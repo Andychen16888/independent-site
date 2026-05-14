@@ -47,4 +47,10 @@ export interface SEOData {
   ogImage?: string
   ogType?: string
   canonical?: string
+  noindex?: boolean
+  nofollow?: boolean
+  articlePublishedTime?: string
+  articleModifiedTime?: string
+  articleAuthors?: string[]
+  articleTags?: string[]
 }

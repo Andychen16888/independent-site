@@ -2,10 +2,13 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { BlogList } from "@/components/blog/BlogList"
 import { generateMetadata } from "@/lib/seo/generate-metadata"
+import { breadcrumbSchema } from "@/lib/seo/structured-data"
+import type { Metadata } from "next"
 
-export const metadata = generateMetadata({
+export const metadata: Metadata = generateMetadata({
   title: "Journal",
-  description: "Explore beauty rituals, artisan stories, and mindful living inspiration from the Oriental Beauty Journal.",
+  description: "Explore beauty rituals, artisan stories, and mindful living inspiration from the Oriental Beauty Journal. Discover peptide skincare tips, ingredient deep-dives, and more.",
+  keywords: "beauty journal, skincare blog, artisan stories, mindfulness, beauty tips",
 })
 
 const allTags = [
@@ -63,19 +66,32 @@ export default async function BlogPage({
 }) {
   const { tag } = await searchParams
   const activeTag = tag || "all"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
 
   const filteredPosts = activeTag === "all"
     ? posts
     : posts.filter((p) => p.tags.includes(activeTag) || p.category === activeTag)
 
+  const schemas = [
+    breadcrumbSchema([
+      { name: "Home", url: baseUrl },
+      { name: "Journal", url: `${baseUrl}/blog` },
+    ]),
+  ]
+
   return (
-    <div className="pt-24 md:pt-28">
-      <div className="bg-cream section-padding">
-        <Container>
-          <Breadcrumb
-            items={[{ label: "Home", href: "/" }, { label: "Journal" }]}
-            className="mb-6"
-          />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+      />
+      <div className="pt-24 md:pt-28">
+        <div className="bg-cream section-padding">
+          <Container>
+            <Breadcrumb
+              items={[{ label: "Home", href: "/" }, { label: "Journal" }]}
+              className="mb-6"
+            />
           <span className="text-caption mb-4 block">Stories & Insights</span>
           <h1 className="heading-xl mb-6">The Journal</h1>
           <p className="text-body max-w-2xl">
@@ -106,5 +122,6 @@ export default async function BlogPage({
         <BlogList posts={filteredPosts} />
       </Container>
     </div>
+    </>
   )
 }

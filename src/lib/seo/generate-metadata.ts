@@ -1,36 +1,52 @@
 import { Metadata } from "next"
 import { SEOData } from "@/types"
 
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Oriental Beauty"
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
-const defaultDescription = "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor."
+export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Oriental Beauty"
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
+export const defaultDescription = "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor."
 
 export function generateMetadata(data: SEOData): Metadata {
+  const title = data.title ? `${data.title} | ${siteName}` : siteName
+  const description = data.description || defaultDescription
+
   return {
     title: data.title ? `${data.title} | ${siteName}` : siteName,
-    description: data.description || defaultDescription,
+    description,
     keywords: data.keywords,
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: data.canonical || siteUrl,
+      languages: {
+        "en-US": siteUrl,
+      },
+    },
     openGraph: {
-      title: data.title || siteName,
-      description: data.description || defaultDescription,
+      title,
+      description,
       url: data.canonical || siteUrl,
       siteName,
-      images: data.ogImage ? [{ url: data.ogImage }] : [],
-      type: (data.ogType as any) || "website",
+      images: data.ogImage
+        ? [{ url: data.ogImage, width: 1200, height: 630, alt: title }]
+        : [{ url: "/og-default.jpg", width: 1200, height: 630, alt: siteName }],
+      type: (data.ogType === "article" ? "article" : "website") as "website" | "article",
       locale: "en_US",
     },
     twitter: {
       card: "summary_large_image",
-      title: data.title || siteName,
-      description: data.description || defaultDescription,
+      title,
+      description,
       images: data.ogImage ? [data.ogImage] : [],
-    },
-    alternates: {
-      canonical: data.canonical,
+      site: "@orientalbeauty",
     },
     robots: {
-      index: true,
-      follow: true,
+      index: data.noindex !== true,
+      follow: data.nofollow !== true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+    other: {
+      "geo.region": "US",
+      "geo.placename": "United States",
     },
   }
 }
@@ -78,5 +94,3 @@ export function generateBreadcrumbSchema(items: { name: string; url: string }[])
     })),
   }
 }
-
-export { siteName, siteUrl, defaultDescription }

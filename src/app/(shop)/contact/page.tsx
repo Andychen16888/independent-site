@@ -1,14 +1,32 @@
 import { Container } from "@/components/ui/Container"
 import { generateMetadata } from "@/lib/seo/generate-metadata"
+import { breadcrumbSchema, contactPageSchema } from "@/lib/seo/structured-data"
+import type { Metadata } from "next"
 
-export const metadata = generateMetadata({
+export const metadata: Metadata = generateMetadata({
   title: "Contact Us",
-  description: "Get in touch with the Oriental Beauty team.",
+  description: "Get in touch with the Oriental Beauty team. We're here to help with orders, products, and general inquiries.",
+  keywords: "contact oriental beauty, customer support, skincare help",
 })
 
 export default function ContactPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
+
+  const schemas = [
+    breadcrumbSchema([
+      { name: "Home", url: baseUrl },
+      { name: "Contact Us", url: `${baseUrl}/contact` },
+    ]),
+    contactPageSchema(),
+  ]
+
   return (
-    <div className="pt-24 md:pt-28 min-h-screen">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+      />
+      <div className="pt-24 md:pt-28 min-h-screen">
       <Container>
         <div className="max-w-2xl mx-auto">
           <span className="text-caption mb-4 block">Get in Touch</span>
@@ -36,5 +54,6 @@ export default function ContactPage() {
         </div>
       </Container>
     </div>
+    </>
   )
 }

@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { BlogContent } from "@/components/blog/BlogContent"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
+import { breadcrumbSchema, blogPostingSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 const posts: Record<string, any> = {
   "art-of-peptide-layering": {
     title: "The Art of Peptide Layering",
+    description: "Master the art of peptide layering with our expert guide. Learn how to combine multi-weight peptides for maximum skin benefits.",
     content: `# The Art of Peptide Layering
 
 ## Why Layering Matters
@@ -54,11 +56,12 @@ Seal everything in with our **Peptide Rich Moisturizer**, which supports the ski
 Build your complete peptide layering system with our curated collection of peptide skincare products.`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-04-15"),
-    tags: "skincare, peptides, routine",
+    tags: "skincare, peptides, routine, anti-aging, collagen",
     coverImage: null,
   },
   "meet-artisan-kazuo-tanaka": {
     title: "Meet the Artisan: Master Potter Kazuo Tanaka",
+    description: "Discover the story of Master Potter Kazuo Tanaka, a third-generation ceramic artist from Kyoto whose Raku-fired creations embody the wabi-sabi philosophy.",
     content: `# Meet the Artisan: Master Potter Kazuo Tanaka
 
 ## A Legacy of Clay
@@ -84,11 +87,12 @@ For our Handmade Living collection, Tanaka-san creates:
 Tanaka-san's work embodies **wabi-sabi** — the Japanese aesthetic of finding beauty in imperfection. No two pieces are identical. The slight asymmetry, the natural drip of glaze, the mark of the potter's finger — these are not flaws, but signatures of authenticity.`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-04-10"),
-    tags: "artisan, ceramics, japan",
+    tags: "artisan, ceramics, japan, wabi-sabi, kyoto",
     coverImage: null,
   },
   "fermented-beauty": {
     title: "Fermented Beauty: Why East Asian Skincare Works",
+    description: "Explore the science behind fermented skincare ingredients and why traditional East Asian fermentation techniques create more potent, absorbable beauty products.",
     content: `# Fermented Beauty: Why East Asian Skincare Works
 
 ## Ancient Wisdom, Modern Science
@@ -120,11 +124,12 @@ Enhances blood circulation to the skin, promoting a natural, healthy glow. Our *
 At Oriental Beauty, we combine traditional fermentation techniques with modern peptide technology. Our ingredients are fermented for 72 hours using traditional methods, then combined with multi-weight peptides for maximum efficacy.`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-04-05"),
-    tags: "skincare, science, fermentation",
+    tags: "skincare, science, fermentation, korean beauty, japanese beauty",
     coverImage: null,
   },
   "mindful-home-sanctuary": {
     title: "Creating a Mindful Home Sanctuary",
+    description: "Learn how to transform your home into a mindful sanctuary using Eastern principles of harmony, natural materials, and intentional living.",
     content: `# Creating a Mindful Home Sanctuary
 
 ## The Art of Intentional Living
@@ -157,11 +162,12 @@ Follow the Japanese principle of **ma** (negative space). Leave room for emptine
 Explore our collection of handcrafted ceramics, textiles, and decor objects designed to bring intention and beauty to your daily life.`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-03-28"),
-    tags: "home, mindfulness, decor",
+    tags: "home, mindfulness, decor, interior design, wabi-sabi",
     coverImage: null,
   },
   "ingredient-spotlight-ginseng": {
     title: "Ingredient Spotlight: Ginseng in Skincare",
+    description: "Discover why ginseng is one of skincare's most powerful ingredients. Learn about its anti-aging benefits and how double-fermentation enhances efficacy.",
     content: `# Ingredient Spotlight: Ginseng in Skincare
 
 ## The Root of Radiance
@@ -190,11 +196,12 @@ Our **Ginseng Peptide Eye Cream** is formulated with double-fermented ginseng an
 In clinical trials, 89% of users showed improvement in fine lines and crow's feet within 8 weeks of consistent use.`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-03-20"),
-    tags: "skincare, ingredients, ginseng",
+    tags: "skincare, ingredients, ginseng, anti-aging, korean beauty",
     coverImage: null,
   },
   "tea-ceremony-daily-ritual": {
     title: "The Tea Ceremony as Daily Ritual",
+    description: "Bring the ancient Japanese tea ceremony into your daily life. Learn the four principles of chanoyu and how to create your own mindful tea ritual.",
     content: `# The Tea Ceremony as Daily Ritual
 
 ## Finding Peace in a Cup
@@ -225,7 +232,7 @@ You don't need a dedicated tea room to practice chanoyu. Here's how to bring the
 4. **Drink with gratitude** — Acknowledge the hands that crafted your cup and grew your tea`,
     author: "Oriental Beauty",
     publishedAt: new Date("2026-03-15"),
-    tags: "tea, ritual, japanese, mindfulness",
+    tags: "tea, ritual, japanese, mindfulness, ceremony",
     coverImage: null,
   },
 }
@@ -236,8 +243,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {}
   return genMeta({
     title: post.title,
-    description: post.content.replace(/[#*>\n]/g, "").slice(0, 160),
+    description: post.description,
     keywords: post.tags || undefined,
+    ogImage: post.coverImage || undefined,
+    ogType: "article",
+    articlePublishedTime: post.publishedAt.toISOString(),
+    articleAuthors: [post.author],
+    articleTags: post.tags?.split(", "),
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"}/blog/${slug}`,
   })
 }
 
@@ -246,19 +259,45 @@ export default async function BlogPostPage({ params }: Props) {
   const post = posts[slug]
   if (!post) notFound()
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
+  const postUrl = `${baseUrl}/blog/${slug}`
+
+  const schemas = [
+    breadcrumbSchema([
+      { name: "Home", url: baseUrl },
+      { name: "Journal", url: `${baseUrl}/blog` },
+      { name: post.title, url: postUrl },
+    ]),
+    blogPostingSchema({
+      headline: post.title,
+      description: post.description,
+      author: post.author,
+      datePublished: post.publishedAt.toISOString(),
+      dateModified: post.publishedAt.toISOString(),
+      image: post.coverImage,
+      url: postUrl,
+    }),
+  ]
+
   return (
-    <div className="pt-24 md:pt-28">
-      <Container>
-        <Breadcrumb
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Journal", href: "/blog" },
-            { label: post.title },
-          ]}
-          className="mb-8"
-        />
-      </Container>
-      <BlogContent post={post} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+      />
+      <div className="pt-24 md:pt-28">
+        <Container>
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Journal", href: "/blog" },
+              { label: post.title },
+            ]}
+            className="mb-8"
+          />
+        </Container>
+        <BlogContent post={post} />
+      </div>
+    </>
   )
 }

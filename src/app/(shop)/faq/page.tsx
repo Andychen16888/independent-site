@@ -1,7 +1,7 @@
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { generateMetadata } from "@/lib/seo/generate-metadata"
-import { breadcrumbSchema, faqPageSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, faqPageSchema, qaPageSchema, GEO_CONFIG } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = generateMetadata({
@@ -50,6 +50,10 @@ export default function FAQPage() {
       { name: "FAQ", url: `${baseUrl}/faq` },
     ]),
     faqPageSchema(faqs.map((f) => ({ question: f.q, answer: f.a }))),
+    // GEO: Individual QAPage schemas for each FAQ — LLMs match specific queries to answers
+    ...faqs.map((f) => qaPageSchema({ question: f.q, answer: f.a, author: "Oriental Beauty" })),
+    // GEO: Brand knowledge questions — LLMs use these to build brand entity understanding
+    ...GEO_CONFIG.brandQuestions.map((bq) => qaPageSchema({ question: bq.q, answer: bq.a, author: "Oriental Beauty" })),
   ]
 
   return (
@@ -58,6 +62,16 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
+      {/* GEO: Brand knowledge facts — LLMs crawl this for entity understanding */}
+      <div className="sr-only" aria-hidden="true">
+        {GEO_CONFIG.brandFacts}
+        {GEO_CONFIG.brandQuestions.map((bq, i) => (
+          <div key={i}>
+            <h2>{bq.q}</h2>
+            <p>{bq.a}</p>
+          </div>
+        ))}
+      </div>
       <div className="pt-24 md:pt-28 min-h-screen">
         <Container>
           <div className="max-w-3xl mx-auto py-12 md:py-16">

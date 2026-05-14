@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductDetail } from "@/components/product/ProductDetail"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
-import { breadcrumbSchema, productSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, productSchema, howToSchema, videoObjectSchema, articleSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -150,6 +150,45 @@ export default async function ProductPage({ params }: Props) {
       images: product.images,
       reviews: product.reviews,
     }),
+    // GEO: HowTo schema for skincare products — LLMs use this for "how to apply" answers
+    ...(product.sku.startsWith("PEP") || product.sku.startsWith("RICE") || product.sku.startsWith("GIN") || product.sku.startsWith("VIT")
+      ? [howToSchema({
+          name: `How to Apply ${product.name}`,
+          description: `Step-by-step guide to using ${product.name} for best results. ${product.shortDescription || ""}`,
+          image: product.images?.[0]?.url,
+          estimatedCost: product.unitPrice.toString(),
+          steps: [
+            { text: "Start with a clean, toned face. Pat skin dry with a soft towel.", duration: "PT1M" },
+            { text: "Dispense a small amount of product onto your fingertips or the back of your hand.", duration: "PT30S" },
+            { text: `Apply ${product.name} gently to your face and neck using upward motions.`, duration: "PT1M" },
+            { text: "Allow the product to absorb for 60 seconds before applying your moisturizer.", duration: "PT1M" },
+            { text: "Use twice daily, morning and evening, for visible results within 4-6 weeks.", duration: "PT30S" },
+          ],
+        })]
+      : []),
+    // GEO: Article schema for handmade/living products — LLMs cite detailed product stories
+    ...(!product.sku.startsWith("PEP") && !product.sku.startsWith("RICE") && !product.sku.startsWith("GIN") && !product.sku.startsWith("VIT")
+      ? [articleSchema({
+          headline: product.name,
+          description: product.shortDescription || product.description,
+          author: { name: product.brand || "Oriental Beauty" },
+          datePublished: "2026-01-15T00:00:00Z",
+          image: product.images?.[0]?.url,
+          url: productUrl,
+          articleSection: "Handmade Living",
+          keywords: `${product.name}, artisan, handmade, ${product.brand}`,
+        })]
+      : []),
+    // GEO: VideoObject schema for products with demo videos
+    ...(product.videos?.length
+      ? product.videos.map((v, i) => videoObjectSchema({
+          name: v.title || `${product.name} Video`,
+          description: `Product demonstration and application guide for ${product.name}`,
+          contentUrl: v.url,
+          uploadDate: "2026-01-01T00:00:00Z",
+          duration: "PT2M",
+        }))
+      : []),
   ]
 
   return (

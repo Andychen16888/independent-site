@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
-import { breadcrumbSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, productGroupSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -69,6 +69,19 @@ export default async function CategoryPage({ params }: Props) {
       { name: "Home", url: baseUrl },
       { name: category.name, url: `${baseUrl}/categories/${category.slug}` },
     ]),
+    productGroupSchema({
+      name: category.title,
+      description: category.description,
+      url: `${baseUrl}/categories/${category.slug}`,
+      image: category.ogImage,
+      products: category.products.map((p) => ({
+        name: p.name,
+        url: `${baseUrl}/products/${p.slug}`,
+        price: p.unitPrice,
+        image: p.images?.[0]?.url,
+        sku: p.slug,
+      })),
+    }),
   ]
 
   return (

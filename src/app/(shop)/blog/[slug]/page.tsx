@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { BlogContent } from "@/components/blog/BlogContent"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
-import { breadcrumbSchema, blogPostingSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, blogPostingSchema, articleSchema, personSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -276,6 +276,26 @@ export default async function BlogPostPage({ params }: Props) {
       dateModified: post.publishedAt.toISOString(),
       image: post.coverImage,
       url: postUrl,
+    }),
+    // GEO: Enhanced Article schema with Speakable spec — LLMs use this to identify quotable sections
+    articleSchema({
+      headline: post.title,
+      description: post.description,
+      author: { name: post.author, url: `${baseUrl}/about` },
+      datePublished: post.publishedAt.toISOString(),
+      dateModified: post.publishedAt.toISOString(),
+      image: post.coverImage,
+      url: postUrl,
+      articleSection: post.tags?.includes("skincare") ? "Beauty" : post.tags?.includes("artisan") ? "Craftsmanship" : "Lifestyle",
+      keywords: post.tags,
+      speakable: { cssSelector: [".blog-content h1", ".blog-content h2", ".blog-content blockquote"] },
+    }),
+    // GEO: Person entity for author authority signal — LLMs track author expertise
+    personSchema({
+      name: post.author,
+      description: "Content creator and beauty/lifestyle expert at Oriental Beauty",
+      jobTitle: "Content Editor",
+      knowsAbout: ["peptide skincare", "asian beauty rituals", "artisanal crafts", "mindful living"],
     }),
   ]
 

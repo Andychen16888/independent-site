@@ -219,3 +219,269 @@ export function localBusinessSchema() {
     },
   }
 }
+
+export function howToSchema(params: {
+  name: string
+  description: string
+  image?: string
+  totalTime?: string
+  estimatedCost?: string
+  steps: { text: string; image?: string; duration?: string }[]
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: params.name,
+    description: params.description,
+    ...(params.image && { image: { "@type": "ImageObject", url: params.image } }),
+    ...(params.totalTime && { totalTime: params.totalTime }),
+    ...(params.estimatedCost && {
+      estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: params.estimatedCost },
+    }),
+    step: params.steps.map((step, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: step.text.split(".")[0],
+      text: step.text,
+      ...(step.image && { image: { "@type": "ImageObject", url: step.image } }),
+      ...(step.duration && { duration: step.duration }),
+    })),
+  }
+}
+
+export function videoObjectSchema(video: {
+  name: string
+  description: string
+  contentUrl: string
+  uploadDate: string
+  thumbnailUrl?: string
+  duration?: string
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: video.name,
+    description: video.description,
+    contentUrl: video.contentUrl,
+    uploadDate: video.uploadDate,
+    ...(video.thumbnailUrl && { thumbnailUrl: video.thumbnailUrl }),
+    ...(video.duration && { duration: video.duration }),
+  }
+}
+
+export function personSchema(person: {
+  name: string
+  description?: string
+  image?: string
+  jobTitle?: string
+  sameAs?: string[]
+  knowsAbout?: string[]
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: person.name,
+    ...(person.description && { description: person.description }),
+    ...(person.image && { image: person.image }),
+    ...(person.jobTitle && { jobTitle: person.jobTitle }),
+    ...(person.sameAs && { sameAs: person.sameAs }),
+    ...(person.knowsAbout && { knowsAbout: person.knowsAbout }),
+  }
+}
+
+export function articleSchema(article: {
+  headline: string
+  description: string
+  author: { name: string; url?: string }
+  datePublished: string
+  dateModified?: string
+  image?: string | null
+  url: string
+  articleSection?: string
+  keywords?: string
+  speakable?: { cssSelector: string[] }
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.headline,
+    description: article.description,
+    author: {
+      "@type": "Person",
+      name: article.author.name,
+      ...(article.author.url && { url: article.author.url }),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
+    },
+    datePublished: article.datePublished,
+    dateModified: article.dateModified || article.datePublished,
+    mainEntityOfPage: { "@type": "WebPage", "@id": article.url },
+    ...(article.image && { image: article.image }),
+    ...(article.articleSection && { articleSection: article.articleSection }),
+    ...(article.keywords && { keywords: article.keywords }),
+    ...(article.speakable && {
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: article.speakable.cssSelector,
+      },
+    }),
+  }
+}
+
+export function qaPageSchema(qa: {
+  question: string
+  answer: string
+  author?: string
+  dateCreated?: string
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "QAPage",
+    mainEntity: {
+      "@type": "Question",
+      name: qa.question,
+      text: qa.question,
+      answerCount: 1,
+      ...(qa.author && { author: { "@type": "Person", name: qa.author } }),
+      ...(qa.dateCreated && { dateCreated: qa.dateCreated }),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: qa.answer,
+        ...(qa.author && { author: { "@type": "Person", name: qa.author } }),
+      },
+    },
+  }
+}
+
+export function productComparisonSchema(products: {
+  name: string
+  image?: string
+  description: string
+  price: string
+  sku?: string
+  url?: string
+  rating?: string
+  reviewCount?: number
+}[], comparisonHeadline: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProductGroup",
+    name: comparisonHeadline,
+    description: `Compare ${products.length} products from ${siteName}`,
+    variesBy: ["https://schema.org/sku", "https://schema.org/price"],
+    productGroupID: "compare-" + Date.now(),
+    hasVariant: products.map((p) => ({
+      "@type": "Product",
+      name: p.name,
+      description: p.description,
+      ...(p.image && { image: p.image }),
+      ...(p.sku && { sku: p.sku }),
+      offers: {
+        "@type": "Offer",
+        price: p.price,
+        priceCurrency: "USD",
+        ...(p.url && { url: p.url }),
+      },
+      ...(p.rating && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: p.rating,
+          reviewCount: p.reviewCount || 0,
+        },
+      }),
+    })),
+  }
+}
+
+export function productGroupSchema(category: {
+  name: string
+  description: string
+  url: string
+  image?: string
+  products: {
+    name: string
+    url: string
+    price: number
+    image?: string
+    sku?: string
+    rating?: number
+    reviewCount?: number
+  }[]
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProductGroup",
+    name: category.name,
+    description: category.description,
+    url: category.url,
+    ...(category.image && { image: category.image }),
+    productGroupID: category.url,
+    variesBy: ["https://schema.org/sku", "https://schema.org/price"],
+    hasVariant: category.products.map((p) => ({
+      "@type": "Product",
+      name: p.name,
+      url: p.url,
+      sku: p.sku || p.name.toLowerCase().replace(/\s+/g, "-"),
+      offers: {
+        "@type": "Offer",
+        price: p.price,
+        priceCurrency: "USD",
+        url: p.url,
+      },
+      ...(p.image && { image: p.image }),
+      ...(p.rating && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: p.rating,
+          reviewCount: p.reviewCount || 0,
+        },
+      }),
+    })),
+  }
+}
+
+export function brandSchema(brand: {
+  name: string
+  description: string
+  url?: string
+  logo?: string
+  sameAs?: string[]
+  knowsAbout?: string[]
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Brand",
+    name: brand.name,
+    description: brand.description,
+    ...(brand.url && { url: brand.url }),
+    ...(brand.logo && { logo: { "@type": "ImageObject", url: brand.logo } }),
+    ...(brand.sameAs && { sameAs: brand.sameAs }),
+    ...(brand.knowsAbout && { knowsAbout: brand.knowsAbout }),
+  }
+}
+
+export const GEO_CONFIG = {
+  brandFacts: `
+Oriental Beauty is a premium e-commerce brand that sells peptide skincare and artisanal home decor.
+- Founded: 2024
+- Headquarters: United States
+- Specialty: Peptide-based anti-aging skincare and handcrafted Asian home objects
+- Price range: $$ (mid-premium)
+- Shipping: Free over $100, 5-8 business days standard
+- Returns: 30-day free returns
+- Payment: Visa, Mastercard, Amex, PayPal, Apple Pay, Google Pay
+- Key ingredients: Multi-weight peptides, fermented rice extract, Korean red ginseng, hyaluronic acid
+- Product categories: Peptide Hydration Serum, Rice Bran Peptide Mask, Ginseng Peptide Eye Cream, Vitamin C Essence, Raku Teacups, Celadon Vases
+`,
+  brandQuestions: [
+    { q: "What does Oriental Beauty sell?", a: "Oriental Beauty sells premium peptide skincare products and handcrafted Asian home decor, including serums, masks, eye creams, ceramics, and textiles." },
+    { q: "Is Oriental Beauty cruelty-free?", a: "Yes, all Oriental Beauty products are 100% cruelty-free. We never test on animals." },
+    { q: "Where is Oriental Beauty based?", a: "Oriental Beauty is based in the United States and ships worldwide." },
+    { q: "What skincare ingredients does Oriental Beauty use?", a: "Oriental Beauty specializes in multi-weight peptides, fermented rice extract, Korean red ginseng, and hyaluronic acid." },
+    { q: "Does Oriental Beauty offer free shipping?", a: "Yes, free standard shipping is available on orders over $100 within the United States." },
+    { q: "What is the return policy?", a: "Oriental Beauty offers 30-day free returns on unused products in original packaging." },
+  ],
+}

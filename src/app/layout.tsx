@@ -3,7 +3,7 @@ import { Inter, Cormorant_Garamond } from "next/font/google"
 import { Providers } from "@/components/layout/Providers"
 import { FacebookPixel, GoogleAnalytics, GoogleAds } from "@/components/marketing/AdScripts"
 import { PromoBar } from "@/components/marketing/PromoBar"
-import { organizationSchema, websiteSchema, localBusinessSchema } from "@/lib/seo/structured-data"
+import { organizationSchema, websiteSchema, localBusinessSchema, brandSchema } from "@/lib/seo/structured-data"
 import "./globals.css"
 
 const inter = Inter({
@@ -84,6 +84,16 @@ const jsonLd = [
   organizationSchema(),
   websiteSchema(),
   localBusinessSchema(),
+  brandSchema({
+    name: "Oriental Beauty",
+    description: "Premium peptide skincare and artisanal home decor brand blending Eastern beauty rituals with modern science.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com",
+    knowsAbout: [
+      "Peptide Skincare", "Anti-Aging Serums", "Asian Beauty Rituals",
+      "Handmade Ceramics", "Artisanal Home Decor", "Fermented Skincare",
+      "Korean Red Ginseng", "Japanese Tea Ceremony", "Wabi-Sabi",
+    ],
+  }),
 ]
 
 export default function RootLayout({
@@ -99,6 +109,11 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no, address=no, email=no" />
         <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ""} />
         <meta name="msvalidate.01" content={process.env.NEXT_PUBLIC_BING_VERIFICATION || ""} />
+        <meta name="application-name" content="Oriental Beauty" />
+        <meta name="apple-mobile-web-app-title" content="Oriental Beauty" />
+        <meta name="generator" content="Next.js" />
+        <meta name="subject" content="Premium Skincare & Artisanal Home Decor" />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

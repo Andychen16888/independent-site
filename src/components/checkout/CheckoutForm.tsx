@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useCartStore } from "@/stores/cart-store"
 import { Button } from "@/components/ui/Button"
 import { StripePayment } from "./StripePayment"
@@ -86,7 +87,7 @@ export function CheckoutForm() {
     return (
       <div className="text-center py-20">
         <p className="text-body mb-4">Your cart is empty</p>
-        <a href="/products" className="btn-primary">Shop Now</a>
+        <Link href="/products" className="btn-primary">Shop Now</Link>
       </div>
     )
   }

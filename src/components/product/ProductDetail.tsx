@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
 import { ImageZoom } from "./ImageZoom"
+import { SocialShare } from "./SocialShare"
 import { FrequentlyBoughtTogether } from "./FrequentlyBoughtTogether"
 import { ProductReviews } from "./ProductReviews"
 import { useCartStore } from "@/stores/cart-store"
@@ -33,8 +33,7 @@ interface ProductDetailProps {
 
 export function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1)
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [isPlayingVideo, setIsPlayingVideo] = useState(false)
+  const [selectedMedia, setSelectedMedia] = useState(0)
   const addItem = useCartStore((s) => s.addItem)
   const toggleItem = useWishlistStore((s) => s.toggleItem)
   const isInWishlist = useWishlistStore((s) => s.isInWishlist)
@@ -43,7 +42,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
     ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
     : 0
 
-  const mainImage = product.images?.[selectedImage]?.url
+  const allMedia = [
+    ...(product.images?.map((img, i) => ({ type: "image" as const, url: img.url, alt: img.alt || product.name, index: i })) || []),
+    ...(product.videos?.map((vid, i) => ({ type: "video" as const, url: vid.url, title: vid.title || "Video", index: i })) || []),
+  ]
+  const currentMedia = allMedia[selectedMedia]
+
+  const mainImage = currentMedia?.type === "image" ? currentMedia.url : product.images?.[0]?.url
+  const isVideoActive = currentMedia?.type === "video"
 
   const handleAddToCart = () => {
     addItem({
@@ -67,47 +73,47 @@ export function ProductDetail({ product }: ProductDetailProps) {
     <Container>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16 mb-16">
         <div className="space-y-4">
-          {isPlayingVideo && product.videos?.[0] ? (
-            <div className="aspect-[4/5] bg-black relative">
+          <div className="aspect-[4/5] bg-mist relative overflow-hidden">
+            {isVideoActive && currentMedia ? (
               <video
-                src={product.videos[0].url}
+                key={currentMedia.url}
+                src={currentMedia.url}
                 controls
                 autoPlay
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain bg-black"
               />
-              <button
-                onClick={() => setIsPlayingVideo(false)}
-                className="absolute top-4 right-4 p-2 bg-ivory/80 hover:bg-ivory text-sm"
-              >
-                Close
-              </button>
-            </div>
-          ) : (
-            <ImageZoom
-              src={mainImage}
-              alt={product.name}
-            />
-          )}
+            ) : (
+              <ImageZoom
+                src={mainImage}
+                alt={product.name}
+              />
+            )}
+          </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {product.images?.map((img, i) => (
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+            {allMedia.map((media, i) => (
               <button
-                key={i}
-                onClick={() => { setSelectedImage(i); setIsPlayingVideo(false) }}
-                className={`flex-shrink-0 w-20 h-20 border-2 transition-colors overflow-hidden ${
-                  i === selectedImage ? "border-charcoal" : "border-transparent hover:border-mist"
+                key={`${media.type}-${media.index}`}
+                onClick={() => setSelectedMedia(i)}
+                className={`flex-shrink-0 w-20 h-20 border-2 transition-colors overflow-hidden relative ${
+                  i === selectedMedia ? "border-charcoal" : "border-transparent hover:border-mist"
                 }`}
               >
-                <div className="w-full h-full bg-mist" />
-              </button>
-            ))}
-            {product.videos?.map((video, i) => (
-              <button
-                key={`video-${i}`}
-                onClick={() => setIsPlayingVideo(true)}
-                className="flex-shrink-0 w-20 h-20 bg-charcoal border-2 border-transparent hover:border-charcoal flex items-center justify-center"
-              >
-                <HiPlay className="w-6 h-6 text-ivory" />
+                {media.type === "image" ? (
+                  <img
+                    src={media.url}
+                    alt={media.alt}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-charcoal flex items-center justify-center">
+                    <HiPlay className="w-6 h-6 text-ivory" />
+                    {media.url && (
+                      <video src={media.url} className="absolute inset-0 w-full h-full object-cover opacity-50" />
+                    )}
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -215,6 +221,15 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </dl>
             </details>
           )}
+
+          <div className="mt-6 pt-6 border-t border-mist">
+            <SocialShare
+              url={`${typeof window !== "undefined" ? window.location.origin : ""}/products/${product.slug}`}
+              title={product.name}
+              description={product.shortDescription || product.description}
+              image={product.images?.[0]?.url}
+            />
+          </div>
         </div>
 
         <div className="mb-16">

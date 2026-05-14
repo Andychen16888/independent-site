@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
 
@@ -23,9 +24,9 @@ export default function Error({
             <Button onClick={reset} variant="primary">
               Try Again
             </Button>
-            <a href="/" className="btn-outline inline-flex items-center justify-center">
+            <Link href="/" className="btn-outline inline-flex items-center justify-center">
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </Container>

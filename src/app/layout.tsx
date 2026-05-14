@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Cormorant_Garamond } from "next/font/google"
 import { Providers } from "@/components/layout/Providers"
+import { FacebookPixel, GoogleAnalytics, GoogleAds } from "@/components/marketing/AdScripts"
+import { PromoBar } from "@/components/marketing/PromoBar"
 import "./globals.css"
 
 const inter = Inter({
@@ -68,7 +70,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
+      <FacebookPixel />
+      <GoogleAnalytics />
+      <GoogleAds />
       <body className="min-h-screen bg-ivory text-charcoal antialiased">
+        <PromoBar />
         <Providers>{children}</Providers>
       </body>
     </html>

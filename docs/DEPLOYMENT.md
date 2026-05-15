@@ -2,7 +2,9 @@
 
 > 部署环境: Linux VPS (Ubuntu 22.04 LTS)  
 > 技术栈: Next.js 15 + PostgreSQL 16 + Nginx + PM2 + Docker  
-> 最后更新: 2026-05-14
+> 最后更新: 2026-05-14  
+> 
+> **SEO / GEO / CDN 章节已同步更新于 2026-05-14**
 
 ---
 
@@ -25,6 +27,10 @@
 15. [监控与日志](#15-监控与日志)
 16. [故障排查](#16-故障排查)
 17. [安全 checklist](#17-安全-checklist)
+18. [SEO 优化部署指南](#18-seo-优化部署指南)
+19. [GEO 优化部署指南](#19-geo-生成式引擎优化-部署指南)
+20. [CDN 加速与缓存策略](#20-cdn-加速与缓存策略)
+21. [管理后台部署指南](#21-管理后台部署指南)
 
 ---
 
@@ -965,7 +971,541 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 ---
 
-## 附录
+## 18. SEO 优化部署指南
+
+### 18.1 结构化数据 (JSON-LD)
+
+项目已内置完整的 JSON-LD 结构化数据，部署后必须验证：
+
+| 页面 | Schema 类型 | 来源文件 |
+|------|------------|---------|
+| 全局 (所有页面) | Organization, Website, LocalBusiness, Brand | `src/app/layout.tsx` |
+| 产品详情 | Product, BreadcrumbList, HowTo, Article, VideoObject | `src/app/(shop)/products/[slug]/page.tsx` |
+| 博客文章 | BlogPosting, BreadcrumbList, Article, Person | `src/app/(shop)/blog/[slug]/page.tsx` |
+| 分类页 | ProductGroup, BreadcrumbList | `src/app/(shop)/categories/[slug]/page.tsx` |
+| FAQ | FAQPage, QAPage, BreadcrumbList | `src/app/(shop)/faq/page.tsx` |
+| 关于我们 | AboutPage, BreadcrumbList | `src/app/(shop)/about/page.tsx` |
+| 联系我们 | ContactPage, BreadcrumbList | `src/app/(shop)/contact/page.tsx` |
+
+#### 验证工具
+
+部署后使用以下工具验证每项:
+
+```bash
+# Google Rich Results Test
+# 访问: https://search.google.com/test/rich-results
+# 输入你的页面 URL 逐一测试
+
+# Schema.org Validator
+# 访问: https://validator.schema.org/
+
+# Google Search Console - URL Inspection
+# 提交页面后查看 "富媒体搜索结果" 标签
+```
+
+#### 常见问题
+
+- **JSON-LD 重复**: 确保每页的 schema 数组不重复添加相同的 `@type`
+- **ProductGroup 验证**: `productGroupSchema` 要求每个 variant 有唯一的 sku
+- **Organization 信息**: 确保 `src/lib/seo/structured-data.ts` 中的联系信息准确
+
+### 18.2 Sitemap
+
+项目自动生成 `/sitemap.xml`，包含所有 23+ 路由:
+
+```bash
+# 部署后验证
+curl https://orientalbeauty.com/sitemap.xml | head -50
+
+# 检查 sitemap 索引
+curl https://orientalbeauty.com/sitemap.xml | grep -o "<loc>[^<]*</loc>"
+```
+
+#### 提交到搜索引擎
+
+```bash
+# Google Search Console
+# 1. 访问 https://search.google.com/search-console
+# 2. 添加域名 (输入 orientalbeauty.com)
+# 3. 验证所有权 (推荐: DNS TXT 记录)
+# 4. 左侧菜单 → Sitemaps → 输入 sitemap.xml → 提交
+
+# Bing Webmaster Tools
+# 1. 访问 https://www.bing.com/webmasters/
+# 2. 添加站点
+# 3. 验证所有权 (可导入 Google Search Console 验证)
+# 4. 输入 sitemap.xml → 提交
+
+# 手动 Ping
+curl "https://www.google.com/ping?sitemap=https://orientalbeauty.com/sitemap.xml"
+curl "https://www.bing.com/ping?sitemap=https://orientalbeauty.com/sitemap.xml"
+```
+
+### 18.3 Robots.txt
+
+`/robots.txt` 位于 `src/app/robots.ts`，自动生成。部署后验证:
+
+```bash
+curl https://orientalbeauty.com/robots.txt
+```
+
+预期输出包含:
+```
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+Sitemap: https://orientalbeauty.com/sitemap.xml
+```
+
+### 18.4 Meta 标签检查清单
+
+部署后对所有模板页面进行检查:
+
+| 标签 | 说明 | 检查方法 |
+|------|------|---------|
+| `<title>` | 每页唯一标题 | 浏览器标签栏 |
+| `<meta name="description">` | 每页唯一描述 | 查看页面源码 |
+| `<meta name="keywords">` | 相关关键词 | 查看页面源码 |
+| `<link rel="canonical">` | 规范 URL，无重复内容 | 查看页面源码 |
+| `<meta property="og:title">` | 社交分享标题 | Facebook Sharing Debugger |
+| `<meta property="og:image">` | 社交分享图片 | Facebook Sharing Debugger |
+| `<meta name="robots">` | 索引指令 | 查看页面源码 |
+| `<meta name="google-site-verification">` | Google 验证 | Search Console |
+
+```bash
+# 批量检查所有页面的 meta 标签
+cat << 'SCRIPT' > /tmp/check-meta.sh
+#!/bin/bash
+URLS=(
+  "https://orientalbeauty.com"
+  "https://orientalbeauty.com/products"
+  "https://orientalbeauty.com/products/peptide-hydration-serum"
+  "https://orientalbeauty.com/categories/beauty"
+  "https://orientalbeauty.com/blog"
+  "https://orientalbeauty.com/about"
+  "https://orientalbeauty.com/contact"
+  "https://orientalbeauty.com/faq"
+)
+
+for url in "${URLS[@]}"; do
+  echo "=== $url ==="
+  curl -s "$url" | grep -E "<title|<meta name=\"description\"|<link rel=\"canonical\""
+  echo ""
+done
+SCRIPT
+chmod +x /tmp/check-meta.sh && bash /tmp/check-meta.sh
+```
+
+### 18.5 Core Web Vitals 优化
+
+部署后使用以下工具监控:
+
+```bash
+# Lighthouse 评分
+# Chrome DevTools → Lighthouse → Generate report
+# 目标: Performance ≥ 90, SEO = 100
+
+# PageSpeed Insights
+# 访问: https://pagespeed.web.dev/ (输入页面 URL)
+
+# Google Search Console → Core Web Vitals
+# 监控 LCP (< 2.5s), FID (< 100ms), CLS (< 0.1)
+```
+
+#### Nginx 缓存优化 (已配置)
+
+```nginx
+# 已在 Nginx 配置中启用:
+# - 静态资源缓存 365 天 (/_next/static/)
+# - 静态文件缓存 30 天 (/static/)
+# - Gzip 压缩
+```
+
+#### 图片优化
+
+```bash
+# 项目使用 next/image 自动优化
+# 确保已安装 sharp (生产环境必须)
+npm list sharp  # 应显示 sharp 已安装
+```
+
+### 18.6 SEO 部署 Checklist
+
+- [ ] Google Search Console 添加域名并验证
+- [ ] Bing Webmaster Tools 添加站点并验证
+- [ ] sitemap.xml 提交到 Google 和 Bing
+- [ ] robots.txt 可访问且内容正确
+- [ ] 所有页面的 JSON-LD 通过 Rich Results Test
+- [ ] 所有页面有唯一的 title 和 description
+- [ ] 所有页面有正确的 canonical URL
+- [ ] Open Graph 标签 (og:title, og:image, og:description) 正常工作
+- [ ] 网站验证代码 (`google-site-verification`, `msvalidate.01`) 已注入
+- [ ] hreflang 标签配置正确 (如有多种语言)
+- [ ] Core Web Vitals 达到绿色指标
+- [ ] 移动端适配测试通过
+
+---
+
+## 19. GEO (生成式引擎优化) 部署指南
+
+### 19.1 什么是 GEO
+
+**GEO (Generative Engine Optimization)** 是针对 AI 生成式搜索引擎（如 ChatGPT Search, Google AI Overviews, Perplexity, Bing Copilot 等）的优化策略。与传统 SEO 不同，GEO 目标是让 LLM 在生成回答时优先引用你的品牌内容。
+
+### 19.2 本项目已实现的 GEO 策略
+
+#### 品牌实体构建
+
+在 `src/lib/seo/structured-data.ts` 中的 `GEO_CONFIG` 包含了:
+
+```typescript
+export const GEO_CONFIG = {
+  brandFacts: `...`,    // 品牌关键事实 (集中呈现)
+  brandQuestions: [...]  // 常见品牌问答
+}
+```
+
+**部署后效果**:
+- **FAQ 页面**: 每个品牌问答作为独立的 `QAPage` schema 注入，LLM 可直接匹配用户查询
+- **隐藏的品牌事实**: 使用 `sr-only` 类（屏幕阅读器可见，视觉隐藏），供 LLM 爬取时抓取
+- **Brand schema**: 布局全局注入，包含品牌描述的语义化实体
+
+#### Speakable 规范 (博客文章)
+
+博客文章 (`src/app/(shop)/blog/[slug]/page.tsx`) 配置了 `SpeakableSpecification`:
+
+```typescript
+speakable: {
+  cssSelector: [".blog-content h1", ".blog-content h2", ".blog-content blockquote"]
+}
+```
+
+这告诉 LLM 哪些内容是文章的"可引用段落"——AI 引擎更倾向引用标记为 speakable 的内容。
+
+#### 实体权威性信号
+
+| 信号 | 实现方式 | 目标 |
+|------|---------|------|
+| 作者权威 | 每篇文章注入 `Person` schema (jobTitle, knowsAbout) | LLM 识别内容作者专业性 |
+| 品牌知识 | Brand schema + QAPage + brandFacts | 构建 LLM 的品牌实体理解 |
+| 结构化产品数据 | Product + ProductGroup + HowTo + Article schema | LLM 在推荐产品时引用完整信息 |
+| HowTo 步骤 | HowTo schema 包含步骤描述和时间 | LLM 回答"如何使用"类问题 |
+
+### 19.3 验证 GEO 效果
+
+```bash
+# 1. 使用 ChatGPT Search 测试
+# 提示词: "What does Oriental Beauty sell?"
+# 提示词: "How to apply peptide serum?"
+# 提示词: "Tell me about Oriental Beauty brand"
+
+# 2. 使用 Perplexity 测试
+# 搜索: "oriental beauty skincare products"
+# 检查是否引用你的网站内容
+
+# 3. Google AI Overviews
+# 搜索品牌相关长尾关键词
+# 观察 AI Overviews 是否引用你网站的结构化数据
+
+# 4. 结构化数据测试
+# 访问: https://search.google.com/test/rich-results
+# 检查 QAPage, Speakable, HowTo, ProductGroup 等 schema
+```
+
+### 19.4 持续优化建议
+
+```bash
+# 1. 更新 brandFacts
+# 文件: src/lib/seo/structured-data.ts → GEO_CONFIG.brandFacts
+# 随产品线扩展及时更新品牌事实
+
+# 2. 扩展 brandQuestions
+# 添加用户最常问的 5-10 个问题
+# 分析 Google Search Console 中的 "People also ask"
+
+# 3. 添加更多 HowTo schema
+# 每个护肤品都应配有 HowTo 步骤
+# 在 products/[slug]/page.tsx 中的 howToSchema 调用处扩展
+
+# 4. 维护 Blog 文章的 speakable 内容
+# 确保 h1/h2/blockquote 包含有价值的引用段落
+# 避免在文章标题中使用点击诱饵
+
+# 5. 监控 LLM 引用
+# 定期在 ChatGPT/Perplexity 搜索品牌关键词
+# 确保持续被 AI 引擎引用
+```
+
+### 19.5 GEO 部署 Checklist
+
+- [ ] Brand schema 在全局布局中注入 (`layout.tsx`)
+- [ ] FAQ 页面包含 QAPage schema + brandFacts 隐藏内容
+- [ ] 博客页面包含 articleSchema + personSchema + speakable 规范
+- [ ] 产品页面包含 howToSchema (护肤品) / articleSchema (手工品)
+- [ ] 分类页面包含 ProductGroup schema
+- [ ] brandFacts 和 brandQuestions 内容准确且完整
+- [ ] 在 ChatGPT Search / Perplexity 中测试品牌可见性
+- [ ] Google Rich Results Test 中所有 schema 无错误
+- [ ] Brand knowledge `knowsAbout` 字段覆盖主要产品类别
+
+---
+
+## 20. CDN 加速与缓存策略
+
+### 20.1 Cloudflare 推荐配置
+
+推荐使用 **Cloudflare** 作为 CDN 和 DNS 提供商 (Free 计划即可满足需求)。
+
+#### 步骤 1: 添加域名到 Cloudflare
+
+```bash
+# 1. 注册/登录 https://dash.cloudflare.com
+# 2. 点击 "Add a Site" → 输入 orientalbeauty.com
+# 3. 选择 Free 计划
+# 4. Cloudflare 自动扫描 DNS 记录
+# 5. 将域名的 Nameservers 改为 Cloudflare 提供的
+```
+
+#### 步骤 2: DNS 配置
+
+| 类型 | 名称 | 值 | Proxy (橙色云朵) |
+|------|------|-----|-----------------|
+| A | `@` | 服务器 IP | Proxied |
+| A | `www` | 服务器 IP | Proxied |
+| CNAME | `*` | orientalbeauty.com | Proxied |
+
+> **重要**: 所有记录必须开启 Proxy (橙色云朵) 才能启用 CDN 缓存和安全功能。
+
+#### 步骤 3: SSL/TLS 配置
+
+```bash
+# Cloudflare Dashboard → SSL/TLS
+# 推荐: Full (strict)
+# - 需要服务器上有有效的 SSL 证书 (Let's Encrypt)
+# - Cloudflare 到访客: HTTPS (Cloudflare 证书)
+# - Cloudflare 到服务器: HTTPS (你的证书)
+```
+
+#### 步骤 4: 缓存规则
+
+进入 Cloudflare Dashboard → **Caching** → **Cache Rules**，创建以下规则:
+
+**规则 1 — 静态资源 (长期缓存)**
+
+```
+Field: Hostname → equals → orientalbeauty.com
+AND Field: URI Path → contains → /_next/static/
+
+Cache Eligibility: Eligible for cache
+Edge TTL: 365 days
+Browser TTL: 365 days
+```
+
+**规则 2 — 图片资源**
+
+```
+Field: Hostname → equals → orientalbeauty.com
+AND Field: URI Path → contains → /static/
+
+Cache Eligibility: Eligible for cache
+Edge TTL: 30 days
+Browser TTL: 30 days
+```
+
+**规则 3 — HTML 页面 (短期缓存)**
+
+```
+Field: Hostname → equals → orientalbeauty.com
+AND Field: URI Path → equals → /*
+AND NOT Field: URI Path → starts with → /_next/
+AND NOT Field: URI Path → starts with → /api/
+
+Cache Eligibility: Eligible for cache
+Edge TTL: 10 minutes
+Browser TTL: 10 minutes
+```
+
+> **注意**: 对于 Next.js 应用，HTML 页面缓存时间不宜过长，否则用户看到的内容可能不是最新的。如需要实时内容，可将 HTML 设置为 `No cache`。
+
+#### 步骤 5: Page Rules (可选，Free 计划限 3 条)
+
+进入 Cloudflare Dashboard → **Rules** → **Page Rules**:
+
+```
+# 规则 1: 静态资源缓存
+Pattern: orientalbeauty.com/_next/static/*
+Setting: Cache Level → Standard + Edge Cache TTL → 365 days
+
+# 规则 2: 始终使用 HTTPS
+Pattern: orientalbeauty.com/*
+Setting: Always Use HTTPS → ON
+
+# 规则 3: 自动缩小化
+Pattern: orientalbeauty.com/*
+Setting: Auto Minify (HTML/CSS/JS) → ON
+```
+
+### 20.2 Cloudflare 速度优化
+
+进入 Cloudflare Dashboard → **Speed** → **Optimization**:
+
+```bash
+# 开启以下功能:
+# ✅ Auto Minify (HTML, CSS, JavaScript)
+# ✅ Brotli (比 Gzip 压缩率更高)
+# ✅ Early Hints (预加载资源)
+# ✅ Rocket Loader (JS 异步加载)
+# ✅ Polish (图片压缩, 选择 Lossless)
+# ✅ HTTP/2 和 HTTP/3 (默认开启)
+```
+
+#### 图片优化 (Cloudflare Polish)
+
+```bash
+# Cloudflare Polish 配置:
+# - Lossless: 无损压缩 (推荐，保持画质)
+# - Lossy: 有损压缩 (更高压缩率)
+# - WebP: 自动转换为 WebP 格式 (需配合 Cache Rules)
+```
+
+### 20.3 安全配置
+
+#### WAF (Web Application Firewall)
+
+```bash
+# Cloudflare Dashboard → Security → WAF
+# 开启:
+# ✅ Bot Fight Mode (防御爬虫)
+# ✅ Browser Integrity Check (验证浏览器)
+# ✅ Security Level → Medium 或 High
+# ✅ Challenge Passage → 30 minutes
+```
+
+#### 速率限制
+
+```bash
+# Cloudflare Dashboard → Security → Rate Limiting
+# 创建规则:
+# - API 路径: /api/* → 100 请求 / 10 秒
+# - 登录路径: /api/auth/* → 5 请求 / 60 秒
+```
+
+### 20.4 Nginx 端配合
+
+即使使用 Cloudflare，Nginx 端也需要优化:
+
+```bash
+# 1. 获取 Cloudflare 真实 IP
+sudo nano /etc/nginx/conf.d/cloudflare.conf
+```
+
+```nginx
+# Cloudflare IP 范围 (定期更新，参见 https://www.cloudflare.com/ips/)
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+real_ip_header X-Forwarded-For;
+```
+
+```bash
+# 2. 如果是 Cloudflare Full (strict)，Nginx 也需要监听 443
+#    并配置有效的 Let's Encrypt 证书 (Cloudflare 回源使用)
+#    具体见第 6 节 SSL 证书
+
+# 3. 重新加载 Nginx
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+#### 自动更新 Cloudflare IP
+
+```bash
+# 创建定时任务，每周更新 Cloudflare IP 列表
+cat > /usr/local/bin/update-cloudflare-ips.sh << 'EOF'
+#!/bin/bash
+CF_IPV4=$(curl -s https://www.cloudflare.com/ips-v4)
+CF_IPV6=$(curl -s https://www.cloudflare.com/ips-v6)
+
+CONF="/etc/nginx/conf.d/cloudflare.conf"
+
+echo "# Cloudflare IP ranges (updated: $(date))" > $CONF
+echo "$CF_IPV4" | while read ip; do
+  echo "set_real_ip_from $ip;" >> $CONF
+done
+echo "$CF_IPV6" | while read ip; do
+  echo "set_real_ip_from $ip;" >> $CONF
+done
+echo "real_ip_header X-Forwarded-For;" >> $CONF
+
+nginx -t && systemctl reload nginx
+EOF
+
+chmod +x /usr/local/bin/update-cloudflare-ips.sh
+
+# 添加到 crontab (每周一凌晨 2 点执行)
+crontab -e
+0 2 * * 1 /usr/local/bin/update-cloudflare-ips.sh
+```
+
+### 20.5 多 CDN 备选方案
+
+| CDN | 计划 | 适用场景 | 备注 |
+|-----|------|---------|------|
+| Cloudflare | Free / $20 Pro | 通用最佳选择 | DNS + CDN + WAF 一体 |
+| BunnyCDN | $1+/月 | 亚太地区加速 | 按量付费，亚太节点多 |
+| Amazon CloudFront | 按量付费 | AWS 生态 | 与 S3 配合使用 |
+| Fastly | $50+/月 | 企业级性能 | 即时缓存清除，高并发 |
+
+#### 使用 BunnyCDN 作为亚太加速 (可选)
+
+如果大部分客户在亚太地区，可搭配 BunnyCDN:
+
+```bash
+# 1. 注册 BunnyCDN (https://bunny.net)
+# 2. 创建 Pull Zone
+#    - Origin URL: https://orientalbeauty.com
+#    - Type: Performance (全球包含亚太节点)
+
+# 3. 静态资源通过 BunnyCDN 分发
+#    在 next.config.ts 中配置 assetPrefix:
+#    assetPrefix: "https://oriental-beauty.b-cdn.net"
+
+# 4. DNS 配置 CNAME 到 BunnyCDN
+#    cdn.orientalbeauty.com → orient-beauty.b-cdn.net
+```
+
+### 20.6 CDN 部署 Checklist
+
+- [ ] Cloudflare DNS 所有记录已开启 Proxy
+- [ ] SSL/TLS 设置为 Full (strict)
+- [ ] Cache Rules 已配置 (静态资源 365 天，HTML 10 分钟)
+- [ ] 自动最小化 (Auto Minify) 已开启
+- [ ] Brotli 压缩已开启
+- [ ] Nginx 已配置 Cloudflare 真实 IP
+- [ ] Nginx 已配置 SSL 证书用于 Cloudflare 回源
+- [ ] 速率限制已配置 (API 和登录路径)
+- [ ] WAF 安全功能已开启
+- [ ] Google / Bing 爬虫可正常抓取
+- [ ] Core Web Vitals 达到绿色指标
+- [ ] 可选: 亚太地区使用 BunnyCDN 加速
 
 ### A. 文件上传存储方案
 
@@ -986,12 +1526,131 @@ docker run -d --name minio \
 
 ### B. CDN 加速
 
-推荐使用 Cloudflare 作为 CDN 和 DNS:
+见 [第 20 节 — CDN 加速与缓存策略](#20-cdn-加速与缓存策略)。
 
-1. 在 Cloudflare 添加域名
-2. 配置 DNS 记录指向服务器 IP
-3. 开启 Proxy (橙色云朵) 启用 CDN
-4. 配置 Page Rules 缓存静态资源
+---
+
+## 21. 管理后台部署指南
+
+### 21.1 管理后台概述
+
+系统内置了一个完整的管理后台，路径为 `/admin`。管理员可以在后台管理：
+
+| 功能 | 路径 | 说明 |
+|------|------|------|
+| Dashboard | `/admin` | 数据概览（收入、订单数、产品数等） |
+| 产品管理 | `/admin/products` | 查看产品列表、库存和状态 |
+| 订单管理 | `/admin/orders` | 查看订单详情、支付和物流状态 |
+| 客户管理 | `/admin/customers` | 查看注册用户及订单/评价统计 |
+| 博客管理 | `/admin/blog` | 管理博客文章和评论 |
+| 营销工具 | `/admin/marketing` | 优惠券和邮件营销配置 |
+| 联盟管理 | `/admin/affiliates` | 查看和管理联盟合作伙伴 |
+| 横幅管理 | `/admin/banners` | 管理首页横幅广告 |
+| 分析工具 | `/admin/analytics` | 数据分析和流量统计 |
+| 系统设置 | `/admin/settings` | 商店名称、邮件、货币等设置 |
+
+### 21.2 初始化管理员账号
+
+首次部署后，需要运行种子脚本创建管理员账号：
+
+```bash
+cd /var/www/orient-beauty
+
+# 运行种子脚本
+npm run db:seed
+```
+
+**默认管理员凭据：**
+
+| 字段 | 值 |
+|------|-----|
+| 邮箱 | `admin@orientalbeauty.com` |
+| 密码 | `Admin123!` |
+
+> **重要**：部署到生产环境后，请立即修改默认密码。
+
+### 21.3 创建更多管理员
+
+通过 Prisma Studio 或直接在数据库中创建：
+
+```bash
+# 方式一：Prisma Studio (图形界面)
+npx prisma studio
+# → 找到 User 表 → 点击 "Add Record"
+# → 填写 email、passwordHash (需 bcrypt 加密)、role 设为 ADMIN
+
+# 方式二：直接在数据库插入
+# 先获取 bcrypt 加密的密码
+node -e "console.log(require('bcryptjs').hashSync('YourPassword123!', 12))"
+
+# 然后在 PostgreSQL 中执行:
+# INSERT INTO users (id, email, "passwordHash", "firstName", "lastName", role)
+# VALUES (gen_random_uuid(), 'admin2@orientalbeauty.com', '上述hash值', 'Admin2', 'Oriental Beauty', 'ADMIN');
+```
+
+### 21.4 修改管理员密码
+
+管理员登录后，可以通过以下方式修改密码：
+
+```bash
+# 方式一：通过 Prisma Studio
+npx prisma studio
+# → User 表 → 找到管理员 → 修改 passwordHash
+
+# 方式二：直接 SQL
+# 先获取新密码的 bcrypt hash
+NEW_HASH=$(node -e "console.log(require('bcryptjs').hashSync('NewPassword123!', 12))")
+# 执行更新
+sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$NEW_HASH' WHERE email='admin@orientalbeauty.com';"
+```
+
+### 21.5 管理后台安全配置
+
+#### 环境变量
+
+```bash
+# .env.production (确保以下配置正确)
+NEXTAUTH_SECRET="your-strong-random-secret"   # 用于加密 session token
+NEXTAUTH_URL="https://orientalbeauty.com"      # 必须与部署 URL 一致
+```
+
+> `NEXTAUTH_SECRET` 应使用强随机字符串生成：`openssl rand -base64 32`
+
+#### 中间件保护
+
+所有 `/admin/*` 路径由 `src/middleware.ts` 保护：
+
+- **未登录用户**：自动重定向到登录页 `/auth/signin`
+- **非管理员用户**（已登录但 role !== ADMIN）：重定向到首页 `/`
+- **管理员用户**：正常访问
+
+#### 双重验证
+
+即使中间件已拦截非管理员请求，每个管理页面在服务端也会通过 `getServerAuthSession()` 再次校验管理员身份，防止绕过中间件的直接访问。
+
+### 21.6 管理后台访问
+
+部署完成后，通过以下地址访问：
+
+```
+https://orientalbeauty.com/admin
+```
+
+使用管理员邮箱和密码登录（如尚未登录，会先跳转到登录页）。
+
+### 21.7 管理后台部署 Checklist
+
+- [ ] 运行 `npm run db:seed` 创建管理员账号
+- [ ] 登录 `/admin` 验证管理后台可正常访问
+- [ ] 修改默认管理员密码
+- [ ] 确认 `NEXTAUTH_SECRET` 已设置为强随机字符串
+- [ ] 确认 `NEXTAUTH_URL` 为生产环境 URL
+- [ ] 验证非管理员用户无法访问 `/admin`
+- [ ] 验证未登录用户无法访问 `/admin`
+- [ ] 验证 admin dashboard 统计数据显示正常
+- [ ] 验证产品列表、订单列表、客户列表可正常加载
+
+---
 
 ### C. 性能优化
 

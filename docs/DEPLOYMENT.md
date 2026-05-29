@@ -165,15 +165,21 @@ nano .env.production
 ```bash
 cd /var/www/orient-beauty
 
-# 安装依赖
-npm ci --legacy-peer-deps --production
+# 拉取最新代码 (如果通过 git 部署)
+git pull origin main
 
-# 生成 Prisma Client (使用本地版本，避免全局 Prisma 版本不兼容)
+# 安装依赖 (包含构建所需的 devDeps)
+npm ci --legacy-peer-deps
+
+# 生成 Prisma Client
 npm run db:generate
 
-# 构建 Next.js
+# 构建 Next.js (standalone 模式)
 npm run build
 ```
+
+> **说明**: `npm ci` 会安装所有依赖（含 devDependencies），因为 `prisma` CLI 和 TypeScript 在构建阶段是必需的。  
+> Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`，不影响最终部署体积。
 
 ### 3.2 数据库迁移
 
@@ -709,9 +715,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/orient-beauty
-            npm ci --legacy-peer-deps --production
+            npm ci --legacy-peer-deps
             npm run db:generate
             npx prisma migrate deploy
+            npm run build
             pm2 restart orient-beauty
 ```
 
@@ -773,8 +780,8 @@ cd /var/www/orient-beauty
 # 拉取最新代码
 git pull origin main
 
-# 安装依赖
-npm ci --legacy-peer-deps --production
+# 安装依赖 (含构建所需的 devDeps)
+npm ci --legacy-peer-deps
 
 # 数据库迁移
 npm run db:generate
@@ -800,7 +807,7 @@ echo "Pulling latest code..."
 git pull origin main
 
 echo "Installing dependencies..."
-npm ci --legacy-peer-deps --production
+npm ci --legacy-peer-deps
 
 echo "Generating Prisma Client..."
 npm run db:generate

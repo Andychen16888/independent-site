@@ -2,7 +2,7 @@
 
 > 部署环境: Linux VPS (Ubuntu 22.04 LTS)  
 > 技术栈: Next.js 15 + PostgreSQL 16 + Nginx + PM2 + Docker  
-> 最后更新: 2026-05-14  
+> 最后更新: 2026-05-29  
 > 
 > **SEO / GEO / CDN 章节已同步更新于 2026-05-14**
 
@@ -168,8 +168,8 @@ cd /var/www/orient-beauty
 # 安装依赖
 npm ci --legacy-peer-deps --production
 
-# 生成 Prisma Client
-npx prisma generate
+# 生成 Prisma Client (使用本地版本，避免全局 Prisma 版本不兼容)
+npm run db:generate
 
 # 构建 Next.js
 npm run build
@@ -179,13 +179,13 @@ npm run build
 
 ```bash
 # 推送 schema 到数据库
-npx prisma db push
+npm run db:push
 
 # 或使用迁移 (推荐生产环境)
 npx prisma migrate deploy
 
 # 导入种子数据
-npx prisma db seed
+npm run db:seed
 ```
 
 ### 3.3 启动应用
@@ -452,10 +452,10 @@ GOOGLE_CLIENT_SECRET=""
 APPLE_CLIENT_ID=""
 APPLE_CLIENT_SECRET=""
 
-# ========== Stripe 支付 ==========
-STRIPE_SECRET_KEY="sk_live_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
+# ========== Stripe 支付 (暂未启用，可留空) ==========
+# STRIPE_SECRET_KEY="sk_live_..."
+# STRIPE_WEBHOOK_SECRET="whsec_..."
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
 
 # ========== PayPal 支付 ==========
 NEXT_PUBLIC_PAYPAL_CLIENT_ID="your-paypal-client-id"
@@ -508,7 +508,7 @@ npx prisma migrate deploy
 
 ```bash
 # 推送 schema 变更 (开发/测试用，会清数据)
-npx prisma db push
+npm run db:push
 
 # 创建新的迁移 (生产环境用)
 npx prisma migrate dev --name add-product-weight
@@ -519,6 +519,8 @@ npx prisma migrate status
 # 打开 Prisma Studio (数据库 GUI)
 npx prisma studio
 ```
+
+> **注意**: 推荐使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
 
 ### 8.3 数据库备份
 
@@ -549,6 +551,8 @@ crontab -e
 ---
 
 ## 9. Stripe Webhook 配置
+
+> **当前状态**: Stripe 支付暂未启用，先保留代码和配置模板，后期启用。部署时 Stripe 相关环境变量可留空。
 
 ### 9.1 创建 Webhook Endpoint
 
@@ -681,7 +685,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: npm run db:generate
 
       - name: Build
         run: npm run build
@@ -706,7 +710,7 @@ jobs:
           script: |
             cd /var/www/orient-beauty
             npm ci --legacy-peer-deps --production
-            npx prisma generate
+            npm run db:generate
             npx prisma migrate deploy
             pm2 restart orient-beauty
 ```
@@ -773,7 +777,7 @@ git pull origin main
 npm ci --legacy-peer-deps --production
 
 # 数据库迁移
-npx prisma generate
+npm run db:generate
 npx prisma migrate deploy
 
 # 构建
@@ -799,7 +803,7 @@ echo "Installing dependencies..."
 npm ci --legacy-peer-deps --production
 
 echo "Generating Prisma Client..."
-npx prisma generate
+npm run db:generate
 
 echo "Running database migrations..."
 npx prisma migrate deploy
@@ -1564,7 +1568,7 @@ npm run db:seed
 
 | 字段 | 值 |
 |------|-----|
-| 邮箱 | `admin@orientalbeauty.com` |
+| 邮箱 | `81570423@qq.com` |
 | 密码 | `Admin123!` |
 
 > **重要**：部署到生产环境后，请立即修改默认密码。
@@ -1601,7 +1605,7 @@ npx prisma studio
 # 先获取新密码的 bcrypt hash
 NEW_HASH=$(node -e "console.log(require('bcryptjs').hashSync('NewPassword123!', 12))")
 # 执行更新
-sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$NEW_HASH' WHERE email='admin@orientalbeauty.com';"
+sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$NEW_HASH' WHERE email='81570423@qq.com';"
 ```
 
 ### 21.5 管理后台安全配置

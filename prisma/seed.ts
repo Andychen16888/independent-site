@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 async function main() {
   console.log("Seeding database...")
 
-  const adminEmail = "admin@orientalbeauty.com"
+  const adminEmail = "81570423@qq.com"
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
 
   if (existing) {
@@ -23,7 +23,7 @@ async function main() {
       },
     })
     console.log("Admin user created:")
-    console.log("  Email:    admin@orientalbeauty.com")
+    console.log("  Email:    81570423@qq.com")
     console.log("  Password: Admin123!")
   }
 

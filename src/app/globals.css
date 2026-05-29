@@ -112,11 +112,11 @@
   }
 
   .section-title h2 {
-    @apply heading-lg mb-4;
+    @apply font-serif text-3xl md:text-4xl lg:text-5xl leading-tight font-light mb-4;
   }
 
   .section-title p {
-    @apply text-body max-w-2xl mx-auto;
+    @apply text-stone leading-relaxed text-sm md:text-base max-w-2xl mx-auto;
   }
 }
 

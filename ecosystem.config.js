@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "oriental-beauty",
+      name: "orient-beauty",
       script: "node_modules/next/dist/bin/next",
       args: "start",
       env: {

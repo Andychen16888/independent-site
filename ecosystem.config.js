@@ -2,8 +2,7 @@ module.exports = {
   apps: [
     {
       name: "orient-beauty",
-      script: "node_modules/next/dist/bin/next",
-      args: "start",
+      script: ".next/standalone/server.js",
       cwd: __dirname,
       env: {
         NODE_ENV: "production",

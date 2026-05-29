@@ -214,6 +214,7 @@ npm run db:seed
 
 ```bash
 # 使用 PM2 启动应用 (从项目根目录运行)
+# 注意: 由于 output: "standalone"，需运行 standalone server.js
 cd /var/www/orient-beauty
 pm2 start ecosystem.config.js
 
@@ -253,8 +254,8 @@ curl -I https://hhbtec.com
 # 查看详细错误日志
 pm2 logs orient-beauty --lines 50
 
-# 尝试前台启动查看错误
-NODE_ENV=production node node_modules/next/dist/bin/next start
+# 尝试前台启动查看错误 (standalone 模式)
+NODE_ENV=production node .next/standalone/server.js
 
 # 常见原因：
 # - .env.production 中 DATABASE_URL 配置错误 → 检查数据库连接

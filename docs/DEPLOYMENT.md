@@ -214,10 +214,16 @@ npm run db:seed
 ### 3.4 启动应用
 
 ```bash
-# 使用 PM2 启动应用 (从项目根目录运行)
-# 注意: 由于 output: "standalone"，需运行 standalone server.js
 cd /var/www/orient-beauty
+
+# 确保拉取最新代码 (否则可能运行旧版 next start 而非 standalone)
+git pull origin main
+
+# 启动方式一 (推荐): 使用 ecosystem.config.js (自动读取环境变量配置)
 pm2 start ecosystem.config.js
+
+# 启动方式二: 直接运行 standalone server.js
+# pm2 start .next/standalone/server.js --name orient-beauty
 
 # 保存 PM2 进程列表 (服务器重启后自动恢复)
 pm2 save
@@ -852,7 +858,8 @@ pm2 logs orient-beauty --lines 100  # 查看最近100行
 pm2 restart orient-beauty     # 重启
 pm2 stop orient-beauty        # 停止
 pm2 delete orient-beauty      # 删除进程
-pm2 start ecosystem.config.js # 从配置文件启动 (推荐)
+pm2 start ecosystem.config.js # 从配置文件启动 (推荐，含环境变量设置)
+pm2 start .next/standalone/server.js --name orient-beauty  # 直接启动 standalone
 
 # 负载监控
 pm2 monit                     # 实时监控

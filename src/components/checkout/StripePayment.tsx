@@ -66,15 +66,9 @@ export function StripePayment(props: StripePaymentProps) {
   }, [])
   const [clientSecret, setClientSecret] = useState<string | null>(null)
 
-  if (!stripePromise) {
-    return (
-      <div className="border border-mist p-6 text-center">
-        <p className="text-sm text-stone">Credit card payment is not available at this time.</p>
-      </div>
-    )
-  }
-
   useEffect(() => {
+    if (!stripePromise) return
+
     fetch("/api/checkout/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -85,7 +79,15 @@ export function StripePayment(props: StripePaymentProps) {
         if (data.clientSecret) setClientSecret(data.clientSecret)
       })
       .catch(() => toast.error("Failed to initialize payment"))
-  }, [props.amount])
+  }, [props.amount, stripePromise])
+
+  if (!stripePromise) {
+    return (
+      <div className="border border-mist p-6 text-center">
+        <p className="text-sm text-stone">Credit card payment is not available at this time.</p>
+      </div>
+    )
+  }
 
   if (!clientSecret) {
     return (

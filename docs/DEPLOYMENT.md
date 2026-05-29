@@ -152,15 +152,27 @@ git clone https://github.com/your-org/orient-beauty.git .
 cd /var/www/orient-beauty
 cp .env .env.production
 nano .env.production
+
+# Prisma CLI 默认读取 .env 文件，需要同步创建
+cp .env.production .env
 ```
 
 完整的 `.env.production` 配置参考第 7 节。
+
+> **注意**: Prisma CLI（`prisma generate`、`prisma migrate` 等）默认读取项目根目录的 `.env` 文件，而 Next.js 读取 `.env.production`。**两个文件都需要包含 `DATABASE_URL`**。部署后执行 `cp .env.production .env` 即可同步。
 
 ---
 
 ## 3. 部署方式一：手动部署 (推荐)
 
-### 3.1 安装依赖并构建
+### 3.1 环境准备
+
+> 首次部署前确保 `.env` 和 `.env.production` 都包含正确的 `DATABASE_URL`：
+> ```bash
+> cp .env.production .env   # 确保 Prisma CLI 可读取环境变量
+> ```
+
+### 3.2 安装依赖并构建
 
 ```bash
 cd /var/www/orient-beauty
@@ -185,14 +197,14 @@ npm run build
 > - 构建时自动设置 `NODE_OPTIONS="--max-old-space-size=4096"` 以避免小内存服务器（< 4GB）上 OOM 崩溃。如服务器内存 ≥ 4GB，可手动减小此值。  
 > - 如需进一步降低内存使用，可创建 swap：参考 [16.5 内存不足](#165-内存不足)。
 
-### 3.2 数据库迁移
+### 3.3 数据库迁移
 
 ```bash
 # 推送 schema 到数据库
 npm run db:push
 
 # 或使用迁移 (推荐生产环境)
-npx prisma migrate deploy
+npm run db:migrate
 
 # 导入种子数据
 npm run db:seed
@@ -507,11 +519,14 @@ openssl rand -base64 32
 ### 8.1 初始化迁移
 
 ```bash
+# 确保 .env 文件存在 (Prisma CLI 默认读取 .env)
+cp .env.production .env
+
 # 首次部署：创建迁移文件
 npx prisma migrate dev --name init
 
 # 生产环境：应用迁移
-npx prisma migrate deploy
+npm run db:migrate
 ```
 
 ### 8.2 数据库管理
@@ -530,7 +545,9 @@ npx prisma migrate status
 npx prisma studio
 ```
 
-> **注意**: 推荐使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
+> **注意**: 
+> - Prisma CLI 默认读取项目根目录的 `.env` 文件获取 `DATABASE_URL`，部署后需执行 `cp .env.production .env` 同步环境变量。
+> - 推荐使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
 
 ### 8.3 数据库备份
 
@@ -719,9 +736,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/orient-beauty
+            cp .env.production .env
             npm ci --legacy-peer-deps
             npm run db:generate
-            npx prisma migrate deploy
+            npm run db:migrate
             npm run build
             pm2 restart orient-beauty
 ```
@@ -784,12 +802,15 @@ cd /var/www/orient-beauty
 # 拉取最新代码
 git pull origin main
 
+# 确保 Prisma 可读取环境变量
+cp .env.production .env
+
 # 安装依赖 (含构建所需的 devDeps)
 npm ci --legacy-peer-deps
 
 # 数据库迁移
 npm run db:generate
-npx prisma migrate deploy
+npm run db:migrate
 
 # 构建
 npm run build
@@ -810,6 +831,9 @@ cd /var/www/orient-beauty
 echo "Pulling latest code..."
 git pull origin main
 
+echo "Copying environment variables for Prisma..."
+cp .env.production .env
+
 echo "Installing dependencies..."
 npm ci --legacy-peer-deps
 
@@ -817,7 +841,7 @@ echo "Generating Prisma Client..."
 npm run db:generate
 
 echo "Running database migrations..."
-npx prisma migrate deploy
+npm run db:migrate
 
 echo "Building application..."
 npm run build

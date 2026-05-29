@@ -212,27 +212,56 @@ npm run db:seed
 
 > **顺序不能错**: 必须先 `db:push`（创建表）再 `db:seed`（填充数据），否则 seed 会报 `table does not exist`。
 
-### 3.3 启动应用
+### 3.4 启动应用
 
 ```bash
-# 使用 PM2 启动
-pm2 start ecosystem.config.js --env production
+# 使用 PM2 启动应用 (从项目根目录运行)
+cd /var/www/orient-beauty
+pm2 start ecosystem.config.js
 
 # 保存 PM2 进程列表 (服务器重启后自动恢复)
 pm2 save
 pm2 startup
 ```
 
-### 3.4 验证部署
+### 3.5 验证部署
 
 ```bash
-# 查看进程状态
+# 1. 检查 PM2 进程是否正常运行
 pm2 status
-pm2 logs orient-beauty
+# 应显示 orient-beauty 为 online，状态绿色
 
-# 测试 HTTP 响应
-curl -I http://localhost:3000
+# 2. 查看启动日志 (确认无报错)
+pm2 logs orient-beauty --lines 20
+
+# 3. 使用健康检查端点 (不依赖数据库)
+curl http://localhost:3000/api/health
+# 应返回 {"status":"ok","timestamp":"...","uptime":...,"memory":...}
+
+# 4. 测试首页 HTML 响应
+curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
+# 应返回 HTTP 200
+
+# 5. 从外部访问 (替换为你的域名)
+curl -I https://hhbtec.com
 # 应返回 HTTP/1.1 200 OK
+```
+
+### 3.6 启动失败排查
+
+如果 PM2 启动后状态为 `errored` 或 `stopped`：
+
+```bash
+# 查看详细错误日志
+pm2 logs orient-beauty --lines 50
+
+# 尝试前台启动查看错误
+NODE_ENV=production node node_modules/next/dist/bin/next start
+
+# 常见原因：
+# - .env.production 中 DATABASE_URL 配置错误 → 检查数据库连接
+# - 端口 3000 被占用 → lsof -i :3000
+# - node_modules 不完整 → npm ci --legacy-peer-deps
 ```
 
 ---

@@ -18,5 +18,7 @@ try {
 }
 
 export default defineConfig({
-  seed: "tsx prisma/seed.ts",
+  migrations: {
+    seed: "tsx prisma/seed.ts",
+  },
 })

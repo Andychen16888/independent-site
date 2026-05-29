@@ -9,7 +9,7 @@
     "lint": "eslint",
 "db:generate": "prisma generate",
 "db:push": "prisma db push",
-"db:seed": "tsx prisma/seed.ts",
+"db:seed": "prisma db seed",
 "db:migrate": "prisma migrate deploy",
 "db:studio": "prisma studio"
   },
@@ -62,5 +62,8 @@
     "eslint-config-next": "15.2.4",
     "tsx": "^4.19.3",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

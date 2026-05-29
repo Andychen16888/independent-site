@@ -1687,7 +1687,7 @@ https://orientalbeauty.com/admin
 
 ### 21.7 管理后台部署 Checklist
 
-- [ ] 运行 `npm run db:seed` 创建管理员账号
+  - [ ] 运行 `npm run db:seed` 创建管理员账号（会自动加载 `.env` 中的 `DATABASE_URL`）
 - [ ] 登录 `/admin` 验证管理后台可正常访问
 - [ ] 修改默认管理员密码
 - [ ] 确认 `NEXTAUTH_SECRET` 已设置为强随机字符串

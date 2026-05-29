@@ -6,6 +6,14 @@ const prisma = new PrismaClient()
 async function main() {
   console.log("Seeding database...")
 
+  // 检查数据库连接和表是否存在
+  try {
+    await prisma.$queryRaw`SELECT 1`
+  } catch {
+    console.error("Cannot connect to database. Check DATABASE_URL in .env")
+    process.exit(1)
+  }
+
   const adminEmail = "81570423@qq.com"
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
 
@@ -45,7 +53,11 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("Seed error:", e)
+    if (e.code === "P2021") {
+      console.error("\n  Database tables not found. Run `npm run db:push` first to create tables.\n")
+    } else {
+      console.error("Seed error:", e)
+    }
     process.exit(1)
   })
   .finally(() => prisma.$disconnect())

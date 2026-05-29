@@ -200,15 +200,17 @@ npm run build
 ### 3.3 数据库迁移
 
 ```bash
-# 推送 schema 到数据库
+# 推送 schema 到数据库 (首次部署必需，创建所有表)
 npm run db:push
 
-# 或使用迁移 (推荐生产环境)
-npm run db:migrate
+# 或使用迁移 (推荐生产环境，需先创建迁移文件)
+# npm run db:migrate
 
-# 导入种子数据
+# 导入种子数据 (创建管理员账号和初始数据)
 npm run db:seed
 ```
+
+> **顺序不能错**: 必须先 `db:push`（创建表）再 `db:seed`（填充数据），否则 seed 会报 `table does not exist`。
 
 ### 3.3 启动应用
 
@@ -532,10 +534,13 @@ npm run db:migrate
 ### 8.2 数据库管理
 
 ```bash
-# 推送 schema 变更 (开发/测试用，会清数据)
+# 首次部署：推送 schema 创建表
 npm run db:push
 
-# 创建新的迁移 (生产环境用)
+# 填充初始数据 (创建管理员、分类等)
+npm run db:seed
+
+# 后续 schema 变更：创建新的迁移 (生产环境用)
 npx prisma migrate dev --name add-product-weight
 
 # 查看迁移状态

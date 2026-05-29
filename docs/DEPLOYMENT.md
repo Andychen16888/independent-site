@@ -189,6 +189,10 @@ npm run db:generate
 # 构建 Next.js (standalone 模式)
 # 如果服务器内存小于 4GB，构建可能因内存不足失败，脚本已自动增加内存限制
 npm run build
+
+# 重要: 将静态资源复制到 standalone 输出目录
+# 否则独立服务器会 404 找不到 CSS 和 JS 文件
+cp -r .next/static .next/standalone/.next/static
 ```
 
 > **说明**:  
@@ -963,6 +967,9 @@ npm run db:seed
 # 构建 (生成 standalone 模式的 .next/standalone/server.js)
 npm run build
 
+# 复制静态资源到 standalone 目录 (否则独立服务器找不到 CSS/JS 返回 404)
+cp -r .next/static .next/standalone/.next/static
+
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
 ```
@@ -996,6 +1003,9 @@ npm run db:seed
 
 echo "Building application (standalone mode)..."
 npm run build
+
+echo "Copying static assets into standalone output..."
+cp -r .next/static .next/standalone/.next/static
 
 echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty

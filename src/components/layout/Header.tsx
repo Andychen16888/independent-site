@@ -9,6 +9,7 @@ import { useWishlistStore } from "@/stores/wishlist-store"
 import { cn } from "@/lib/utils/cn"
 import { Container } from "@/components/ui/Container"
 import { motion, AnimatePresence } from "framer-motion"
+import { HiXMark, HiOutlineGift } from "react-icons/hi2"
 import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyingGlass, HiOutlineBars3, HiOutlineXMark } from "react-icons/hi2"
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
 
@@ -18,6 +19,59 @@ const navigation = [
   { name: "Journal", href: "/blog" },
   { name: "About", href: "/about" },
 ]
+
+function PromoBar() {
+  const [isVisible, setIsVisible] = useState(true)
+  const [dismissed, setDismissed] = useState(false)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("promo-dismissed")
+      if (stored) {
+        const expiry = parseInt(stored, 10)
+        if (Date.now() < expiry) {
+          setDismissed(true)
+        } else {
+          localStorage.removeItem("promo-dismissed")
+        }
+      }
+    } catch {}
+  }, [])
+
+  if (!isVisible || dismissed) return null
+
+  const handleDismiss = () => {
+    setIsVisible(false)
+    try {
+      localStorage.setItem("promo-dismissed", String(Date.now() + 86400000))
+    } catch {}
+  }
+
+  return (
+    <div
+      className="relative bg-charcoal text-ivory text-xs tracking-wider py-2.5 px-4 text-center overflow-hidden"
+      style={{ animation: "slideDown 0.3s ease-out" }}
+    >
+      <div className="flex items-center justify-center gap-3">
+        <HiOutlineGift className="w-4 h-4 shrink-0 text-rosegold" />
+        <span>New customers save 10%</span>
+        <button
+          onClick={handleDismiss}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-ivory/10 rounded transition-colors"
+          aria-label="Dismiss promotion"
+        >
+          <HiXMark className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <style>{`
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  )
+}
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -47,6 +101,7 @@ export function Header() {
           : "bg-transparent"
       )}
     >
+      <PromoBar />
       <Container>
         <div className="flex items-center justify-between h-16 md:h-20">
           <button

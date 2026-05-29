@@ -34,7 +34,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <Container>
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">

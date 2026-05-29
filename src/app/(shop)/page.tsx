@@ -14,21 +14,19 @@ export default function HomePage() {
   return (
     <>
       <HeroBanner />
-      <div className="pt-[100px] md:pt-[116px]">
-        <BrandStory />
-        <FeaturedCategories />
-        <PeptideSkincare />
-        <ProductCarousel
-          title="Best Sellers"
-          subtitle="Our most-loved products, chosen by you"
-          filter="bestseller"
-        />
-        <HandmadeLiving />
-        <Testimonials />
-        <InstagramFeed />
-        <NewsletterSection />
-        <SEOSection />
-      </div>
+      <BrandStory />
+      <FeaturedCategories />
+      <PeptideSkincare />
+      <ProductCarousel
+        title="Best Sellers"
+        subtitle="Our most-loved products, chosen by you"
+        filter="bestseller"
+      />
+      <HandmadeLiving />
+      <Testimonials />
+      <InstagramFeed />
+      <NewsletterSection />
+      <SEOSection />
     </>
   )
 }

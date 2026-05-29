@@ -16,7 +16,7 @@ export default async function SearchPage({
   const { q } = await searchParams
 
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen">
+    <div className="min-h-screen">
       <Container>
         <Breadcrumb
           items={[{ label: "Home", href: "/" }, { label: "Search" }]}

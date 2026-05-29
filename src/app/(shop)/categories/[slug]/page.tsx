@@ -90,7 +90,7 @@ export default async function CategoryPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
-      <div className="pt-[100px] md:pt-[116px]">
+      <div>
         <div className={`${bgClass} section-padding`}>
           <Container>
             <Breadcrumb

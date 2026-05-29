@@ -63,7 +63,7 @@ export default function ProductsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
-      <div className="pt-[100px] md:pt-[116px]">
+      <div>
         <Container>
           <Breadcrumb
             items={[{ label: "Home", href: "/" }, { label: "All Products" }]}

@@ -8,7 +8,7 @@ export const metadata = generateMetadata({
 
 export default function PrivacyPage() {
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen">
+    <div className="min-h-screen">
       <Container>
         <div className="max-w-3xl mx-auto py-12 md:py-16">
           <span className="text-caption mb-4 block">Legal</span>

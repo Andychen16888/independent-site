@@ -4,7 +4,7 @@ import { HiOutlineCheckCircle } from "react-icons/hi2"
 
 export default function CheckoutCompletePage() {
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <Container>
         <div className="max-w-lg mx-auto text-center">
           <div className="w-16 h-16 mx-auto mb-6 bg-sage/20 rounded-full flex items-center justify-center">

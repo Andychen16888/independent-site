@@ -10,7 +10,7 @@ export const metadata = generateMetadata({
 
 export default function CheckoutPage() {
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen">
+    <div className="min-h-screen">
       <Container>
         <Breadcrumb
           items={[

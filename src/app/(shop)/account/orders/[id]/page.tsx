@@ -17,7 +17,7 @@ export default async function OrderDetailPage({
   const { id } = await params
 
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen">
+    <div className="min-h-screen">
       <Container>
         <Breadcrumb
           items={[

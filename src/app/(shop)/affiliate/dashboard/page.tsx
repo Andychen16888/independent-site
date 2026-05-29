@@ -34,7 +34,7 @@ export default function AffiliateDashboardPage() {
 
   if (loading) {
     return (
-      <div className="pt-[100px] md:pt-[116px] min-h-screen">
+      <div className="min-h-screen">
         <Container>
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-mist rounded w-1/3" />
@@ -48,7 +48,7 @@ export default function AffiliateDashboardPage() {
   }
 
   return (
-    <div className="pt-[100px] md:pt-[116px] min-h-screen">
+    <div className="min-h-screen">
       <Container>
         <Breadcrumb
           items={[

@@ -3,7 +3,7 @@ import { SectionLoading } from "@/components/ui/Loading"
 
 export default function ProductsLoading() {
   return (
-    <div className="pt-24 md:pt-28">
+    <div className="pt-[100px] md:pt-[116px]">
       <Container>
         <div className="animate-pulse mb-8">
           <div className="h-4 bg-mist rounded w-1/4 mb-4" />

@@ -85,7 +85,7 @@ export default async function BlogPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
-      <div className="pt-24 md:pt-28">
+      <div className="pt-[100px] md:pt-[116px]">
         <div className="bg-cream section-padding">
           <Container>
             <Breadcrumb

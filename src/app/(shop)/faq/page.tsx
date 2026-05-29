@@ -72,7 +72,7 @@ export default function FAQPage() {
           </div>
         ))}
       </div>
-      <div className="pt-24 md:pt-28 min-h-screen">
+      <div className="pt-[100px] md:pt-[116px] min-h-screen">
         <Container>
           <div className="max-w-3xl mx-auto py-12 md:py-16">
             <Breadcrumb

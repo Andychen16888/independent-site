@@ -197,7 +197,7 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
-      <div className="pt-24 md:pt-28">
+      <div className="pt-[100px] md:pt-[116px]">
         <Container>
           <Breadcrumb
             items={[

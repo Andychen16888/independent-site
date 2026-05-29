@@ -17,7 +17,7 @@ export default async function AdminProductsPage() {
           <h1 className="heading-md">Products</h1>
           <p className="text-body text-sm mt-1">Manage your product catalog. ({products.length} total)</p>
         </div>
-        <button className="btn-primary text-xs">Add Product</button>
+        <Link href="/admin/products/new" className="btn-primary text-xs">Add Product</Link>
       </div>
 
       {products.length === 0 ? (

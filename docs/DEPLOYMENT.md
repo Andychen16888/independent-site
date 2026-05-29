@@ -523,54 +523,80 @@ sudo certbot certificates
 
 ### 6.2 SSL 配置优化
 
-Certbot 会自动修改 `/etc/nginx/sites-available/orient-beauty` 添加 SSL 证书路径。你需要在此文件末尾的 `server` 块内（`listen 443 ssl http2;` 的块），手动添加以下安全优化配置：
+#### 第一步：查看 Certbot 自带的 SSL 配置
+
+Certbot 会自动生成 `/etc/letsencrypt/options-ssl-nginx.conf`，其中已包含基础的 SSL 配置。先查看此文件的内容，避免后续重复添加：
 
 ```bash
-# 编辑站点配置文件 (Certbot 已添加 SSL 证书路径后的文件)
+cat /etc/letsencrypt/options-ssl-nginx.conf
+```
+
+典型输出如下（不同 Certbot 版本略有差异）：
+
+```nginx
+# This file contains important security parameters.
+# ...
+
+ssl_session_cache shared:le_nginx_SSL:10m;
+ssl_session_timeout 1440m;
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_prefer_server_ciphers on;
+ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:...;
+```
+
+> **重要**: 以上指令已被 `include /etc/letsencrypt/options-ssl-nginx.conf` 加载，**不要在站点配置中重复添加它们**，否则 Nginx 会报 `duplicate` 错误。
+
+#### 第二步：编辑站点配置，仅补充缺失的选项
+
+```bash
+# 编辑站点配置文件 (Certbot 已添加 SSL 证书路径)
 sudo nano /etc/nginx/sites-available/orient-beauty
 ```
 
-在 `listen 443 ssl http2;` 对应的 `server` 块中，在 `ssl_certificate` 和 `ssl_certificate_key` 配置之后，添加以下内容：
+找到 `listen 443 ssl http2;` 对应的 `server` 块，在 `ssl_dhparam` 行之后添加以下**仅补充**的配置：
 
 ```nginx
-    # ========== SSL 协议与加密套件 ==========
-    ssl_protocols TLSv1.2 TLSv1.3;                          # 仅允许 TLS 1.2 和 1.3 (禁用 SSLv3/TLSv1.0/TLSv1.1)
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;                           # 让客户端选择加密套件 (兼容性更好)
-    ssl_session_cache shared:SSL:10m;                        # SSL 会话缓存 10MB (约 40000 个会话)
-    ssl_session_timeout 1d;                                  # 会话超时 1 天 (减少 SSL 握手)
+    # ========== SSL 补充优化 (仅在 options-ssl-nginx.conf 中未包含的指令) ==========
     ssl_session_tickets off;                                 # 禁用 SSL 会话票据 (提高前向安全性)
     ssl_stapling on;                                         # 启用 OCSP Stapling (加速证书验证)
     ssl_stapling_verify on;                                  # 验证 OCSP 响应签名
-
-    # ========== 安全头 (如未在 server 块开头配置，可在此添加) ==========
-    # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    ssl_session_timeout 1d;                                  # 覆盖默认值，会话超时 1 天 (可选)
 ```
 
-**完成后的完整 `server` 块结构参考**：
+> **注意**: `ssl_session_timeout` 在 `options-ssl-nginx.conf` 中已有（值为 `1440m`），此处如果再次添加会报 `duplicate` 错误。如想覆盖默认值，**必须先删除或注释掉** `options-ssl-nginx.conf` 中的对应行，再在站点配置中设置新值。
+
+#### 第三步：完整配置参考
+
+添加后，`server` 块结构应如下（注意**不要重复** `options-ssl-nginx.conf` 中已有的指令）：
 
 ```nginx
 server {
     listen 443 ssl http2;
     server_name your-domain.com www.your-domain.com;
 
-    # Certbot 自动生成
+    # ===== Certbot 自动生成 (不要修改) =====
     ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    # 手动添加的 SSL 优化
-    ssl_protocols TLSv1.2 TLSv1.3;
-    # ... (以上所有优化配置)
+    # ===== 手动补充的配置 (只添加 options-ssl-nginx.conf 中没有的) =====
+    ssl_session_tickets off;
+    ssl_stapling on;
+    ssl_stapling_verify on;
 
-    # 站点其他配置 (proxy_pass 等，见 5.1 节)
+    # ===== 站点其他配置 (proxy_pass 等) =====
+    # 见 5.1 节中的 location 配置
 }
 ```
 
+#### 第四步：验证并重载
+
 ```bash
-# 保存并退出后，测试配置并重载 Nginx
+# 测试配置是否正确 (无 duplicate 错误)
 sudo nginx -t
+
+# 重载 Nginx
 sudo systemctl reload nginx
 
 # 验证 SSL 配置评分

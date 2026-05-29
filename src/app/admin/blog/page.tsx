@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort, truncate } from "@/lib/utils/format"
 
@@ -16,7 +17,7 @@ export default async function AdminBlogPage() {
           <h1 className="heading-md">Blog Posts</h1>
           <p className="text-body text-sm mt-1">Manage your journal content. ({posts.length} total)</p>
         </div>
-        <button className="btn-primary text-xs">New Post</button>
+        <Link href="/admin/blog/new" className="btn-primary text-xs">New Post</Link>
       </div>
 
       {posts.length === 0 ? (

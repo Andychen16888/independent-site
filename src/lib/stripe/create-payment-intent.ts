@@ -1,7 +1,7 @@
-import { stripe } from "./stripe"
+import { getStripe } from "./stripe"
 
 export async function createPaymentIntent(amount: number, currency: string = "usd") {
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: Math.round(amount * 100),
     currency,
     automatic_payment_methods: {
@@ -13,5 +13,5 @@ export async function createPaymentIntent(amount: number, currency: string = "us
 }
 
 export async function retrievePaymentIntent(id: string) {
-  return stripe.paymentIntents.retrieve(id)
+  return getStripe().paymentIntents.retrieve(id)
 }

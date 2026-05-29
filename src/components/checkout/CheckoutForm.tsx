@@ -10,13 +10,15 @@ import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
 import { HiOutlineCreditCard, HiOutlineLockClosed } from "react-icons/hi2"
 
+const stripeEnabled = !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
 type PaymentMethod = "card" | "paypal"
 
 export function CheckoutForm() {
   const { items, getSubtotal, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
   const [step, setStep] = useState<"shipping" | "payment">("shipping")
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(stripeEnabled ? "card" : "paypal")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -206,23 +208,25 @@ export function CheckoutForm() {
             </div>
 
             {/* Payment Method Toggle */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <button
-                onClick={() => setPaymentMethod("card")}
-                className={`p-4 border text-left transition-colors ${
-                  paymentMethod === "card"
-                    ? "border-charcoal bg-charcoal/5"
-                    : "border-mist hover:border-charcoal/30"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <HiOutlineCreditCard className="w-5 h-5 text-stone" />
-                  <div>
-                    <p className="text-sm font-medium">Credit Card</p>
-                    <p className="text-xs text-stone">Visa, Mastercard, Amex</p>
+            <div className={`grid gap-3 mb-6 ${stripeEnabled ? "grid-cols-2" : "grid-cols-1"}`}>
+              {stripeEnabled && (
+                <button
+                  onClick={() => setPaymentMethod("card")}
+                  className={`p-4 border text-left transition-colors ${
+                    paymentMethod === "card"
+                      ? "border-charcoal bg-charcoal/5"
+                      : "border-mist hover:border-charcoal/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <HiOutlineCreditCard className="w-5 h-5 text-stone" />
+                    <div>
+                      <p className="text-sm font-medium">Credit Card</p>
+                      <p className="text-xs text-stone">Visa, Mastercard, Amex</p>
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+              )}
 
               <button
                 onClick={() => setPaymentMethod("paypal")}
@@ -308,7 +312,7 @@ export function CheckoutForm() {
           </div>
 
           <div className="mt-4 text-xs text-stone text-center space-y-1">
-            <p>Secure checkout via Stripe & PayPal</p>
+            <p>Secure checkout via {stripeEnabled ? "Stripe & " : ""}PayPal</p>
             <p>Your payment info is encrypted</p>
           </div>
         </div>

@@ -1,13 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/Button"
 import { getStripePublishableKey } from "@/lib/stripe/stripe"
 import { toast } from "react-hot-toast"
-
-const stripePromise = loadStripe(getStripePublishableKey())
 
 interface StripePaymentProps {
   amount: number
@@ -62,7 +60,19 @@ function PaymentForm({ amount, onSuccess, onError }: StripePaymentProps) {
 }
 
 export function StripePayment(props: StripePaymentProps) {
+  const stripePromise = useMemo(() => {
+    const key = getStripePublishableKey()
+    return key ? loadStripe(key) : null
+  }, [])
   const [clientSecret, setClientSecret] = useState<string | null>(null)
+
+  if (!stripePromise) {
+    return (
+      <div className="border border-mist p-6 text-center">
+        <p className="text-sm text-stone">Credit card payment is not available at this time.</p>
+      </div>
+    )
+  }
 
   useEffect(() => {
     fetch("/api/checkout/create-payment-intent", {

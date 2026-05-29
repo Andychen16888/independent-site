@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe/stripe"
+import { getStripe, isStripeConfigured } from "@/lib/stripe/stripe"
 import { prisma } from "@/lib/db/prisma"
 
 export async function POST(req: Request) {
-  const body = await req.text()
-  const signature = req.headers.get("stripe-signature") || ""
-
   try {
-    const event = stripe.webhooks.constructEvent(
+    if (!isStripeConfigured()) {
+      return NextResponse.json(
+        { error: "Stripe is not configured" },
+        { status: 503 }
+      )
+    }
+
+    const body = await req.text()
+    const signature = req.headers.get("stripe-signature") || ""
+
+    const event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!

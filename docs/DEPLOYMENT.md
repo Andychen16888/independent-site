@@ -523,84 +523,65 @@ sudo certbot certificates
 
 ### 6.2 SSL 配置优化
 
-#### 第一步：查看 Certbot 自带的 SSL 配置
+> **Certbot 已自动应用最佳 SSL 配置，一般情况下无需手动修改。**
 
-Certbot 会自动生成 `/etc/letsencrypt/options-ssl-nginx.conf`，其中已包含基础的 SSL 配置。先查看此文件的内容，避免后续重复添加：
+#### 检查 Certbot 自带的 SSL 配置
+
+Certbot 会自动生成 `/etc/letsencrypt/options-ssl-nginx.conf`，并通过 `include` 指令加载。此文件已包含所有必要的 SSL 安全配置。查看其实际内容：
 
 ```bash
 cat /etc/letsencrypt/options-ssl-nginx.conf
 ```
 
-典型输出如下（不同 Certbot 版本略有差异）：
+典型输出如下（Certbot 版本 ≥ 2.0）：
 
 ```nginx
-# This file contains important security parameters.
-# ...
-
 ssl_session_cache shared:le_nginx_SSL:10m;
 ssl_session_timeout 1440m;
 ssl_protocols TLSv1.2 TLSv1.3;
 ssl_prefer_server_ciphers on;
 ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:...;
+ssl_session_tickets off;
+ssl_stapling on;
+ssl_stapling_verify on;
 ```
 
-> **重要**: 以上指令已被 `include /etc/letsencrypt/options-ssl-nginx.conf` 加载，**不要在站点配置中重复添加它们**，否则 Nginx 会报 `duplicate` 错误。
+#### 为什么不需要手动添加？
 
-#### 第二步：编辑站点配置，仅补充缺失的选项
+因为站点配置中已包含 `include /etc/letsencrypt/options-ssl-nginx.conf;`，上述所有 SSL 指令都已被加载。**手动在站点配置中再次添加任何已存在的指令，都会导致 Nginx 报错**：
+
+```
+nginx: [emerg] "ssl_session_timeout" directive is duplicate
+```
+
+#### 如果需要覆盖某个默认值
+
+不要直接在站点配置中添加同名指令，而是按下述步骤操作：
 
 ```bash
-# 编辑站点配置文件 (Certbot 已添加 SSL 证书路径)
+# 1. 复制 options-ssl-nginx.conf 并移除需要覆盖的行
+sudo cp /etc/letsencrypt/options-ssl-nginx.conf /etc/letsencrypt/options-ssl-nginx.conf.bak
+
+# 2. 编辑 options-ssl-nginx.conf，注释掉需要覆盖的行
+sudo nano /etc/letsencrypt/options-ssl-nginx.conf
+# 例如将 ssl_session_timeout 1440m; 改为 # ssl_session_timeout 1440m;
+
+# 3. 在站点配置中添加新值
 sudo nano /etc/nginx/sites-available/orient-beauty
+# 在 include 行之后添加: ssl_session_timeout 1d;
+
+# 4. 测试并重载
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-找到 `listen 443 ssl http2;` 对应的 `server` 块，在 `ssl_dhparam` 行之后添加以下**仅补充**的配置：
+> **建议**: 除非你有特定的安全合规要求（如 PCI DSS 需要调整加密套件），否则保持 Certbot 默认配置即可，它已经是行业最佳实践。
 
-```nginx
-    # ========== SSL 补充优化 (仅在 options-ssl-nginx.conf 中未包含的指令) ==========
-    ssl_session_tickets off;                                 # 禁用 SSL 会话票据 (提高前向安全性)
-    ssl_stapling on;                                         # 启用 OCSP Stapling (加速证书验证)
-    ssl_stapling_verify on;                                  # 验证 OCSP 响应签名
-    ssl_session_timeout 1d;                                  # 覆盖默认值，会话超时 1 天 (可选)
-```
-
-> **注意**: `ssl_session_timeout` 在 `options-ssl-nginx.conf` 中已有（值为 `1440m`），此处如果再次添加会报 `duplicate` 错误。如想覆盖默认值，**必须先删除或注释掉** `options-ssl-nginx.conf` 中的对应行，再在站点配置中设置新值。
-
-#### 第三步：完整配置参考
-
-添加后，`server` 块结构应如下（注意**不要重复** `options-ssl-nginx.conf` 中已有的指令）：
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name your-domain.com www.your-domain.com;
-
-    # ===== Certbot 自动生成 (不要修改) =====
-    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    # ===== 手动补充的配置 (只添加 options-ssl-nginx.conf 中没有的) =====
-    ssl_session_tickets off;
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
-    # ===== 站点其他配置 (proxy_pass 等) =====
-    # 见 5.1 节中的 location 配置
-}
-```
-
-#### 第四步：验证并重载
+#### 验证 SSL 评分
 
 ```bash
-# 测试配置是否正确 (无 duplicate 错误)
-sudo nginx -t
-
-# 重载 Nginx
-sudo systemctl reload nginx
-
-# 验证 SSL 配置评分
-# 访问: https://www.ssllabs.com/ssltest/analyze.html?d=your-domain.com
+# 访问以下 URL 测试 SSL 配置 (替换 your-domain.com 为实际域名)
+# https://www.ssllabs.com/ssltest/analyze.html?d=your-domain.com
+# 目标: A 或 A+ 评分
 ```
 
 ---

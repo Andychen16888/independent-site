@@ -159,7 +159,7 @@ cp .env.production .env
 
 完整的 `.env.production` 配置参考第 7 节。
 
-> **注意**: Prisma CLI（`prisma generate`、`prisma migrate` 等）默认读取项目根目录的 `.env` 文件，而 Next.js 读取 `.env.production`。**两个文件都需要包含 `DATABASE_URL`**。部署后执行 `cp .env.production .env` 即可同步。
+> **注意**: Prisma CLI（自 v6 起使用 `prisma.config.ts` 配置）会通过 `prisma.config.ts` 手动加载 `.env` 文件，Next.js 读取 `.env.production`。**两个文件都需要包含 `DATABASE_URL`**。部署后执行 `cp .env.production .env` 即可同步。
 
 ---
 
@@ -169,7 +169,7 @@ cp .env.production .env
 
 > 首次部署前确保 `.env` 和 `.env.production` 都包含正确的 `DATABASE_URL`：
 > ```bash
-> cp .env.production .env   # 确保 Prisma CLI 可读取环境变量
+> cp .env.production .env   # Prisma config 会从此文件加载环境变量
 > ```
 
 ### 3.2 安装依赖并构建
@@ -193,7 +193,8 @@ npm run build
 
 > **说明**:  
 > - `npm ci` 会安装所有依赖（含 devDependencies），因为 `prisma` CLI 和 TypeScript 在构建阶段是必需的。  
-> - Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`，不影响最终部署体积。  
+> - Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`（含 `server.js`）。**运行时必须使用 `node .next/standalone/server.js`，不能用 `next start`**。  
+> - PM2 配置 (`ecosystem.config.js`) 已设置为直接运行 `server.js`。  
 > - 构建时自动设置 `NODE_OPTIONS="--max-old-space-size=4096"` 以避免小内存服务器（< 4GB）上 OOM 崩溃。如服务器内存 ≥ 4GB，可手动减小此值。  
 > - 如需进一步降低内存使用，可创建 swap：参考 [16.5 内存不足](#165-内存不足)。
 
@@ -594,27 +595,31 @@ openssl rand -base64 32
 ### 8.1 初始化迁移
 
 ```bash
-# 确保 .env 文件存在 (Prisma CLI 默认读取 .env)
+# 确保 .env 文件存在 (prisma.config.ts 会从此文件加载环境变量)
 cp .env.production .env
 
-# 首次部署：创建迁移文件
-npx prisma migrate dev --name init
+# 首次部署：推送 schema 直接创建表 (项目无迁移文件时使用)
+npm run db:push
 
-# 生产环境：应用迁移
-npm run db:migrate
+# 填充初始数据 (创建管理员、分类等)
+npm run db:seed
 ```
 
 ### 8.2 数据库管理
 
 ```bash
-# 首次部署：推送 schema 创建表
+# 首次部署：推送 schema 创建表 (无迁移文件时)
 npm run db:push
 
 # 填充初始数据 (创建管理员、分类等)
 npm run db:seed
 
-# 后续 schema 变更：创建新的迁移 (生产环境用)
-npx prisma migrate dev --name add-product-weight
+# 后续 schema 变更：如需创建迁移文件 (生产环境推荐)
+# 注意: 此命令需要本地开发环境，不要在服务器上运行
+# npx prisma migrate dev --name add-product-weight
+
+# 应用待处理的迁移 (当 prisma/migrations/ 存在迁移文件时)
+# npm run db:migrate
 
 # 查看迁移状态
 npx prisma migrate status
@@ -624,8 +629,9 @@ npx prisma studio
 ```
 
 > **注意**: 
-> - Prisma CLI 默认读取项目根目录的 `.env` 文件获取 `DATABASE_URL`，部署后需执行 `cp .env.production .env` 同步环境变量。
-> - 推荐使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
+> - `prisma.config.ts` 存在时，Prisma 会跳过自动加载 `.env` 的步骤，改为由配置文件手动加载。因此 `.env` 文件必须存在且包含 `DATABASE_URL`。
+> - 始终使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
+> - 首次部署必须使用 `db:push`（项目不含迁移文件）。`db:migrate` 仅在 `prisma/migrations/` 目录存在迁移文件时才有效。
 
 ### 8.3 数据库备份
 
@@ -817,7 +823,8 @@ jobs:
             cp .env.production .env
             npm ci --legacy-peer-deps
             npm run db:generate
-            npm run db:migrate
+            npm run db:push
+            npm run db:seed
             npm run build
             pm2 restart orient-beauty
 ```
@@ -838,13 +845,14 @@ jobs:
 ### 14.1 PM2 管理
 
 ```bash
-# 应用管理
+# 应用管理 (standalone 模式，运行 .next/standalone/server.js)
 pm2 status                    # 查看所有进程
 pm2 logs orient-beauty        # 查看日志
 pm2 logs orient-beauty --lines 100  # 查看最近100行
 pm2 restart orient-beauty     # 重启
 pm2 stop orient-beauty        # 停止
 pm2 delete orient-beauty      # 删除进程
+pm2 start ecosystem.config.js # 从配置文件启动 (推荐)
 
 # 负载监控
 pm2 monit                     # 实时监控
@@ -880,20 +888,25 @@ cd /var/www/orient-beauty
 # 拉取最新代码
 git pull origin main
 
-# 确保 Prisma 可读取环境变量
+# 确保 Prisma 可读取环境变量 (prisma.config.ts 会加载此文件)
 cp .env.production .env
 
 # 安装依赖 (含构建所需的 devDeps)
 npm ci --legacy-peer-deps
 
-# 数据库迁移
+# 生成 Prisma Client
 npm run db:generate
-npm run db:migrate
 
-# 构建
+# 数据库迁移 (首次部署用 db:push，有迁移文件后用 db:migrate)
+npm run db:push
+
+# 填充种子数据 (如无新数据可跳过)
+npm run db:seed
+
+# 构建 (生成 standalone 模式的 .next/standalone/server.js)
 npm run build
 
-# 重启
+# 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
 ```
 
@@ -909,7 +922,7 @@ cd /var/www/orient-beauty
 echo "Pulling latest code..."
 git pull origin main
 
-echo "Copying environment variables for Prisma..."
+echo "Copying environment variables for Prisma (loaded by prisma.config.ts)..."
 cp .env.production .env
 
 echo "Installing dependencies..."
@@ -918,13 +931,16 @@ npm ci --legacy-peer-deps
 echo "Generating Prisma Client..."
 npm run db:generate
 
-echo "Running database migrations..."
-npm run db:migrate
+echo "Pushing database schema..."
+npm run db:push
 
-echo "Building application..."
+echo "Seeding database..."
+npm run db:seed
+
+echo "Building application (standalone mode)..."
 npm run build
 
-echo "Restarting application..."
+echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty
 
 echo "Deployment complete!"
@@ -983,14 +999,20 @@ sudo -u postgres psql -c "SELECT query, calls, total_time FROM pg_stat_statement
 # 检查 PM2 日志
 pm2 logs orient-beauty --lines 50
 
+# 检查 standalone server 是否构建成功
+ls -la /var/www/orient-beauty/.next/standalone/server.js
+
+# 尝试前台启动 standalone server (查看错误信息)
+NODE_ENV=production node /var/www/orient-beauty/.next/standalone/server.js
+
 # 检查 Node.js 版本
 node -v
 
 # 检查端口占用
 lsof -i :3000
 
-# 检查环境变量
-cd /var/www/orient-beauty && node -e "console.log(process.env.DATABASE_URL)"
+# 检查环境变量 (.env 和 .env.production 都必须有 DATABASE_URL)
+cd /var/www/orient-beauty && cat .env | grep DATABASE_URL
 ```
 
 ### 16.2 数据库连接失败
@@ -1011,6 +1033,10 @@ sudo -u postgres psql -c "SHOW max_connections;"
 ```bash
 # 检查应用是否运行
 pm2 status
+
+# 检查健康端点 (不依赖数据库)
+curl http://localhost:3000/api/health
+# 应返回 {"status":"ok","timestamp":"...","uptime":...}
 
 # 检查 Nginx
 sudo nginx -t
@@ -1765,7 +1791,7 @@ https://orientalbeauty.com/admin
 
 ### 21.7 管理后台部署 Checklist
 
-  - [ ] 运行 `npm run db:seed` 创建管理员账号（会自动加载 `.env` 中的 `DATABASE_URL`）
+  - [ ] 运行 `npm run db:seed` 创建管理员账号（`prisma.config.ts` 会加载 `.env` 中的 `DATABASE_URL`）
 - [ ] 登录 `/admin` 验证管理后台可正常访问
 - [ ] 修改默认管理员密码
 - [ ] 确认 `NEXTAUTH_SECRET` 已设置为强随机字符串
@@ -1782,6 +1808,7 @@ https://orientalbeauty.com/admin
 ```bash
 # 启用 Next.js 输出文件追踪 (减小部署体积)
 # next.config.ts 已配置 output: "standalone"
+# 注意: standalone 模式必须运行 .next/standalone/server.js，不能用 next start
 
 # 启用图片优化 (sharp)
 # 已安装 sharp 包

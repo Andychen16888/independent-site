@@ -294,6 +294,10 @@ docker compose exec app sh
 
 ### 5.1 主配置
 
+> **注意**: 将下列所有 `your-domain.com` 替换为你的实际域名（如 `hhbtec.com`）。
+
+#### 首次配置（HTTP 仅用于获取 SSL 证书）
+
 ```bash
 sudo nano /etc/nginx/sites-available/orient-beauty
 ```
@@ -306,17 +310,61 @@ upstream nextjs {
 
 server {
     listen 80;
-    server_name orientalbeauty.com www.orientalbeauty.com;
+    server_name your-domain.com www.your-domain.com;
+
+    location / {
+        proxy_pass http://nextjs;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /_next/static/ {
+        proxy_pass http://nextjs;
+        expires 365d;
+        add_header Cache-Control "public, immutable, max-age=31536000";
+    }
+
+    location /api/ {
+        proxy_pass http://nextjs;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 60s;
+    }
+}
+```
+
+#### 获取 SSL 证书后再添加 HTTPS
+
+```bash
+# 获取 SSL 证书 (见第6节)
+sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+
+# Certbot 会自动修改 Nginx 配置添加 HTTPS
+# 完成后 Nginx 配置会自动变成类似下面这样：
+```
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name orientalbeauty.com www.orientalbeauty.com;
+    server_name your-domain.com www.your-domain.com;
 
-    # SSL 配置 (见第6节)
-    ssl_certificate /etc/letsencrypt/live/orientalbeauty.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/orientalbeauty.com/privkey.pem;
+    # Certbot 自动添加
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     # 安全头
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
@@ -431,8 +479,8 @@ http {
 # 安装 Certbot
 sudo apt install -y certbot python3-certbot-nginx
 
-# 获取证书
-sudo certbot --nginx -d orientalbeauty.com -d www.orientalbeauty.com
+# 获取证书 (替换 your-domain.com 为实际域名)
+sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 
 # 证书自动续期 (certbot 会自动创建定时任务)
 sudo certbot renew --dry-run
@@ -440,6 +488,8 @@ sudo certbot renew --dry-run
 # 查看证书状态
 sudo certbot certificates
 ```
+
+> **重要**: 运行 `certbot --nginx` 之前，必须先配置好 HTTP 版 Nginx（见 5.1 节首次配置），并确保域名 DNS 已解析到服务器 IP。Certbot 会自动修改 Nginx 配置添加 SSL。
 
 ### 6.2 SSL 配置优化
 

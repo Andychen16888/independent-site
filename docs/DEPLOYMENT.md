@@ -175,11 +175,15 @@ npm ci --legacy-peer-deps
 npm run db:generate
 
 # 构建 Next.js (standalone 模式)
+# 如果服务器内存小于 4GB，构建可能因内存不足失败，脚本已自动增加内存限制
 npm run build
 ```
 
-> **说明**: `npm ci` 会安装所有依赖（含 devDependencies），因为 `prisma` CLI 和 TypeScript 在构建阶段是必需的。  
-> Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`，不影响最终部署体积。
+> **说明**:  
+> - `npm ci` 会安装所有依赖（含 devDependencies），因为 `prisma` CLI 和 TypeScript 在构建阶段是必需的。  
+> - Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`，不影响最终部署体积。  
+> - 构建时自动设置 `NODE_OPTIONS="--max-old-space-size=4096"` 以避免小内存服务器（< 4GB）上 OOM 崩溃。如服务器内存 ≥ 4GB，可手动减小此值。  
+> - 如需进一步降低内存使用，可创建 swap：参考 [16.5 内存不足](#165-内存不足)。
 
 ### 3.2 数据库迁移
 
@@ -933,8 +937,12 @@ tail -f /var/log/nginx/error.log
 # 查看内存使用
 free -h
 
-# 调整 PM2 内存限制
-pm2 restart orient-beauty --max-memory-restart 500M
+# 调整 PM2 运行时内存限制
+pm2 restart orient-beauty --max-memory-restart 1G
+
+# 构建时内存不足 (JavaScript heap out of memory)
+# 项目已内置 NODE_OPTIONS="--max-old-space-size=4096"，如果仍然 OOM：
+NODE_OPTIONS="--max-old-space-size=6144" npm run build
 
 # 创建 swap (如果系统没有)
 sudo fallocate -l 2G /swapfile
@@ -942,6 +950,10 @@ sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# 验证 swap
+free -h
+swapon --show
 ```
 
 ---

@@ -303,17 +303,12 @@ sudo nano /etc/nginx/sites-available/orient-beauty
 ```
 
 ```nginx
-upstream nextjs {
-    server 127.0.0.1:3000;
-    keepalive 64;
-}
-
 server {
     listen 80;
     server_name your-domain.com www.your-domain.com;
 
     location / {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -324,13 +319,13 @@ server {
     }
 
     location /_next/static/ {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
     }
 
     location /api/ {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -378,7 +373,7 @@ server {
 
     # 静态资源缓存
     location /_next/static/ {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
     }
@@ -391,7 +386,7 @@ server {
 
     # API 请求
     location /api/ {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -404,7 +399,7 @@ server {
 
     # 主要代理
     location / {
-        proxy_pass http://nextjs;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";

@@ -200,11 +200,9 @@ npm run build
 ### 3.3 数据库迁移
 
 ```bash
-# 推送 schema 到数据库 (首次部署必需，创建所有表)
+# 重要: 首次部署必须使用 db:push (项目无迁移文件)
+# db:migrate 仅当 prisma/migrations/ 目录存在迁移文件时才有效
 npm run db:push
-
-# 或使用迁移 (推荐生产环境，需先创建迁移文件)
-# npm run db:migrate
 
 # 导入种子数据 (创建管理员账号和初始数据)
 npm run db:seed

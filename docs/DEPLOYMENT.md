@@ -523,15 +523,58 @@ sudo certbot certificates
 
 ### 6.2 SSL 配置优化
 
+Certbot 会自动修改 `/etc/nginx/sites-available/orient-beauty` 添加 SSL 证书路径。你需要在此文件末尾的 `server` 块内（`listen 443 ssl http2;` 的块），手动添加以下安全优化配置：
+
+```bash
+# 编辑站点配置文件 (Certbot 已添加 SSL 证书路径后的文件)
+sudo nano /etc/nginx/sites-available/orient-beauty
+```
+
+在 `listen 443 ssl http2;` 对应的 `server` 块中，在 `ssl_certificate` 和 `ssl_certificate_key` 配置之后，添加以下内容：
+
 ```nginx
-ssl_protocols TLSv1.2 TLSv1.3;
-ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-ssl_prefer_server_ciphers off;
-ssl_session_cache shared:SSL:10m;
-ssl_session_timeout 1d;
-ssl_session_tickets off;
-ssl_stapling on;
-ssl_stapling_verify on;
+    # ========== SSL 协议与加密套件 ==========
+    ssl_protocols TLSv1.2 TLSv1.3;                          # 仅允许 TLS 1.2 和 1.3 (禁用 SSLv3/TLSv1.0/TLSv1.1)
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;                           # 让客户端选择加密套件 (兼容性更好)
+    ssl_session_cache shared:SSL:10m;                        # SSL 会话缓存 10MB (约 40000 个会话)
+    ssl_session_timeout 1d;                                  # 会话超时 1 天 (减少 SSL 握手)
+    ssl_session_tickets off;                                 # 禁用 SSL 会话票据 (提高前向安全性)
+    ssl_stapling on;                                         # 启用 OCSP Stapling (加速证书验证)
+    ssl_stapling_verify on;                                  # 验证 OCSP 响应签名
+
+    # ========== 安全头 (如未在 server 块开头配置，可在此添加) ==========
+    # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+```
+
+**完成后的完整 `server` 块结构参考**：
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com www.your-domain.com;
+
+    # Certbot 自动生成
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # 手动添加的 SSL 优化
+    ssl_protocols TLSv1.2 TLSv1.3;
+    # ... (以上所有优化配置)
+
+    # 站点其他配置 (proxy_pass 等，见 5.1 节)
+}
+```
+
+```bash
+# 保存并退出后，测试配置并重载 Nginx
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 验证 SSL 配置评分
+# 访问: https://www.ssllabs.com/ssltest/analyze.html?d=your-domain.com
 ```
 
 ---

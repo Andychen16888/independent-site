@@ -4,6 +4,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema, productGroupSchema } from "@/lib/seo/structured-data"
+import { mockProducts } from "@/lib/mock/products"
 import type { Metadata } from "next"
 
 interface Props {
@@ -19,12 +20,7 @@ const categories = [
     description: "Discover our premium peptide-infused skincare collection. Each product combines cutting-edge biotechnology with traditional Asian botanicals for radiant, healthy skin. From hydrating serums to brightening essences, our beauty range is designed for the modern woman who values clean, effective skincare.",
     style: "minimal-white",
     ogImage: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1200&q=80",
-    products: [
-      { id: "1", name: "Peptide Hydration Serum", slug: "peptide-hydration-serum", unitPrice: 78, originalPrice: 98, stock: 15, isNew: true, isBestSeller: true, images: [{ url: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80" }] },
-      { id: "4", name: "Rice Bran Peptide Mask", slug: "rice-bran-peptide-mask", unitPrice: 12, stock: 100, isNew: true, images: [{ url: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=400&q=80" }] },
-      { id: "7", name: "Ginseng Peptide Eye Cream", slug: "ginseng-peptide-eye-cream", unitPrice: 62, originalPrice: 78, stock: 18, isBestSeller: true, images: [{ url: "https://images.unsplash.com/photo-1621607512214-68297480165e?w=400&q=80" }] },
-      { id: "4b", name: "Vitamin C Brightening Essence", slug: "vitamin-c-brightening-essence", unitPrice: 55, stock: 30, isNew: true, images: [{ url: "https://images.unsplash.com/photo-1599305090598-fe179d501227?w=400&q=80" }] },
-    ],
+    productSlugs: ["peptide-hydration-serum", "rice-bran-peptide-mask", "ginseng-peptide-eye-cream", "vitamin-c-brightening-essence"] as const,
   },
   {
     slug: "handmade-living",
@@ -34,12 +30,7 @@ const categories = [
     description: "Curated objects from master artisans across Asia. Each piece brings warmth, tradition, and intention into your home. Discover hand-thrown ceramics, natural fiber textiles, and mindful home accessories that transform your space into a sanctuary.",
     style: "warm-wood",
     ogImage: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200&q=80",
-    products: [
-      { id: "5", name: "Raku Teacup Set", slug: "raku-teacup-set", unitPrice: 145, stock: 8, isNew: true, isBestSeller: true, images: [{ url: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80" }] },
-      { id: "6", name: "Celadon Lotus Vase", slug: "celadon-lotus-vase", unitPrice: 230, originalPrice: 280, stock: 3, isNew: true, images: [{ url: "https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400&q=80" }] },
-      { id: "7b", name: "Bamboo Incense Holder", slug: "bamboo-incense-holder", unitPrice: 38, stock: 50, images: [{ url: "https://images.unsplash.com/photo-1602872030216-3ae6e5f3e5e5?w=400&q=80" }] },
-      { id: "8b", name: "Mulberry Silk Eye Mask", slug: "mulberry-silk-eye-mask", unitPrice: 48, originalPrice: 58, stock: 35, isBestSeller: true, images: [{ url: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&q=80" }] },
-    ],
+    productSlugs: ["raku-teacup-set", "celadon-lotus-vase", "bamboo-incense-holder", "mulberry-silk-eye-mask"] as const,
   },
 ]
 
@@ -61,6 +52,10 @@ export default async function CategoryPage({ params }: Props) {
   const category = categories.find((c) => c.slug === slug)
   if (!category) notFound()
 
+  const products = mockProducts.filter((p) =>
+    (category.productSlugs as readonly string[]).includes(p.slug)
+  )
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
   const bgClass = category.style === "warm-wood" ? "bg-cream" : "bg-ivory"
 
@@ -74,7 +69,7 @@ export default async function CategoryPage({ params }: Props) {
       description: category.description,
       url: `${baseUrl}/categories/${category.slug}`,
       image: category.ogImage,
-      products: category.products.map((p) => ({
+      products: products.map((p) => ({
         name: p.name,
         url: `${baseUrl}/products/${p.slug}`,
         price: p.unitPrice,
@@ -107,7 +102,7 @@ export default async function CategoryPage({ params }: Props) {
         </div>
 
         <Container className="py-12 md:py-16">
-          <ProductGrid products={category.products} />
+          <ProductGrid products={products} />
         </Container>
       </div>
     </>

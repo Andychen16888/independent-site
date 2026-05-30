@@ -442,12 +442,24 @@ server {
 #### 获取 SSL 证书后再添加 HTTPS
 
 ```bash
-# 获取 SSL 证书 (见第6节)
+# 更新软件源并安装 Certbot
+sudo apt update
+sudo apt install -y certbot python3-certbot-nginx
+
+# 获取证书 (certbot 会自动修改 Nginx 配置添加 SSL)
 sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 
-# Certbot 会自动修改 Nginx 配置添加 HTTPS
-# 完成后 Nginx 配置会自动变成类似下面这样：
+# 测试证书自动续期
+sudo certbot renew --dry-run
+
+# 查看证书状态
+sudo certbot certificates
 ```
+
+> **注意**: 
+> - 运行 `certbot --nginx` 之前，必须先配置好 HTTP 版 Nginx（见上方），并确保域名 DNS 已解析到服务器 IP。Certbot 会自动修改 Nginx 配置添加 HTTPS 和 SSL 证书路径。
+> - 如果遇到 `ERR_CERT_AUTHORITY_INVALID`，说明你的 Nginx 配置引用了错误的证书路径。执行 `sudo certbot --nginx -d your-domain.com -d www.your-domain.com` 重新申请或修复。
+> - 申请成功后，Nginx 配置中的证书路径会自动更新为 `/etc/letsencrypt/live/your-domain.com/` 下的证书文件。
 
 ```nginx
 server {

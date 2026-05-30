@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
+import { getToken } from "next-auth/jwt"
 import { AdminSidebar } from "@/components/admin/AdminSidebar"
 
 export const metadata: Metadata = {
@@ -10,7 +11,6 @@ export const metadata: Metadata = {
 
 async function getSession() {
   try {
-    const { getToken } = await import("next-auth/jwt")
     const token = await getToken({
       req: { cookies: await cookies() } as any,
       secret: process.env.NEXTAUTH_SECRET,

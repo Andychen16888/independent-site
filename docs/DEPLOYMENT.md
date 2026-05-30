@@ -212,9 +212,9 @@ sudo systemctl restart postgresql
 ```bash
 # 方式一：从 Git 仓库克隆
 cd /var/www
-sudo mkdir -p orient-beauty
-sudo chown deploy:deploy orient-beauty
-git clone https://github.com/Andychen16888/orient-beauty.git .
+git clone https://github.com/Andychen16888/orient-beauty.git
+sudo chown -R deploy:deploy orient-beauty
+cd orient-beauty
 # 或使用 rsync 从本地推送
 # rsync -avz --exclude 'node_modules' --exclude '.next' --exclude '.env' ./ orient-beauty/
 

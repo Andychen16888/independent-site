@@ -48,6 +48,8 @@
 
 ### 1.2 初始设置
 
+> **安全警告**: 新服务器在配置完成前，对外暴露的时间越短越好。以下步骤必须在第一时间完成，**在安装任何依赖或克隆代码之前**先做安全加固。
+
 ```bash
 # 连接服务器
 ssh root@your-server-ip
@@ -55,20 +57,94 @@ ssh root@your-server-ip
 # 更新系统
 apt update && apt upgrade -y
 
-# 创建部署用户
+# ========== 立即安全加固（前置，必须最先执行） ==========
+
+# 1. 创建部署用户并赋予 sudo
 adduser deploy
 usermod -aG sudo deploy
-su - deploy
 
-# 安装基础工具
-sudo apt install -y curl wget git vim ufw fail2ban
+# 2. 配置 SSH 密钥登录（不要复制密码！在本地执行 ssh-copy-id）
+exit  # 退出 root 会话，回到本地
+ssh-copy-id deploy@your-server-ip  # 在本地终端执行，上传公钥
+ssh deploy@your-server-ip          # 用新用户登录
 
-# 配置防火墙
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
+# 3. 禁止 root 和密码登录
+sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
+
+# 4. 立即启用防火墙（只放行 SSH、HTTP、HTTPS）
+sudo ufw --force reset
+sudo ufw default deny incoming
+sudo ufw default deny outgoing
+sudo ufw allow in on lo
+sudo ufw allow out on lo
+sudo ufw allow out 53          # DNS 解析
+sudo ufw allow in 22/tcp       # SSH
+sudo ufw allow out 22/tcp      # SSH 出站
+sudo ufw allow in 80/tcp       # HTTP
+sudo ufw allow out 80/tcp      # HTTP 出站
+sudo ufw allow in 443/tcp      # HTTPS
+sudo ufw allow out 443/tcp     # HTTPS 出站
 sudo ufw --force enable
+sudo ufw status verbose
+
+# 5. 安装 fail2ban（SSH 防爆破）
+sudo apt install -y fail2ban
+sudo systemctl enable --now fail2ban
+
+# 6. 开启自动安全更新
+sudo apt install -y unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+
+# 7. 安装基础工具
+sudo apt install -y curl wget git vim
+
+echo "✓ 安全加固完成，可以继续部署"
 ```
+
+### 1.3 安全原则（防止木马和挖矿程序植入）
+
+| 原则 | 说明 |
+|------|------|
+| **最小权限** | 永远用普通用户（`deploy`）操作，禁止 root 日常使用 |
+| **最小暴露** | Node 服务必须绑定 `127.0.0.1`，只通过 Nginx 对外 |
+| **最小端口** | 防火墙仅开放 22/80/443，拒绝其他所有端口 |
+| **密钥认证** | 禁用密码登录，SSH key + 口令短语 |
+| **定期审查** | 每周检查进程列表、网络连接、cron 任务 |
+
+#### 常见木马特征（部署后应定期检查）
+
+```bash
+# 检查挖矿进程
+ps aux | grep -E "xmrig|minerd|kdevtmpfs|kinsing|xig|sustse|donate"
+ss -antp | grep -E "43[0-9]{2}|3333|5555|14444|9999"  # 常见矿池端口
+
+# 检查异常网络外联
+ss -antp | grep "ESTAB" | grep -v "127.0.0.1"
+
+# 检查可疑 systemd 服务
+systemctl list-units --type=service --state=running | grep -E "xmrig|scanner|update|cloud|sysupdate"
+
+# 检查定时任务
+cat /etc/crontab 2>/dev/null
+ls -la /etc/cron.d/ 2>/dev/null
+crontab -l
+for user in $(awk -F: '$3>=1000{print $1}' /etc/passwd); do crontab -u $user -l 2>/dev/null; done
+
+# 检查 SSH authorized_keys 后门
+cat ~/.ssh/authorized_keys
+for dir in /root /home/*; do [ -f "$dir/.ssh/authorized_keys" ] && echo "=== $dir ===" && cat "$dir/.ssh/authorized_keys"; done
+
+# 检查 LD_PRELOAD 后门
+cat /etc/ld.so.preload 2>/dev/null
+
+# 检查 /dev/shm /tmp 可疑文件
+ls -la /dev/shm/ /tmp/ /var/tmp/ 2>/dev/null
+```
+
+> **如果发现上述任何异常**：立即切断网络连接，备份数据，重装系统。手动清理无法根除 rootkit 级别的木马。
 
 ### 1.3 安装依赖
 
@@ -224,10 +300,11 @@ cd /var/www/orient-beauty
 git pull origin main
 
 # 启动方式一 (推荐): 使用 ecosystem.config.js (自动读取环境变量配置)
+# 注意: ecosystem.config.js 已配置 HOST=127.0.0.1，确保 Node 仅监听本地
 pm2 start ecosystem.config.js
 
 # 启动方式二: 直接运行 standalone server.js
-# pm2 start .next/standalone/server.js --name orient-beauty
+# pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1
 
 # 保存 PM2 进程列表 (服务器重启后自动恢复)
 pm2 save
@@ -912,8 +989,8 @@ pm2 logs orient-beauty --lines 100  # 查看最近100行
 pm2 restart orient-beauty     # 重启
 pm2 stop orient-beauty        # 停止
 pm2 delete orient-beauty      # 删除进程
-pm2 start ecosystem.config.js # 从配置文件启动 (推荐，含环境变量设置)
-pm2 start .next/standalone/server.js --name orient-beauty  # 直接启动 standalone
+pm2 start ecosystem.config.js --update-env  # 从配置文件启动 (推荐，含 HOST/PORT 环境变量)
+pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1  # 直接启动 standalone
 
 # 负载监控
 pm2 monit                     # 实时监控
@@ -1155,37 +1232,79 @@ swapon --show
 
 ## 17. 安全 Checklist
 
-### 17.1 服务器安全
+### 17.1 服务器安全（防入侵基础）
 
-- [ ] SSH 使用密钥登录，禁用密码登录
-- [ ] 修改默认 SSH 端口 (22 → 自定义端口)
-- [ ] 开启 UFW 防火墙 (仅开放 22, 80, 443)
-- [ ] 安装并配置 fail2ban
-- [ ] 自动安全更新: `sudo apt install unattended-upgrades`
-- [ ] 禁用 root 直接 SSH 登录
+- [ ] SSH 使用密钥登录，禁用密码登录（`PasswordAuthentication no`）
+- [ ] 禁用 root 直接 SSH 登录（`PermitRootLogin no`）
+- [ ] 使用普通用户（`deploy`）进行日常操作
+- [ ] 开启 UFW 防火墙，仅允许 22/80/443 端口入站
+- [ ] UFW 出站规则限制：仅允许 DNS(53)、HTTP(80)、HTTPS(443) 和 loopback
+- [ ] 安装并配置 fail2ban（SSH 防爆破，maxretry=3）
+- [ ] 自动安全更新（`unattended-upgrades`）
+- [ ] Node 服务绑定 `127.0.0.1`，禁止暴露在公网
+- [ ] 修改默认 SSH 端口（可选，22 端口会被大量扫描）
 
-### 17.2 数据库安全
+### 17.2 防木马/挖矿程序（基于实际入侵案例）
 
-- [ ] 使用强密码 (32位以上随机字符)
-- [ ] 限制数据库访问 IP
-- [ ] 定期自动备份
+- [ ] 部署后立即执行：`ps aux | grep -E "xmrig|minerd|kdevtmpfs|kinsing"` 确认无异常进程
+- [ ] 检查异常网络连接：`ss -antp | grep ESTAB | grep -v 127.0.0.1`
+- [ ] 检查 systemd 中可疑服务：`systemctl list-units --type=service --state=running`
+- [ ] 检查 cron 后门：`cat /etc/crontab && ls /etc/cron.d/ && crontab -l`
+- [ ] 检查 SSH authorized_keys 后门：`cat ~/.ssh/authorized_keys`
+- [ ] 检查 LD_PRELOAD 后门：`cat /etc/ld.so.preload 2>/dev/null`
+- [ ] 检查 /tmp、/var/tmp、/dev/shm 中异常可执行文件
+- [ ] 每周定时执行以上检查（可写入 crontab 自动化）
+
+### 17.3 数据库安全
+
+- [ ] 使用强密码（32位以上随机字符）
+- [ ] 确保 PostgreSQL 只监听 `127.0.0.1`（`listen_addresses = 'localhost'`）
+- [ ] 定期自动备份到异地存储
 - [ ] 备份文件加密存储
 
-### 17.3 应用安全
+### 17.4 应用安全
 
-- [ ] NEXTAUTH_SECRET 使用强随机字符串
-- [ ] 所有 API Key 通过环境变量注入
+- [ ] `NEXTAUTH_SECRET` 使用强随机字符串（`openssl rand -base64 32`）
+- [ ] 所有 API Key 通过环境变量注入，不硬编码
 - [ ] Stripe Webhook 签名验证已启用
-- [ ] HTTPS 强制跳转
-- [ ] 安全头已配置 (HSTS, X-Frame-Options 等)
-- [ ] 文件上传大小限制 (client_max_body_size)
+- [ ] HTTPS 强制跳转（HTTP → 301 → HTTPS）
+- [ ] 安全头已配置（HSTS, X-Frame-Options, X-Content-Type-Options 等）
+- [ ] 文件上传大小限制（`client_max_body_size`）
+- [ ] 生产环境禁用 `NEXT_PUBLIC_*` 暴露敏感信息
+- [ ] 构建产物 `.next/` 和 `.env` 文件不应被公网访问
 
-### 17.4 监控告警
+### 17.5 监控告警（尽早发现入侵）
 
-- [ ] 配置 PM2 内存重启阈值
-- [ ] 设置磁盘使用率告警 (>80%)
+- [ ] 配置 PM2 内存重启阈值（`max_memory_restart: "1G"`）
+- [ ] 设置磁盘使用率告警（>80%）
 - [ ] 监控 SSL 证书到期时间
 - [ ] 配置 500 错误告警
+- [ ] 监控 CPU 异常飙高（挖矿程序特征）
+- [ ] 监控异常出站连接（矿池域名/IP）
+- [ ] 建议安装 `netdata` 或 `prometheus + node_exporter` 实时监控
+
+### 17.6 紧急响应流程（检测到入侵时）
+
+```bash
+# 1. 立即切断网络
+sudo ufw deny out to any
+sudo ufw deny in to any
+
+# 2. 备份数据
+pg_dump -U orient_user orient_beauty > /backup/emergency-$(date +%Y%m%d).sql
+
+# 3. 停止应用
+pm2 delete orient-beauty
+
+# 4. 全面排查（见 17.2 节）
+# 5. 确认无法彻底清除后 → 重装系统
+# 6. 重装后：
+#    - 更换所有密码和 API Key
+#    - 更换 SSH 密钥对
+#    - 使用本 checklist 逐条确认安全配置
+```
+
+> **核心原则**: 一旦确认被植入挖矿木马或 rootkit，**最安全的方式是重装系统**。手动清理无法保证 100% 清除，特别是 kernel 级别或 LD_PRELOAD 类型的后门。
 
 ---
 

@@ -226,29 +226,16 @@ cd orient-beauty
 
 ```bash
 cd /var/www/orient-beauty
-cp .env .env.production
-nano .env.production
-
-# Prisma CLI 默认读取 .env 文件，需要同步创建
-cp .env.production .env
+nano .env
 ```
 
-完整的 `.env.production` 配置参考第 7 节。
-
-> **注意**: Prisma CLI（自 v6 起使用 `prisma.config.ts` 配置）会通过 `prisma.config.ts` 手动加载 `.env` 文件，Next.js 读取 `.env.production`。**两个文件都需要包含 `DATABASE_URL`**。部署后执行 `cp .env.production .env` 即可同步。
+完整的 `.env` 配置参考第 7 节。
 
 ---
 
 ## 3. 部署方式一：手动部署 (推荐)
 
-### 3.1 环境准备
-
-> 首次部署前确保 `.env` 和 `.env.production` 都包含正确的 `DATABASE_URL`：
-> ```bash
-> cp .env.production .env   # Prisma config 会从此文件加载环境变量
-> ```
-
-### 3.2 安装依赖并构建
+### 3.1 安装依赖并构建
 
 ```bash
 cd /var/www/orient-beauty
@@ -346,7 +333,7 @@ pm2 logs orient-beauty --lines 50
 NODE_ENV=production node .next/standalone/server.js
 
 # 常见原因：
-# - .env.production 中 DATABASE_URL 配置错误 → 检查数据库连接
+# - .env 中 DATABASE_URL 配置错误 → 检查数据库连接
 # - 端口 3000 被占用 → lsof -i :3000
 # - node_modules 不完整 → npm ci --legacy-peer-deps
 ```
@@ -370,9 +357,7 @@ node_modules
 .next
 .git
 *.md
-.env
-.env.*
-!.env.production
+!.env
 EOF
 
 # 构建并启动
@@ -673,7 +658,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## 7. 环境变量说明
 
-完整的 `.env.production` 配置：
+完整的 `.env` 配置：
 
 ```bash
 # ========== 数据库 ==========
@@ -736,10 +721,7 @@ openssl rand -base64 32
 ### 8.1 初始化迁移
 
 ```bash
-# 确保 .env 文件存在 (prisma.config.ts 会从此文件加载环境变量)
-cp .env.production .env
-
-# 首次部署：推送 schema 直接创建表 (项目无迁移文件时使用)
+# 推送 schema 直接创建表 (项目无迁移文件时使用)
 npm run db:push
 
 # 填充初始数据 (创建管理员、分类等)
@@ -961,13 +943,135 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/orient-beauty
-            cp .env.production .env
+            cp .env .env
             npm ci --legacy-peer-deps
             npm run db:generate
             npm run db:push
             npm run db:seed
             npm run build
             pm2 restart orient-beauty
+```
+EOF
+
+### 13.2 需要配置的 GitHub Secrets
+
+| Secret | 说明 |
+|--------|------|
+| `HOST` | 服务器 IP |
+| `USERNAME` | SSH 用户名 (如 deploy) |
+| `SSH_KEY` | SSH 私钥 |
+| `DATABASE_URL` | 数据库连接字符串 |
+
+---
+
+## 14. 运维命令
+
+### 14.1 PM2 管理
+
+```bash
+# 应用管理 (standalone 模式，运行 .next/standalone/server.js)
+pm2 status                    # 查看所有进程
+pm2 logs orient-beauty        # 查看日志
+pm2 logs orient-beauty --lines 100  # 查看最近100行
+pm2 restart orient-beauty     # 重启
+pm2 stop orient-beauty        # 停止
+pm2 delete orient-beauty      # 删除进程
+pm2 start ecosystem.config.js --update-env  # 从配置文件启动 (推荐，含 HOST/PORT 环境变量)
+pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1  # 直接启动 standalone
+
+# 负载监控
+pm2 monit                     # 实时监控
+pm2 info orient-beauty        # 进程详情
+
+# 保存和开机自启
+pm2 save
+pm2 startup
+```
+
+### 14.2 日志管理
+
+```bash
+# 应用日志
+pm2 logs orient-beauty
+tail -f /var/www/orient-beauty/logs/out.log
+tail -f /var/www/orient-beauty/logs/err.log
+
+# Nginx 日志
+tail -f /var/log/nginx/orient-beauty-access.log
+tail -f /var/log/nginx/orient-beauty-error.log
+
+# 系统日志
+journalctl -u nginx -f
+journalctl -u postgresql -f
+```
+
+### 14.3 更新部署
+
+```bash
+cd /var/www/orient-beauty
+
+# 拉取最新代码
+git pull origin main
+
+# 安装依赖 (含构建所需的 devDeps)
+npm ci --legacy-peer-deps
+
+# 生成 Prisma Client
+npm run db:generate
+
+# 数据库迁移 (首次部署用 db:push，有迁移文件后用 db:migrate)
+npm run db:push
+
+# 填充种子数据 (如无新数据可跳过)
+npm run db:seed
+
+# 构建 (生成 standalone 模式的 .next/standalone/server.js)
+npm run build
+
+# 复制静态资源到 standalone 目录 (否则独立服务器找不到 CSS/JS 返回 404)
+cp -r .next/static .next/standalone/.next/static
+
+# 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
+pm2 restart orient-beauty
+```
+
+### 14.4 一键更新脚本
+
+```bash
+cat > /usr/local/bin/deploy.sh << 'EOF'
+#!/bin/bash
+set -e
+
+cd /var/www/orient-beauty
+
+echo "Pulling latest code..."
+git pull origin main
+
+echo "Installing dependencies..."
+npm ci --legacy-peer-deps
+
+echo "Generating Prisma Client..."
+npm run db:generate
+
+echo "Pushing database schema..."
+npm run db:push
+
+echo "Seeding database..."
+npm run db:seed
+
+echo "Building application (standalone mode)..."
+npm run build
+
+echo "Copying static assets into standalone output..."
+cp -r .next/static .next/standalone/.next/static
+
+echo "Restarting application (via standalone server.js)..."
+pm2 restart orient-beauty
+
+echo "Deployment complete!"
+EOF
+
+chmod +x /usr/local/bin/deploy.sh
 ```
 
 ### 13.2 需要配置的 GitHub Secrets
@@ -1031,7 +1135,7 @@ cd /var/www/orient-beauty
 git pull origin main
 
 # 确保 Prisma 可读取环境变量 (prisma.config.ts 会加载此文件)
-cp .env.production .env
+cp .env .env
 
 # 安装依赖 (含构建所需的 devDeps)
 npm ci --legacy-peer-deps
@@ -1068,7 +1172,7 @@ echo "Pulling latest code..."
 git pull origin main
 
 echo "Copying environment variables for Prisma (loaded by prisma.config.ts)..."
-cp .env.production .env
+cp .env .env
 
 echo "Installing dependencies..."
 npm ci --legacy-peer-deps
@@ -1159,7 +1263,7 @@ node -v
 # 检查端口占用
 lsof -i :3000
 
-# 检查环境变量 (.env 和 .env.production 都必须有 DATABASE_URL)
+# 检查环境变量 (确保 .env 包含 DATABASE_URL)
 cd /var/www/orient-beauty && cat .env | grep DATABASE_URL
 ```
 
@@ -1950,7 +2054,7 @@ sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$N
 #### 环境变量
 
 ```bash
-# .env.production (确保以下配置正确)
+# .env (确保以下配置正确)
 NEXTAUTH_SECRET="your-strong-random-secret"   # 用于加密 session token
 NEXTAUTH_URL="https://orientalbeauty.com"      # 必须与部署 URL 一致
 ```

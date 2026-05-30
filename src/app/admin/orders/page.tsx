@@ -13,11 +13,20 @@ const statusColors: Record<string, string> = {
   REFUNDED: "bg-stone/10 text-stone",
 }
 
+async function getOrders() {
+  try {
+    return await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { user: true, items: true },
+    })
+  } catch (error) {
+    console.error("Failed to fetch orders:", error)
+    return []
+  }
+}
+
 export default async function AdminOrdersPage() {
-  const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { user: true, items: true },
-  })
+  const orders = await getOrders()
 
   return (
     <div>

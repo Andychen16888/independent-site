@@ -5,39 +5,48 @@ import Link from "next/link"
 export const dynamic = "force-dynamic"
 
 async function getStats() {
-  const [totalOrders, totalRevenue, totalProducts, totalCustomers, totalAffiliates, recentOrders, topProducts] =
-    await Promise.all([
-      prisma.order.count(),
-      prisma.order.aggregate({ _sum: { total: true }, where: { paymentStatus: "PAID" } }),
-      prisma.product.count({ where: { status: "ACTIVE" } }),
-      prisma.user.count({ where: { role: "USER" } }),
-      prisma.affiliate.count({ where: { status: "APPROVED" } }),
-      prisma.order.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: { user: true },
-      }),
-      prisma.orderItem.groupBy({
-        by: ["productId", "productName"],
-        _sum: { quantity: true, totalPrice: true },
-        orderBy: { _sum: { quantity: "desc" } },
-        take: 5,
-      }),
-    ])
+  try {
+    const [totalOrders, totalRevenue, totalProducts, totalCustomers, totalAffiliates, recentOrders, topProducts] =
+      await Promise.all([
+        prisma.order.count(),
+        prisma.order.aggregate({ _sum: { total: true }, where: { paymentStatus: "PAID" } }),
+        prisma.product.count({ where: { status: "ACTIVE" } }),
+        prisma.user.count({ where: { role: "USER" } }),
+        prisma.affiliate.count({ where: { status: "APPROVED" } }),
+        prisma.order.findMany({
+          take: 5,
+          orderBy: { createdAt: "desc" },
+          include: { user: true },
+        }),
+        prisma.orderItem.groupBy({
+          by: ["productId", "productName"],
+          _sum: { quantity: true, totalPrice: true },
+          orderBy: { _sum: { quantity: "desc" } },
+          take: 5,
+        }),
+      ])
 
-  const prevMonth = new Date()
-  prevMonth.setMonth(prevMonth.getMonth() - 1)
-  const prevOrders = await prisma.order.count({ where: { createdAt: { gte: prevMonth } } })
+    const prevMonth = new Date()
+    prevMonth.setMonth(prevMonth.getMonth() - 1)
+    const prevOrders = await prisma.order.count({ where: { createdAt: { gte: prevMonth } } })
 
-  return {
-    totalRevenue: totalRevenue._sum.total || 0,
-    totalOrders,
-    totalProducts,
-    totalCustomers,
-    totalAffiliates,
-    recentOrders,
-    topProducts,
-    prevOrders,
+    return {
+      totalRevenue: totalRevenue._sum.total || 0,
+      totalOrders,
+      totalProducts,
+      totalCustomers,
+      totalAffiliates,
+      recentOrders,
+      topProducts,
+      prevOrders,
+    }
+  } catch (error) {
+    console.error("Failed to fetch admin stats:", error)
+    return {
+      totalRevenue: 0, totalOrders: 0, totalProducts: 0,
+      totalCustomers: 0, totalAffiliates: 0,
+      recentOrders: [], topProducts: [], prevOrders: 0,
+    }
   }
 }
 

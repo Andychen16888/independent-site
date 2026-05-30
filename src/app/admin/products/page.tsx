@@ -4,11 +4,20 @@ import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
+async function getProducts() {
+  try {
+    return await prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { images: { where: { isPrimary: true }, take: 1 } },
+    })
+  } catch (error) {
+    console.error("Failed to fetch products:", error)
+    return []
+  }
+}
+
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { images: { where: { isPrimary: true }, take: 1 } },
-  })
+  const products = await getProducts()
 
   return (
     <div>

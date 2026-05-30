@@ -4,11 +4,20 @@ import { formatDateShort, truncate } from "@/lib/utils/format"
 
 export const dynamic = "force-dynamic"
 
+async function getPosts() {
+  try {
+    return await prisma.blogPost.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { comments: true } } },
+    })
+  } catch (error) {
+    console.error("Failed to fetch blog posts:", error)
+    return []
+  }
+}
+
 export default async function AdminBlogPage() {
-  const posts = await prisma.blogPost.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { comments: true } } },
-  })
+  const posts = await getPosts()
 
   return (
     <div>

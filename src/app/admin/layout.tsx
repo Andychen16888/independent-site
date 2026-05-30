@@ -8,8 +8,17 @@ export const metadata: Metadata = {
   robots: "noindex, nofollow",
 }
 
+async function getSession() {
+  try {
+    return await getServerAuthSession()
+  } catch (error) {
+    console.error("Failed to get auth session:", error)
+    return null
+  }
+}
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerAuthSession()
+  const session = await getSession()
   if (!session?.user) redirect("/auth/signin")
   if ((session.user as any).role !== "ADMIN") redirect("/")
 

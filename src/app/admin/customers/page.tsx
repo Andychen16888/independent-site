@@ -3,11 +3,20 @@ import { formatDateShort } from "@/lib/utils/format"
 
 export const dynamic = "force-dynamic"
 
+async function getCustomers() {
+  try {
+    return await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { orders: true, reviews: true } } },
+    })
+  } catch (error) {
+    console.error("Failed to fetch customers:", error)
+    return []
+  }
+}
+
 export default async function AdminCustomersPage() {
-  const customers = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { orders: true, reviews: true } } },
-  })
+  const customers = await getCustomers()
 
   return (
     <div>

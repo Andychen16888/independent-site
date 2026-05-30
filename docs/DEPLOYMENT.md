@@ -214,7 +214,7 @@ sudo systemctl restart postgresql
 cd /var/www
 sudo mkdir -p orient-beauty
 sudo chown deploy:deploy orient-beauty
-git clone https://github.com/your-org/orient-beauty.git .
+git clone https://github.com/Andychen16888/orient-beauty.git .
 # 或使用 rsync 从本地推送
 # rsync -avz --exclude 'node_modules' --exclude '.next' --exclude '.env' ./ orient-beauty/
 

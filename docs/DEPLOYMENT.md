@@ -355,10 +355,14 @@ NODE_ENV=production node .next/standalone/server.js
 
 ## 4. 部署方式二：Docker 部署
 
-### 4.1 构建镜像
+### 4.1 获取代码并构建镜像
 
 ```bash
-cd /var/www/orient-beauty
+# 首次部署先克隆代码
+cd /var/www
+git clone https://github.com/Andychen16888/orient-beauty.git
+sudo chown -R deploy:deploy orient-beauty
+cd orient-beauty
 
 # 创建 .dockerignore
 cat > .dockerignore << EOF

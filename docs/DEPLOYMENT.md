@@ -576,7 +576,8 @@ http {
 ### 6.1 使用 Let's Encrypt
 
 ```bash
-# 安装 Certbot
+# 更新软件源并安装 Certbot
+sudo apt update
 sudo apt install -y certbot python3-certbot-nginx
 
 # 获取证书 (替换 your-domain.com 为实际域名)

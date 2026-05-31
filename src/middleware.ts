@@ -3,7 +3,13 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
   try {
-    const token = await getToken({ req, secureCookie: false })
+    // Try both cookie names — HTTP sites use next-auth.session-token,
+    // but NEXTAUTH_URL=https:// forces __Secure-next-auth.session-token
+    let token = await getToken({ req, secureCookie: false })
+    if (!token) {
+      token = await getToken({ req, secureCookie: true })
+    }
+
     const path = req.nextUrl.pathname
 
     if (!path.startsWith("/admin")) return NextResponse.next()

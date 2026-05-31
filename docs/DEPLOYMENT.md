@@ -315,11 +315,9 @@ curl http://localhost:3000/api/health
 # 4. 测试首页 HTML 响应
 curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
 # 应返回 HTTP 200
-
-# 5. 从外部访问 (替换为你的域名)
-curl -I https://hhbtec.com
-# 应返回 HTTP/1.1 200 OK
 ```
+
+> **外部访问验证**: 完成 [Nginx 配置](#5-nginx-配置) 和 [SSL 证书](#6-ssl-证书) 后，在 [§6.3 验证 SSL 与外部访问](#63-验证-ssl-与外部访问) 中通过域名测试。
 
 ### 3.6 启动失败排查
 
@@ -665,6 +663,34 @@ sudo nginx -t && sudo systemctl reload nginx
 # 访问以下 URL 测试 SSL 配置 (替换 your-domain.com 为实际域名)
 # https://www.ssllabs.com/ssltest/analyze.html?d=your-domain.com
 # 目标: A 或 A+ 评分
+```
+
+### 6.3 验证 SSL 与外部访问
+
+> **前置条件**: Nginx 已配置并启用（§5），SSL 证书已申请（§6.1）。如未完成，请先完成上述步骤。
+
+```bash
+# 1. 测试 Nginx 配置文件语法
+sudo nginx -t
+# 应输出: syntax is ok / test is successful
+
+# 2. 重载 Nginx 使配置生效
+sudo systemctl reload nginx
+
+# 3. 从外部访问 (替换为你的域名)
+curl -I https://hhbtec.com
+# 应返回 HTTP/1.1 200 OK
+
+# 4. 验证 HTTP 自动跳转 HTTPS
+curl -I http://hhbtec.com
+# 应返回 301 Moved Permanently → Location: https://hhbtec.com/
+
+# 5. 测试 API 健康检查 (通过 Nginx)
+curl -I https://hhbtec.com/api/health
+# 应返回 HTTP/1.1 200 OK
+
+# 6. 检查 SSL 证书信息
+echo | openssl s_client -connect hhbtec.com:443 -servername hhbtec.com 2>/dev/null | openssl x509 -noout -dates
 ```
 
 ---

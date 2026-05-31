@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
-import { getServerAuthSession } from "@/lib/auth/get-server-session"
+import { getToken } from "next-auth/jwt"
+import { cookies } from "next/headers"
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerAuthSession()
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    const token = await getToken({ req: { cookies: await cookies() } as any })
+    if (!token || token.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -35,3 +36,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 })
   }
 }
+
+

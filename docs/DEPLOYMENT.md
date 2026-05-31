@@ -252,7 +252,7 @@ npm run db:generate
 # 构建 Next.js (standalone 模式)
 # 如果服务器内存小于 4GB，构建可能因内存不足失败，脚本已自动增加内存限制
 # 构建后会自动将静态资源复制到 standalone 输出目录
-npm run build
+npm run build:server
 ```
 
 > **说明**:  
@@ -260,7 +260,7 @@ npm run build
 > - Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`（含 `server.js`）。**运行时必须使用 `node .next/standalone/server.js`，不能用 `next start`**。  
 > - PM2 配置 (`ecosystem.config.js`) 已设置为直接运行 `server.js`。  
 > - 构建时自动设置 `NODE_OPTIONS="--max-old-space-size=4096"` 以避免小内存服务器（< 4GB）上 OOM 崩溃。如服务器内存 ≥ 4GB，可手动减小此值。  
-> - `npm run build` 已包含将 `.next/static` 复制到 `.next/standalone/.next/static/` 的步骤，无需手动执行。
+> - `npm run build:server` 已包含将 `.next/static` 复制到 `.next/standalone/.next/static/` 的步骤，无需手动执行。
 
 ### 3.3 数据库迁移
 
@@ -958,7 +958,7 @@ jobs:
         run: npm run db:generate
 
       - name: Build
-        run: npm run build
+        run: npm run build:server
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -984,7 +984,7 @@ jobs:
             npm run db:generate
             npm run db:push
             npm run db:seed
-            npm run build
+            npm run build:server
             pm2 restart orient-beauty
 ```
 EOF
@@ -1062,7 +1062,7 @@ npm run db:push
 npm run db:seed
 
 # 构建 (生成 standalone 模式的 .next/standalone/server.js，自动复制静态资源)
-npm run build
+npm run build:server
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
@@ -1093,7 +1093,7 @@ echo "Seeding database..."
 npm run db:seed
 
 echo "Building application (standalone mode)..."
-npm run build
+npm run build:server
 
 echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty
@@ -1180,7 +1180,7 @@ npm run db:push
 npm run db:seed
 
 # 构建 (生成 standalone 模式的 .next/standalone/server.js，自动复制静态资源)
-npm run build
+npm run build:server
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
@@ -1214,7 +1214,7 @@ echo "Seeding database..."
 npm run db:seed
 
 echo "Building application (standalone mode)..."
-npm run build
+npm run build:server
 
 echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty
@@ -1346,7 +1346,7 @@ pm2 restart orient-beauty --max-memory-restart 1G
 
 # 构建时内存不足 (JavaScript heap out of memory)
 # 项目已内置 NODE_OPTIONS="--max-old-space-size=4096"，如果仍然 OOM：
-NODE_OPTIONS="--max-old-space-size=6144" npm run build
+NODE_OPTIONS="--max-old-space-size=6144" npm run build:server
 
 # 创建 swap (如果系统没有)
 sudo fallocate -l 2G /swapfile

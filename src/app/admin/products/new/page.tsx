@@ -161,7 +161,8 @@ export default function NewProductPage() {
           >
             <option value="ACTIVE">Active</option>
             <option value="DRAFT">Draft</option>
-            <option value="DISCONTINUED">Discontinued</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="ARCHIVED">Archived</option>
           </select>
         </div>
 

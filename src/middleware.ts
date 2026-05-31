@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
   try {
-    const token = await getToken({ req })
+    const token = await getToken({ req, secureCookie: false })
     const path = req.nextUrl.pathname
 
     if (!path.startsWith("/admin")) return NextResponse.next()

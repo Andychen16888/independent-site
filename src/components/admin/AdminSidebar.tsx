@@ -26,6 +26,10 @@ const navItems = [
 export function AdminSidebar() {
   const pathname = usePathname()
 
+  if (typeof window === "undefined") {
+    console.log("[AdminSidebar] SSR render, pathname:", pathname)
+  }
+
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-charcoal text-ivory flex flex-col z-50">
       <div className="p-6 border-b border-white/10">

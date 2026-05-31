@@ -28,7 +28,9 @@ export default function SignInPage() {
       setError("Invalid email or password")
       setIsLoading(false)
     } else {
-      router.push("/account")
+      const params = new URLSearchParams(window.location.search)
+      const callbackUrl = params.get("callbackUrl") || "/account"
+      router.push(callbackUrl)
       router.refresh()
     }
   }
@@ -83,7 +85,11 @@ export default function SignInPage() {
 
             <div className="space-y-3">
               <button
-                onClick={() => signIn("google", { callbackUrl: "/account" })}
+                onClick={() => {
+                  const params = new URLSearchParams(window.location.search)
+                  const cb = params.get("callbackUrl") || "/account"
+                  signIn("google", { callbackUrl: cb })
+                }}
                 className="w-full px-4 py-3 border border-charcoal/20 text-sm hover:bg-mist transition-colors flex items-center justify-center gap-3"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">

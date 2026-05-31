@@ -4,13 +4,17 @@ import { NextRequest, NextResponse } from "next/server"
 export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req })
+    const path = req.nextUrl.pathname
+
+    if (!path.startsWith("/admin")) return NextResponse.next()
+
     if (!token) {
-      return NextResponse.redirect(new URL("/auth/signin", req.url))
+      const callbackUrl = encodeURIComponent(path)
+      return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${callbackUrl}`, req.url))
     }
 
-    const path = req.nextUrl.pathname
-    if (path.startsWith("/admin") && token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/auth/signin", req.url))
+    if (token.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/account", req.url))
     }
   } catch {
     return NextResponse.redirect(new URL("/auth/signin", req.url))

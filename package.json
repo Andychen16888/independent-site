@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-"build:server": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build && mkdir -p .next/standalone/.next/static && cp -r .next/static/. .next/standalone/.next/static/",
+    "build": "next build && node scripts/copy-standalone-static.js",
+"build:server": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build && node scripts/copy-standalone-static.js",
     "start": "next start",
     "lint": "eslint",
 "db:generate": "prisma generate",

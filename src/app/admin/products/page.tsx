@@ -6,18 +6,19 @@ export const dynamic = "force-dynamic"
 
 async function getProducts() {
   try {
-    return await prisma.product.findMany({
+    return { products: await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
       include: { images: { where: { isPrimary: true }, take: 1 } },
-    })
+    }), error: null as string | null }
   } catch (error) {
     console.error("Failed to fetch products:", error)
-    return []
+    const message = error instanceof Error ? error.message : "Unknown error"
+    return { products: [], error: message }
   }
 }
 
 export default async function AdminProductsPage() {
-  const products = await getProducts()
+  const { products, error } = await getProducts()
 
   return (
     <div>
@@ -29,9 +30,18 @@ export default async function AdminProductsPage() {
         <Link href="/admin/products/new" className="btn-primary text-xs">Add Product</Link>
       </div>
 
+      {error && (
+        <div className="bg-rosegold/10 border border-rosegold/30 p-4 mb-6 rounded text-sm text-rosegold">
+          <strong>Database error:</strong> {error}
+        </div>
+      )}
+
       {products.length === 0 ? (
         <div className="bg-white border border-mist p-12 text-center text-sm text-stone">
-          No products yet. Click &ldquo;Add Product&rdquo; to get started.
+          {error
+            ? "Unable to load products due to a database error. Check the message above and verify your database connection."
+            : "No products yet. Click &ldquo;Add Product&rdquo; to get started."
+          }
         </div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">

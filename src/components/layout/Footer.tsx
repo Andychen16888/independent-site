@@ -20,8 +20,6 @@ const footerLinks = {
     links: [
       { name: "Our Story", href: "/about" },
       { name: "Journal", href: "/blog" },
-      { name: "Sustainability", href: "/sustainability" },
-      { name: "Press", href: "/press" },
     ],
   },
   support: {
@@ -108,7 +106,6 @@ export function Footer() {
           <div className="flex items-center gap-6 text-xs text-stone">
             <Link href="/privacy" className="hover:text-ivory transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-ivory transition-colors">Terms of Service</Link>
-            <Link href="/accessibility" className="hover:text-ivory transition-colors">Accessibility</Link>
           </div>
         </div>
       </Container>

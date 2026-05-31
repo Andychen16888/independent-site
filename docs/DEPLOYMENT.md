@@ -251,11 +251,8 @@ npm run db:generate
 
 # 构建 Next.js (standalone 模式)
 # 如果服务器内存小于 4GB，构建可能因内存不足失败，脚本已自动增加内存限制
+# 构建后会自动将静态资源复制到 standalone 输出目录
 npm run build
-
-# 重要: 将静态资源复制到 standalone 输出目录
-# 否则独立服务器会 404 找不到 CSS 和 JS 文件
-cp -r .next/static .next/standalone/.next/static
 ```
 
 > **说明**:  
@@ -263,7 +260,7 @@ cp -r .next/static .next/standalone/.next/static
 > - Next.js 的 `output: "standalone"` 会在构建后自动提取仅运行所需的文件到 `.next/standalone/`（含 `server.js`）。**运行时必须使用 `node .next/standalone/server.js`，不能用 `next start`**。  
 > - PM2 配置 (`ecosystem.config.js`) 已设置为直接运行 `server.js`。  
 > - 构建时自动设置 `NODE_OPTIONS="--max-old-space-size=4096"` 以避免小内存服务器（< 4GB）上 OOM 崩溃。如服务器内存 ≥ 4GB，可手动减小此值。  
-> - 如需进一步降低内存使用，可创建 swap：参考 [16.5 内存不足](#165-内存不足)。
+> - `npm run build` 已包含将 `.next/static` 复制到 `.next/standalone/.next/static/` 的步骤，无需手动执行。
 
 ### 3.3 数据库迁移
 
@@ -1064,11 +1061,8 @@ npm run db:push
 # 填充种子数据 (如无新数据可跳过)
 npm run db:seed
 
-# 构建 (生成 standalone 模式的 .next/standalone/server.js)
+# 构建 (生成 standalone 模式的 .next/standalone/server.js，自动复制静态资源)
 npm run build
-
-# 复制静态资源到 standalone 目录 (否则独立服务器找不到 CSS/JS 返回 404)
-cp -r .next/static .next/standalone/.next/static
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
@@ -1100,9 +1094,6 @@ npm run db:seed
 
 echo "Building application (standalone mode)..."
 npm run build
-
-echo "Copying static assets into standalone output..."
-cp -r .next/static .next/standalone/.next/static
 
 echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty
@@ -1188,11 +1179,8 @@ npm run db:push
 # 填充种子数据 (如无新数据可跳过)
 npm run db:seed
 
-# 构建 (生成 standalone 模式的 .next/standalone/server.js)
+# 构建 (生成 standalone 模式的 .next/standalone/server.js，自动复制静态资源)
 npm run build
-
-# 复制静态资源到 standalone 目录 (否则独立服务器找不到 CSS/JS 返回 404)
-cp -r .next/static .next/standalone/.next/static
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
 pm2 restart orient-beauty
@@ -1227,9 +1215,6 @@ npm run db:seed
 
 echo "Building application (standalone mode)..."
 npm run build
-
-echo "Copying static assets into standalone output..."
-cp -r .next/static .next/standalone/.next/static
 
 echo "Restarting application (via standalone server.js)..."
 pm2 restart orient-beauty

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, description, unitPrice, originalPrice, stock, status, sku, slug } = body
+    const { name, description, unitPrice, originalPrice, stock, status, sku, slug, images, categoryIds } = body
 
     if (!name || !description || unitPrice === undefined) {
       return NextResponse.json({ error: "Name, description, and unitPrice are required" }, { status: 400 })
@@ -27,6 +27,27 @@ export async function POST(req: NextRequest) {
         originalPrice: originalPrice ? parseFloat(originalPrice) : null,
         stock: stock ? parseInt(stock, 10) : 0,
         status: status || "ACTIVE",
+        ...(images && images.length > 0 && {
+          images: {
+            create: images.map((img: any, i: number) => ({
+              url: img.url,
+              alt: img.alt || "",
+              sortOrder: i,
+              isPrimary: i === 0,
+            })),
+          },
+        }),
+        ...(categoryIds && categoryIds.length > 0 && {
+          categories: {
+            create: categoryIds.map((categoryId: string) => ({
+              categoryId,
+            })),
+          },
+        }),
+      },
+      include: {
+        images: true,
+        categories: { include: { category: true } },
       },
     })
 

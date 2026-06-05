@@ -1,13 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { slugify } from "@/lib/utils/format"
+
+interface ImageItem {
+  url: string
+  alt: string
+  isPrimary: boolean
+}
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
 
 export default function NewProductPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
+  const [images, setImages] = useState<ImageItem[]>([])
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -19,6 +35,21 @@ export default function NewProductPage() {
     status: "ACTIVE",
   })
 
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/admin/categories")
+        if (res.ok) {
+          const data = await res.json()
+          setCategories(data.categories)
+        }
+      } catch {
+        // silently fail
+      }
+    }
+    loadCategories()
+  }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({
@@ -28,16 +59,91 @@ export default function NewProductPage() {
     }))
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!res.ok) throw new Error("Upload failed")
+
+      const data = await res.json()
+      setImages((prev) => [
+        ...prev,
+        { url: data.url, alt: "", isPrimary: prev.length === 0 },
+      ])
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setUploading(false)
+      e.target.value = ""
+    }
+  }
+
+  const handleImageUrlAdd = () => {
+    setImages((prev) => [
+      ...prev,
+      { url: "", alt: "", isPrimary: prev.length === 0 },
+    ])
+  }
+
+  const handleImageChange = (index: number, field: keyof ImageItem, value: string | boolean) => {
+    setImages((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+
+      if (field === "isPrimary" && value === true) {
+        for (let i = 0; i < next.length; i++) {
+          if (i !== index) next[i].isPrimary = false
+        }
+      }
+
+      return next
+    })
+  }
+
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => {
+      const next = prev.filter((_, i) => i !== index)
+      if (prev[index].isPrimary && next.length > 0) {
+        next[0].isPrimary = true
+      }
+      return next
+    })
+  }
+
+  const handleCategoryToggle = (categoryId: string) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    )
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setError("")
 
+    const validImages = images.filter((img) => img.url.trim() !== "")
+
     try {
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          images: validImages,
+          categoryIds: selectedCategoryIds,
+        }),
       })
 
       if (!res.ok) {
@@ -164,6 +270,98 @@ export default function NewProductPage() {
             <option value="INACTIVE">Inactive</option>
             <option value="ARCHIVED">Archived</option>
           </select>
+        </div>
+
+        <div className="border-t border-mist pt-6">
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-3">Product Images</label>
+
+          {images.length > 0 && (
+            <div className="space-y-3 mb-4">
+              {images.map((img, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-ivory/50 border border-mist">
+                  {img.url && (
+                    <img src={img.url} alt="" className="w-16 h-16 object-cover border border-mist flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Image URL"
+                      value={img.url}
+                      onChange={(e) => handleImageChange(index, "url", e.target.value)}
+                      className="w-full border border-mist bg-white px-3 py-1.5 text-sm outline-none focus:border-charcoal transition-colors"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Alt text (optional)"
+                      value={img.alt}
+                      onChange={(e) => handleImageChange(index, "alt", e.target.value)}
+                      className="w-full border border-mist bg-white px-3 py-1.5 text-sm outline-none focus:border-charcoal transition-colors"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <label className="flex items-center gap-1 text-xs cursor-pointer">
+                      <input
+                        type="radio"
+                        name="primaryImage"
+                        checked={img.isPrimary}
+                        onChange={() => handleImageChange(index, "isPrimary", true)}
+                        className="w-3 h-3"
+                      />
+                      Primary
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="text-xs text-rosegold hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <label className="btn-outline text-xs cursor-pointer inline-flex items-center gap-2">
+              {uploading ? "Uploading..." : "Upload Image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={handleImageUrlAdd}
+              className="text-xs text-stone hover:text-charcoal transition-colors"
+            >
+              + Add URL
+            </button>
+          </div>
+        </div>
+
+        <div className="border-t border-mist pt-6">
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-3">Categories</label>
+          {categories.length === 0 ? (
+            <p className="text-sm text-stone">No categories available. Create categories first.</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map((cat) => (
+                <label key={cat.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategoryIds.includes(cat.id)}
+                    onChange={() => handleCategoryToggle(cat.id)}
+                    className="w-4 h-4"
+                  />
+                  {cat.name}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-mist">

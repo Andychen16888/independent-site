@@ -1,42 +1,38 @@
 import { notFound } from "next/navigation"
+import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema, productGroupSchema } from "@/lib/seo/structured-data"
-import { mockProducts } from "@/lib/mock/products"
 import type { Metadata } from "next"
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
-const categories = [
-  {
-    slug: "beauty",
+const categoryMeta: Record<string, { name: string; title: string; subtitle: string; description: string; style: string; ogImage: string }> = {
+  beauty: {
     name: "Beauty",
     title: "Peptide Skincare",
     subtitle: "Advanced formulations rooted in Eastern botanical wisdom",
     description: "Discover our premium peptide-infused skincare collection. Each product combines cutting-edge biotechnology with traditional Asian botanicals for radiant, healthy skin. From hydrating serums to brightening essences, our beauty range is designed for the modern woman who values clean, effective skincare.",
     style: "minimal-white",
     ogImage: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1200&q=80",
-    productSlugs: ["peptide-hydration-serum", "rice-bran-peptide-mask", "ginseng-peptide-eye-cream", "vitamin-c-brightening-essence"] as const,
   },
-  {
-    slug: "handmade-living",
+  "handmade-living": {
     name: "Handmade Living",
     title: "Artisanal Home Objects",
     subtitle: "Handcrafted pieces that tell a story",
     description: "Curated objects from master artisans across Asia. Each piece brings warmth, tradition, and intention into your home. Discover hand-thrown ceramics, natural fiber textiles, and mindful home accessories that transform your space into a sanctuary.",
     style: "warm-wood",
     ogImage: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200&q=80",
-    productSlugs: ["raku-teacup-set", "celadon-lotus-vase", "bamboo-incense-holder", "mulberry-silk-eye-mask"] as const,
   },
-]
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const category = categories.find((c) => c.slug === slug)
+  const category = categoryMeta[slug]
   if (!category) return {}
   return genMeta({
     title: `${category.title} | ${category.name}`,
@@ -49,12 +45,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params
-  const category = categories.find((c) => c.slug === slug)
+  const category = categoryMeta[slug]
   if (!category) notFound()
 
-  const products = mockProducts.filter((p) =>
-    (category.productSlugs as readonly string[]).includes(p.slug)
-  )
+  const categoryRecord = await prisma.category.findFirst({
+    where: { slug, isActive: true },
+  })
+
+  const products = categoryRecord
+    ? (await prisma.product.findMany({
+        where: {
+          status: "ACTIVE",
+          categories: { some: { categoryId: categoryRecord.id } },
+        },
+        orderBy: { createdAt: "desc" },
+        include: { images: { take: 1 } },
+      })).map((p) => ({
+        ...p,
+        unitPrice: Number(p.unitPrice),
+        originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+      }))
+    : []
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
   const bgClass = category.style === "warm-wood" ? "bg-cream" : "bg-ivory"
@@ -62,17 +73,17 @@ export default async function CategoryPage({ params }: Props) {
   const schemas = [
     breadcrumbSchema([
       { name: "Home", url: baseUrl },
-      { name: category.name, url: `${baseUrl}/categories/${category.slug}` },
+      { name: category.name, url: `${baseUrl}/categories/${slug}` },
     ]),
     productGroupSchema({
       name: category.title,
       description: category.description,
-      url: `${baseUrl}/categories/${category.slug}`,
+      url: `${baseUrl}/categories/${slug}`,
       image: category.ogImage,
       products: products.map((p) => ({
         name: p.name,
         url: `${baseUrl}/products/${p.slug}`,
-        price: p.unitPrice,
+        price: Number(p.unitPrice),
         image: p.images?.[0]?.url,
         sku: p.slug,
       })),

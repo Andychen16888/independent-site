@@ -1,10 +1,10 @@
+import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductFilters } from "@/components/product/ProductFilters"
 import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema } from "@/lib/seo/structured-data"
-import { filterMockProducts } from "@/lib/mock/products"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = generateMetadata({
@@ -19,7 +19,51 @@ interface Props {
 
 export default async function ProductsPage({ searchParams }: Props) {
   const { sort, price, q } = await searchParams
-  const products = filterMockProducts({ sort, price, q })
+
+  const where: any = { status: "ACTIVE" }
+
+  if (q) {
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ]
+  }
+
+  if (price) {
+    const [minStr, maxStr] = price.split("-")
+    const min = Number(minStr)
+    const max = maxStr ? Number(maxStr) : Infinity
+    where.unitPrice = { gte: min, ...(max !== Infinity ? { lte: max } : {}) }
+  }
+
+  let orderBy: any = { createdAt: "desc" }
+  if (sort) {
+    switch (sort) {
+      case "price-asc":
+        orderBy = { unitPrice: "asc" }
+        break
+      case "price-desc":
+        orderBy = { unitPrice: "desc" }
+        break
+      case "newest":
+        orderBy = { createdAt: "desc" }
+        break
+      case "bestseller":
+        orderBy = { isBestSeller: "desc" }
+        break
+    }
+  }
+
+  const products = (await prisma.product.findMany({
+    where,
+    orderBy,
+    include: { images: { take: 1 } },
+  })).map((p) => ({
+    ...p,
+    unitPrice: Number(p.unitPrice),
+    originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+  }))
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
 
   const schemas = [

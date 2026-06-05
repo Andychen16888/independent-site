@@ -1,22 +1,29 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useRef } from "react"
 import Link from "next/link"
 import { Container } from "@/components/ui/Container"
 import { ProductCard } from "./ProductCard"
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi2"
-import { mockProducts, filterByParam } from "@/lib/mock/products"
 
 interface ProductCarouselProps {
   title: string
   subtitle?: string
-  filter?: "bestseller" | "newest" | "featured"
-  categorySlug?: string
+  products: {
+    id: string
+    name: string
+    slug: string
+    unitPrice: number
+    originalPrice?: number | null
+    stock: number
+    isNew?: boolean
+    isBestSeller?: boolean
+    images?: { url: string; alt?: string | null }[]
+  }[]
 }
 
-export function ProductCarousel({ title, subtitle, filter }: ProductCarouselProps) {
+export function ProductCarousel({ title, subtitle, products }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const products = useMemo(() => filterByParam(mockProducts, filter), [filter])
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {

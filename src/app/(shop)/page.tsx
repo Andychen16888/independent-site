@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/db/prisma"
 import { HeroBanner } from "@/components/home/HeroBanner"
 import { BrandStory } from "@/components/home/BrandStory"
 import { FeaturedCategories } from "@/components/home/FeaturedCategories"
@@ -10,7 +11,18 @@ import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const bestSellers = (await prisma.product.findMany({
+    where: { status: "ACTIVE", isBestSeller: true },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+    include: { images: { take: 1 } },
+  })).map((p) => ({
+    ...p,
+    unitPrice: Number(p.unitPrice),
+    originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+  }))
+
   return (
     <>
       <HeroBanner />
@@ -20,7 +32,7 @@ export default function HomePage() {
       <ProductCarousel
         title="Best Sellers"
         subtitle="Our most-loved products, chosen by you"
-        filter="bestseller"
+        products={bestSellers}
       />
       <HandmadeLiving />
       <Testimonials />

@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata } from "@/lib/seo/generate-metadata"
-import { filterMockProducts } from "@/lib/mock/products"
 
 export const metadata = generateMetadata({
   title: "Search Results",
@@ -15,7 +15,23 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>
 }) {
   const { q } = await searchParams
-  const products = q ? filterMockProducts({ q }) : []
+  const products = q
+    ? (await prisma.product.findMany({
+        where: {
+          status: "ACTIVE",
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+        include: { images: { take: 1 } },
+      })).map((p) => ({
+        ...p,
+        unitPrice: Number(p.unitPrice),
+        originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+      }))
+    : []
 
   return (
     <div className="min-h-screen">

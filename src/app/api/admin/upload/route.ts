@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
-import { cookies } from "next/headers"
 import { writeFile, mkdir } from "fs/promises"
 import path from "path"
 import { v4 as uuidv4 } from "uuid"
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req: { cookies: await cookies() } as any })
+    let token = await getToken({ req, secureCookie: false })
+    if (!token) {
+      token = await getToken({ req, secureCookie: true })
+    }
     if (!token || token.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

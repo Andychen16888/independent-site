@@ -3,8 +3,11 @@ import { prisma } from "@/lib/db/prisma"
 import { getToken } from "next-auth/jwt"
 import { cookies } from "next/headers"
 
-async function checkAdmin() {
-  const token = await getToken({ req: { cookies: await cookies() } as any })
+async function checkAdmin(req: NextRequest) {
+  let token = await getToken({ req, secureCookie: false })
+  if (!token) {
+    token = await getToken({ req, secureCookie: true })
+  }
   if (!token || token.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
@@ -12,7 +15,7 @@ async function checkAdmin() {
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin()
+  const authError = await checkAdmin(req)
   if (authError) return authError
 
   try {
@@ -39,7 +42,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin()
+  const authError = await checkAdmin(req)
   if (authError) return authError
 
   try {
@@ -99,7 +102,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin()
+  const authError = await checkAdmin(req)
   if (authError) return authError
 
   try {

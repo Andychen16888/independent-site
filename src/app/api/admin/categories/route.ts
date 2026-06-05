@@ -1,11 +1,13 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getToken } from "next-auth/jwt"
-import { cookies } from "next/headers"
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req: { cookies: await cookies() } as any })
+    let token = await getToken({ req, secureCookie: false })
+    if (!token) {
+      token = await getToken({ req, secureCookie: true })
+    }
     if (!token || token.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

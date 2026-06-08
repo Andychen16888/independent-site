@@ -419,7 +419,7 @@ server {
     }
 
     location /_next/static/ {
-        proxy_pass http://127.0.0.1:3000;
+        alias /var/www/orient-beauty/.next/static;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
     }
@@ -433,6 +433,8 @@ server {
     }
 }
 ```
+
+> **注意**: `/_next/static/` 使用 `alias` 直接从文件系统读取，而不是通过 `proxy_pass` 代理到 Node.js。这可以避免 `net::ERR_INCOMPLETE_CHUNKED_ENCODING` 错误（Nginx 代理大 JS chunk 文件时连接截断）。
 
 #### 获取 SSL 证书后再添加 HTTPS
 
@@ -483,9 +485,9 @@ server {
     access_log /var/log/nginx/orient-beauty-access.log;
     error_log /var/log/nginx/orient-beauty-error.log;
 
-    # 静态资源缓存
+    # 静态资源缓存（直接读文件系统，避免代理大文件时的连接截断）
     location /_next/static/ {
-        proxy_pass http://127.0.0.1:3000;
+        alias /var/www/orient-beauty/.next/static;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
     }

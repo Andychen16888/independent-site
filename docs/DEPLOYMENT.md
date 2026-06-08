@@ -422,11 +422,18 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # 直接读文件系统，避免代理大 JS 文件时的连接截断
+    # 静态资源（优先读本地文件系统，找不到时降级到 Node 代理）
     location /_next/static/ {
-        alias /var/www/orient-beauty/.next/static;
+        try_files $uri @nextjs;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
+    }
+
+    location @nextjs {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 
     location /api/ {
@@ -515,6 +522,21 @@ server {
         add_header Cache-Control "public, max-age=2592000";
     }
 
+    # 上传文件（优先读项目根 uploads/，其次 public/uploads/，找不到回退 Node）
+    location /uploads/ {
+        root /var/www/orient-beauty;
+        try_files $uri /public$uri @fallback_uploads;
+        expires 7d;
+        add_header Cache-Control "public, max-age=604800";
+    }
+
+    location @fallback_uploads {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
     # API 请求
     location /api/ {
         proxy_pass http://127.0.0.1:3000;
@@ -545,8 +567,14 @@ server {
 
 ### 5.2 启用站点
 
+> **快捷方式**: 仓库中的 `orient-beauty.nginx.conf` 已包含完整的 `server` 块配置（不含 `events`/`http`），可直接复制使用：
+> ```bash
+> sudo cp /var/www/orient-beauty/orient-beauty.nginx.conf /etc/nginx/sites-available/orient-beauty
+> sudo sed -i 's/your-domain.com/hhbtec.com/g' /etc/nginx/sites-available/orient-beauty
+> ```
+
 ```bash
-sudo ln -s /etc/nginx/sites-available/orient-beauty /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/orient-beauty /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```

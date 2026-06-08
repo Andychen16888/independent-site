@@ -30,19 +30,17 @@ export async function sendEmail({
   subject: string
   html: string
 }) {
-  try {
-    const t = getTransporter()
-    if (!t) return
-
-    await t.sendMail({
-      from: process.env.SMTP_FROM || `"Oriental Beauty" <${process.env.SMTP_USER}>`,
-      to,
-      subject,
-      html,
-    })
-  } catch (error) {
-    console.error("Failed to send email:", error)
+  const t = getTransporter()
+  if (!t) {
+    throw new Error("SMTP not configured — set SMTP_HOST, SMTP_USER, and SMTP_PASS in .env")
   }
+
+  await t.sendMail({
+    from: process.env.SMTP_FROM || `"Oriental Beauty" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    html,
+  })
 }
 
 export async function sendOrderConfirmationEmail(

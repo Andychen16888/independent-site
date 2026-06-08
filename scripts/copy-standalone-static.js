@@ -10,8 +10,20 @@ if (!fs.existsSync(src)) {
   process.exit(1)
 }
 
+// Remove dest first to ensure clean copy
+if (fs.existsSync(dest)) {
+  fs.rmSync(dest, { recursive: true, force: true })
+}
+
 fs.mkdirSync(dest, { recursive: true })
 fs.cpSync(src, dest, { recursive: true })
 
-const count = fs.readdirSync(dest, { recursive: true }).length
-console.log(`Copied ${count} files from .next/static to .next/standalone/.next/static`)
+const srcFiles = fs.readdirSync(src, { recursive: true }).length
+const destFiles = fs.readdirSync(dest, { recursive: true }).length
+
+console.log(`Copied ${destFiles} files from .next/static to .next/standalone/.next/static`)
+
+if (srcFiles !== destFiles) {
+  console.error(`ERROR: File count mismatch! Source: ${srcFiles}, Dest: ${destFiles}`)
+  process.exit(1)
+}

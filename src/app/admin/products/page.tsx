@@ -53,6 +53,7 @@ export default async function AdminProductsPage() {
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Price</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Stock</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -65,9 +66,6 @@ export default async function AdminProductsPage() {
                       )}
                       <div className="min-w-0">
                         <p className="font-medium truncate max-w-[240px]">{product.name}</p>
-                        <Link href={`/admin/products/${product.id}`} className="text-[10px] text-sage hover:underline">
-                          Edit
-                        </Link>
                       </div>
                     </div>
                   </td>
@@ -95,6 +93,14 @@ export default async function AdminProductsPage() {
                     }`}>
                       {product.status}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/products/${product.id}`}
+                      className="btn-outline text-[10px] px-3 py-1.5 inline-flex items-center gap-1"
+                    >
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

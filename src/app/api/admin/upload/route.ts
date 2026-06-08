@@ -3,6 +3,9 @@ import { getToken } from "next-auth/jwt"
 import { writeFile, mkdir } from "fs/promises"
 import path from "path"
 import { v4 as uuidv4 } from "uuid"
+import sharp from "sharp"
+
+const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,18 +24,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg"
-    const allowed = ["jpg", "jpeg", "png", "webp", "gif"]
-    if (!allowed.includes(ext)) {
+    if (!ALLOWED_MIMES.includes(file.type)) {
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 })
     }
 
     const buffer = Buffer.from(await file.arrayBuffer())
-    const filename = `${uuidv4()}.${ext}`
+
+    let image: sharp.Sharp
+    let metadata: sharp.Metadata
+    try {
+      image = sharp(buffer)
+      metadata = await image.metadata()
+      if (!metadata.format) {
+        return NextResponse.json({ error: "Invalid image file" }, { status: 400 })
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid image file" }, { status: 400 })
+    }
+
+    const isAnimatedGif = metadata.format === "gif" && (metadata.pages ? metadata.pages > 1 : false)
+
+    let processedBuffer: Buffer
+    if (isAnimatedGif) {
+      processedBuffer = buffer
+    } else {
+      processedBuffer = await image.webp({ quality: 85, effort: 4 }).toBuffer()
+    }
+
+    const filename = isAnimatedGif ? `${uuidv4()}.gif` : `${uuidv4()}.webp`
     const uploadDir = path.join(process.cwd(), "public", "uploads")
 
     await mkdir(uploadDir, { recursive: true })
-    await writeFile(path.join(uploadDir, filename), buffer)
+    await writeFile(path.join(uploadDir, filename), processedBuffer)
 
     return NextResponse.json({ url: `/uploads/${filename}` })
   } catch (error) {

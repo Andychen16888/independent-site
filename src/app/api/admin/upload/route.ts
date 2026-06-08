@@ -52,12 +52,12 @@ export async function POST(req: NextRequest) {
     }
 
     const filename = isAnimatedGif ? `${uuidv4()}.gif` : `${uuidv4()}.webp`
-    const uploadDir = path.join(process.cwd(), "public", "uploads")
+    const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads")
 
     await mkdir(uploadDir, { recursive: true })
     await writeFile(path.join(uploadDir, filename), processedBuffer)
 
-    return NextResponse.json({ url: `/uploads/${filename}` })
+    return NextResponse.json({ url: `/api/uploads/${filename}` })
   } catch (error) {
     console.error("Upload error:", error)
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })

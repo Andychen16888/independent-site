@@ -745,8 +745,14 @@ PAYPAL_API_URL="https://api-m.paypal.com"
 # ========== OpenAI ==========
 OPENAI_API_KEY="sk-..."
 
-# ========== 邮件服务 (Resend) ==========
-RESEND_API_KEY="re_..."
+# ========== Gmail SMTP ==========
+# Gmail 需开启两步验证 + 使用"应用专用密码"
+# 生成地址: https://myaccount.google.com/apppasswords
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-16-char-app-password"
+SMTP_FROM="Oriental Beauty <your-email@gmail.com>"
 
 # ========== 站点配置 ==========
 NEXT_PUBLIC_SITE_URL="https://orientalbeauty.com"
@@ -922,22 +928,29 @@ OPENAI_API_KEY="sk-..."
 
 ## 12. 邮件服务配置
 
-### 12.1 Resend 设置
+### 12.1 Gmail SMTP 设置
 
-1. 注册 [Resend](https://resend.com)
-2. 验证域名
-3. 创建 API Key
-4. 配置 `.env`:
+系统使用 **nodemailer** + Gmail SMTP 发送邮件。
+
+1. **开启两步验证**：访问 https://myaccount.google.com/security → 开启"两步验证"
+2. **生成应用专用密码**：访问 https://myaccount.google.com/apppasswords → 选择"邮件" → 生成 16 位密码
+3. **配置 `.env`**：
 
 ```bash
-RESEND_API_KEY="re_..."
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="填上面生成的16位密码"
+SMTP_FROM="Oriental Beauty <your-email@gmail.com>"
 ```
+
+> 如果使用其他 SMTP 服务商（如 QQ邮箱、Outlook 等），只需修改 `SMTP_HOST` 和 `SMTP_PORT`，代码无需改动。
 
 ### 12.2 邮件模板
 
 系统会自动发送以下邮件：
 
-> **密码重置邮件**需要 `RESEND_API_KEY` 配置正确才能发送。如果 API Key 未配置，忘记密码接口不会报错（防枚举攻击），但用户将收不到邮件。请务必在生产环境配置正确的 `RESEND_API_KEY`。
+> **密码重置邮件**需要 SMTP 配置正确才能发送。如果未配置，忘记密码接口不会报错（防枚举攻击），但用户将收不到邮件。请务必在生产环境配置正确的 SMTP 信息。
 
 
 

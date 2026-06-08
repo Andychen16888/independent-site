@@ -8,11 +8,11 @@
     "build:server": "prisma generate && NODE_OPTIONS=\"--max-old-space-size=4096\" next build && node scripts/copy-standalone-static.js",
     "start": "next start",
     "lint": "eslint",
-"db:generate": "prisma generate",
-"db:push": "prisma db push",
-"db:seed": "prisma db seed",
-"db:migrate": "prisma migrate deploy",
-"db:studio": "prisma studio"
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
@@ -32,7 +32,9 @@
     "marked": "^15.0.7",
     "next": "15.2.4",
     "next-auth": "^4.24.11",
+    "nodemailer": "^8.0.10",
     "openai": "^6.37.0",
+    "prisma": "^6.19.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
@@ -48,7 +50,6 @@
     "tailwindcss": "^4",
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
-    "prisma": "^6.19.3",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

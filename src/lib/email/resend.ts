@@ -1,15 +1,24 @@
-import { Resend } from "resend"
+import nodemailer from "nodemailer"
 
-let resend: Resend | null = null
+let transporter: nodemailer.Transporter | null = null
 
-function getResend() {
-  if (!resend) {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured")
+function getTransporter() {
+  if (!transporter) {
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env
+
+    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+      console.warn("SMTP not configured — emails will not be sent")
+      return null
     }
-    resend = new Resend(process.env.RESEND_API_KEY)
+
+    transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT) || 587,
+      secure: Number(SMTP_PORT) === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+    })
   }
-  return resend
+  return transporter
 }
 
 export async function sendEmail({
@@ -22,9 +31,11 @@ export async function sendEmail({
   html: string
 }) {
   try {
-    const client = getResend()
-    await client.emails.send({
-      from: `Oriental Beauty <noreply@${process.env.RESEND_DOMAIN || "orientalbeauty.com"}>`,
+    const t = getTransporter()
+    if (!t) return
+
+    await t.sendMail({
+      from: process.env.SMTP_FROM || `"Oriental Beauty" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,

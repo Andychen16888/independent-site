@@ -63,9 +63,12 @@ export default function EditProductPage() {
   })
 
   useEffect(() => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 15000)
+
     async function loadProduct() {
       try {
-        const res = await fetch(`/api/admin/products/${id}`)
+        const res = await fetch(`/api/admin/products/${id}`, { signal: controller.signal })
         if (res.status === 404) {
           setNotFound(true)
           return
@@ -99,27 +102,39 @@ export default function EditProductPage() {
           setSelectedCategoryIds(p.categories.map((pc: any) => pc.category.id))
         }
       } catch (err: any) {
-        setError(err.message)
+        if (err.name === "AbortError") {
+          setError("Request timed out. Please try again.")
+        } else {
+          setError(err.message)
+        }
       } finally {
+        clearTimeout(timeout)
         setLoading(false)
       }
     }
     loadProduct()
+    return () => { clearTimeout(timeout); controller.abort() }
   }, [id])
 
   useEffect(() => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+
     async function loadCategories() {
       try {
-        const res = await fetch("/api/admin/categories")
+        const res = await fetch("/api/admin/categories", { signal: controller.signal })
         if (res.ok) {
           const data = await res.json()
           setCategories(data.categories)
         }
       } catch {
         // silently fail
+      } finally {
+        clearTimeout(timeout)
       }
     }
     loadCategories()
+    return () => { clearTimeout(timeout); controller.abort() }
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

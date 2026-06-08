@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getToken } from "next-auth/jwt"
-import { cookies } from "next/headers"
 
 async function checkAdmin(req: NextRequest) {
   let token = await getToken({ req, secureCookie: false })
@@ -25,8 +24,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       include: {
         images: { orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
-        parameters: true,
-        faqs: { orderBy: { sortOrder: "asc" } },
       },
     })
 

@@ -394,13 +394,17 @@ docker compose exec app sh
 
 ### 5.1 主配置
 
-> **注意**: 将下列所有 `your-domain.com` 替换为你的实际域名（如 `hhbtec.com`）。
+> **重要: 不要直接从网页复制** — 从下方代码块复制时，务必点击代码块右上角的"复制"按钮（`📋`），或者只选中 `nginx` 代码块内的内容。不要把 markdown 的代码标记（````nginx` / ````）和行号一起复制进文件。
+>
+> 将下列所有 `your-domain.com` 替换为你的实际域名（如 `hhbtec.com`）。
 
-#### 首次配置（HTTP 仅用于获取 SSL 证书）
+#### 首次配置 — HTTP（仅用于获取 SSL 证书）
 
 ```bash
 sudo nano /etc/nginx/sites-available/orient-beauty
 ```
+
+粘贴以下内容（只复制代码块内的纯文本）：
 
 ```nginx
 server {
@@ -418,6 +422,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # 直接读文件系统，避免代理大 JS 文件时的连接截断
     location /_next/static/ {
         alias /var/www/orient-beauty/.next/static;
         expires 365d;
@@ -434,9 +439,7 @@ server {
 }
 ```
 
-> **注意**: `/_next/static/` 使用 `alias` 直接从文件系统读取，而不是通过 `proxy_pass` 代理到 Node.js。这可以避免 `net::ERR_INCOMPLETE_CHUNKED_ENCODING` 错误（Nginx 代理大 JS chunk 文件时连接截断）。
-
-#### 获取 SSL 证书后再添加 HTTPS
+#### 获取 SSL 证书
 
 ```bash
 # 更新软件源并安装 Certbot
@@ -453,10 +456,17 @@ sudo certbot renew --dry-run
 sudo certbot certificates
 ```
 
-> **注意**: 
-> - 运行 `certbot --nginx` 之前，必须先配置好 HTTP 版 Nginx（见上方），并确保域名 DNS 已解析到服务器 IP。Certbot 会自动修改 Nginx 配置添加 HTTPS 和 SSL 证书路径。
-> - 如果遇到 `ERR_CERT_AUTHORITY_INVALID`，说明你的 Nginx 配置引用了错误的证书路径。执行 `sudo certbot --nginx -d your-domain.com -d www.your-domain.com` 重新申请或修复。
-> - 申请成功后，Nginx 配置中的证书路径会自动更新为 `/etc/letsencrypt/live/your-domain.com/` 下的证书文件。
+> **⚠️ 重要**: `certbot --nginx` 会自动修改你的 Nginx 配置文件，但会移除安全头、`/static/` 等自定义配置。申请成功后，**必须重新编辑配置文件**，补充缺失的部分（见下方最终配置）。
+
+#### 最终完整配置（SSL 证书获取后）
+
+证书申请成功后，重新编辑 Nginx 配置：
+
+```bash
+sudo nano /etc/nginx/sites-available/orient-beauty
+```
+
+粘贴以下**完整配置**（只复制代码块内的纯文本，不要包含外面的 ` ```nginx ` 标记）：
 
 ```nginx
 server {
@@ -469,7 +479,7 @@ server {
     listen 443 ssl http2;
     server_name your-domain.com www.your-domain.com;
 
-    # Certbot 自动添加
+    # Certbot 自动添加（不要修改这部分）
     ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
@@ -485,7 +495,7 @@ server {
     access_log /var/log/nginx/orient-beauty-access.log;
     error_log /var/log/nginx/orient-beauty-error.log;
 
-    # 静态资源缓存（直接读文件系统，避免代理大文件时的连接截断）
+    # 静态资源（直接读文件系统，不走 Node 代理）
     location /_next/static/ {
         alias /var/www/orient-beauty/.next/static;
         expires 365d;

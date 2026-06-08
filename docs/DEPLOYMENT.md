@@ -2,7 +2,7 @@
 
 > 部署环境: Linux VPS (Ubuntu 22.04 LTS)  
 > 技术栈: Next.js 15 + PostgreSQL 16 + Nginx + PM2 + Docker  
-> 最后更新: 2026-05-29  
+> 最后更新: 2026-06-08  
 > 
 > **SEO / GEO / CDN 章节已同步更新于 2026-05-14**
 
@@ -808,8 +808,9 @@ npx prisma studio
 
 > **注意**: 
 > - `prisma.config.ts` 存在时，Prisma 会跳过自动加载 `.env` 的步骤，改为由配置文件手动加载。因此 `.env` 文件必须存在且包含 `DATABASE_URL`。
-> - 始终使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不兼容。
+> - 始终使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不匹配。
 > - 首次部署必须使用 `db:push`（项目不含迁移文件）。`db:migrate` 仅在 `prisma/migrations/` 目录存在迁移文件时才有效。
+> - **2026-06-08 更新**: 新增密码重置功能，`User` 模型增加 `resetToken` 和 `resetTokenExpires` 字段。已有数据库需运行 `npm run db:push` 同步新字段。
 
 ### 8.3 数据库备份
 
@@ -936,11 +937,16 @@ RESEND_API_KEY="re_..."
 
 系统会自动发送以下邮件：
 
+> **密码重置邮件**需要 `RESEND_API_KEY` 配置正确才能发送。如果 API Key 未配置，忘记密码接口不会报错（防枚举攻击），但用户将收不到邮件。请务必在生产环境配置正确的 `RESEND_API_KEY`。
+
+
+
 | 邮件类型 | 触发条件 | 说明 |
 |---------|---------|------|
 | 订单确认 | 下单成功 | 订单详情和预计送达时间 |
 | 发货通知 | 订单发货 | Tracking Number 和物流链接 |
 | 购物车放弃提醒 | 用户加购但未结算 | 24小时后发送提醒 |
+| 密码重置 | 用户在忘记密码页面提交邮箱 | 包含 1 小时有效期的重置链接 |
 | Newsletter | 用户订阅 | 推广邮件 (需用户授权) |
 
 ---
@@ -2130,7 +2136,9 @@ https://orientalbeauty.com/admin
 
   - [ ] 运行 `npm run db:seed` 创建管理员账号（`prisma.config.ts` 会加载 `.env` 中的 `DATABASE_URL`）
 - [ ] 登录 `/admin` 验证管理后台可正常访问
-- [ ] 修改默认管理员密码
+- [ ] 修改默认管理员密码（`/admin/settings` → Change Password）
+- [ ] 验证忘记密码流程：访问 `/auth/forgot-password`，输入管理员邮箱，检查是否收到重置邮件
+- [ ] 验证密码重置链接有效，重置后可正常登录
 - [ ] 确认 `NEXTAUTH_SECRET` 已设置为强随机字符串
 - [ ] 确认 `NEXTAUTH_URL` 为生产环境 URL
 - [ ] 验证非管理员用户无法访问 `/admin`

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma"
 import { formatPrice } from "@/lib/utils/format"
 import Link from "next/link"
+import DeleteProductButton from "./DeleteProductButton"
 
 export const dynamic = "force-dynamic"
 
@@ -95,12 +96,15 @@ export default async function AdminProductsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/products/${product.id}`}
-                      className="btn-outline text-[10px] px-3 py-1.5 inline-flex items-center gap-1"
-                    >
-                      Edit
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/admin/products/${product.id}`}
+                        className="btn-outline text-[10px] px-3 py-1.5 inline-flex items-center gap-1"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteProductButton productId={product.id} productName={product.name} />
+                    </div>
                   </td>
                 </tr>
               ))}

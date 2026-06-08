@@ -1,6 +1,16 @@
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+let resend: Resend | null = null
+
+function getResend() {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured")
+    }
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export async function sendEmail({
   to,
@@ -12,7 +22,8 @@ export async function sendEmail({
   html: string
 }) {
   try {
-    await resend.emails.send({
+    const client = getResend()
+    await client.emails.send({
       from: `Oriental Beauty <noreply@${process.env.RESEND_DOMAIN || "orientalbeauty.com"}>`,
       to,
       subject,
@@ -61,6 +72,39 @@ export async function sendOrderConfirmationEmail(
         <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
           <p>Oriental Beauty — Where East Meets West</p>
           <p>Questions? Contact our support team</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
+export async function sendPasswordResetEmail(
+  email: string,
+  resetUrl: string
+) {
+  await sendEmail({
+    to: email,
+    subject: "Reset Your Password — Oriental Beauty",
+    html: `
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">Oriental Beauty</h1>
+        </div>
+        <h2 style="font-size: 24px; font-weight: 300; color: #333; text-align: center;">Reset Your Password</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+          We received a request to reset your password. Click the button below to choose a new one.
+        </p>
+        <div style="text-align: center; margin: 40px 0;">
+          <a href="${resetUrl}"
+             style="display: inline-block; padding: 14px 40px; background: #333; color: #fff; text-decoration: none; letter-spacing: 2px; font-size: 12px; text-transform: uppercase;">
+            Reset Password
+          </a>
+        </div>
+        <p style="text-align: center; color: #999; font-size: 13px;">
+          This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
+        </p>
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
+          <p>Oriental Beauty — Where East Meets West</p>
         </div>
       </div>
     `,

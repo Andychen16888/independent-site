@@ -74,6 +74,8 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   passwordHash  String?
+  resetToken    String?   @unique
+  resetTokenExpires DateTime?
   firstName     String?
   lastName      String?
   phone         String?

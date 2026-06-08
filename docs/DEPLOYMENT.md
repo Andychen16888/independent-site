@@ -495,11 +495,18 @@ server {
     access_log /var/log/nginx/orient-beauty-access.log;
     error_log /var/log/nginx/orient-beauty-error.log;
 
-    # 静态资源（直接读文件系统，不走 Node 代理）
+    # 静态资源（优先读本地文件系统，找不到时降级到 Node 代理）
     location /_next/static/ {
-        alias /var/www/orient-beauty/.next/static;
+        try_files $uri @nextjs_static;
         expires 365d;
         add_header Cache-Control "public, immutable, max-age=31536000";
+    }
+
+    location @nextjs_static {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 
     location /static/ {

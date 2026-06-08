@@ -71,6 +71,15 @@ export default function SignInPage() {
             <Button type="submit" loading={isLoading} className="w-full">
               Sign In
             </Button>
+
+            <div className="text-right">
+              <a
+                href="/auth/forgot-password"
+                className="text-xs text-stone hover:text-charcoal underline underline-offset-4 decoration-mist hover:decoration-charcoal transition-colors"
+              >
+                Forgot password?
+              </a>
+            </div>
           </form>
 
           <div className="mt-8 text-center">

@@ -10,6 +10,9 @@ interface ImageItem {
   isPrimary: boolean
 }
 
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
+
 interface Category {
   id: string
   name: string
@@ -150,6 +153,18 @@ export default function EditProductPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setError("Invalid file type. Allowed: JPEG, PNG, WebP, GIF, AVIF, TIFF")
+      e.target.value = ""
+      return
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setError("File too large. Maximum size is 5MB.")
+      e.target.value = ""
+      return
+    }
 
     setUploading(true)
     try {
@@ -486,7 +501,7 @@ export default function EditProductPage() {
               {uploading ? "Uploading..." : "Upload Image"}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/tiff"
                 onChange={handleImageUpload}
                 disabled={uploading}
                 className="hidden"
@@ -500,6 +515,7 @@ export default function EditProductPage() {
               + Add URL
             </button>
           </div>
+          <p className="text-xs text-stone mt-2">Supported: JPEG, PNG, WebP, GIF, AVIF, TIFF — Max 5MB per image</p>
         </div>
 
         <div className="border-t border-mist pt-6">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { slugify } from "@/lib/utils/format"
+import RichEditor from "@/components/admin/RichEditor"
 
 interface ImageItem {
   url: string
@@ -32,6 +33,7 @@ export default function NewProductPage() {
     slug: "",
     sku: "",
     description: "",
+    shortDescription: "",
     unitPrice: "",
     originalPrice: "",
     stock: "0",
@@ -60,6 +62,14 @@ export default function NewProductPage() {
       [name]: value,
       ...(name === "name" && !prev.slug ? { slug: slugify(value) } : {}),
     }))
+  }
+
+  const handleDescriptionChange = (html: string) => {
+    setForm((prev) => ({ ...prev, description: html }))
+  }
+
+  const handleShortDescriptionChange = (html: string) => {
+    setForm((prev) => ({ ...prev, shortDescription: html }))
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +166,7 @@ export default function NewProductPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          shortDescription: form.shortDescription || null,
           images: validImages,
           categoryIds: selectedCategoryIds,
         }),
@@ -223,13 +234,21 @@ export default function NewProductPage() {
 
         <div>
           <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Description *</label>
-          <textarea
-            name="description"
+          <RichEditor
             value={form.description}
-            onChange={handleChange}
-            required
-            rows={5}
-            className="w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors resize-y"
+            onChange={handleDescriptionChange}
+            placeholder="Enter product description..."
+            minHeight={200}
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Short Description</label>
+          <RichEditor
+            value={form.shortDescription}
+            onChange={handleShortDescriptionChange}
+            placeholder="Brief summary for listings..."
+            minHeight={100}
           />
         </div>
 

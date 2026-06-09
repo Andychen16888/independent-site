@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return {}
   return genMeta({
     title: product.name,
-    description: product.shortDescription || product.description,
+    description: (product.shortDescription || product.description).replace(/<[^>]*>/g, ""),
     keywords: `${product.name}, ${product.brand || ""}, peptide skincare, beauty, skincare products`,
     ogImage: product.images?.[0]?.url,
     ogType: "product",
@@ -83,7 +83,7 @@ export default async function ProductPage({ params }: Props) {
     ...(serializedProduct.sku.startsWith("PEP") || serializedProduct.sku.startsWith("RICE") || serializedProduct.sku.startsWith("GIN") || serializedProduct.sku.startsWith("VIT")
       ? [howToSchema({
           name: `How to Apply ${serializedProduct.name}`,
-          description: `Step-by-step guide to using ${serializedProduct.name} for best results. ${serializedProduct.shortDescription || ""}`,
+          description: `Step-by-step guide to using ${serializedProduct.name} for best results. ${(serializedProduct.shortDescription || "").replace(/<[^>]*>/g, "")}`,
           image: serializedProduct.images?.[0]?.url,
           estimatedCost: serializedProduct.unitPrice.toString(),
           steps: [
@@ -98,7 +98,7 @@ export default async function ProductPage({ params }: Props) {
     ...(!serializedProduct.sku.startsWith("PEP") && !serializedProduct.sku.startsWith("RICE") && !serializedProduct.sku.startsWith("GIN") && !serializedProduct.sku.startsWith("VIT")
       ? [articleSchema({
           headline: serializedProduct.name,
-          description: serializedProduct.shortDescription || serializedProduct.description,
+          description: (serializedProduct.shortDescription || serializedProduct.description).replace(/<[^>]*>/g, ""),
           author: { name: serializedProduct.brand || "Oriental Beauty" },
           datePublished: serializedProduct.createdAt.toISOString(),
           image: serializedProduct.images?.[0]?.url,

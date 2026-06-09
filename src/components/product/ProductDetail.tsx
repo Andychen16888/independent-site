@@ -10,6 +10,7 @@ import { ProductReviews } from "./ProductReviews"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { formatPrice, getDiscountPercentage } from "@/lib/utils/format"
+import DOMPurify from "dompurify"
 import { HiOutlineMinus, HiOutlinePlus, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineArrowPath, HiHeart, HiOutlineHeart, HiPlay } from "react-icons/hi2"
 
 interface ProductDetailProps {
@@ -126,7 +127,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <h1 className="heading-lg mb-4">{product.name}</h1>
 
           {product.shortDescription && (
-            <p className="text-body mb-6">{product.shortDescription}</p>
+            <div
+              className="text-body mb-6 prose prose-stone max-w-none"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.shortDescription) }}
+            />
           )}
 
           <div className="flex items-baseline gap-3 mb-8">
@@ -203,7 +207,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <summary className="text-sm tracking-widest uppercase cursor-pointer text-charcoal hover:text-stone transition-colors">
               Description
             </summary>
-            <p className="text-body mt-4 leading-relaxed">{product.description}</p>
+            <div
+              className="text-body mt-4 leading-relaxed prose prose-stone max-w-none"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
+            />
           </details>
 
           {product.parameters && product.parameters.length > 0 && (
@@ -226,7 +233,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <SocialShare
               url={`${typeof window !== "undefined" ? window.location.origin : ""}/products/${product.slug}`}
               title={product.name}
-              description={product.shortDescription || product.description}
+              description={(product.shortDescription || product.description).replace(/<[^>]*>/g, "")}
               image={product.images?.[0]?.url}
             />
           </div>

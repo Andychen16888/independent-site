@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, description, unitPrice, originalPrice, stock, status, sku, slug, images, categoryIds } = body
+    const { name, description, shortDescription, unitPrice, originalPrice, stock, status, sku, slug, images, categoryIds } = body
 
     if (!name || !description || unitPrice === undefined) {
       return NextResponse.json({ error: "Name, description, and unitPrice are required" }, { status: 400 })
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
         slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
         sku: sku || `SKU-${Date.now()}`,
         description,
+        ...(shortDescription !== undefined && { shortDescription }),
         unitPrice: parseFloat(unitPrice),
         originalPrice: originalPrice ? parseFloat(originalPrice) : null,
         stock: stock ? parseInt(stock, 10) : 0,

@@ -2,7 +2,13 @@ import type { Metadata, Viewport } from "next"
 import { Inter, Cormorant_Garamond } from "next/font/google"
 import { Providers } from "@/components/layout/Providers"
 import { FacebookPixel, GoogleAnalytics, GoogleAds } from "@/components/marketing/AdScripts"
-import { organizationSchema, websiteSchema, localBusinessSchema, brandSchema } from "@/lib/seo/structured-data"
+import {
+  organizationSchema,
+  websiteSchema,
+  localBusinessSchema,
+  brandSchema,
+} from "@/lib/seo/structured-data"
+import { getSiteSeo } from "@/lib/settings/settings"
 import "./globals.css"
 
 const inter = Inter({
@@ -18,59 +24,59 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: "Oriental Beauty | Premium Skincare & Artisanal Living",
-    template: "%s | Oriental Beauty",
-  },
-  description:
-    "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor.",
-  keywords: [
-    "peptide skincare", "oriental beauty", "handmade ceramics", "asian skincare",
-    "artisanal home decor", "premium skincare", "eastern lifestyle",
-    "anti-aging serum", "korean skincare", "japanese ceramics",
-    "natural skincare", "luxury beauty", "organic skincare",
-  ],
-  authors: [{ name: "Oriental Beauty" }],
-  creator: "Oriental Beauty",
-  publisher: "Oriental Beauty",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"),
-  alternates: {
-    canonical: "/",
-    languages: { "en-US": "/" },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: "Oriental Beauty",
-    title: "Oriental Beauty | Premium Skincare & Artisanal Living",
-    description:
-      "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship.",
-    images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Oriental Beauty" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@orientalbeauty",
-    creator: "@orientalbeauty",
-    title: "Oriental Beauty | Premium Skincare & Artisanal Living",
-    description:
-      "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship.",
-    images: ["/og-default.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    "max-image-preview": "large",
-    "max-snippet": -1,
-    "max-video-preview": -1,
-  },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
-    yahoo: process.env.NEXT_PUBLIC_BING_VERIFICATION,
-  },
-  category: "beauty",
-  classification: "E-commerce",
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSiteSeo()
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const ogImage = seo.logo && /^https?:\/\//.test(seo.logo)
+    ? { url: seo.logo, width: 1200, height: 630, alt: seo.siteName }
+    : { url: "/og-default.jpg", width: 1200, height: 630, alt: seo.siteName }
+  const keywords = (seo.defaultKeywords || "").split(",").map((k) => k.trim()).filter(Boolean)
+
+  return {
+    title: {
+      default: seo.homepageTitle,
+      template: `%s | ${seo.siteName}`,
+    },
+    description: seo.siteDescription,
+    keywords,
+    authors: [{ name: seo.siteName }],
+    creator: seo.siteName,
+    publisher: seo.siteName,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: baseUrl,
+      languages: { [seo.language]: "/" },
+    },
+    openGraph: {
+      type: "website",
+      locale: seo.language === "zh" ? "zh_CN" : "en_US",
+      siteName: seo.siteName,
+      title: seo.homepageTitle,
+      description: seo.homepageDescription,
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || undefined,
+      title: seo.homepageTitle,
+      description: seo.homepageDescription,
+      images: [ogImage.url],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+      yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+      yahoo: process.env.NEXT_PUBLIC_BING_VERIFICATION,
+    },
+    category: "ecommerce",
+    classification: "E-commerce",
+  }
 }
 
 export const viewport: Viewport = {
@@ -79,39 +85,56 @@ export const viewport: Viewport = {
   themeColor: "#FFFFF0",
 }
 
-const jsonLd = [
-  organizationSchema(),
-  websiteSchema(),
-  localBusinessSchema(),
-  brandSchema({
-    name: "Oriental Beauty",
-    description: "Premium peptide skincare and artisanal home decor brand blending Eastern beauty rituals with modern science.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com",
-    knowsAbout: [
-      "Peptide Skincare", "Anti-Aging Serums", "Asian Beauty Rituals",
-      "Handmade Ceramics", "Artisanal Home Decor", "Fermented Skincare",
-      "Korean Red Ginseng", "Japanese Tea Ceremony", "Wabi-Sabi",
-    ],
-  }),
-]
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const seo = await getSiteSeo()
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const socialLinks = [
+    seo.social.facebook,
+    seo.social.instagram,
+    seo.social.linkedin,
+    seo.social.youtube,
+    seo.social.twitter,
+  ].filter(Boolean)
+
+  const jsonLd = [
+    organizationSchema({
+      name: seo.siteName,
+      url: baseUrl,
+      description: seo.siteDescription,
+      logo: seo.logo || undefined,
+      sameAs: socialLinks,
+      email: seo.contactEmail || undefined,
+      phone: seo.contactPhone || undefined,
+    }),
+    websiteSchema({ name: seo.siteName, url: baseUrl }),
+    localBusinessSchema({ name: seo.siteName, url: baseUrl, description: seo.siteDescription }),
+    brandSchema({
+      name: seo.siteName,
+      description: seo.siteSlogan || seo.siteDescription,
+      url: baseUrl,
+      logo: seo.logo || undefined,
+      sameAs: socialLinks,
+    }),
+  ]
+
+  const favicon = seo.favicon && /^https?:\/\//.test(seo.favicon) ? seo.favicon : undefined
+
   return (
-    <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
+    <html lang={seo.language} className={`${inter.variable} ${cormorant.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {favicon && <link rel="icon" href={favicon} />}
         <meta name="format-detection" content="telephone=no, address=no, email=no" />
         <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ""} />
         <meta name="msvalidate.01" content={process.env.NEXT_PUBLIC_BING_VERIFICATION || ""} />
-        <meta name="application-name" content="Oriental Beauty" />
-        <meta name="apple-mobile-web-app-title" content="Oriental Beauty" />
+        <meta name="application-name" content={seo.siteName} />
+        <meta name="apple-mobile-web-app-title" content={seo.siteName} />
         <meta name="generator" content="Next.js" />
-        <meta name="subject" content="Premium Skincare & Artisanal Home Decor" />
         <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <script
           type="application/ld+json"

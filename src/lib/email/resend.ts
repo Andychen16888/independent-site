@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer"
+import { getSiteSeo } from "@/lib/settings/settings"
 
 let transporter: nodemailer.Transporter | null = null
 
@@ -36,7 +37,7 @@ export async function sendEmail({
   }
 
   await t.sendMail({
-    from: process.env.SMTP_FROM || `"Oriental Beauty" <${process.env.SMTP_USER}>`,
+    from: process.env.SMTP_FROM || `"${(await getSiteSeo()).siteName}" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,
@@ -49,6 +50,7 @@ export async function sendOrderConfirmationEmail(
   items: any[],
   total: string
 ) {
+  const brand = (await getSiteSeo()).siteName
   const itemsHtml = items
     .map(
       (item) =>
@@ -68,7 +70,7 @@ export async function sendOrderConfirmationEmail(
     html: `
       <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">Oriental Beauty</h1>
+          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">${brand}</h1>
         </div>
         <h2 style="font-size: 24px; font-weight: 300; color: #333; text-align: center;">Thank You for Your Order</h2>
         <p style="text-align: center; color: #666; margin-bottom: 30px;">Order #${orderNumber}</p>
@@ -79,7 +81,7 @@ export async function sendOrderConfirmationEmail(
           Total: ${total}
         </div>
         <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
-          <p>Oriental Beauty — Where East Meets West</p>
+          <p>${brand} — Where East Meets West</p>
           <p>Questions? Contact our support team</p>
         </div>
       </div>
@@ -91,13 +93,14 @@ export async function sendPasswordResetEmail(
   email: string,
   resetUrl: string
 ) {
+  const brand = (await getSiteSeo()).siteName
   await sendEmail({
     to: email,
-    subject: "Reset Your Password — Oriental Beauty",
+    subject: `Reset Your Password — ${brand}`,
     html: `
       <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">Oriental Beauty</h1>
+          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">${brand}</h1>
         </div>
         <h2 style="font-size: 24px; font-weight: 300; color: #333; text-align: center;">Reset Your Password</h2>
         <p style="text-align: center; color: #666; margin-bottom: 30px;">
@@ -113,7 +116,7 @@ export async function sendPasswordResetEmail(
           This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
         </p>
         <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
-          <p>Oriental Beauty — Where East Meets West</p>
+          <p>${brand} — Where East Meets West</p>
         </div>
       </div>
     `,
@@ -121,6 +124,7 @@ export async function sendPasswordResetEmail(
 }
 
 export async function sendAbandonedCartEmail(email: string, items: any[]) {
+  const brand = (await getSiteSeo()).siteName
   const itemsHtml = items
     .map(
       (item) =>
@@ -140,7 +144,7 @@ export async function sendAbandonedCartEmail(email: string, items: any[]) {
     html: `
       <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">Oriental Beauty</h1>
+          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">${brand}</h1>
         </div>
         <h2 style="font-size: 24px; font-weight: 300; color: #333; text-align: center;">You Left Something Behind</h2>
         <p style="text-align: center; color: #666; margin-bottom: 30px;">Your cart items are still waiting for you</p>

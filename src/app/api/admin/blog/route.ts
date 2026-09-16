@@ -1,32 +1,57 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
-import { getServerAuthSession } from "@/lib/auth/get-server-session"
+import { requireAdmin } from "@/lib/auth/admin-guard"
+
+function generateSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+}
+
+export async function GET(req: NextRequest) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
+  try {
+    const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } })
+    return NextResponse.json({ posts })
+  } catch (error) {
+    console.error("Admin blog fetch error:", error)
+    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 })
+  }
+}
 
 export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerAuthSession()
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  const authError = await requireAdmin(req)
+  if (authError) return authError
 
+  try {
     const body = await req.json()
-    const { title, slug, content, excerpt, coverImage, author, tags, isPublished } = body
+    const { title, slug, excerpt, content, coverImage, author, tags, isPublished, seoTitle, seoDescription, seoKeywords } = body
 
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 })
     }
 
+    let slugValue = slug
+    if (!slugValue) slugValue = generateSlug(title)
+    const existing = await prisma.blogPost.findUnique({ where: { slug: slugValue } })
+    if (existing) slugValue = `${slugValue}-${Date.now().toString().slice(-4)}`
+
+    const published = isPublished !== undefined ? isPublished : false
+
     const post = await prisma.blogPost.create({
       data: {
         title,
-        slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-        content,
+        slug: slugValue,
         excerpt: excerpt || null,
+        content,
         coverImage: coverImage || null,
         author: author || "Admin",
         tags: tags || null,
-        isPublished: isPublished || false,
-        publishedAt: isPublished ? new Date() : null,
+        isPublished: published,
+        publishedAt: published ? new Date() : null,
+        seoTitle: seoTitle || null,
+        seoDescription: seoDescription || null,
+        seoKeywords: seoKeywords || null,
       },
     })
 

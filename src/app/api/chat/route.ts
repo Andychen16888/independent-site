@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server"
 import OpenAI from "openai"
-import { SYSTEM_PROMPT } from "@/lib/ai/system-prompt"
+import { buildSystemPrompt } from "@/lib/ai/system-prompt"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -20,10 +20,12 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    const systemPrompt = await buildSystemPrompt()
+
     const stream = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         ...messages.slice(-20),
       ],
       temperature: 0.7,

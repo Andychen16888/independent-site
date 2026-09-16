@@ -16,7 +16,7 @@ interface ChatWidgetProps {
 
 const WELCOME_MESSAGE: Message = {
   role: "assistant",
-  content: "Hello! I'm Ori, your personal beauty and lifestyle guide. ✨ I can help you find the perfect skincare routine, explore our handcrafted collections, or answer any questions about our products. How can I assist you today?"
+  content: `Hello! I'm your personal shopping assistant at ${process.env.NEXT_PUBLIC_SITE_NAME || "our store"}. ✨ I can help you find the perfect product, explore our collections, or answer any questions about our store. How can I assist you today?`
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -99,7 +99,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "I apologize, but I'm having trouble connecting. Please try again or email us at hello@orientalbeauty.com for immediate assistance." },
+        { role: "assistant", content: "I apologize, but I'm having trouble connecting. Please try again or email our support team for immediate assistance." },
       ])
     } finally {
       setIsLoading(false)
@@ -135,7 +135,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                   <HiOutlineSparkles className="w-4 h-4 text-gold" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Oriental Beauty</p>
+                  <p className="text-sm font-medium">{process.env.NEXT_PUBLIC_SITE_NAME || "Store"}</p>
                   <p className="text-[10px] text-ivory/60 tracking-wider uppercase">AI Sales Assistant</p>
                 </div>
               </div>

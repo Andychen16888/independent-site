@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductDetail } from "@/components/product/ProductDetail"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
+import { getSiteSeo } from "@/lib/settings/settings"
 import { breadcrumbSchema, productSchema, howToSchema, videoObjectSchema, articleSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
@@ -19,13 +20,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, slug: true, shortDescription: true, description: true, brand: true, images: { take: 1 } },
   })
   if (!product) return {}
+  const seo = await getSiteSeo()
   return genMeta({
     title: product.name,
     description: (product.shortDescription || product.description).replace(/<[^>]*>/g, ""),
-    keywords: `${product.name}, ${product.brand || ""}, peptide skincare, beauty, skincare products`,
+    keywords: `${product.name}, ${product.brand || ""}, ${seo.siteName}`,
     ogImage: product.images?.[0]?.url,
     ogType: "product",
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"}/products/${product.slug}`,
+    siteName: seo.siteName,
+    siteDescription: seo.siteDescription,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"}/products/${product.slug}`,
   })
 }
 
@@ -64,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
   const productUrl = `${baseUrl}/products/${serializedProduct.slug}`
 
   const schemas = [
@@ -99,7 +103,7 @@ export default async function ProductPage({ params }: Props) {
       ? [articleSchema({
           headline: serializedProduct.name,
           description: (serializedProduct.shortDescription || serializedProduct.description).replace(/<[^>]*>/g, ""),
-          author: { name: serializedProduct.brand || "Oriental Beauty" },
+          author: { name: serializedProduct.brand || serializedProduct.name },
           datePublished: serializedProduct.createdAt.toISOString(),
           image: serializedProduct.images?.[0]?.url,
           url: productUrl,

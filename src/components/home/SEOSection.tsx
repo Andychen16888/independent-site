@@ -3,49 +3,38 @@
 import Link from "next/link"
 import { Container } from "@/components/ui/Container"
 
-export function SEOSection() {
+export interface SEOLink { label: string; href: string }
+
+export function SEOSection({
+  heading = "Discover Our Collections",
+  paragraphs = [],
+  links = [],
+}: {
+  heading?: string
+  paragraphs?: string[]
+  links?: SEOLink[]
+}) {
+  if (!heading && paragraphs.length === 0 && links.length === 0) return null
+
   return (
     <section className="py-12 md:py-16 bg-ivory border-t border-mist">
       <Container>
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="heading-sm mb-4">
-            Premium Peptide Skincare & Artisanal Home Decor
-          </h2>
-          <div className="text-body text-sm space-y-3 max-w-3xl mx-auto">
-            <p>
-              Oriental Beauty brings you the finest in peptide skincare and handcrafted 
-              oriental home decor. Our peptide-infused serums, masks, and treatments 
-              combine cutting-edge biotechnology with traditional Eastern botanical wisdom. 
-              Each product is formulated with multi-weight peptides, fermented Asian 
-              botanicals, and clean, sustainable ingredients.
-            </p>
-            <p>
-              Explore our curated collection of artisanal home objects — hand-thrown 
-              ceramics from ancient Japanese kilns, carved teakwood pieces, handwoven 
-              silk textiles, and mindful decor objects that bring warmth and intention 
-              to your living space.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-6 mt-8 text-xs text-stone">
-            <Link href="/categories/beauty" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Peptide Skincare
-            </Link>
-            <Link href="/categories/beauty" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Face Serums
-            </Link>
-            <Link href="/categories/beauty" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Sheet Masks
-            </Link>
-            <Link href="/categories/handmade-living" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Handmade Ceramics
-            </Link>
-            <Link href="/categories/handmade-living" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Oriental Home Decor
-            </Link>
-            <Link href="/blog" className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
-              Beauty Journal
-            </Link>
-          </div>
+          {heading && <h2 className="heading-sm mb-4">{heading}</h2>}
+          {paragraphs.length > 0 && (
+            <div className="text-body text-sm space-y-3 max-w-3xl mx-auto">
+              {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+            </div>
+          )}
+          {links.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-6 mt-8 text-xs text-stone">
+              {links.map((link) => (
+                <Link key={link.href + link.label} href={link.href} className="hover:text-charcoal transition-colors underline underline-offset-4 decoration-mist hover:decoration-charcoal">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </Container>
     </section>

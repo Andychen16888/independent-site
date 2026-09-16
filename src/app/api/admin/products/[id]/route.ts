@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
-import { getToken } from "next-auth/jwt"
-
-async function checkAdmin(req: NextRequest) {
-  let token = await getToken({ req, secureCookie: false })
-  if (!token) {
-    token = await getToken({ req, secureCookie: true })
-  }
-  if (!token || token.role !== "ADMIN") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-  return null
-}
+import { requireAdmin } from "@/lib/auth/admin-guard"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin(req)
+  const authError = await requireAdmin(req)
   if (authError) return authError
 
   try {
@@ -23,6 +12,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       where: { id },
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        parameters: { orderBy: { sortOrder: "asc" } },
+        faqs: { orderBy: { sortOrder: "asc" } },
+        videos: { orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
       },
     })
@@ -39,32 +31,45 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin(req)
+  const authError = await requireAdmin(req)
   if (authError) return authError
 
   try {
     const { id } = await params
     const body = await req.json()
-    const { name, slug, sku, brand, description, shortDescription, unitPrice, originalPrice, stock, status, isFeatured, isBestSeller, isNew } = body
-
-    const { images, categoryIds } = body
+    const {
+      name, slug, sku, brand, model, tags,
+      description, shortDescription,
+      unitPrice, originalPrice, costPrice, stock, status,
+      isFeatured, isBestSeller, isNew, isHomeFeatured, sortOrder,
+      seoTitle, seoDescription, seoKeywords,
+      images, categoryIds, parameters,
+    } = body
 
     const product = await prisma.product.update({
       where: { id },
       data: {
-        ...(name !== undefined && { name }),
-        ...(slug !== undefined && { slug }),
-        ...(sku !== undefined && { sku }),
-        ...(brand !== undefined && { brand }),
+        ...(name !== undefined && name !== "" && { name }),
+        ...(slug !== undefined && slug !== "" && { slug }),
+        ...(sku !== undefined && sku !== "" && { sku }),
+        ...(brand !== undefined && { brand: brand || null }),
+        ...(model !== undefined && { model: model || null }),
+        ...(tags !== undefined && { tags: tags || null }),
         ...(description !== undefined && { description }),
         ...(shortDescription !== undefined && { shortDescription }),
         ...(unitPrice !== undefined && { unitPrice: parseFloat(unitPrice) }),
         ...(originalPrice !== undefined && { originalPrice: originalPrice ? parseFloat(originalPrice) : null }),
+        ...(costPrice !== undefined && { costPrice: costPrice ? parseFloat(costPrice) : null }),
         ...(stock !== undefined && { stock: parseInt(stock, 10) }),
         ...(status !== undefined && { status }),
         ...(isFeatured !== undefined && { isFeatured }),
         ...(isBestSeller !== undefined && { isBestSeller }),
         ...(isNew !== undefined && { isNew }),
+        ...(isHomeFeatured !== undefined && { isHomeFeatured }),
+        ...(sortOrder !== undefined && sortOrder !== "" && { sortOrder: parseInt(sortOrder, 10) }),
+        ...(seoTitle !== undefined ? { seoTitle } : {}),
+        ...(seoDescription !== undefined ? { seoDescription } : {}),
+        ...(seoKeywords !== undefined ? { seoKeywords } : {}),
         ...(images !== undefined && {
           images: {
             deleteMany: {},
@@ -84,9 +89,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             })),
           },
         }),
+        ...(parameters !== undefined && {
+          parameters: {
+            deleteMany: {},
+            create: parameters.map((p: any, i: number) => ({
+              name: p.name,
+              value: String(p.value),
+              sortOrder: i,
+            })),
+          },
+        }),
       },
       include: {
         images: { orderBy: { sortOrder: "asc" } },
+        parameters: { orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
       },
     })
@@ -99,13 +115,30 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authError = await checkAdmin(req)
+  const authError = await requireAdmin(req)
   if (authError) return authError
 
   try {
     const { id } = await params
-    await prisma.product.delete({ where: { id } })
-    return NextResponse.json({ success: true })
+    const { searchParams } = new URL(req.url)
+    const force = searchParams.get("force") === "true"
+
+    const product = await prisma.product.findUnique({ where: { id } })
+    if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 })
+
+    if (force) {
+      // Hard delete requested explicitly by the admin.
+      await prisma.product.delete({ where: { id } })
+      return NextResponse.json({ success: true, soft: false })
+    }
+
+    // Soft delete — order history, carts snapshot data, reviews remain intact.
+    await prisma.product.update({
+      where: { id },
+      data: { deletedAt: new Date(), status: "ARCHIVED" },
+    })
+
+    return NextResponse.json({ success: true, soft: true })
   } catch (error) {
     console.error("Admin product delete error:", error)
     return NextResponse.json({ error: "Failed to delete product" }, { status: 500 })

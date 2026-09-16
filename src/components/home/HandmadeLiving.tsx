@@ -4,30 +4,35 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 
-const collections = [
-  {
-    title: "Ceramics",
-    description: "Hand-thrown pottery from ancient kilns",
-    href: "/categories/handmade-living?sub=ceramics",
-  },
-  {
-    title: "Woodcraft",
-    description: "Carved teak and bamboo art pieces",
-    href: "/categories/handmade-living?sub=woodcraft",
-  },
-  {
-    title: "Textiles",
-    description: "Handwoven silk and linen home goods",
-    href: "/categories/handmade-living?sub=textiles",
-  },
-  {
-    title: "Decor",
-    description: "Curated objects for mindful spaces",
-    href: "/categories/handmade-living?sub=decor",
-  },
-]
+export interface CollectionItem { title: string; description?: string; href: string }
 
-export function HandmadeLiving() {
+export interface CollectionContent {
+  eyebrow?: string
+  title: string
+  tagline?: string
+  collections?: CollectionItem[]
+  ctaLabel?: string
+  ctaHref?: string
+}
+
+const DEFAULT_COLLECTIONS: CollectionContent = {
+  eyebrow: "Craftsmanship",
+  title: "Handmade Living",
+  tagline: "Objects that bring warmth, story, and intention into your home",
+  collections: [
+    { title: "Ceramics", description: "Hand-thrown pottery from ancient kilns", href: "/categories/handmade-living?sub=ceramics" },
+    { title: "Woodcraft", description: "Carved teak and bamboo art pieces", href: "/categories/handmade-living?sub=woodcraft" },
+    { title: "Textiles", description: "Handwoven silk and linen home goods", href: "/categories/handmade-living?sub=textiles" },
+    { title: "Decor", description: "Curated objects for mindful spaces", href: "/categories/handmade-living?sub=decor" },
+  ],
+  ctaLabel: "Explore All Collections",
+  ctaHref: "/categories/handmade-living",
+}
+
+export function CollectionGallerySection({ content = DEFAULT_COLLECTIONS }: { content?: CollectionContent }) {
+  const safe = content.title ? content : DEFAULT_COLLECTIONS
+  const collections = safe.collections || []
+
   return (
     <section className="section-padding bg-cream overflow-hidden">
       <Container>
@@ -37,15 +42,15 @@ export function HandmadeLiving() {
           viewport={{ once: true }}
           className="section-title"
         >
-          <span className="text-caption mb-4 block">Craftsmanship</span>
-          <h2>Handmade Living</h2>
-          <p>Objects that bring warmth, story, and intention into your home</p>
+          {safe.eyebrow && <span className="text-caption mb-4 block">{safe.eyebrow}</span>}
+          <h2>{safe.title}</h2>
+          {safe.tagline && <p>{safe.tagline}</p>}
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {collections.map((item, index) => (
             <motion.div
-              key={item.title}
+              key={item.title + index}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -60,20 +65,24 @@ export function HandmadeLiving() {
                   <h3 className="font-serif text-lg text-ivory translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-ivory/70 mt-1 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75">
-                    {item.description}
-                  </p>
+                  {item.description && (
+                    <p className="text-xs text-ivory/70 mt-1 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75">
+                      {item.description}
+                    </p>
+                  )}
                 </div>
               </Link>
             </motion.div>
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <Link href="/categories/handmade-living" className="btn-outline">
-            Explore All Collections
-          </Link>
-        </div>
+        {safe.ctaLabel && safe.ctaHref && (
+          <div className="text-center mt-12">
+            <Link href={safe.ctaHref} className="btn-outline inline-flex">
+              {safe.ctaLabel}
+            </Link>
+          </div>
+        )}
       </Container>
     </section>
   )

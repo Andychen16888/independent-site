@@ -1,16 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
-import { getServerAuthSession } from "@/lib/auth/get-server-session"
+import { requireAdmin } from "@/lib/auth/admin-guard"
+
+export async function GET(req: NextRequest) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
+  try {
+    const banners = await prisma.banner.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    })
+    return NextResponse.json({ banners })
+  } catch (error) {
+    console.error("Admin banners fetch error:", error)
+    return NextResponse.json({ error: "Failed to fetch banners" }, { status: 500 })
+  }
+}
 
 export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerAuthSession()
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  const authError = await requireAdmin(req)
+  if (authError) return authError
 
+  try {
     const body = await req.json()
-    const { title, subtitle, image, link, sortOrder, isActive } = body
+    const { title, subtitle, eyebrow, description, ctaText, alignment, image, link, sortOrder, isActive } = body
 
     if (!title || !image) {
       return NextResponse.json({ error: "Title and image are required" }, { status: 400 })
@@ -20,9 +33,13 @@ export async function POST(req: NextRequest) {
       data: {
         title,
         subtitle: subtitle || null,
+        eyebrow: eyebrow || null,
+        description: description || null,
+        ctaText: ctaText || null,
+        alignment: alignment || "left",
         image,
         link: link || null,
-        sortOrder: sortOrder ? parseInt(sortOrder, 10) : 0,
+        sortOrder: sortOrder !== undefined && sortOrder !== "" ? parseInt(sortOrder, 10) : 0,
         isActive: isActive !== undefined ? isActive : true,
       },
     })

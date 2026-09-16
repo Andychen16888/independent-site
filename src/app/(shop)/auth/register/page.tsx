@@ -52,7 +52,7 @@ export default function RegisterPage() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
             <h1 className="heading-lg mb-3">Create Account</h1>
-            <p className="text-body">Join the Oriental Beauty community</p>
+            <p className="text-body">Join the {process.env.NEXT_PUBLIC_SITE_NAME || "Store"} community</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

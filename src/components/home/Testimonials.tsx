@@ -4,9 +4,10 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 
-const testimonials = [
+export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
+
+export const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
-    id: 1,
     name: "Sarah M.",
     location: "New York",
     rating: 5,
@@ -14,7 +15,6 @@ const testimonials = [
     product: "Peptide Hydration Serum",
   },
   {
-    id: 2,
     name: "Emily R.",
     location: "Los Angeles",
     rating: 5,
@@ -22,7 +22,6 @@ const testimonials = [
     product: "Artisan Tea Collection",
   },
   {
-    id: 3,
     name: "Jessica K.",
     location: "London",
     rating: 5,
@@ -31,8 +30,13 @@ const testimonials = [
   },
 ]
 
-export function Testimonials() {
+export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Kind Words", heading = "From Our Community" }: { items?: Testimonial[]; eyebrow?: string; heading?: string }) {
   const [current, setCurrent] = useState(0)
+  const safe = items && items.length > 0 ? items : DEFAULT_TESTIMONIALS
+
+  if (safe.length === 0) return null
+  const idx = Math.min(current, safe.length - 1)
+  const testimonial = safe[idx]
 
   return (
     <section className="section-padding bg-charcoal text-ivory">
@@ -43,50 +47,52 @@ export function Testimonials() {
           viewport={{ once: true }}
           className="section-title"
         >
-          <span className="text-caption text-ivory/50 mb-4 block">Kind Words</span>
-          <h2 className="text-ivory">From Our Community</h2>
+          <span className="text-caption text-ivory/50 mb-4 block">{eyebrow}</span>
+          <h2 className="text-ivory">{heading}</h2>
         </motion.div>
 
         <div className="max-w-3xl mx-auto text-center">
           <AnimatePresence mode="wait">
             <motion.div
-              key={current}
+              key={idx}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
               <div className="flex justify-center gap-1 mb-8">
-                {Array.from({ length: testimonials[current].rating }).map((_, i) => (
+                {Array.from({ length: testimonial.rating || 5 }).map((_, i) => (
                   <svg key={i} className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
               <blockquote className="heading-sm mb-8 text-ivory/90 leading-relaxed font-light italic">
-                &ldquo;{testimonials[current].text}&rdquo;
+                &ldquo;{testimonial.text}&rdquo;
               </blockquote>
               <p className="text-sm text-ivory/60 tracking-wider uppercase">
-                {testimonials[current].name} — {testimonials[current].location}
+                {testimonial.name}{testimonial.location ? ` — ${testimonial.location}` : ""}
               </p>
-              <p className="text-xs text-ivory/40 mt-1">
-                Verified Buyer of {testimonials[current].product}
-              </p>
+              {testimonial.product && (
+                <p className="text-xs text-ivory/40 mt-1">Verified Buyer of {testimonial.product}</p>
+              )}
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex justify-center gap-3 mt-10">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrent(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === current ? "bg-ivory w-6" : "bg-ivory/30"
-                }`}
-                aria-label={`Testimonial ${index + 1}`}
-              />
-            ))}
-          </div>
+          {safe.length > 1 && (
+            <div className="flex justify-center gap-3 mt-10">
+              {safe.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrent(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === idx ? "bg-ivory w-6" : "bg-ivory/30"
+                  }`}
+                  aria-label={`Testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </Container>
     </section>

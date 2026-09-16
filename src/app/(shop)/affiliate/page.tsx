@@ -5,7 +5,7 @@ import { generateMetadata } from "@/lib/seo/generate-metadata"
 
 export const metadata = generateMetadata({
   title: "Affiliate Program",
-  description: "Join the Oriental Beauty affiliate program and earn commissions by sharing products you love.",
+  description: "Join our affiliate program and earn commissions by sharing products you love.",
 })
 
 export default function AffiliatePage() {

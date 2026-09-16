@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort, truncate } from "@/lib/utils/format"
+import DeleteBlogButton from "@/components/admin/DeleteBlogButton"
 
 export const dynamic = "force-dynamic"
 
@@ -41,6 +42,7 @@ export default async function AdminBlogPage() {
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Comments</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Published</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -61,6 +63,12 @@ export default async function AdminBlogPage() {
                   </td>
                   <td className="px-4 py-3 text-xs text-stone">
                     {post.publishedAt ? formatDateShort(post.publishedAt) : "-"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2 text-[10px]">
+                      <Link href={`/admin/blog/${post.id}`} className="btn-outline px-2 py-1.5 inline-flex items-center gap-1">Edit</Link>
+                      <DeleteBlogButton id={post.id} title={post.title} />
+                    </div>
                   </td>
                 </tr>
               ))}

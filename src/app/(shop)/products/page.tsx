@@ -64,7 +64,7 @@ export default async function ProductsPage({ searchParams }: Props) {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
 
   const schemas = [
     breadcrumbSchema([

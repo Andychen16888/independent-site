@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  async redirects() {
+    const pages = ["about", "contact", "shipping", "privacy", "terms"]
+    return pages.map((slug) => ({
+      source: `/${slug}`,
+      destination: `/pages/${slug}`,
+      permanent: true,
+    }))
+  },
 }
 
 export default nextConfig

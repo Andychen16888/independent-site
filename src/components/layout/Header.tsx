@@ -13,14 +13,14 @@ import { HiXMark, HiOutlineGift } from "react-icons/hi2"
 import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyingGlass, HiOutlineBars3, HiOutlineXMark } from "react-icons/hi2"
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
 
-const navigation = [
+const DEFAULT_NAV = [
   { name: "Beauty", href: "/categories/beauty" },
   { name: "Handmade Living", href: "/categories/handmade-living" },
   { name: "Journal", href: "/blog" },
   { name: "About", href: "/about" },
 ]
 
-function PromoBar() {
+function PromoBar({ text }: { text: string }) {
   const [isVisible, setIsVisible] = useState(true)
   const [dismissed, setDismissed] = useState(false)
 
@@ -38,7 +38,7 @@ function PromoBar() {
     } catch {}
   }, [])
 
-  if (!isVisible || dismissed) return null
+  if (!text || !isVisible || dismissed) return null
 
   const handleDismiss = () => {
     setIsVisible(false)
@@ -54,7 +54,7 @@ function PromoBar() {
     >
       <div className="flex items-center justify-center gap-3">
         <HiOutlineGift className="w-4 h-4 shrink-0 text-rosegold" />
-        <span>New customers save 10%</span>
+        <span>{text}</span>
         <button
           onClick={handleDismiss}
           className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-ivory/10 rounded transition-colors"
@@ -73,7 +73,19 @@ function PromoBar() {
   )
 }
 
-export function Header() {
+export function Header({
+  navItems = DEFAULT_NAV,
+  siteName = "ORIENTAL",
+  siteSlogan = "BEAUTY",
+  logo = "",
+  promoBar = "New customers save 10%",
+}: {
+  navItems?: { name: string; href: string }[]
+  siteName?: string
+  siteSlogan?: string
+  logo?: string
+  promoBar?: string
+}) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -81,6 +93,7 @@ export function Header() {
   const { data: session } = useSession()
   const cartCount = useCartStore((s) => s.getItemCount())
   const wishlistCount = useWishlistStore((s) => s.items.length)
+  const safeNav = navItems && navItems.length > 0 ? navItems : DEFAULT_NAV
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -101,7 +114,7 @@ export function Header() {
           : "bg-transparent"
       )}
     >
-      <PromoBar />
+      <PromoBar text={promoBar} />
       <Container>
         <div className="flex items-center justify-between h-16 md:h-20">
           <button
@@ -113,9 +126,9 @@ export function Header() {
           </button>
 
           <nav className="hidden md:flex items-center space-x-10">
-            {navigation.map((item) => (
+            {safeNav.map((item) => (
               <Link
-                key={item.name}
+                key={item.name + item.href}
                 href={item.href}
                 className={cn(
                   "text-xs tracking-widest uppercase transition-colors duration-300",
@@ -130,12 +143,21 @@ export function Header() {
           </nav>
 
           <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-            <span className="font-serif text-xl md:text-2xl tracking-[0.3em] text-charcoal">
-              ORIENTAL
-            </span>
-            <span className="block text-[10px] tracking-[0.5em] text-stone text-center">
-              BEAUTY
-            </span>
+            {logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} alt={siteName} className="max-h-12 md:max-h-14 w-auto" />
+            ) : (
+              <>
+                <span className="font-serif text-xl md:text-2xl tracking-[0.3em] text-charcoal">
+                  {siteName}
+                </span>
+                {siteSlogan && (
+                  <span className="block text-[10px] tracking-[0.5em] text-stone text-center">
+                    {siteSlogan}
+                  </span>
+                )}
+              </>
+            )}
           </Link>
 
           <div className="flex items-center space-x-4 md:space-x-6">
@@ -184,9 +206,9 @@ export function Header() {
             className="md:hidden bg-ivory border-t border-mist"
           >
             <Container className="py-6 space-y-4">
-              {navigation.map((item) => (
+              {safeNav.map((item) => (
                 <Link
-                  key={item.name}
+                  key={item.name + item.href}
                   href={item.href}
                   className={cn(
                     "block py-2 text-sm tracking-widest uppercase",

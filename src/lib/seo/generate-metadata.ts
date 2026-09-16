@@ -1,16 +1,17 @@
 import { Metadata } from "next"
 import { SEOData } from "@/types"
 
-export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Oriental Beauty"
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orientalbeauty.com"
-export const defaultDescription = "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor."
+export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Global Commerce"
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+export const defaultDescription = "Premium skincare and artisanal home decor brand blending Eastern beauty rituals with modern science."
 
-export function generateMetadata(data: SEOData): Metadata {
-  const title = data.title ? `${data.title} | ${siteName}` : siteName
-  const description = data.description || defaultDescription
+export function generateMetadata(data: SEOData & { siteName?: string; siteDescription?: string } = { title: "", description: "" }): Metadata {
+  const name = data.siteName || siteName
+  const title = data.title ? `${data.title} | ${name}` : name
+  const description = data.description || data.siteDescription || defaultDescription
 
   return {
-    title: data.title ? `${data.title} | ${siteName}` : siteName,
+    title: data.title ? `${data.title} | ${name}` : name,
     description,
     keywords: data.keywords,
     metadataBase: new URL(siteUrl),
@@ -24,10 +25,10 @@ export function generateMetadata(data: SEOData): Metadata {
       title,
       description,
       url: data.canonical || siteUrl,
-      siteName,
+      siteName: name,
       images: data.ogImage
         ? [{ url: data.ogImage, width: 1200, height: 630, alt: title }]
-        : [{ url: "/og-default.jpg", width: 1200, height: 630, alt: siteName }],
+        : [{ url: "/og-default.jpg", width: 1200, height: 630, alt: name }],
       type: (data.ogType === "article" ? "article" : "website") as "website" | "article",
       locale: "en_US",
     },
@@ -36,7 +37,7 @@ export function generateMetadata(data: SEOData): Metadata {
       title,
       description,
       images: data.ogImage ? [data.ogImage] : [],
-      site: "@orientalbeauty",
+      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@orbrand",
     },
     robots: {
       index: data.noindex !== true,

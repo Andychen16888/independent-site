@@ -1,10 +1,10 @@
-# Oriental Beauty 生产部署指南
+# 通用独立站 (Commerce) 生产部署指南
 
 > 部署环境: Linux VPS (Ubuntu 22.04 LTS)  
 > 技术栈: Next.js 15 + PostgreSQL 16 + Nginx + PM2 + Docker  
-> 最后更新: 2026-06-08  
+> 最后更新: 2026-09-16  
 > 
-> **SEO / GEO / CDN 章节已同步更新于 2026-05-14**
+> **本指南适用于通用 B2B/零售独立站。所有站点名称、品牌、联系方式、商品均为数据库驱动，部署后在管理后台 `/admin/settings` 配置即可，无需改代码。**
 
 ---
 
@@ -74,19 +74,36 @@ sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/ss
 sudo sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
-# 4. 立即启用防火墙（只放行 SSH、HTTP、HTTPS）
+# 4. 立即启用防火墙（放行所有必要端口）
 sudo ufw --force reset
 sudo ufw default deny incoming
 sudo ufw default deny outgoing
 sudo ufw allow in on lo
 sudo ufw allow out on lo
-sudo ufw allow out 53          # DNS 解析
-sudo ufw allow in 22/tcp       # SSH
-sudo ufw allow out 22/tcp      # SSH 出站
-sudo ufw allow in 80/tcp       # HTTP
-sudo ufw allow out 80/tcp      # HTTP 出站
-sudo ufw allow in 443/tcp      # HTTPS
-sudo ufw allow out 443/tcp     # HTTPS 出站
+
+# --- 入站规则 ---
+sudo ufw allow in 22/tcp       # SSH — 远程管理
+sudo ufw allow in 80/tcp       # HTTP — Nginx 网页服务
+sudo ufw allow in 443/tcp      # HTTPS — Nginx SSL 网页服务
+
+# --- 出站规则 ---
+sudo ufw allow out 22/tcp      # SSH — git pull、rsync、远程管理
+sudo ufw allow out 53/udp      # DNS — 域名解析
+sudo ufw allow out 80/tcp      # HTTP — API 调用、git clone、npm install、系统更新
+sudo ufw allow out 443/tcp     # HTTPS — API 调用(Stripe/PayPal/OpenAI)、git、npm、系统更新
+sudo ufw allow out 123/udp     # NTP — 时间同步（SSL 证书验证必需）
+sudo ufw allow out 587/tcp     # SMTP Submission — Gmail SMTP 发送邮件
+sudo ufw allow out 465/tcp     # SMTPS — 备用邮件发送端口
+sudo ufw allow out 25/tcp      # SMTP — 基础邮件发送（部分 VPS 厂商默认封锁）
+
+# --- 可选（按需放行） ---
+# sudo ufw allow out 5432/tcp  # PostgreSQL — 仅远程数据库需要（默认 localhost 无需放行）
+# sudo ufw allow out 6379/tcp  # Redis — 仅远程 Redis 需要
+
+# --- 诊断与监控 ---
+sudo ufw allow in proto icmp   # ICMP — 允许 ping 入站（故障排查）
+sudo ufw allow out proto icmp  # ICMP — 允许 ping 出站（故障排查）
+
 sudo ufw --force enable
 sudo ufw status verbose
 
@@ -110,7 +127,7 @@ echo "✓ 安全加固完成，可以继续部署"
 |------|------|
 | **最小权限** | 永远用普通用户（`deploy`）操作，禁止 root 日常使用 |
 | **最小暴露** | Node 服务必须绑定 `127.0.0.1`，只通过 Nginx 对外 |
-| **最小端口** | 防火墙仅开放 22/80/443，拒绝其他所有端口 |
+| **最小端口** | 入站仅开放 22/80/443；出站仅开放 DNS/NTP/HTTP/HTTPS/邮件服务端口 |
 | **密钥认证** | 禁用密码登录，SSH key + 口令短语 |
 | **定期审查** | 每周检查进程列表、网络连接、cron 任务 |
 
@@ -189,12 +206,12 @@ sudo usermod -aG docker deploy
 # 切换到 postgres 用户
 sudo -u postgres psql
 
-# 创建数据库和用户
-CREATE USER orient_user WITH PASSWORD 'your-strong-password';
-CREATE DATABASE orient_beauty OWNER orient_user;
-GRANT ALL PRIVILEGES ON DATABASE orient_beauty TO orient_user;
-\c orient_beauty
-GRANT ALL ON SCHEMA public TO orient_user;
+# 创建数据库和用户 (名称可与 .env 中 DATABASE_URL 对应，此处示例用 commerce_*)
+CREATE USER commerce_user WITH PASSWORD 'your-strong-password';
+CREATE DATABASE commerce_db OWNER commerce_user;
+GRANT ALL PRIVILEGES ON DATABASE commerce_db TO commerce_user;
+\c commerce_db
+GRANT ALL ON SCHEMA public TO commerce_user;
 \q
 
 # 允许远程连接 (如果需要)
@@ -265,15 +282,15 @@ npm run build:server
 ### 3.3 数据库迁移
 
 ```bash
-# 重要: 首次部署必须使用 db:push (项目无迁移文件)
-# db:migrate 仅当 prisma/migrations/ 目录存在迁移文件时才有效
-npm run db:push
+# 项目自带迁移文件 (prisma/migrations/)，生产环境使用 migrate deploy 应用迁移
+npm run db:migrate
 
-# 导入种子数据 (创建管理员账号和初始数据)
+# 导入种子数据 (创建管理员账号、分类、产品、页面、博客、设置等初始数据)
 npm run db:seed
 ```
 
-> **顺序不能错**: 必须先 `db:push`（创建表）再 `db:seed`（填充数据），否则 seed 会报 `table does not exist`。
+> **顺序不能错**: 必须先 `db:migrate`（应用迁移、创建表）再 `db:seed`（填充数据），否则 seed 会报 `table does not exist`。
+> **首次部署或已有数据库升级**: 都使用 `npm run db:migrate`（`prisma migrate deploy`），Prisma 会自动跳过已应用的迁移。`db:push` 仅用于无迁移文件的临时环境，生产环境不要使用。
 
 ### 3.4 启动应用
 
@@ -745,11 +762,12 @@ echo | openssl s_client -connect hhbtec.com:443 -servername hhbtec.com 2>/dev/nu
 
 ```bash
 # ========== 数据库 ==========
-DATABASE_URL="postgresql://orient_user:your-strong-password@localhost:5432/orient_beauty?schema=public"
+# 数据库名/用户按下面 1.4 节创建，也可自行命名
+DATABASE_URL="postgresql://commerce_user:your-strong-password@localhost:5432/commerce_db?schema=public"
 
 # ========== NextAuth 认证 ==========
 NEXTAUTH_SECRET="$(openssl rand -base64 32)"  # 生成随机密钥
-NEXTAUTH_URL="https://orientalbeauty.com"
+NEXTAUTH_URL="https://your-domain.com"
 
 # Google OAuth (可选)
 GOOGLE_CLIENT_ID=""
@@ -780,11 +798,11 @@ SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
 SMTP_USER="your-email@gmail.com"
 SMTP_PASS="your-16-char-app-password"
-SMTP_FROM="Oriental Beauty <your-email@gmail.com>"
+SMTP_FROM="Your Store <your-email@gmail.com>"
 
-# ========== 站点配置 ==========
-NEXT_PUBLIC_SITE_URL="https://orientalbeauty.com"
-NEXT_PUBLIC_SITE_NAME="Oriental Beauty"
+# ========== 站点配置 (站点身份由后台 Settings 驱动，此处仅作为构建期兜底) ==========
+NEXT_PUBLIC_SITE_URL="https://your-domain.com"
+NEXT_PUBLIC_SITE_NAME="Your Store Name"
 
 # ========== 物流追踪 17Track ==========
 NEXT_PUBLIC_17TRACK_API_KEY=""
@@ -807,31 +825,24 @@ openssl rand -base64 32
 
 ## 8. 数据库迁移
 
-### 8.1 初始化迁移
+### 8.1 应用迁移
 
 ```bash
-# 推送 schema 直接创建表 (项目无迁移文件时使用)
-npm run db:push
+# 生产环境应用迁移 (创建/更新表结构，幂等，自动跳过已应用的部分)
+npm run db:migrate
 
-# 填充初始数据 (创建管理员、分类等)
+# 填充初始数据 (创建管理员、分类、产品、页面、博客、设置等)
 npm run db:seed
 ```
 
 ### 8.2 数据库管理
 
 ```bash
-# 首次部署：推送 schema 创建表 (无迁移文件时)
-npm run db:push
+# 应用待处理的迁移 (生产环境推荐，2026-09 起项目已内置迁移文件)
+npm run db:migrate
 
-# 填充初始数据 (创建管理员、分类等)
-npm run db:seed
-
-# 后续 schema 变更：如需创建迁移文件 (生产环境推荐)
-# 注意: 此命令需要本地开发环境，不要在服务器上运行
-# npx prisma migrate dev --name add-product-weight
-
-# 应用待处理的迁移 (当 prisma/migrations/ 存在迁移文件时)
-# npm run db:migrate
+# 本地开发时创建新迁移 (仅本地执行，提交 migration 文件到仓库)
+npx prisma migrate dev --name add-xxx-field
 
 # 查看迁移状态
 npx prisma migrate status
@@ -843,21 +854,21 @@ npx prisma studio
 > **注意**: 
 > - `prisma.config.ts` 存在时，Prisma 会跳过自动加载 `.env` 的步骤，改为由配置文件手动加载。因此 `.env` 文件必须存在且包含 `DATABASE_URL`。
 > - 始终使用 `npm run db:*` 命令代替 `npx prisma *`，确保使用项目本地安装的 Prisma 版本，避免全局 Prisma 版本不匹配。
-> - 首次部署必须使用 `db:push`（项目不含迁移文件）。`db:migrate` 仅在 `prisma/migrations/` 目录存在迁移文件时才有效。
-> - **2026-06-08 更新**: 新增密码重置功能，`User` 模型增加 `resetToken` 和 `resetTokenExpires` 字段。已有数据库需运行 `npm run db:push` 同步新字段。
+> - 生产环境统一使用 `npm run db:migrate`（`prisma migrate deploy`）。`db:push` 会忽略迁移文件、直接按 schema 改库，生产环境仅建议在紧急本地修复时使用。
+> - **2026-09-16 更新**: 项目已内置通用电商模型迁移（`20260916113757_add_generic_commerce_models`、`20260916163000_address_user_optional`），包含面向访客的结账能力（`Address.userId` 可为空）与数据库驱动的商品/分类/页面/博客/设置系统。种子脚本会填充默认站点设置、商品、分类、页面、博客文章与 FAQ。
 
 ### 8.3 数据库备份
 
 ```bash
 # 手动备份
-pg_dump -U orient_user orient_beauty > /backup/orient-beauty-$(date +%Y%m%d).sql
+pg_dump -U commerce_user commerce_db > /backup/orient-beauty-$(date +%Y%m%d).sql
 
 # 自动备份脚本
 cat > /usr/local/bin/backup-db.sh << 'EOF'
 #!/bin/bash
 BACKUP_DIR="/backup"
-DB_NAME="orient_beauty"
-DB_USER="orient_user"
+DB_NAME="commerce_db"
+DB_USER="commerce_user"
 RETENTION_DAYS=30
 
 mkdir -p $BACKUP_DIR
@@ -882,7 +893,7 @@ crontab -e
 
 1. 登录 [Stripe Dashboard](https://dashboard.stripe.com/webhooks)
 2. 点击 **Add endpoint**
-3. Endpoint URL: `https://orientalbeauty.com/api/checkout/webhook`
+3. Endpoint URL: `https://your-domain.com/api/checkout/webhook`
 4. 监听事件:
    - `payment_intent.succeeded`
    - `payment_intent.payment_failed`
@@ -969,7 +980,7 @@ SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
 SMTP_USER="your-email@gmail.com"
 SMTP_PASS="填上面生成的16位密码"
-SMTP_FROM="Oriental Beauty <your-email@gmail.com>"
+SMTP_FROM="Your Store <your-email@gmail.com>"
 ```
 
 > 如果使用其他 SMTP 服务商（如 QQ邮箱、Outlook 等），只需修改 `SMTP_HOST` 和 `SMTP_PORT`，代码无需改动。
@@ -1048,7 +1059,7 @@ jobs:
             cp .env .env
             npm ci --legacy-peer-deps
             npm run db:generate
-            npm run db:push
+            npm run db:migrate
             npm run db:seed
             npm run build:server
             pm2 restart orient-beauty
@@ -1121,8 +1132,8 @@ npm ci --legacy-peer-deps
 # 生成 Prisma Client
 npm run db:generate
 
-# 数据库迁移 (首次部署用 db:push，有迁移文件后用 db:migrate)
-npm run db:push
+# 数据库迁移 (应用 prisma/migrations/ 中的待处理迁移，生产环境标准流程)
+npm run db:migrate
 
 # 填充种子数据 (如无新数据可跳过)
 npm run db:seed
@@ -1152,8 +1163,8 @@ npm ci --legacy-peer-deps
 echo "Generating Prisma Client..."
 npm run db:generate
 
-echo "Pushing database schema..."
-npm run db:push
+echo "Applying database migrations..."
+npm run db:migrate
 
 echo "Seeding database..."
 npm run db:seed
@@ -1239,8 +1250,8 @@ npm ci --legacy-peer-deps
 # 生成 Prisma Client
 npm run db:generate
 
-# 数据库迁移 (首次部署用 db:push，有迁移文件后用 db:migrate)
-npm run db:push
+# 数据库迁移 (应用 prisma/migrations/ 中的待处理迁移，生产环境标准流程)
+npm run db:migrate
 
 # 填充种子数据 (如无新数据可跳过)
 npm run db:seed
@@ -1273,8 +1284,8 @@ npm ci --legacy-peer-deps
 echo "Generating Prisma Client..."
 npm run db:generate
 
-echo "Pushing database schema..."
-npm run db:push
+echo "Applying database migrations..."
+npm run db:migrate
 
 echo "Seeding database..."
 npm run db:seed
@@ -1318,7 +1329,7 @@ free -h
 pm2 monit
 
 # 查看 API 响应时间
-curl -w "Total: %{time_total}s\n" -o /dev/null -s https://orientalbeauty.com
+curl -w "Total: %{time_total}s\n" -o /dev/null -s https://your-domain.com
 ```
 
 ### 15.3 数据库监控
@@ -1364,7 +1375,7 @@ cd /var/www/orient-beauty && cat .env | grep DATABASE_URL
 sudo systemctl status postgresql
 
 # 测试连接
-psql -U orient_user -d orient_beauty -h localhost
+psql -U commerce_user -d commerce_db -h localhost
 
 # 检查 max_connections
 sudo -u postgres psql -c "SHOW max_connections;"
@@ -1489,7 +1500,7 @@ sudo ufw deny out to any
 sudo ufw deny in to any
 
 # 2. 备份数据
-pg_dump -U orient_user orient_beauty > /backup/emergency-$(date +%Y%m%d).sql
+pg_dump -U commerce_user commerce_db > /backup/emergency-$(date +%Y%m%d).sql
 
 # 3. 停止应用
 pm2 delete orient-beauty
@@ -1519,8 +1530,7 @@ pm2 delete orient-beauty
 | 博客文章 | BlogPosting, BreadcrumbList, Article, Person | `src/app/(shop)/blog/[slug]/page.tsx` |
 | 分类页 | ProductGroup, BreadcrumbList | `src/app/(shop)/categories/[slug]/page.tsx` |
 | FAQ | FAQPage, QAPage, BreadcrumbList | `src/app/(shop)/faq/page.tsx` |
-| 关于我们 | AboutPage, BreadcrumbList | `src/app/(shop)/about/page.tsx` |
-| 联系我们 | ContactPage, BreadcrumbList | `src/app/(shop)/contact/page.tsx` |
+| 页面 | AboutPage / ContactPage / Article | `src/app/(shop)/pages/[slug]/page.tsx` |
 
 #### 验证工具
 
@@ -1546,14 +1556,14 @@ pm2 delete orient-beauty
 
 ### 18.2 Sitemap
 
-项目自动生成 `/sitemap.xml`，包含所有 23+ 路由:
+项目自动生成 `/sitemap.xml`，动态包含：静态路由、全部在售商品、启用中的分类、已发布的博客与页面（`force-dynamic`，实时查询数据库）:
 
 ```bash
 # 部署后验证
-curl https://orientalbeauty.com/sitemap.xml | head -50
+curl https://your-domain.com/sitemap.xml | head -50
 
 # 检查 sitemap 索引
-curl https://orientalbeauty.com/sitemap.xml | grep -o "<loc>[^<]*</loc>"
+curl https://your-domain.com/sitemap.xml | grep -o "<loc>[^<]*</loc>"
 ```
 
 #### 提交到搜索引擎
@@ -1561,7 +1571,7 @@ curl https://orientalbeauty.com/sitemap.xml | grep -o "<loc>[^<]*</loc>"
 ```bash
 # Google Search Console
 # 1. 访问 https://search.google.com/search-console
-# 2. 添加域名 (输入 orientalbeauty.com)
+# 2. 添加域名 (输入 your-domain.com)
 # 3. 验证所有权 (推荐: DNS TXT 记录)
 # 4. 左侧菜单 → Sitemaps → 输入 sitemap.xml → 提交
 
@@ -1572,8 +1582,8 @@ curl https://orientalbeauty.com/sitemap.xml | grep -o "<loc>[^<]*</loc>"
 # 4. 输入 sitemap.xml → 提交
 
 # 手动 Ping
-curl "https://www.google.com/ping?sitemap=https://orientalbeauty.com/sitemap.xml"
-curl "https://www.bing.com/ping?sitemap=https://orientalbeauty.com/sitemap.xml"
+curl "https://www.google.com/ping?sitemap=https://your-domain.com/sitemap.xml"
+curl "https://www.bing.com/ping?sitemap=https://your-domain.com/sitemap.xml"
 ```
 
 ### 18.3 Robots.txt
@@ -1581,7 +1591,7 @@ curl "https://www.bing.com/ping?sitemap=https://orientalbeauty.com/sitemap.xml"
 `/robots.txt` 位于 `src/app/robots.ts`，自动生成。部署后验证:
 
 ```bash
-curl https://orientalbeauty.com/robots.txt
+curl https://your-domain.com/robots.txt
 ```
 
 预期输出包含:
@@ -1596,7 +1606,7 @@ Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-Sitemap: https://orientalbeauty.com/sitemap.xml
+Sitemap: https://your-domain.com/sitemap.xml
 ```
 
 ### 18.4 Meta 标签检查清单
@@ -1619,14 +1629,14 @@ Sitemap: https://orientalbeauty.com/sitemap.xml
 cat << 'SCRIPT' > /tmp/check-meta.sh
 #!/bin/bash
 URLS=(
-  "https://orientalbeauty.com"
-  "https://orientalbeauty.com/products"
-  "https://orientalbeauty.com/products/peptide-hydration-serum"
-  "https://orientalbeauty.com/categories/beauty"
-  "https://orientalbeauty.com/blog"
-  "https://orientalbeauty.com/about"
-  "https://orientalbeauty.com/contact"
-  "https://orientalbeauty.com/faq"
+  "https://your-domain.com"
+  "https://your-domain.com/products"
+  "https://your-domain.com/products/your-product-slug"
+  "https://your-domain.com/categories/your-category-slug"
+  "https://your-domain.com/blog"
+  "https://your-domain.com/pages/about"
+  "https://your-domain.com/pages/contact"
+  "https://your-domain.com/faq"
 )
 
 for url in "${URLS[@]}"; do
@@ -1696,20 +1706,19 @@ npm list sharp  # 应显示 sharp 已安装
 
 ### 19.2 本项目已实现的 GEO 策略
 
-#### 品牌实体构建
+#### 品牌实体构建 (数据库驱动)
 
-在 `src/lib/seo/structured-data.ts` 中的 `GEO_CONFIG` 包含了:
+品牌知识已改为**数据库驱动**，全部可在管理后台维护，无需改代码：
 
-```typescript
-export const GEO_CONFIG = {
-  brandFacts: `...`,    // 品牌关键事实 (集中呈现)
-  brandQuestions: [...]  // 常见品牌问答
-}
-```
+| 数据源 | 后台配置位置 | 用途 |
+|--------|------------|------|
+| 站点名称/描述/标语/Logo | `/admin/settings` → SEO | 全局 Organization/WebSite/Brand schema、`brandFacts` 文本 |
+| FAQ 问答列表 | `/admin/settings` → `content.faq` (JSON) | FAQ 页面渲染，并为每个问答生成独立 `QAPage` schema |
+| 商品/分类/页面/博客 | 后台各自的管理页 | Product / ProductGroup / Article / BlogPosting schema 自动生成 |
 
 **部署后效果**:
-- **FAQ 页面**: 每个品牌问答作为独立的 `QAPage` schema 注入，LLM 可直接匹配用户查询
-- **隐藏的品牌事实**: 使用 `sr-only` 类（屏幕阅读器可见，视觉隐藏），供 LLM 爬取时抓取
+- **FAQ 页面** (`/faq`): 后台配置的每个问答作为独立的 `QAPage` schema 注入，LLM 可直接匹配用户查询
+- **品牌事实 (brandFacts)**: 使用 `sr-only` 类（屏幕阅读器可见，视觉隐藏），由站点设置动态生成，供 LLM 爬取时抓取
 - **Brand schema**: 布局全局注入，包含品牌描述的语义化实体
 
 #### Speakable 规范 (博客文章)
@@ -1737,12 +1746,12 @@ speakable: {
 
 ```bash
 # 1. 使用 ChatGPT Search 测试
-# 提示词: "What does Oriental Beauty sell?"
-# 提示词: "How to apply peptide serum?"
-# 提示词: "Tell me about Oriental Beauty brand"
+# 提示词: "What does {Your Store} sell?"
+# 提示词: "How to use {your product}?"
+# 提示词: "Tell me about {Your Brand} story"
 
 # 2. 使用 Perplexity 测试
-# 搜索: "oriental beauty skincare products"
+# 搜索: "{your product} {your domain}"
 # 检查是否引用你的网站内容
 
 # 3. Google AI Overviews
@@ -1757,16 +1766,16 @@ speakable: {
 ### 19.4 持续优化建议
 
 ```bash
-# 1. 更新 brandFacts
-# 文件: src/lib/seo/structured-data.ts → GEO_CONFIG.brandFacts
-# 随产品线扩展及时更新品牌事实
+# 1. 更新品牌事实
+# 后台 → /admin/settings → SEO (站点名称/描述/标语) 已自动生成品牌事实文本
+# 后台 → /admin/settings → content.faq 可维护 FAQ 问答
 
-# 2. 扩展 brandQuestions
-# 添加用户最常问的 5-10 个问题
+# 2. 扩展现有 FAQ
+# 添加用户最常问的 5-10 个问题到 content.faq (JSON)
 # 分析 Google Search Console 中的 "People also ask"
 
 # 3. 添加更多 HowTo schema
-# 每个护肤品都应配有 HowTo 步骤
+# 每个产品都应配有使用步骤
 # 在 products/[slug]/page.tsx 中的 howToSchema 调用处扩展
 
 # 4. 维护 Blog 文章的 speakable 内容
@@ -1781,11 +1790,11 @@ speakable: {
 ### 19.5 GEO 部署 Checklist
 
 - [ ] Brand schema 在全局布局中注入 (`layout.tsx`)
-- [ ] FAQ 页面包含 QAPage schema + brandFacts 隐藏内容
+- [ ] FAQ 页面包含 QAPage schema + 设置驱动的品牌事实隐藏内容
 - [ ] 博客页面包含 articleSchema + personSchema + speakable 规范
-- [ ] 产品页面包含 howToSchema (护肤品) / articleSchema (手工品)
+- [ ] 产品页面包含 howToSchema / articleSchema
 - [ ] 分类页面包含 ProductGroup schema
-- [ ] brandFacts 和 brandQuestions 内容准确且完整
+- [ ] 后台 `/admin/settings` 中站点名称/描述/标语及 `content.faq` 准确且完整
 - [ ] 在 ChatGPT Search / Perplexity 中测试品牌可见性
 - [ ] Google Rich Results Test 中所有 schema 无错误
 - [ ] Brand knowledge `knowsAbout` 字段覆盖主要产品类别
@@ -1802,7 +1811,7 @@ speakable: {
 
 ```bash
 # 1. 注册/登录 https://dash.cloudflare.com
-# 2. 点击 "Add a Site" → 输入 orientalbeauty.com
+# 2. 点击 "Add a Site" → 输入 your-domain.com
 # 3. 选择 Free 计划
 # 4. Cloudflare 自动扫描 DNS 记录
 # 5. 将域名的 Nameservers 改为 Cloudflare 提供的
@@ -1814,7 +1823,7 @@ speakable: {
 |------|------|-----|-----------------|
 | A | `@` | 服务器 IP | Proxied |
 | A | `www` | 服务器 IP | Proxied |
-| CNAME | `*` | orientalbeauty.com | Proxied |
+| CNAME | `*` | your-domain.com | Proxied |
 
 > **重要**: 所有记录必须开启 Proxy (橙色云朵) 才能启用 CDN 缓存和安全功能。
 
@@ -1835,7 +1844,7 @@ speakable: {
 **规则 1 — 静态资源 (长期缓存)**
 
 ```
-Field: Hostname → equals → orientalbeauty.com
+Field: Hostname → equals → your-domain.com
 AND Field: URI Path → contains → /_next/static/
 
 Cache Eligibility: Eligible for cache
@@ -1846,7 +1855,7 @@ Browser TTL: 365 days
 **规则 2 — 图片资源**
 
 ```
-Field: Hostname → equals → orientalbeauty.com
+Field: Hostname → equals → your-domain.com
 AND Field: URI Path → contains → /static/
 
 Cache Eligibility: Eligible for cache
@@ -1857,7 +1866,7 @@ Browser TTL: 30 days
 **规则 3 — HTML 页面 (短期缓存)**
 
 ```
-Field: Hostname → equals → orientalbeauty.com
+Field: Hostname → equals → your-domain.com
 AND Field: URI Path → equals → /*
 AND NOT Field: URI Path → starts with → /_next/
 AND NOT Field: URI Path → starts with → /api/
@@ -1875,15 +1884,15 @@ Browser TTL: 10 minutes
 
 ```
 # 规则 1: 静态资源缓存
-Pattern: orientalbeauty.com/_next/static/*
+Pattern: your-domain.com/_next/static/*
 Setting: Cache Level → Standard + Edge Cache TTL → 365 days
 
 # 规则 2: 始终使用 HTTPS
-Pattern: orientalbeauty.com/*
+Pattern: your-domain.com/*
 Setting: Always Use HTTPS → ON
 
 # 规则 3: 自动缩小化
-Pattern: orientalbeauty.com/*
+Pattern: your-domain.com/*
 Setting: Auto Minify (HTML/CSS/JS) → ON
 ```
 
@@ -2016,7 +2025,7 @@ crontab -e
 ```bash
 # 1. 注册 BunnyCDN (https://bunny.net)
 # 2. 创建 Pull Zone
-#    - Origin URL: https://orientalbeauty.com
+#    - Origin URL: https://your-domain.com
 #    - Type: Performance (全球包含亚太节点)
 
 # 3. 静态资源通过 BunnyCDN 分发
@@ -2024,7 +2033,7 @@ crontab -e
 #    assetPrefix: "https://oriental-beauty.b-cdn.net"
 
 # 4. DNS 配置 CNAME 到 BunnyCDN
-#    cdn.orientalbeauty.com → orient-beauty.b-cdn.net
+#    cdn.your-domain.com → orient-beauty.b-cdn.net
 ```
 
 ### 20.6 CDN 部署 Checklist
@@ -2120,7 +2129,7 @@ node -e "console.log(require('bcryptjs').hashSync('YourPassword123!', 12))"
 
 # 然后在 PostgreSQL 中执行:
 # INSERT INTO users (id, email, "passwordHash", "firstName", "lastName", role)
-# VALUES (gen_random_uuid(), 'admin2@orientalbeauty.com', '上述hash值', 'Admin2', 'Oriental Beauty', 'ADMIN');
+# VALUES (gen_random_uuid(), 'admin2@your-domain.com', '上述hash值', 'Admin2', 'Your Brand', 'ADMIN');
 ```
 
 ### 21.4 修改管理员密码
@@ -2136,7 +2145,7 @@ npx prisma studio
 # 先获取新密码的 bcrypt hash
 NEW_HASH=$(node -e "console.log(require('bcryptjs').hashSync('NewPassword123!', 12))")
 # 执行更新
-sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$NEW_HASH' WHERE email='81570423@qq.com';"
+sudo -u postgres psql -d commerce_db -c "UPDATE users SET \"passwordHash\"='$NEW_HASH' WHERE email='81570423@qq.com';"
 ```
 
 ### 21.5 管理后台安全配置
@@ -2146,7 +2155,7 @@ sudo -u postgres psql -d orient_beauty -c "UPDATE users SET \"passwordHash\"='$N
 ```bash
 # .env (确保以下配置正确)
 NEXTAUTH_SECRET="your-strong-random-secret"   # 用于加密 session token
-NEXTAUTH_URL="https://orientalbeauty.com"      # 必须与部署 URL 一致
+NEXTAUTH_URL="https://your-domain.com"      # 必须与部署 URL 一致
 ```
 
 > `NEXTAUTH_SECRET` 应使用强随机字符串生成：`openssl rand -base64 32`
@@ -2168,7 +2177,7 @@ NEXTAUTH_URL="https://orientalbeauty.com"      # 必须与部署 URL 一致
 部署完成后，通过以下地址访问：
 
 ```
-https://orientalbeauty.com/admin
+https://your-domain.com/admin
 ```
 
 使用管理员邮箱和密码登录（如尚未登录，会先跳转到登录页）。

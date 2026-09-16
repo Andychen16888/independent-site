@@ -4,7 +4,30 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Container } from "@/components/ui/Container"
 
-export function BrandStory() {
+export interface BrandStoryContent {
+  eyebrow?: string
+  title: string
+  paragraphs?: string[]
+  image?: string
+  ctaLabel?: string
+  ctaHref?: string
+}
+
+const DEFAULT_BRAND_STORY: BrandStoryContent = {
+  eyebrow: "Our Story",
+  title: "Bridging Two Worlds",
+  paragraphs: [
+    "Oriental Beauty was born from a simple belief — that the finest skincare rituals and the most beautiful home objects share a common origin: respect for nature and devotion to craftsmanship.",
+    "We travel across Asia to partner with artisans who have perfected their craft over generations, and collaborate with scientists who reimagine traditional ingredients through modern peptide technology.",
+  ],
+  ctaLabel: "Read Our Story",
+  ctaHref: "/about",
+}
+
+export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandStoryContent }) {
+  const safe = content.title ? content : DEFAULT_BRAND_STORY
+  const paragraphs = safe.paragraphs || []
+
   return (
     <section className="section-padding bg-ivory">
       <Container>
@@ -15,23 +38,16 @@ export function BrandStory() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-caption mb-4 block">Our Story</span>
-            <h2 className="heading-lg mb-6">
-              Bridging Two Worlds
-            </h2>
-            <p className="text-body mb-6">
-              Oriental Beauty was born from a simple belief — that the finest skincare rituals 
-              and the most beautiful home objects share a common origin: respect for nature 
-              and devotion to craftsmanship.
-            </p>
-            <p className="text-body mb-8">
-              We travel across Asia to partner with artisans who have perfected their craft 
-              over generations, and collaborate with scientists who reimagine traditional 
-              ingredients through modern peptide technology.
-            </p>
-            <Link href="/about" className="btn-outline">
-              Read Our Story
-            </Link>
+            {safe.eyebrow && <span className="text-caption mb-4 block">{safe.eyebrow}</span>}
+            <h2 className="heading-lg mb-6">{safe.title}</h2>
+            {paragraphs.map((p, i) => (
+              <p key={i} className="text-body mb-6">{p}</p>
+            ))}
+            {safe.ctaLabel && safe.ctaHref && (
+              <Link href={safe.ctaHref} className="btn-outline inline-flex">
+                {safe.ctaLabel}
+              </Link>
+            )}
           </motion.div>
 
           <motion.div
@@ -41,6 +57,7 @@ export function BrandStory() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative aspect-[4/5] bg-mist"
           >
+            {safe.image && <img src={safe.image} alt="" className="absolute inset-0 w-full h-full object-cover" />}
             <div className="absolute inset-0 bg-gradient-to-tr from-charcoal/5 to-transparent" />
             <div className="absolute -bottom-4 -left-4 w-24 h-24 border border-sage/30" />
             <div className="absolute -top-4 -right-4 w-32 h-32 border border-blush/30" />

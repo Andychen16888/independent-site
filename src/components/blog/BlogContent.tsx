@@ -17,8 +17,9 @@ interface BlogContentProps {
 }
 
 export function BlogContent({ post }: BlogContentProps) {
+  const looksLikeHtml = /<\s*[a-z][\s\S]*>/i.test(post.content)
   const htmlContent = DOMPurify.sanitize(
-    marked.parse(post.content, { breaks: true }) as string
+    looksLikeHtml ? post.content : (marked.parse(post.content, { breaks: true }) as string)
   )
 
   return (

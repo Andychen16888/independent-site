@@ -1,125 +1,145 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
+import { SETTING_KEYS, SETTING_GROUP_ORDER, type SettingGroup } from "@/lib/settings/keys"
+import ImageUploader from "@/components/admin/ImageUploader"
+
+const GROUP_TITLES: Record<SettingGroup, string> = {
+  site: "Site",
+  content: "Homepage Content",
+  contact: "Company & Contact",
+  social: "Social Media",
+  seo: "SEO",
+  shipping: "Shipping",
+  analytics: "Analytics",
+}
+
+function isImageKey(key: string): boolean {
+  return key.includes("logo") || key.includes("favicon") || key.includes("ogImage")
+}
 
 export default function AdminSettingsPage() {
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
+  const [settings, setSettings] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
-  const handlePasswordUpdate = async (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch("/api/admin/settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.settings) setSettings(data.settings)
+      })
+      .catch(() => toast.error("Failed to load settings"))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const update = (key: string, value: string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }))
+  }
+
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords don't match")
-      return
-    }
-    if (passwordData.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters")
-      return
-    }
-    setIsLoading(true)
+    setSaving(true)
     try {
-      const res = await fetch("/api/account/password", {
+      const res = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword,
-        }),
+        body: JSON.stringify({ settings }),
       })
       const data = await res.json()
-      if (res.ok) {
-        toast.success("Password updated")
-        setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
-      } else {
-        toast.error(data.error || "Update failed")
-      }
-    } catch {
-      toast.error("Something went wrong")
+      if (!res.ok) throw new Error(data.error || "Save failed")
+      if (data.settings) setSettings(data.settings)
+      toast.success("Settings saved")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Save failed")
     } finally {
-      setIsLoading(false)
+      setSaving(false)
     }
   }
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="heading-md">Settings</h1>
-        <p className="text-body text-sm mt-1">Configure your store settings.</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="heading-md">Settings</h1>
+          <p className="text-body text-sm mt-1">Configure store identity, contact, SEO, and shipping. Saved to the database and rendered on the storefront automatically.</p>
+        </div>
       </div>
 
-      <div className="max-w-2xl space-y-8">
-        <div className="bg-white border border-mist p-8 space-y-6">
-          <h2 className="font-serif text-lg">Store</h2>
-          <div>
-            <label className="block text-sm text-stone mb-2">Store Name</label>
-            <input
-              type="text"
-              defaultValue="Oriental Beauty"
-              className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-stone mb-2">Support Email</label>
-            <input
-              type="email"
-              defaultValue="hello@orientalbeauty.com"
-              className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-stone mb-2">Default Currency</label>
-            <select className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors">
-              <option>USD</option>
-              <option>EUR</option>
-              <option>GBP</option>
-              <option>CAD</option>
-              <option>AUD</option>
-            </select>
-          </div>
-        </div>
+      {loading ? (
+        <div className="text-sm text-stone">Loading settings...</div>
+      ) : (
+        <form onSubmit={handleSave} className="max-w-3xl space-y-8">
+          {SETTING_GROUP_ORDER.map((group) => {
+            const keys = SETTING_KEYS.filter((k) => k.group === group)
+            return (
+              <div key={group} className="bg-white border border-mist p-8 space-y-5">
+                <h2 className="font-serif text-lg">{GROUP_TITLES[group]}</h2>
+                {keys.map((meta) => {
+                  const currentValue = settings[meta.key] || ""
+                  return (
+                    <div key={meta.key}>
+                      <label className="block text-sm text-stone mb-2">{meta.label}</label>
+                      {isImageKey(meta.key) ? (
+                        <ImageUploader value={currentValue} onChange={(url) => update(meta.key, url)} />
+                      ) : meta.type === "textarea" ? (
+                        <textarea
+                          value={currentValue}
+                          onChange={(e) => update(meta.key, e.target.value)}
+                          rows={3}
+                          className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
+                        />
+                      ) : meta.type === "language" ? (
+                        <select
+                          value={currentValue || "en"}
+                          onChange={(e) => update(meta.key, e.target.value)}
+                          className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
+                        >
+                          <option value="en">English</option>
+                          <option value="zh">中文</option>
+                          <option value="es">Español</option>
+                          <option value="fr">Français</option>
+                          <option value="de">Deutsch</option>
+                          <option value="ar">العربية</option>
+                        </select>
+                      ) : meta.type === "currency" ? (
+                        <select
+                          value={currentValue || "USD"}
+                          onChange={(e) => update(meta.key, e.target.value)}
+                          className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
+                        >
+                          {["USD", "EUR", "GBP", "CAD", "AUD", "CNY", "JPY"].map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={currentValue}
+                          onChange={(e) => update(meta.key, e.target.value)}
+                          placeholder={meta.placeholder}
+                          className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
 
-        <div className="bg-white border border-mist p-8 space-y-5">
-          <h2 className="font-serif text-lg">Change Password</h2>
-          <form onSubmit={handlePasswordUpdate} className="space-y-5">
-            <input
-              type="password"
-              placeholder="Current password"
-              value={passwordData.currentPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-              required
-              className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
-            />
-            <input
-              type="password"
-              placeholder="New password"
-              value={passwordData.newPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-              required
-              className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
-            />
-            <input
-              type="password"
-              placeholder="Confirm new password"
-              value={passwordData.confirmPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-              required
-              className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
-            />
+          <div className="flex items-center gap-4">
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={saving}
               className="inline-flex items-center justify-center px-8 py-3 bg-charcoal text-white text-sm tracking-widest uppercase font-light transition-all duration-300 hover:bg-charcoal/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Updating..." : "Update Password"}
+              {saving ? "Saving..." : "Save Settings"}
             </button>
-          </form>
-        </div>
-      </div>
+          </div>
+        </form>
+      )}
     </div>
   )
 }

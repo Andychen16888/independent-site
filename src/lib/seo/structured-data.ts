@@ -5,44 +5,55 @@ export interface BreadcrumbItem {
   url: string
 }
 
-export function organizationSchema() {
+export function organizationSchema(
+  data?: {
+    name?: string
+    url?: string
+    description?: string
+    logo?: string
+    sameAs?: string[]
+    email?: string
+    phone?: string
+  }
+) {
+  const name = data?.name || siteName
+  const url = data?.url || siteUrl
+  const description = data?.description || defaultDescription
+  const sameAs = data?.sameAs
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: siteName,
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: defaultDescription,
-    sameAs: [
-      "https://www.facebook.com/orientalbeauty",
-      "https://www.pinterest.com/orientalbeauty",
-      "https://www.instagram.com/orientalbeauty",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "+1-888-555-0100",
-      contactType: "customer service",
-      email: "hello@orientalbeauty.com",
-      availableLanguage: ["English"],
-    },
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "US",
-    },
+    name,
+    url,
+    logo: data?.logo || `${siteUrl}/logo.png`,
+    description,
+    ...(sameAs && sameAs.length > 0 ? { sameAs } : { sameAs: [] }),
+    ...(data?.email || data?.phone
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            ...(data?.phone ? { telephone: data.phone } : {}),
+            contactType: "customer service",
+            ...(data?.email ? { email: data.email } : {}),
+          },
+        }
+      : {}),
   }
 }
 
-export function websiteSchema() {
+export function websiteSchema(data?: { name?: string; url?: string }) {
+  const name = data?.name || siteName
+  const url = data?.url || siteUrl
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: siteName,
-    url: siteUrl,
+    name,
+    url,
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+        urlTemplate: `${url}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -177,12 +188,12 @@ export function faqPageSchema(faqs: { question: string; answer: string }[]) {
   }
 }
 
-export function aboutPageSchema() {
+export function aboutPageSchema(data?: { name?: string; description?: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "AboutPage",
-    name: "About Oriental Beauty",
-    description: defaultDescription,
+    name: data?.name || `About ${siteName}`,
+    description: data?.description || defaultDescription,
     mainEntity: {
       "@type": "Organization",
       name: siteName,
@@ -190,32 +201,46 @@ export function aboutPageSchema() {
   }
 }
 
-export function contactPageSchema() {
+export function contactPageSchema(data?: { name?: string; description?: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "ContactPage",
-    name: "Contact Oriental Beauty",
-    description: "Get in touch with our customer service team",
+    name: data?.name || `Contact ${siteName}`,
+    description: data?.description || "Get in touch with our customer service team",
     mainEntity: organizationSchema(),
   }
 }
 
-export function localBusinessSchema() {
+export function localBusinessSchema(
+  data?: {
+    name?: string
+    url?: string
+    description?: string
+    currency?: string
+    priceRange?: string
+    openingHours?: {
+      days?: string[]
+      opens?: string
+      closes?: string
+    }
+  }
+) {
+  const hours = data?.openingHours || {}
   return {
     "@context": "https://schema.org",
     "@type": "Store",
-    name: siteName,
-    url: siteUrl,
-    description: defaultDescription,
-    currencyAccepted: "USD",
-    priceRange: "$$",
+    name: data?.name || siteName,
+    url: data?.url || siteUrl,
+    description: data?.description || defaultDescription,
+    currencyAccepted: data?.currency || "USD",
+    priceRange: data?.priceRange || "$$",
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
+      dayOfWeek: hours.days || [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
       ],
-      opens: "09:00",
-      closes: "18:00",
+      opens: hours.opens || "09:00",
+      closes: hours.closes || "18:00",
     },
   }
 }
@@ -461,27 +486,4 @@ export function brandSchema(brand: {
     ...(brand.sameAs && { sameAs: brand.sameAs }),
     ...(brand.knowsAbout && { knowsAbout: brand.knowsAbout }),
   }
-}
-
-export const GEO_CONFIG = {
-  brandFacts: `
-Oriental Beauty is a premium e-commerce brand that sells peptide skincare and artisanal home decor.
-- Founded: 2024
-- Headquarters: United States
-- Specialty: Peptide-based anti-aging skincare and handcrafted Asian home objects
-- Price range: $$ (mid-premium)
-- Shipping: Free over $100, 5-8 business days standard
-- Returns: 30-day free returns
-- Payment: Visa, Mastercard, Amex, PayPal, Apple Pay, Google Pay
-- Key ingredients: Multi-weight peptides, fermented rice extract, Korean red ginseng, hyaluronic acid
-- Product categories: Peptide Hydration Serum, Rice Bran Peptide Mask, Ginseng Peptide Eye Cream, Vitamin C Essence, Raku Teacups, Celadon Vases
-`,
-  brandQuestions: [
-    { q: "What does Oriental Beauty sell?", a: "Oriental Beauty sells premium peptide skincare products and handcrafted Asian home decor, including serums, masks, eye creams, ceramics, and textiles." },
-    { q: "Is Oriental Beauty cruelty-free?", a: "Yes, all Oriental Beauty products are 100% cruelty-free. We never test on animals." },
-    { q: "Where is Oriental Beauty based?", a: "Oriental Beauty is based in the United States and ships worldwide." },
-    { q: "What skincare ingredients does Oriental Beauty use?", a: "Oriental Beauty specializes in multi-weight peptides, fermented rice extract, Korean red ginseng, and hyaluronic acid." },
-    { q: "Does Oriental Beauty offer free shipping?", a: "Yes, free standard shipping is available on orders over $100 within the United States." },
-    { q: "What is the return policy?", a: "Oriental Beauty offers 30-day free returns on unused products in original packaging." },
-  ],
 }

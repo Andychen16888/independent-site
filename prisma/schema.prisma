@@ -141,17 +141,21 @@ model VerificationToken {
 }
 
 model Category {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?  @db.Text
-  image       String?
-  parentId    String?
-  type        String   @default("BEAUTY")
-  sortOrder   Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  description    String?  @db.Text
+  image          String?
+  parentId       String?
+  type           String   @default("GENERAL")
+  sortOrder      Int      @default(0)
+  isActive       Boolean  @default(true)
+  isFeatured     Boolean  @default(false)
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   parent       Category?   @relation("CategoryParent", fields: [parentId], references: [id])
   children     Category[]  @relation("CategoryParent")
@@ -180,6 +184,8 @@ model Product {
   slug            String        @unique
   sku             String        @unique
   brand           String?
+  model           String?
+  tags            String?
   description     String        @db.Text
   shortDescription String?
   unitPrice       Decimal       @db.Decimal(10, 2)
@@ -192,6 +198,9 @@ model Product {
   isFeatured      Boolean       @default(false)
   isBestSeller    Boolean       @default(false)
   isNew           Boolean       @default(false)
+  isHomeFeatured  Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  deletedAt       DateTime?
   seoTitle        String?
   seoDescription  String?
   seoKeywords     String?
@@ -213,6 +222,7 @@ model Product {
   @@index([slug])
   @@index([sku])
   @@index([status])
+  @@index([deletedAt])
   @@index([isFeatured])
   @@index([isBestSeller])
   @@map("products")
@@ -260,6 +270,7 @@ model ProductParameter {
   productId String
   name      String
   value     String
+  sortOrder Int    @default(0)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -294,7 +305,7 @@ model ProductRelation {
 
 model Address {
   id         String  @id @default(cuid())
-  userId     String
+  userId     String?
   firstName  String
   lastName   String
   phone      String?
@@ -308,7 +319,7 @@ model Address {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders         Order[] @relation("ShippingAddress")
   billingOrders  Order[] @relation("BillingAddress")
 
@@ -611,17 +622,56 @@ model Newsletter {
 }
 
 model Banner {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  eyebrow     String?
+  description String?  @db.Text
+  ctaText     String?
+  alignment   String   @default("left")
+  image       String
+  link        String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("banners")
+}
+
+model Menu {
   id        String   @id @default(cuid())
-  title     String
-  subtitle  String?
-  image     String
-  link      String?
+  label     String
+  url       String
+  parentId  String?
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("banners")
+  parent   Menu?  @relation("MenuParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children Menu[] @relation("MenuParent")
+
+  @@map("menus")
+}
+
+model Page {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  excerpt        String?  @db.Text
+  content        String   @db.Text
+  coverImage     String?
+  isPublished    Boolean  @default(false)
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isPublished])
+  @@map("pages")
 }
 
 model SiteSetting {

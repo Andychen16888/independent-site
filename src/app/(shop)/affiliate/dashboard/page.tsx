@@ -111,7 +111,7 @@ export default function AffiliateDashboardPage() {
               </div>
               <div className="flex gap-4 mt-4">
                 <a
-                  href={`https://twitter.com/intent/tweet?text=Check%20out%20Oriental%20Beauty%20${encodeURIComponent(referralLink)}`}
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${process.env.NEXT_PUBLIC_SITE_NAME || "our store"}: `)}${encodeURIComponent(referralLink)}`}
                   target="_blank"
                   rel="noopener"
                   className="text-xs text-stone hover:text-charcoal underline underline-offset-4"

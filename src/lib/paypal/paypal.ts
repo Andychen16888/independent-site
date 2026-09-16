@@ -1,3 +1,5 @@
+import { getSiteSeo } from "@/lib/settings/settings"
+
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET
 const PAYPAL_API_URL = process.env.PAYPAL_API_URL || "https://api-m.paypal.com"
@@ -20,6 +22,7 @@ export async function getPayPalAccessToken(): Promise<string> {
 
 export async function createPayPalOrder(amount: number, currency: string = "USD") {
   const accessToken = await getPayPalAccessToken()
+  const siteName = (await getSiteSeo()).siteName
 
   const res = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
     method: "POST",
@@ -35,7 +38,7 @@ export async function createPayPalOrder(amount: number, currency: string = "USD"
             currency_code: currency,
             value: amount.toFixed(2),
           },
-          description: "Oriental Beauty Order",
+          description: `${siteName} Order`,
         },
       ],
     }),

@@ -229,11 +229,11 @@ sudo systemctl restart postgresql
 ```bash
 # 方式一：从 Git 仓库克隆
 cd /var/www
-git clone https://github.com/Andychen16888/orient-beauty.git
-sudo chown -R deploy:deploy orient-beauty
-cd orient-beauty
+git clone https://github.com/Andychen16888/b2b-independent-site.git
+sudo chown -R deploy:deploy b2b-independent-site
+cd b2b-independent-site
 # 或使用 rsync 从本地推送
-# rsync -avz --exclude 'node_modules' --exclude '.next' --exclude '.env' ./ orient-beauty/
+# rsync -avz --exclude 'node_modules' --exclude '.next' --exclude '.env' ./ b2b-independent-site/
 
 # 方式二：从本地构建后上传
 # 在本地构建后，将整个项目（不含 node_modules）上传到服务器
@@ -242,7 +242,7 @@ cd orient-beauty
 ### 2.2 创建环境变量
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 nano .env
 ```
 
@@ -255,7 +255,7 @@ nano .env
 ### 3.1 安装依赖并构建
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 # 拉取最新代码 (如果通过 git 部署)
 git pull origin main
@@ -295,7 +295,7 @@ npm run db:seed
 ### 3.4 启动应用
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 # 确保拉取最新代码 (否则可能运行旧版 next start 而非 standalone)
 git pull origin main
@@ -305,7 +305,7 @@ git pull origin main
 pm2 start ecosystem.config.js
 
 # 启动方式二: 直接运行 standalone server.js
-# pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1
+# pm2 start .next/standalone/server.js --name b2b-independent-site -- --hostname 127.0.0.1
 
 # 保存 PM2 进程列表 (服务器重启后自动恢复)
 pm2 save
@@ -317,10 +317,10 @@ pm2 startup
 ```bash
 # 1. 检查 PM2 进程是否正常运行
 pm2 status
-# 应显示 orient-beauty 为 online，状态绿色
+# 应显示 b2b-independent-site 为 online，状态绿色
 
 # 2. 查看启动日志 (确认无报错)
-pm2 logs orient-beauty --lines 20
+pm2 logs b2b-independent-site --lines 20
 
 # 3. 使用健康检查端点 (不依赖数据库)
 curl http://localhost:3000/api/health
@@ -339,7 +339,7 @@ curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
 
 ```bash
 # 查看详细错误日志
-pm2 logs orient-beauty --lines 50
+pm2 logs b2b-independent-site --lines 50
 
 # 尝试前台启动查看错误 (standalone 模式)
 NODE_ENV=production node .next/standalone/server.js
@@ -359,9 +359,9 @@ NODE_ENV=production node .next/standalone/server.js
 ```bash
 # 首次部署先克隆代码
 cd /var/www
-git clone https://github.com/Andychen16888/orient-beauty.git
-sudo chown -R deploy:deploy orient-beauty
-cd orient-beauty
+git clone https://github.com/Andychen16888/b2b-independent-site.git
+sudo chown -R deploy:deploy b2b-independent-site
+cd b2b-independent-site
 
 # 创建 .dockerignore
 cat > .dockerignore << EOF
@@ -418,7 +418,7 @@ docker compose exec app sh
 #### 首次配置 — HTTP（仅用于获取 SSL 证书）
 
 ```bash
-sudo nano /etc/nginx/sites-available/orient-beauty
+sudo nano /etc/nginx/sites-available/b2b-independent-site
 ```
 
 粘贴以下内容（只复制代码块内的纯文本）：
@@ -487,7 +487,7 @@ sudo certbot certificates
 证书申请成功后，重新编辑 Nginx 配置：
 
 ```bash
-sudo nano /etc/nginx/sites-available/orient-beauty
+sudo nano /etc/nginx/sites-available/b2b-independent-site
 ```
 
 粘贴以下**完整配置**（只复制代码块内的纯文本，不要包含外面的 ` ```nginx ` 标记）：
@@ -516,8 +516,8 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
     # 日志
-    access_log /var/log/nginx/orient-beauty-access.log;
-    error_log /var/log/nginx/orient-beauty-error.log;
+    access_log /var/log/nginx/b2b-independent-site-access.log;
+    error_log /var/log/nginx/b2b-independent-site-error.log;
 
     # 静态资源（优先读本地文件系统，找不到时降级到 Node 代理）
     location /_next/static/ {
@@ -534,14 +534,14 @@ server {
     }
 
     location /static/ {
-        alias /var/www/orient-beauty/public/;
+        alias /var/www/b2b-independent-site/public/;
         expires 30d;
         add_header Cache-Control "public, max-age=2592000";
     }
 
     # 上传文件（优先读项目根 uploads/，其次 public/uploads/，找不到回退 Node）
     location /uploads/ {
-        root /var/www/orient-beauty;
+        root /var/www/b2b-independent-site;
         try_files $uri /public$uri @fallback_uploads;
         expires 7d;
         add_header Cache-Control "public, max-age=604800";
@@ -584,14 +584,14 @@ server {
 
 ### 5.2 启用站点
 
-> **快捷方式**: 仓库中的 `orient-beauty.nginx.conf` 已包含完整的 `server` 块配置（不含 `events`/`http`），可直接复制使用：
+> **快捷方式**: 仓库中的 `b2b-independent-site.nginx.conf` 已包含完整的 `server` 块配置（不含 `events`/`http`），可直接复制使用：
 > ```bash
-> sudo cp /var/www/orient-beauty/orient-beauty.nginx.conf /etc/nginx/sites-available/orient-beauty
-> sudo sed -i 's/your-domain.com/hhbtec.com/g' /etc/nginx/sites-available/orient-beauty
+> sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
+> sudo sed -i 's/your-domain.com/hhbtec.com/g' /etc/nginx/sites-available/b2b-independent-site
 > ```
 
 ```bash
-sudo ln -sf /etc/nginx/sites-available/orient-beauty /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/b2b-independent-site /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -709,7 +709,7 @@ sudo nano /etc/letsencrypt/options-ssl-nginx.conf
 # 例如将 ssl_session_timeout 1440m; 改为 # ssl_session_timeout 1440m;
 
 # 3. 在站点配置中添加新值
-sudo nano /etc/nginx/sites-available/orient-beauty
+sudo nano /etc/nginx/sites-available/b2b-independent-site
 # 在 include 行之后添加: ssl_session_timeout 1d;
 
 # 4. 测试并重载
@@ -861,7 +861,7 @@ npx prisma studio
 
 ```bash
 # 手动备份
-pg_dump -U commerce_user commerce_db > /backup/orient-beauty-$(date +%Y%m%d).sql
+pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m%d).sql
 
 # 自动备份脚本
 cat > /usr/local/bin/backup-db.sh << 'EOF'
@@ -1046,7 +1046,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: ".,!node_modules"
-          target: "/var/www/orient-beauty"
+          target: "/var/www/b2b-independent-site"
 
       - name: Restart PM2
         uses: appleboy/ssh-action@v1.0.3
@@ -1055,14 +1055,14 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /var/www/orient-beauty
+            cd /var/www/b2b-independent-site
             cp .env .env
             npm ci --legacy-peer-deps
             npm run db:generate
             npm run db:migrate
             npm run db:seed
             npm run build:server
-            pm2 restart orient-beauty
+            pm2 restart b2b-independent-site
 ```
 EOF
 
@@ -1084,17 +1084,17 @@ EOF
 ```bash
 # 应用管理 (standalone 模式，运行 .next/standalone/server.js)
 pm2 status                    # 查看所有进程
-pm2 logs orient-beauty        # 查看日志
-pm2 logs orient-beauty --lines 100  # 查看最近100行
-pm2 restart orient-beauty     # 重启
-pm2 stop orient-beauty        # 停止
-pm2 delete orient-beauty      # 删除进程
+pm2 logs b2b-independent-site        # 查看日志
+pm2 logs b2b-independent-site --lines 100  # 查看最近100行
+pm2 restart b2b-independent-site     # 重启
+pm2 stop b2b-independent-site        # 停止
+pm2 delete b2b-independent-site      # 删除进程
 pm2 start ecosystem.config.js --update-env  # 从配置文件启动 (推荐，含 HOST/PORT 环境变量)
-pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1  # 直接启动 standalone
+pm2 start .next/standalone/server.js --name b2b-independent-site -- --hostname 127.0.0.1  # 直接启动 standalone
 
 # 负载监控
 pm2 monit                     # 实时监控
-pm2 info orient-beauty        # 进程详情
+pm2 info b2b-independent-site        # 进程详情
 
 # 保存和开机自启
 pm2 save
@@ -1105,13 +1105,13 @@ pm2 startup
 
 ```bash
 # 应用日志
-pm2 logs orient-beauty
-tail -f /var/www/orient-beauty/logs/out.log
-tail -f /var/www/orient-beauty/logs/err.log
+pm2 logs b2b-independent-site
+tail -f /var/www/b2b-independent-site/logs/out.log
+tail -f /var/www/b2b-independent-site/logs/err.log
 
 # Nginx 日志
-tail -f /var/log/nginx/orient-beauty-access.log
-tail -f /var/log/nginx/orient-beauty-error.log
+tail -f /var/log/nginx/b2b-independent-site-access.log
+tail -f /var/log/nginx/b2b-independent-site-error.log
 
 # 系统日志
 journalctl -u nginx -f
@@ -1121,7 +1121,7 @@ journalctl -u postgresql -f
 ### 14.3 更新部署
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 # 拉取最新代码
 git pull origin main
@@ -1142,7 +1142,7 @@ npm run db:seed
 npm run build:server
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
-pm2 restart orient-beauty
+pm2 restart b2b-independent-site
 ```
 
 ### 14.4 一键更新脚本
@@ -1152,7 +1152,7 @@ cat > /usr/local/bin/deploy.sh << 'EOF'
 #!/bin/bash
 set -e
 
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 echo "Pulling latest code..."
 git pull origin main
@@ -1173,7 +1173,7 @@ echo "Building application (standalone mode)..."
 npm run build:server
 
 echo "Restarting application (via standalone server.js)..."
-pm2 restart orient-beauty
+pm2 restart b2b-independent-site
 
 echo "Deployment complete!"
 EOF
@@ -1199,17 +1199,17 @@ chmod +x /usr/local/bin/deploy.sh
 ```bash
 # 应用管理 (standalone 模式，运行 .next/standalone/server.js)
 pm2 status                    # 查看所有进程
-pm2 logs orient-beauty        # 查看日志
-pm2 logs orient-beauty --lines 100  # 查看最近100行
-pm2 restart orient-beauty     # 重启
-pm2 stop orient-beauty        # 停止
-pm2 delete orient-beauty      # 删除进程
+pm2 logs b2b-independent-site        # 查看日志
+pm2 logs b2b-independent-site --lines 100  # 查看最近100行
+pm2 restart b2b-independent-site     # 重启
+pm2 stop b2b-independent-site        # 停止
+pm2 delete b2b-independent-site      # 删除进程
 pm2 start ecosystem.config.js --update-env  # 从配置文件启动 (推荐，含 HOST/PORT 环境变量)
-pm2 start .next/standalone/server.js --name orient-beauty -- --hostname 127.0.0.1  # 直接启动 standalone
+pm2 start .next/standalone/server.js --name b2b-independent-site -- --hostname 127.0.0.1  # 直接启动 standalone
 
 # 负载监控
 pm2 monit                     # 实时监控
-pm2 info orient-beauty        # 进程详情
+pm2 info b2b-independent-site        # 进程详情
 
 # 保存和开机自启
 pm2 save
@@ -1220,13 +1220,13 @@ pm2 startup
 
 ```bash
 # 应用日志
-pm2 logs orient-beauty
-tail -f /var/www/orient-beauty/logs/out.log
-tail -f /var/www/orient-beauty/logs/err.log
+pm2 logs b2b-independent-site
+tail -f /var/www/b2b-independent-site/logs/out.log
+tail -f /var/www/b2b-independent-site/logs/err.log
 
 # Nginx 日志
-tail -f /var/log/nginx/orient-beauty-access.log
-tail -f /var/log/nginx/orient-beauty-error.log
+tail -f /var/log/nginx/b2b-independent-site-access.log
+tail -f /var/log/nginx/b2b-independent-site-error.log
 
 # 系统日志
 journalctl -u nginx -f
@@ -1236,7 +1236,7 @@ journalctl -u postgresql -f
 ### 14.3 更新部署
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 # 拉取最新代码
 git pull origin main
@@ -1260,7 +1260,7 @@ npm run db:seed
 npm run build:server
 
 # 重启 PM2 (ecosystem.config.js 启动 standalone server.js)
-pm2 restart orient-beauty
+pm2 restart b2b-independent-site
 ```
 
 ### 14.4 一键更新脚本
@@ -1270,7 +1270,7 @@ cat > /usr/local/bin/deploy.sh << 'EOF'
 #!/bin/bash
 set -e
 
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 echo "Pulling latest code..."
 git pull origin main
@@ -1294,7 +1294,7 @@ echo "Building application (standalone mode)..."
 npm run build:server
 
 echo "Restarting application (via standalone server.js)..."
-pm2 restart orient-beauty
+pm2 restart b2b-independent-site
 
 echo "Deployment complete!"
 EOF
@@ -1350,13 +1350,13 @@ sudo -u postgres psql -c "SELECT query, calls, total_time FROM pg_stat_statement
 
 ```bash
 # 检查 PM2 日志
-pm2 logs orient-beauty --lines 50
+pm2 logs b2b-independent-site --lines 50
 
 # 检查 standalone server 是否构建成功
-ls -la /var/www/orient-beauty/.next/standalone/server.js
+ls -la /var/www/b2b-independent-site/.next/standalone/server.js
 
 # 尝试前台启动 standalone server (查看错误信息)
-NODE_ENV=production node /var/www/orient-beauty/.next/standalone/server.js
+NODE_ENV=production node /var/www/b2b-independent-site/.next/standalone/server.js
 
 # 检查 Node.js 版本
 node -v
@@ -1365,7 +1365,7 @@ node -v
 lsof -i :3000
 
 # 检查环境变量 (确保 .env 包含 DATABASE_URL)
-cd /var/www/orient-beauty && cat .env | grep DATABASE_URL
+cd /var/www/b2b-independent-site && cat .env | grep DATABASE_URL
 ```
 
 ### 16.2 数据库连接失败
@@ -1419,7 +1419,7 @@ tail -f /var/log/nginx/error.log
 free -h
 
 # 调整 PM2 运行时内存限制
-pm2 restart orient-beauty --max-memory-restart 1G
+pm2 restart b2b-independent-site --max-memory-restart 1G
 
 # 构建时内存不足 (JavaScript heap out of memory)
 # 项目已内置 NODE_OPTIONS="--max-old-space-size=4096"，如果仍然 OOM：
@@ -1503,7 +1503,7 @@ sudo ufw deny in to any
 pg_dump -U commerce_user commerce_db > /backup/emergency-$(date +%Y%m%d).sql
 
 # 3. 停止应用
-pm2 delete orient-beauty
+pm2 delete b2b-independent-site
 
 # 4. 全面排查（见 17.2 节）
 # 5. 确认无法彻底清除后 → 重装系统
@@ -2030,10 +2030,10 @@ crontab -e
 
 # 3. 静态资源通过 BunnyCDN 分发
 #    在 next.config.ts 中配置 assetPrefix:
-#    assetPrefix: "https://oriental-beauty.b-cdn.net"
+#    assetPrefix: "https://b2b-independent-site.b-cdn.net"
 
 # 4. DNS 配置 CNAME 到 BunnyCDN
-#    cdn.your-domain.com → orient-beauty.b-cdn.net
+#    cdn.your-domain.com → b2b-independent-site.b-cdn.net
 ```
 
 ### 20.6 CDN 部署 Checklist
@@ -2098,7 +2098,7 @@ docker run -d --name minio \
 首次部署后，需要运行种子脚本创建管理员账号：
 
 ```bash
-cd /var/www/orient-beauty
+cd /var/www/b2b-independent-site
 
 # 运行种子脚本
 npm run db:seed

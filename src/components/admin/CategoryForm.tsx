@@ -117,7 +117,6 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
           <label className={label}>Type</label>
           <select value={form.type} onChange={(e) => update({ type: e.target.value })} className={input}>
             <option value="GENERAL">General</option>
-            <option value="BEAUTY">Beauty</option>
             <option value="ELECTRONICS">Electronics</option>
             <option value="FASHION">Fashion</option>
             <option value="HOME">Home</option>

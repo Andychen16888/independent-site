@@ -9,8 +9,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = generateMetadata({
   title: "Journal",
-  description: "Explore beauty rituals, artisan stories, and mindful living inspiration from the journal.",
-  keywords: "journal, blog, stories, insights",
+  description: "Importing guides, sourcing tips, and market insights from the Commodities From China journal.",
+  keywords: "journal, blog, importing, sourcing, trade insights",
   canonical: "/blog",
 })
 
@@ -65,10 +65,10 @@ export default async function BlogPage({ searchParams }: Props) {
               items={[{ label: "Home", href: "/" }, { label: "Journal" }]}
               className="mb-6"
             />
-            <span className="text-caption mb-4 block">Stories & Insights</span>
+            <span className="text-caption mb-4 block">Guides & Insights</span>
             <h1 className="heading-xl mb-6">The Journal</h1>
             <p className="text-body max-w-2xl">
-              Explorations in beauty, craftsmanship, and mindful living — from our team and community.
+              Practical importing, sourcing, and logistics knowledge — from our team and partners.
             </p>
           </Container>
         </div>

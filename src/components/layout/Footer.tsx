@@ -5,8 +5,8 @@ import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/
 
 const DEFAULT_SHOP_LINKS = [
   { name: "All Products", href: "/products" },
-  { name: "Beauty", href: "/categories/beauty" },
-  { name: "Handmade Living", href: "/categories/handmade-living" },
+  { name: "Electronics", href: "/categories/electronics" },
+  { name: "Home & Kitchen", href: "/categories/home-kitchen" },
   { name: "New Arrivals", href: "/products?sort=newest" },
   { name: "Best Sellers", href: "/products?sort=bestseller" },
 ]
@@ -29,7 +29,7 @@ export async function Footer({
   siteName = "Commodities From China",
   siteSlogan = "Sourced from China",
   logo = "",
-  about = "Direct from China to the world. We supply premium skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers.",
+  about = "Direct from China to the world. We supply quality electronics, LED lighting, kitchenware, and everyday household commodities for retail and wholesale B2B buyers.",
   contactEmail = "info@commoditychina.com",
   contactPhone = "",
   address = "Guangzhou, Guangdong, China",

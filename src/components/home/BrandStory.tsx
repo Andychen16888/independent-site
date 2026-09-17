@@ -15,13 +15,13 @@ export interface BrandStoryContent {
 
 const DEFAULT_BRAND_STORY: BrandStoryContent = {
   eyebrow: "Our Story",
-  title: "Bridging Two Worlds",
+  title: "Quality Goods, Direct from the Source",
   paragraphs: [
     "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-    "We travel across Asia to partner with artisans who have perfected their craft over generations, and collaborate with scientists who reimagine traditional ingredients through modern peptide technology.",
+    "We build long-term partnerships with certified manufacturers across China — from electronics factories in Shenzhen to kitchenware producers in Guangzhou — and inspect every batch before it ships.",
   ],
   ctaLabel: "Read Our Story",
-  ctaHref: "/about",
+  ctaHref: "/pages/about",
 }
 
 export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandStoryContent }) {

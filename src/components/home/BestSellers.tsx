@@ -7,9 +7,9 @@ import { Container } from "@/components/ui/Container"
 // Placeholder — will be replaced with real product fetching
 const products = Array.from({ length: 4 }, (_, i) => ({
   id: i,
-  name: "Peptide Hydration Serum",
-  price: 78,
-  originalPrice: 98,
+  name: "LED Motion Sensor Night Light",
+  price: 9.9,
+  originalPrice: 14.5,
   image: null,
 }))
 
@@ -23,9 +23,9 @@ export function BestSellers() {
           viewport={{ once: true }}
           className="section-title"
         >
-          <span className="text-caption mb-4 block">Most Loved</span>
+          <span className="text-caption mb-4 block">Top Picks</span>
           <h2>Best Sellers</h2>
-          <p>Curated favorites that our community returns to again and again</p>
+          <p>Wholesale favorites that buyers reorder again and again</p>
         </motion.div>
 
         <div className="product-grid">

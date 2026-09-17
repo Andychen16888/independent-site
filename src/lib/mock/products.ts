@@ -8,57 +8,57 @@ export interface MockProduct {
   isNew?: boolean
   isBestSeller?: boolean
   images?: { url: string; alt?: string | null }[]
-  category?: "beauty" | "handmade-living"
+  category?: "electronics" | "home-kitchen"
 }
 
 export const mockProducts: MockProduct[] = [
   {
-    id: "1", name: "Peptide Hydration Serum", slug: "peptide-hydration-serum",
-    unitPrice: 78, originalPrice: 98, stock: 15, isNew: true, isBestSeller: true,
+    id: "1", name: "LED Motion Sensor Night Light", slug: "led-motion-sensor-night-light",
+    unitPrice: 9.9, originalPrice: 14.5, stock: 500, isNew: true, isBestSeller: true,
     images: [{ url: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80" }],
-    category: "beauty",
+    category: "electronics",
   },
   {
-    id: "2", name: "Rice Bran Peptide Mask", slug: "rice-bran-peptide-mask",
-    unitPrice: 12, stock: 100, isNew: true,
+    id: "2", name: "Portable Power Bank 20000mAh", slug: "portable-power-bank-20000mah",
+    unitPrice: 24.5, stock: 300, isNew: true,
     images: [{ url: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=400&q=80" }],
-    category: "beauty",
+    category: "electronics",
   },
   {
-    id: "3", name: "Ginseng Peptide Eye Cream", slug: "ginseng-peptide-eye-cream",
-    unitPrice: 62, originalPrice: 78, stock: 18, isBestSeller: true,
+    id: "3", name: "TWS Wireless Earbuds Pro", slug: "tws-wireless-earbuds-pro",
+    unitPrice: 32, originalPrice: 45, stock: 250, isBestSeller: true,
     images: [{ url: "https://images.unsplash.com/photo-1621607512214-68297480165e?w=400&q=80" }],
-    category: "beauty",
+    category: "electronics",
   },
   {
-    id: "4", name: "Vitamin C Brightening Essence", slug: "vitamin-c-brightening-essence",
-    unitPrice: 55, stock: 30, isNew: true,
+    id: "4", name: "Smart LED Strip Light Kit", slug: "smart-led-strip-light-kit",
+    unitPrice: 15.5, stock: 400, isNew: true,
     images: [{ url: "https://images.unsplash.com/photo-1599305090598-fe179d501227?w=400&q=80" }],
-    category: "beauty",
+    category: "electronics",
   },
   {
-    id: "5", name: "Raku Teacup Set", slug: "raku-teacup-set",
-    unitPrice: 145, stock: 8, isNew: true, isBestSeller: true,
+    id: "5", name: "Ceramic Dinnerware Set", slug: "ceramic-dinnerware-set",
+    unitPrice: 68, stock: 120, isNew: true, isBestSeller: true,
     images: [{ url: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80" }],
-    category: "handmade-living",
+    category: "home-kitchen",
   },
   {
-    id: "6", name: "Celadon Lotus Vase", slug: "celadon-lotus-vase",
-    unitPrice: 230, originalPrice: 280, stock: 3, isNew: true,
+    id: "6", name: "Stainless Steel Insulated Mug", slug: "stainless-steel-insulated-mug",
+    unitPrice: 12, originalPrice: 16, stock: 350, isNew: true,
     images: [{ url: "https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400&q=80" }],
-    category: "handmade-living",
+    category: "home-kitchen",
   },
   {
-    id: "7", name: "Bamboo Incense Holder", slug: "bamboo-incense-holder",
-    unitPrice: 38, stock: 50,
+    id: "7", name: "Non-Stick Cookware Set", slug: "non-stick-cookware-set",
+    unitPrice: 88, stock: 80,
     images: [{ url: "https://images.unsplash.com/photo-1602872030216-3ae6e5f3e5e5?w=400&q=80" }],
-    category: "handmade-living",
+    category: "home-kitchen",
   },
   {
-    id: "8", name: "Mulberry Silk Eye Mask", slug: "mulberry-silk-eye-mask",
-    unitPrice: 48, originalPrice: 58, stock: 35, isBestSeller: true,
+    id: "8", name: "Ceramic Dinnerware Set — 32-Piece", slug: "ceramic-dinnerware-set-32",
+    unitPrice: 92, originalPrice: 110, stock: 60, isBestSeller: true,
     images: [{ url: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&q=80" }],
-    category: "handmade-living",
+    category: "home-kitchen",
   },
 ]
 

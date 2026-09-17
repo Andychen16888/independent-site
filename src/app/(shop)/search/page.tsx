@@ -6,7 +6,7 @@ import { generateMetadata } from "@/lib/seo/generate-metadata"
 
 export const metadata = generateMetadata({
   title: "Search Results",
-  description: "Search our collection of peptide skincare and artisanal home decor.",
+  description: "Search our collection of electronics, LED lighting, kitchenware, and household commodities.",
   noindex: true,
   nofollow: true,
 })

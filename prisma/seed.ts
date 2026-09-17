@@ -36,8 +36,8 @@ async function main() {
   }
 
   const categoryData = [
-    { name: "Beauty", slug: "beauty", description: "Peptide skincare and beauty products", type: "BEAUTY", sortOrder: 1, isFeatured: true, seoTitle: "Beauty", seoDescription: "Skincare and beauty products", seoKeywords: "beauty, skincare" },
-    { name: "Handmade Living", slug: "handmade-living", description: "Artisanal home objects and decor", type: "HOME", sortOrder: 2, isFeatured: true, seoTitle: "Handmade Living", seoDescription: "Artisanal home objects and decor", seoKeywords: "handmade, home decor" },
+    { name: "Electronics", slug: "electronics", description: "LED lighting, power banks, audio gear, and everyday electronics", type: "ELECTRONICS", sortOrder: 1, isFeatured: true, seoTitle: "Electronics", seoDescription: "Wholesale electronics and LED products", seoKeywords: "electronics, led, wholesale" },
+    { name: "Home & Kitchen", slug: "home-kitchen", description: "Daily-use kitchenware and household essentials", type: "HOME", sortOrder: 2, isFeatured: true, seoTitle: "Home & Kitchen", seoDescription: "Kitchenware and household essentials", seoKeywords: "kitchenware, home goods, household" },
   ]
 
   const categoryIds: Record<string, string> = {}
@@ -61,106 +61,106 @@ async function main() {
     categorySlug: string; imageUrl: string;
   }[] = [
     {
-      name: "Peptide Hydration Serum",
-      slug: "peptide-hydration-serum",
-      sku: "OB-001",
+      name: "LED Motion Sensor Night Light",
+      slug: "led-motion-sensor-night-light",
+      sku: "CC-001",
       brand: "Commodities From China",
-      description: "A lightweight, fast-absorbing serum packed with multi-weight hyaluronic acid and copper peptides to deeply hydrate and support skin barrier repair.",
-      shortDescription: "Deep hydration serum with copper peptides and hyaluronic acid",
-      unitPrice: 48.00,
-      originalPrice: 58.00,
-      stock: 150,
+      description: "A compact LED night light with built-in motion sensor and automatic dimming. Energy-efficient, USB-rechargeable, and ideal for hallways, bedrooms, and closets.",
+      shortDescription: "Rechargeable LED motion sensor night light",
+      unitPrice: 6.50,
+      originalPrice: 8.00,
+      stock: 1500,
       status: "ACTIVE",
       isFeatured: true,
       isBestSeller: true,
       isNew: false,
-      categorySlug: "beauty",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Serum",
+      categorySlug: "electronics",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=LED+Light",
     },
     {
-      name: "Vitamin C Brightening Cream",
-      slug: "vitamin-c-brightening-cream",
-      sku: "OB-002",
+      name: "Portable Power Bank 20000mAh",
+      slug: "portable-power-bank-20000mah",
+      sku: "CC-002",
       brand: "Commodities From China",
-      description: "A rich yet silky moisturizer featuring stabilized vitamin C and niacinamide to brighten skin tone, reduce dark spots, and improve overall radiance.",
-      shortDescription: "Brightening moisturizer with vitamin C and niacinamide",
-      unitPrice: 42.00,
+      description: "High-capacity 20000mAh power bank with dual USB output and fast-charge support. Slim aluminum body, LED indicator, and overcharge protection for reliable everyday power.",
+      shortDescription: "20000mAh dual-port fast-charge power bank",
+      unitPrice: 18.00,
       originalPrice: null,
-      stock: 200,
+      stock: 800,
       status: "ACTIVE",
       isFeatured: true,
       isBestSeller: false,
       isNew: false,
-      categorySlug: "beauty",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Cream",
+      categorySlug: "electronics",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Power+Bank",
     },
     {
-      name: "Retinol Night Oil",
-      slug: "retinol-night-oil",
-      sku: "OB-003",
+      name: "TWS Wireless Earbuds Pro",
+      slug: "tws-wireless-earbuds-pro",
+      sku: "CC-003",
       brand: "Commodities From China",
-      description: "A gentle yet effective overnight treatment combining encapsulated retinol with squalane and rosehip oil to smooth fine lines and improve skin texture while you sleep.",
-      shortDescription: "Overnight retinol treatment with squalane and rosehip oil",
-      unitPrice: 52.00,
-      originalPrice: 62.00,
-      stock: 100,
+      description: "True wireless earbuds with Bluetooth 5.3, active noise cancellation, and up to 30 hours of total playback with the charging case. IPX5 water resistance for workouts and daily commutes.",
+      shortDescription: "Bluetooth 5.3 ANC true wireless earbuds",
+      unitPrice: 24.50,
+      originalPrice: 30.00,
+      stock: 600,
       status: "ACTIVE",
       isFeatured: false,
       isBestSeller: false,
       isNew: true,
-      categorySlug: "beauty",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Night+Oil",
+      categorySlug: "electronics",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Earbuds",
     },
     {
-      name: "Ceramide Barrier Balm",
-      slug: "ceramide-barrier-balm",
-      sku: "OB-004",
+      name: "Stainless Steel Insulated Mug 500ml",
+      slug: "stainless-steel-insulated-mug-500ml",
+      sku: "CC-004",
       brand: "Commodities From China",
-      description: "An ultra-nourishing balm formulated with ceramides, panthenol, and shea butter to restore and strengthen the skin barrier for compromised or dry skin types.",
-      shortDescription: "Nourishing barrier repair balm with ceramides and shea butter",
-      unitPrice: 38.00,
+      description: "Double-wall vacuum-insulated stainless steel mug that keeps drinks hot for 12 hours or cold for 24. Leak-proof lid, powder-coated finish, and dishwasher-safe construction.",
+      shortDescription: "Vacuum-insulated 500ml stainless steel travel mug",
+      unitPrice: 9.80,
       originalPrice: null,
-      stock: 80,
+      stock: 400,
       status: "DRAFT",
       isFeatured: false,
       isBestSeller: false,
       isNew: false,
-      categorySlug: "beauty",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Balm",
+      categorySlug: "home-kitchen",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Insulated+Mug",
     },
     {
-      name: "Handcrafted Soy Candle - Jasmine",
-      slug: "handcrafted-soy-candle-jasmine",
-      sku: "OB-101",
+      name: "Smart LED Strip Light Kit",
+      slug: "smart-led-strip-light-kit",
+      sku: "CC-005",
       brand: "Commodities From China",
-      description: "Hand-poured soy wax candle with natural jasmine essential oil. Burns cleanly for 45+ hours in a hand-thrown ceramic vessel.",
-      shortDescription: "Soy wax candle with natural jasmine essential oil",
-      unitPrice: 28.00,
-      originalPrice: 32.00,
-      stock: 60,
+      description: "5-meter RGB smart LED strip kit with app and voice control, 16 million colors, and music sync mode. Self-adhesive backing makes installation quick and clean.",
+      shortDescription: "5m RGB app-controlled smart LED strip light",
+      unitPrice: 12.90,
+      originalPrice: 15.00,
+      stock: 1200,
       status: "ACTIVE",
       isFeatured: true,
       isBestSeller: false,
       isNew: false,
-      categorySlug: "handmade-living",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Candle",
+      categorySlug: "electronics",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=LED+Strip",
     },
     {
-      name: "Linen Tea Towel Set",
-      slug: "linen-tea-towel-set",
-      sku: "OB-102",
+      name: "Ceramic Dinnerware Set (16-piece)",
+      slug: "ceramic-dinnerware-set-16-piece",
+      sku: "CC-006",
       brand: "Commodities From China",
-      description: "Set of three stonewashed linen tea towels in neutral earth tones. Pre-washed for softness, each measures 18x28 inches.",
-      shortDescription: "Set of 3 stonewashed linen tea towels",
-      unitPrice: 34.00,
+      description: "Complete 16-piece ceramic dinnerware set including dinner plates, salad plates, bowls, and mugs. Durable stoneware finish that is microwave and dishwasher safe.",
+      shortDescription: "16-piece ceramic dinnerware set",
+      unitPrice: 42.00,
       originalPrice: null,
-      stock: 120,
+      stock: 180,
       status: "ACTIVE",
       isFeatured: false,
       isBestSeller: true,
       isNew: false,
-      categorySlug: "handmade-living",
-      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Towel+Set",
+      categorySlug: "home-kitchen",
+      imageUrl: "https://placehold.co/400x400/ivory/charcoal?text=Dinnerware",
     },
   ]
 
@@ -223,7 +223,7 @@ async function seedSiteSettings() {
   const settings: Record<string, string> = {
     "site.name": "Commodities From China",
     "site.slogan": "Sourced from China, delivered worldwide",
-    "site.description": "Sourced directly from China. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers worldwide.",
+    "site.description": "Direct sourcing from trusted Chinese factories. Quality electronics, kitchenware, and daily-use commodities for retail and wholesale B2B buyers worldwide.",
     "site.logo": "",
     "site.favicon": "",
     "site.language": "en",
@@ -234,17 +234,17 @@ async function seedSiteSettings() {
     "contact.whatsapp": "",
     "company.name": "Commodities From China Inc.",
     "company.address": "Guangzhou, Guangdong, China",
-    "company.brief": "Direct sourcing from trusted Chinese suppliers. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale buyers.",
-    "footer.about": "Sourced directly from China. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers worldwide.",
+    "company.brief": "Direct sourcing from trusted Chinese suppliers. Quality electronics, kitchenware, and daily-use commodities for retail and wholesale buyers.",
+    "footer.about": "Sourced directly from China. Quality electronics, kitchenware, and everyday commodities for retail and wholesale B2B buyers worldwide.",
     "footer.copyright": "All rights reserved.",
     "social.facebook": "https://www.facebook.com/commoditychina",
     "social.instagram": "https://www.instagram.com/commoditychina",
     "social.linkedin": "",
     "social.youtube": "",
     "social.twitter": "https://twitter.com/commoditychina",
-    "seo.homeTitle": "Commodities From China | Wholesale Skincare & Artisanal Home Decor",
-    "seo.homeDescription": "Sourced directly from China for retail and wholesale B2B buyers. Premium peptide skincare, natural formulas, and artisanal home decor.",
-    "seo.defaultKeywords": "peptide skincare, commodities from china, wholesale skincare, b2b wholesale, handmade ceramics, artisanal home decor",
+    "seo.homeTitle": "Commodities From China | Wholesale Electronics & Daily Commodities",
+    "seo.homeDescription": "Factory-direct sourcing from China for retail and wholesale B2B buyers. Quality electronics, LED lighting, kitchenware, and everyday commodities at wholesale prices.",
+    "seo.defaultKeywords": "wholesale electronics, commodities from china, b2b wholesale, led lighting wholesale, factory-direct, kitchenware wholesale",
     "content.featuredEyebrow": "Explore",
     "content.featuredHeading": "Our Collections",
     "content.featuredTagline": "Factory-direct sourcing, quality goods, worldwide delivery",
@@ -253,59 +253,59 @@ async function seedSiteSettings() {
       title: "From China to the World",
       paragraphs: [
         "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-        "We partner with factories, farmers, and artisans across China who have perfected their craft over generations, from peptide skincare formulated in modern labs to ceramics shaped by hand.",
+        "We partner with manufacturers and suppliers across China who have mastered their craft over decades, from LED lighting produced in modern factories to kitchenware shaped by industrial precision.",
         "Whether you shop retail or buy wholesale in bulk, we deliver factory-direct quality with reliable global shipping and dedicated support.",
       ],
       ctaLabel: "Read Our Story",
       ctaHref: "/pages/about",
     }),
     "content.promo1": JSON.stringify({
-      eyebrow: "The Science of Beauty",
-      title: "Peptide Skincare",
-      body: "Our peptide formulations combine cutting-edge biotechnology with centuries-old Asian botanical wisdom. Each product is designed to work in harmony with your skin's natural rhythms.",
+      eyebrow: "Modern Manufacturing",
+      title: "Quality Electronics",
+      body: "From LED lighting and power banks to wireless audio — our electronics are manufactured to strict quality standards with global certifications. Built for retail, private label, and wholesale order quantities.",
       features: [
-        { title: "Advanced Peptide Technology", description: "Multi-weight peptides that penetrate deeper for visible results" },
-        { title: "Botanical Actives", description: "Fermented Asian botanicals — ginseng, green tea, and rice bran" },
-        { title: "Minimalist Formulations", description: "Clean, effective ingredients. No parabens, sulfates, or synthetic fragrances" },
-        { title: "Sustainable Luxury", description: "Refillable glass vessels and biodegradable packaging" },
+        { title: "Factory-Direct Pricing", description: "Bulk pricing with tiered discounts for wholesale orders" },
+        { title: "Certified Quality", description: "CE, FCC, RoHS certified products with batch inspection" },
+        { title: "Private Label Ready", description: "Custom branding and packaging for retail programs" },
+        { title: "Reliable Supply", description: "Consistent stock and dependable shipping schedules" },
       ],
-      ctaLabel: "View All Skincare",
-      ctaHref: "/categories/beauty",
+      ctaLabel: "View All Electronics",
+      ctaHref: "/categories/electronics",
     }),
     "content.promo2": JSON.stringify({
-      eyebrow: "Craftsmanship",
-      title: "Handmade Living",
-      tagline: "Objects that bring warmth, story, and intention into your home",
+      eyebrow: "Everyday Essentials",
+      title: "Home & Kitchen",
+      tagline: "Practical, durable kitchenware and household goods for daily life",
       collections: [
-        { title: "Ceramics", description: "Hand-thrown pottery from ancient kilns", href: "/categories/handmade-living?sub=ceramics" },
-        { title: "Woodcraft", description: "Carved teak and bamboo art pieces", href: "/categories/handmade-living?sub=woodcraft" },
-        { title: "Textiles", description: "Handwoven silk and linen home goods", href: "/categories/handmade-living?sub=textiles" },
-        { title: "Decor", description: "Curated objects for mindful spaces", href: "/categories/handmade-living?sub=decor" },
+        { title: "Kitchenware", description: "Cookware, dinnerware, and prep tools", href: "/categories/home-kitchen?sub=kitchenware" },
+        { title: "Storage", description: "Food containers and organization solutions", href: "/categories/home-kitchen?sub=storage" },
+        { title: "Textiles", description: "Towels, linens, and kitchen textiles", href: "/categories/home-kitchen?sub=textiles" },
+        { title: "Cleaning", description: "Household cleaning essentials", href: "/categories/home-kitchen?sub=cleaning" },
       ],
       ctaLabel: "Explore All Collections",
-      ctaHref: "/categories/handmade-living",
+      ctaHref: "/categories/home-kitchen",
     }),
     "content.testimonials": JSON.stringify([
       {
         name: "Sarah M.",
         location: "New York",
         rating: 5,
-        text: "The peptide serum transformed my skincare routine. My skin has never looked this radiant. It's the perfect balance of science and nature.",
-        product: "Peptide Hydration Serum",
+        text: "We order LED lighting products in bulk from Commodities From China every quarter. Consistent quality, on-time delivery, and pricing that keeps us competitive.",
+        product: "LED Motion Sensor Night Light",
       },
       {
         name: "Emily R.",
         location: "Guangzhou",
         rating: 5,
-        text: "I purchased a ceramic tea set from the Handmade collection and it's absolutely breathtaking. Each piece tells a story. It has become the centerpiece of my morning ritual.",
-        product: "Artisan Tea Collection",
+        text: "The dinnerware set is excellent value for the wholesale price. My customers love the quality, and the supplier communication was fast and professional.",
+        product: "Ceramic Dinnerware Set",
       },
       {
         name: "Jessica K.",
         location: "London",
         rating: 5,
-        text: "Finally, a brand that understands true luxury — it's about ingredients that work and objects that matter. The overnight mask is pure magic.",
-        product: "Overnight Recovery Mask",
+        text: "Reliable sourcing partner. The power banks sell out quickly at our retail store. Finally a supplier that delivers what they promise at factory-direct prices.",
+        product: "Portable Power Bank 20000mAh",
       },
     ]),
     "content.instagram": JSON.stringify({
@@ -316,12 +316,12 @@ async function seedSiteSettings() {
     }),
     "content.faq": JSON.stringify([
       {
-        q: "What is peptide skincare?",
-        a: "Peptide skincare uses short chains of amino acids that signal your skin to produce collagen and elastin. Our multi-weight peptide formulations penetrate at different depths for comprehensive visible results.",
+        q: "What is the minimum order quantity (MOQ)?",
+        a: "MOQs vary by product. Most electronics and kitchenware items can be ordered at retail quantities, while some bulk items have a minimum of 100 units. Contact us for detailed MOQ and tiered wholesale pricing.",
       },
       {
-        q: "Are your products cruelty-free?",
-        a: "Yes, all our products are 100% cruelty-free. We never test on animals and partner only with suppliers who share this commitment.",
+        q: "Can I order in bulk for wholesale or private label?",
+        a: "Yes. We support wholesale orders with tiered discounts, and offer private label services including custom branding, packaging, and product labeling for qualified orders.",
       },
       {
         q: "How long does shipping take?",
@@ -329,15 +329,15 @@ async function seedSiteSettings() {
       },
       {
         q: "What is your return policy?",
-        a: "We offer a 30-day return window for unused products in original packaging. Free returns on domestic orders. Refunds are processed within 5-7 business days.",
+        a: "We offer a 30-day return window for unused products in original packaging. Defective items are replaced or refunded at no cost. Refunds are processed within 5-7 business days.",
       },
       {
         q: "Do you ship internationally?",
-        a: "Yes, we ship worldwide. International orders may be subject to customs duties and taxes, which are the customer's responsibility.",
+        a: "Yes, we ship worldwide. International orders may be subject to customs duties and taxes, which are the customer's responsibility. We provide tracking on all orders.",
       },
       {
-        q: "Are your products suitable for sensitive skin?",
-        a: "Our formulations are designed to be gentle and free from parabens, sulfates, and synthetic fragrances. However, we recommend patch testing before full application.",
+        q: "Are your products certified?",
+        a: "Most of our electronics carry CE, FCC, and RoHS certifications, and kitchenware meets food-safe standards. Certification documents are available upon request.",
       },
     ]),
   }
@@ -355,9 +355,9 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
     title: "About Us",
     slug: "about",
     excerpt: "Our story — sourcing quality goods from China for the world.",
-    content: `<h1>From China to the World</h1><p>Our journey began in the factories, farms, and workshops of China — from modern skincare labs in Guangzhou to ceramics studios in Jingdezhen. We traveled the country to find makers who share one standard: quality you can trust.</p><p>We believe that buying well is simpler when good products move directly from maker to buyer. That's why we handle sourcing, quality control, and shipping ourselves — so you get factory-direct value every time.</p>`,
+    content: `<h1>From China to the World</h1><p>Our journey began in the factories and workshops of China — from electronics assembly lines in Shenzhen to kitchenware manufacturers in Guangzhou. We traveled the country to find makers who share one standard: quality you can trust.</p><p>We believe that buying well is simpler when good products move directly from maker to buyer. That's why we handle sourcing, quality control, and shipping ourselves — so you get factory-direct value every time.</p>`,
     seoTitle: "About Us",
-    seoDescription: "Discover how Commodities From China sources quality skincare, home decor, and everyday goods directly from Chinese suppliers.",
+    seoDescription: "Discover how Commodities From China sources quality electronics, kitchenware, and everyday goods directly from Chinese suppliers.",
     seoKeywords: "about us, our story, sourcing from china, b2b wholesale",
   },
   {
@@ -411,229 +411,203 @@ async function seedDefaultPages() {
 
 const defaultBlogPosts: { title: string; slug: string; excerpt: string; content: string; author: string; tags: string; publishedAt: string }[] = [
   {
-    title: "The Art of Peptide Layering",
-    slug: "art-of-peptide-layering",
-    excerpt: "Discover how to build an effective peptide skincare routine with our step-by-step guide.",
-    content: `<h1>The Art of Peptide Layering</h1>
+    title: "How to Import from China: A Beginner's Guide",
+    slug: "import-from-china-beginners-guide",
+    excerpt: "Everything you need to know before your first shipment — from finding suppliers to clearing customs.",
+    content: `<h1>How to Import from China: A Beginner's Guide</h1>
 
-<h2>Why Layering Matters</h2>
+<h2>Why Source from China?</h2>
 
-<p>Layering your skincare correctly can make the difference between radiant, youthful skin and a routine that never reaches its full potential. At Commodities From China, we've perfected a peptide-layering system that maximizes absorption and efficacy.</p>
+<p>China remains the world's largest manufacturer of consumer goods, offering unmatched scale, competitive pricing, and a complete supply chain — from electronics to everyday household items. For both retail entrepreneurs and established wholesalers, sourcing from China is the fastest path to factory-direct margins.</p>
 
-<h2>The Science of Peptides</h2>
+<h2>Step 1: Define Your Product</h2>
 
-<p>Peptides are short chains of amino acids that act as signaling molecules for your skin. When applied topically, they communicate with your cells to:</p>
+<p>Know exactly what you want to buy. A tight product specification — including materials, dimensions, certifications, and quality expectations — makes every later step faster and less risky.</p>
 
 <ul>
-<li><strong>Boost collagen production</strong></li>
-<li><strong>Improve skin elasticity</strong></li>
-<li><strong>Reduce fine lines and wrinkles</strong></li>
-<li><strong>Strengthen the skin barrier</strong></li>
+<li><strong>Write a detailed spec sheet</strong></li>
+<li><strong>Set your target price range</strong></li>
+<li><strong>Determine your target MOQ</strong></li>
+<li><strong>List required certifications</strong></li>
 </ul>
 
-<h2>Our Peptide Layering Method</h2>
+<h2>Step 2: Choose a Sourcing Route</h2>
 
-<h3>Step 1: Cleanse</h3>
-<p>Start with a gentle, pH-balanced cleanser to prepare your skin for maximum peptide absorption.</p>
+<p>You can work with trade intermediaries, sourcing agents, or go directly to manufacturers. Direct factory relationships give you the best pricing but require more diligence.</p>
 
-<h3>Step 2: Peptide Essence</h3>
-<p>Apply our <strong>Multi-Peptide Essence</strong> to damp skin. The low molecular weight peptides penetrate deeply to signal collagen production at the cellular level.</p>
+<h2>Step 3: Quality Control</h2>
 
-<h3>Step 3: Peptide Serum</h3>
-<p>Layer our <strong>Peptide Hydration Serum</strong> over the essence. This medium-weight formula delivers peptides to the mid-layers of your skin.</p>
+<p>Never skip inspection. A third-party pre-shipment inspection catches defects before your money is tied up in freight. Samples should be tested before you commit to a production run.</p>
 
-<h3>Step 4: Moisturize</h3>
-<p>Seal everything in with our <strong>Peptide Rich Moisturizer</strong>, which supports the skin barrier and locks in hydration.</p>
+<h2>Step 4: Shipping and Customs</h2>
 
-<blockquote>"The key to peptide layering is going from thinnest to thickest consistency, allowing each layer to absorb before applying the next."</blockquote>
+<p>Choose between air freight (fast, higher cost) and sea freight (slow, lower cost for large volumes). Understand Incoterms, HS codes, and duties — customs preparation prevents costly delays at the border.</p>
 
-<h2>Pro Tips</h2>
+<blockquote>"The key to a successful import strategy is preparation: spec your product correctly, inspect your goods, and know your true landed cost before you order."</blockquote>
 
-<ul>
-<li><strong>Pat, don't rub</strong> — Gentle pressing motions help peptides absorb better</li>
-<li><strong>Wait 60 seconds</strong> between each layer for optimal absorption</li>
-<li><strong>Use twice daily</strong> for visible results within 4-6 weeks</li>
-</ul>`,
+<h2>Why Work with a Sourcing Partner?</h2>
+
+<p>A reliable sourcing partner, like Commodities From China, handles supplier vetting, quality control, and export logistics for you — so you get factory-direct pricing without the hassle of managing factories abroad.</p>`,
     author: "Content Editor",
-    tags: "skincare, peptides, routine, anti-aging, collagen",
+    tags: "importing, sourcing, china, b2b, wholesale",
     publishedAt: "2026-04-15",
   },
   {
-    title: "Meet the Artisan: Master Potter Kazuo Tanaka",
-    slug: "meet-artisan-kazuo-tanaka",
-    excerpt: "A glimpse into the life and craft of a third-generation ceramic master from Kyoto.",
-    content: `<h1>Meet the Artisan: Master Potter Kazuo Tanaka</h1>
+    title: "Quality Control 101: What Your Supplier Won't Tell You",
+    slug: "quality-control-101",
+    excerpt: "Practical steps to make sure your products match the sample — every single time.",
+    content: `<h1>Quality Control 101: What Your Supplier Won't Tell You</h1>
 
-<h2>A Legacy of Clay</h2>
+<h2>Why Quality Control Matters</h2>
 
-<p>In the ancient pottery district of Kyoto, surrounded by the scent of wet clay and wood smoke, Master Kazuo Tanaka has been shaping ceramic art for over four decades. His hands — weathered and wise — carry the knowledge of three generations of potters.</p>
+<p>Product returns, chargebacks, and lost customers all trace back to quality failures. A disciplined quality-control process protects your margins and your reputation. Here's what every importer should know.</p>
 
-<h2>The Kiln That Breathes</h2>
+<h2>Step 1: Approve the Sample, Not the Promise</h2>
 
-<p>Tanaka-san's workshop centers around a traditional <strong>noborigama</strong> (climbing kiln) that reaches temperatures of 1,300°C. Each firing takes five days and requires constant attention, day and night.</p>
+<p>Never place a production order based on a supplier's description. Get a physical or approved sample and lock the spec in writing, including tolerances for color, weight, and finish.</p>
 
-<blockquote>"The kiln is alive. It breathes, it sighs, it tells you when the pieces are ready."</blockquote>
+<h2>Step 2: In-Process Inspections</h2>
 
-<h2>The Signature Collection</h2>
+<p>For your first production runs, schedule an inspection during manufacturing — not only after. Defects caught mid-run are cheap to fix; defects caught after shipment are expensive news.</p>
 
-<p>For our Handmade Living collection, Tanaka-san creates:</p>
+<h2>Step 3: Pre-Shipment Inspection</h2>
 
-<ul>
-<li><strong>Tea ceremony bowls</strong> — Each one unique in shape and glaze pattern</li>
-<li><strong>Sake vessels</strong> — Thin-walled with a crystalline finish</li>
-<li><strong>Serving platters</strong> — Large-format pieces for shared meals</li>
-</ul>
+<p>A pre-shipment inspection against the AQL (Acceptable Quality Limit) standard catches most issues before goods leave the factory. Your contract should clearly state the inspection pass/fail criteria.</p>
 
-<h2>The Philosophy of Wabi-Sabi</h2>
+<h2>Step 4: Document Everything</h2>
 
-<p>Tanaka-san's work embodies <strong>wabi-sabi</strong> — the Japanese aesthetic of finding beauty in imperfection. No two pieces are identical. The slight asymmetry, the natural drip of glaze, the mark of the potter's finger — these are not flaws, but signatures of authenticity.</p>`,
-    author: "Content Editor",
-    tags: "artisan, ceramics, japan, wabi-sabi, kyoto",
-    publishedAt: "2026-04-10",
-  },
-  {
-    title: "Fermented Beauty: Why East Asian Skincare Works",
-    slug: "fermented-beauty",
-    excerpt: "The science behind fermentation in skincare and why it delivers visible results.",
-    content: `<h1>Fermented Beauty: Why East Asian Skincare Works</h1>
+<p>Keep photos, certificates, and test reports from every batch. Documentation resolves disputes quickly and builds leverage with suppliers on rework or refunds.</p>
 
-<h2>Ancient Wisdom, Modern Science</h2>
-
-<p>Fermentation has been a cornerstone of East Asian beauty for centuries. From sake washes in Japan to fermented rice water in Korea, this traditional technique is now backed by modern dermatological science.</p>
-
-<h2>Why Fermentation?</h2>
-
-<p>The fermentation process breaks down ingredients into smaller molecules, making them:</p>
-
-<ul>
-<li><strong>Easier to absorb</strong> — Smaller particle size penetrates deeper</li>
-<li><strong>More potent</strong> — Fermentation releases beneficial metabolites</li>
-<li><strong>Gentler on skin</strong> — The process reduces potential irritants</li>
-<li><strong>Rich in antioxidants</strong> — Fermented ingredients have higher antioxidant activity</li>
-</ul>
-
-<h2>Key Fermented Ingredients</h2>
-
-<h3>1. Fermented Rice</h3>
-<p>Rich in amino acids, vitamins B and E, and minerals. Brightens skin tone and improves texture.</p>
-
-<h3>2. Fermented Green Tea</h3>
-<p>Contains higher levels of polyphenols and antioxidants than non-fermented tea. Reduces inflammation and protects against environmental damage.</p>
-
-<h3>3. Fermented Ginseng</h3>
-<p>Enhances blood circulation to the skin, promoting a natural, healthy glow.</p>
+<blockquote>"Trust but verify. Samples set the benchmark, but only inspection guarantees delivery."</blockquote>
 
 <h2>Our Approach</h2>
 
-<p>At Commodities From China, we combine traditional fermentation techniques with modern peptide technology. Our ingredients are fermented for 72 hours using traditional methods, then combined with multi-weight peptides for maximum efficacy.</p>`,
+<p>At Commodities From China, every batch is inspected before shipment. Certified electronics and certified food-safe kitchenware can't be taken on faith — they're verified, documented, and traceable.</p>`,
     author: "Content Editor",
-    tags: "skincare, science, fermentation, korean beauty, japanese beauty",
+    tags: "quality control, inspection, manufacturing, b2b, suppliers",
+    publishedAt: "2026-04-10",
+  },
+  {
+    title: "Air Freight vs Sea Freight: Choosing the Right Shipping Method",
+    slug: "air-freight-vs-sea-freight",
+    excerpt: "Cost, speed, and reliability — how to pick the right logistics channel for your goods.",
+    content: `<h1>Air Freight vs Sea Freight: Choosing the Right Shipping Method</h1>
+
+<h2>Speed vs. Cost</h2>
+
+<p>Your shipping choice balances two competing goals: getting products to market fast, and keeping landed costs low. Understanding the trade-offs helps you choose the right channel for each shipment.</p>
+
+<h2>When to Use Air Freight</h2>
+
+<p>Air freight costs more per unit but wins on speed — typically 3-7 days door-to-door. Choose air when you're:</p>
+
+<ul>
+<li><strong>Restocking best sellers</strong> — inventory downtime costs more than freight</li>
+<li><strong>Shipping high-value items</strong> — electronics with high per-unit value</li>
+<li><strong>Running promotions</strong> — deadlines that can't slip</li>
+<li><strong>Sending small volumes</strong> — under 100 kg, air is often sensible</li>
+</ul>
+
+<h2>When to Use Sea Freight</h2>
+
+<p>Sea freight is dramatically cheaper for large volumes. Choose sea when you're shipping more than a pallet of goods with a less urgent timeline — typically 25-40 days from port to port.</p>
+
+<h2>Calculating Total Landed Cost</h2>
+
+<p>Your landed cost includes freight, insurance, duties, customs clearance, and warehousing. Compare the full picture, not just the freight quote, before choosing a channel.</p>
+
+<blockquote>"The cheapest shipping method is rarely the cheapest overall — always calculate total landed cost."</blockquote>`,
+    author: "Content Editor",
+    tags: "logistics, shipping, freight, international trade, b2b",
     publishedAt: "2026-04-05",
   },
   {
-    title: "Creating a Mindful Home Sanctuary",
-    slug: "mindful-home-sanctuary",
-    excerpt: "How to curate a space that nurtures calm, creativity, and connection.",
-    content: `<h1>Creating a Mindful Home Sanctuary</h1>
+    title: "Understanding MOQ: How to Negotiate Minimum Order Quantities",
+    slug: "understanding-moq-negotiation",
+    excerpt: "What MOQ really means, and how to negotiate better terms with Chinese suppliers.",
+    content: `<h1>Understanding MOQ: How to Negotiate Minimum Order Quantities</h1>
 
-<h2>The Art of Intentional Living</h2>
+<h2>What Is an MOQ?</h2>
 
-<p>Your home should be your sanctuary — a space that nurtures calm, creativity, and connection. Drawing from Eastern principles of harmony and balance, here's how to create a space that truly supports your wellbeing.</p>
+<p>Minimum order quantity (MOQ) is the smallest order a factory will produce. MOQs exist because factories set up tooling, materials, and production lines — and smaller batches mean higher cost per unit.</p>
 
-<h2>1. Choose Objects with Intention</h2>
+<h2>Why Suppliers Set MOQs</h2>
 
-<p>Every object in your home should have a purpose or bring you joy. Our <strong>Handmade Living</strong> collection is curated with this philosophy — each piece is crafted to be both functional and beautiful.</p>
+<p>Understand the supplier's economics and negotiation gets easier. An MOQ typically covers setup costs, material minimums, and factory capacity allocation. It's not arbitrary — it's math.</p>
 
-<h2>2. Embrace Natural Materials</h2>
+<h2>How to Negotiate a Better MOQ</h2>
 
-<p>Wood, ceramic, linen, bamboo — natural materials bring warmth and texture to your space. They age gracefully and develop character over time.</p>
-
-<h2>3. Create Ritual Spaces</h2>
-
-<p>Designate areas for your daily rituals:</p>
 <ul>
-<li><strong>Morning tea corner</strong> — A quiet space for your first cup</li>
-<li><strong>Skincare altar</strong> — Where you perform your beauty ritual</li>
-<li><strong>Meditation nook</strong> — A cushion and a simple shelf</li>
+<li><strong>Order from existing catalog items</strong> — standard products have lower MOQs than custom designs</li>
+<li><strong>Commit to repeat orders</strong> — a purchase plan wins lower initial MOQs</li>
+<li><strong>Adjust the spec</strong> — flexible materials or colors can lower the minimum</li>
+<li><strong>Consolidate variants</strong> — combine sizes into one production run</li>
+<li><strong>Pay better terms</strong> — faster payment often trades for lower MOQ</li>
 </ul>
 
-<h2>4. Less is More</h2>
+<h2>MOQ Is a Tool, Not a Barrier</h2>
 
-<p>Follow the Japanese principle of <strong>ma</strong> (negative space). Leave room for emptiness — it's not about what you add, but what you choose to leave out.</p>
-
-<blockquote>"The beauty of a room is not in what is there, but in what is not."</blockquote>`,
+<p>For small buyers, working with a sourcing partner pools demand across many customers, unlocking low MOQs and factory-direct pricing that would otherwise be out of reach.</p>`,
     author: "Content Editor",
-    tags: "home, mindfulness, decor, interior design, wabi-sabi",
+    tags: "moq, negotiation, sourcing, wholesale, b2b",
     publishedAt: "2026-03-28",
   },
   {
-    title: "Ingredient Spotlight: Ginseng in Skincare",
-    slug: "ingredient-spotlight-ginseng",
-    excerpt: "Why this ancient root is a powerhouse ingredient in modern peptide formulations.",
-    content: `<h1>Ingredient Spotlight: Ginseng in Skincare</h1>
+    title: "Why LED Lighting Is Transforming the Wholesale Market",
+    slug: "why-led-lighting-transforming-wholesale",
+    excerpt: "Energy efficiency, long lifespan, and falling prices — why LED products are a wholesale staple.",
+    content: `<h1>Why LED Lighting Is Transforming the Wholesale Market</h1>
 
-<h2>The Root of Radiance</h2>
+<h2>The LED Advantage</h2>
 
-<p>Ginseng (<em>Panax ginseng</em>) has been revered in East Asian medicine for thousands of years. In skincare, it's a powerhouse ingredient that delivers visible, transformative results.</p>
+<p>LED lighting has become a mainstream wholesale category thanks to three compounding advantages: dramatically lower energy use, long service life, and rapidly falling production costs.</p>
 
-<h2>Why Ginseng Works</h2>
+<h2>Energy Efficiency That Sells Itself</h2>
 
-<p>Ginseng contains <strong>ginsenosides</strong> — unique compounds that:</p>
+<p>LED bulbs consume up to 80% less energy than incandescent equivalents and last 15 times longer. For commercial and residential buyers, the payback period is often measured in months — making LED an easy upsell for resellers.</p>
 
-<ul>
-<li><strong>Stimulate blood circulation</strong> — Bringing oxygen and nutrients to skin cells</li>
-<li><strong>Boost collagen synthesis</strong> — Reducing fine lines and wrinkles</li>
-<li><strong>Protect against UV damage</strong> — Acting as a natural antioxidant</li>
-<li><strong>Energize dull skin</strong> — Promoting a radiant, healthy complexion</li>
-</ul>
+<h2>Smart Lighting, New Margins</h2>
 
-<h2>Our Double-Fermented Ginseng</h2>
+<p>Smart LED products — strips, bulbs, and sensors with app and voice control — command premium margins. The ecosystem keeps expanding, from RGB strips to motion-sensing night lights, giving wholesalers a constant stream of new SKUs.</p>
 
-<p>We use a proprietary double-fermentation process that increases the bioavailability of ginsenosides by 300%. This means your skin can absorb and utilize more of the active compounds.</p>
+<h2>Certifications Matter</h2>
 
-<h2>The Results</h2>
+<p>Legal, safe LED products carry CE, RoHS, and FCC certification. Buyers increasingly verify compliance before purchase, so importing from suppliers who document certification is a competitive advantage.</p>
 
-<p>In clinical trials, 89% of users showed improvement in fine lines and crow's feet within 8 weeks of consistent use.</p>`,
+<blockquote>"LED is no longer the future of lighting — it's the present. Wholesalers who carry certified LED products have a clear market advantage."</blockquote>`,
     author: "Content Editor",
-    tags: "skincare, ingredients, ginseng, anti-aging, korean beauty",
+    tags: "led, lighting, electronics, wholesale, energy",
     publishedAt: "2026-03-20",
   },
   {
-    title: "The Tea Ceremony as Daily Ritual",
-    slug: "tea-ceremony-daily-ritual",
-    excerpt: "How the Japanese tea ceremony can transform your daily routine into a mindful practice.",
-    content: `<h1>The Tea Ceremony as Daily Ritual</h1>
+    title: "Customs and Tariffs: A Practical Guide for Importers",
+    slug: "customs-tariffs-importer-guide",
+    excerpt: "HS codes, duties, and documentation — the practical basics every importer needs.",
+    content: `<h1>Customs and Tariffs: A Practical Guide for Importers</h1>
 
-<h2>Finding Peace in a Cup</h2>
+<h2>The Customs Basics</h2>
 
-<p>The Japanese tea ceremony — <strong>chanoyu</strong> — is more than just preparing and drinking tea. It's a meditative practice that cultivates presence, gratitude, and connection.</p>
+<p>Every import crosses a border through customs — a process governed by classification, valuation, and documentation. Getting these right keeps shipments flowing and costs predictable.</p>
 
-<h2>The Four Principles</h2>
+<h2>1. HS Codes</h2>
 
-<h3>1. Harmony (Wa)</h3>
-<p>The harmony between host and guest, between the tools and the space, between the tea and the moment.</p>
+<p>The Harmonized System (HS) code classifies your product and determines the duty rate. Classifying correctly avoids overpaying duties or triggering inspections. When in doubt, use a customs broker.</p>
 
-<h3>2. Respect (Kei)</h3>
-<p>Respect for the utensils, the tea, and each person present. Every movement is deliberate and meaningful.</p>
+<h2>2. Valuation and Duties</h2>
 
-<h3>3. Purity (Sei)</h3>
-<p>Purification — of the utensils, the space, and the mind. Wiping the tea bowl is a gesture of clearing the spirit.</p>
+<p>Duties are calculated on the customs value — typically the price you paid plus freight and insurance. Know the duty rate for your product class before you commit to a landed-cost budget.</p>
 
-<h3>4. Tranquility (Jaku)</h3>
-<p>The ultimate goal — a state of calm awareness that arises when the first three principles are embodied.</p>
+<h2>3. Key Documents</h2>
 
-<h2>Creating Your Own Ritual</h2>
+<p>Standard exports from China require a commercial invoice, packing list, and bill of lading. Depending on the product, add certificates of origin and compliance documents (CE, FCC, RoHS).</p>
 
-<p>You don't need a dedicated tea room to practice chanoyu. Here's how to bring the spirit of the tea ceremony into your daily life:</p>
+<h2>4. Avoid the Common Pitfalls</h2>
 
-<ol>
-<li><strong>Choose a special vessel</strong> — Our <strong>Artisan Tea Ceremony Set</strong> makes any cup of tea feel sacred</li>
-<li><strong>Set aside 15 minutes</strong> — No phones, no distractions</li>
-<li><strong>Focus on each movement</strong> — The sound of water, the warmth of the cup, the aroma of the tea</li>
-<li><strong>Drink with gratitude</strong> — Acknowledge the hands that crafted your cup and grew your tea</li>
-</ol>`,
+<p>Under-declared values, missing certificates, and mismatched paperwork are the most common causes of customs delays. Consistency between invoice, packing list, and shipping documents is everything.</p>
+
+<blockquote>"Duties and documentation aren't an afterthought — they're part of your landed cost. Plan for them before you place the order."</blockquote>`,
     author: "Content Editor",
-    tags: "tea, ritual, japanese, mindfulness, ceremony",
+    tags: "customs, tariffs, importing, international trade, logistics",
     publishedAt: "2026-03-15",
   },
 ]

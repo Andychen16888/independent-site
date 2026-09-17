@@ -9,8 +9,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = generateMetadata({
   title: "All Products",
-  description: "Browse our complete collection of premium peptide skincare and artisanal home decor. Factory-direct quality for retail and wholesale B2B buyers.",
-  keywords: "peptide skincare, wholesale skincare, artisan home decor, b2b wholesale, buy skincare online",
+  description: "Browse our complete collection of electronics, LED lighting, kitchenware, and household commodities. Factory-direct quality for retail and wholesale B2B buyers.",
+  keywords: "wholesale electronics, led lighting, kitchenware, b2b wholesale, household commodities",
   canonical: "/products",
 })
 
@@ -88,7 +88,7 @@ export default async function ProductsPage({ searchParams }: Props) {
           />
           <h1 className="heading-xl mb-4">All Products</h1>
           <p className="text-body mb-12 max-w-2xl">
-            Discover our complete collection, from peptide skincare to artisanal home objects.
+            Discover our complete collection of electronics, LED lighting, and household commodities.
           </p>
 
           <div className="grid md:grid-cols-[220px_1fr] gap-8 lg:gap-12">

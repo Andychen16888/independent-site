@@ -6,7 +6,7 @@ import { ProductDetail } from "@/components/product/ProductDetail"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
-import { breadcrumbSchema, productSchema, howToSchema, videoObjectSchema, articleSchema, faqPageSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, productSchema, videoObjectSchema, articleSchema, faqPageSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -84,33 +84,16 @@ export default async function ProductPage({ params }: Props) {
       images: serializedProduct.images,
       reviews: serializedProduct.reviews,
     }),
-    ...(serializedProduct.sku.startsWith("PEP") || serializedProduct.sku.startsWith("RICE") || serializedProduct.sku.startsWith("GIN") || serializedProduct.sku.startsWith("VIT")
-      ? [howToSchema({
-          name: `How to Apply ${serializedProduct.name}`,
-          description: `Step-by-step guide to using ${serializedProduct.name} for best results. ${(serializedProduct.shortDescription || "").replace(/<[^>]*>/g, "")}`,
-          image: serializedProduct.images?.[0]?.url,
-          estimatedCost: serializedProduct.unitPrice.toString(),
-          steps: [
-            { text: "Start with a clean, toned face. Pat skin dry with a soft towel.", duration: "PT1M" },
-            { text: "Dispense a small amount of product onto your fingertips or the back of your hand.", duration: "PT30S" },
-            { text: `Apply ${serializedProduct.name} gently to your face and neck using upward motions.`, duration: "PT1M" },
-            { text: "Allow the product to absorb for 60 seconds before applying your moisturizer.", duration: "PT1M" },
-            { text: "Use twice daily, morning and evening, for visible results within 4-6 weeks.", duration: "PT30S" },
-          ],
-        })]
-      : []),
-    ...(!serializedProduct.sku.startsWith("PEP") && !serializedProduct.sku.startsWith("RICE") && !serializedProduct.sku.startsWith("GIN") && !serializedProduct.sku.startsWith("VIT")
-      ? [articleSchema({
-          headline: serializedProduct.name,
-          description: (serializedProduct.shortDescription || serializedProduct.description).replace(/<[^>]*>/g, ""),
-          author: { name: serializedProduct.brand || serializedProduct.name },
-          datePublished: serializedProduct.createdAt.toISOString(),
-          image: serializedProduct.images?.[0]?.url,
-          url: productUrl,
-          articleSection: "Handmade Living",
-          keywords: `${serializedProduct.name}, artisan, handmade, ${serializedProduct.brand || ""}`,
-        })]
-      : []),
+    articleSchema({
+      headline: serializedProduct.name,
+      description: (serializedProduct.shortDescription || serializedProduct.description).replace(/<[^>]*>/g, ""),
+      author: { name: serializedProduct.brand || serializedProduct.name },
+      datePublished: serializedProduct.createdAt.toISOString(),
+      image: serializedProduct.images?.[0]?.url,
+      url: productUrl,
+      articleSection: "Products",
+      keywords: `${serializedProduct.name}, wholesale, electronics, kitchenware, ${serializedProduct.brand || ""}`,
+    }),
     ...(serializedProduct.videos?.length
       ? serializedProduct.videos.map((v, i) => videoObjectSchema({
           name: v.title || `${serializedProduct.name} Video`,

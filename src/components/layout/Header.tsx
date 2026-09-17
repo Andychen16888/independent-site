@@ -14,10 +14,10 @@ import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyin
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
 
 const DEFAULT_NAV = [
-  { name: "Beauty", href: "/categories/beauty" },
-  { name: "Handmade Living", href: "/categories/handmade-living" },
+  { name: "Electronics", href: "/categories/electronics" },
+  { name: "Home & Kitchen", href: "/categories/home-kitchen" },
   { name: "Journal", href: "/blog" },
-  { name: "About", href: "/about" },
+  { name: "About", href: "/pages/about" },
 ]
 
 function PromoBar({ text }: { text: string }) {

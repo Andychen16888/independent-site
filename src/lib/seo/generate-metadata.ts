@@ -3,7 +3,7 @@ import { SEOData } from "@/types"
 
 export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
-export const defaultDescription = "Premium skincare, artisanal home decor, and quality everyday commodities sourced directly from China for retail and wholesale B2B buyers worldwide."
+export const defaultDescription = "Quality electronics, LED lighting, kitchenware, and everyday household commodities sourced directly from China for retail and wholesale B2B buyers worldwide."
 
 /** Return an absolute URL for a given site path (or as-is if already absolute). */
 export function absoluteUrl(path: string): string {
@@ -58,7 +58,7 @@ export function generateMetadata(
       title,
       description,
       images: [absoluteUrl(data.ogImage || "/og-default.jpg")],
-      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@orbrand",
+      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@commoditychina",
     },
     robots: {
       index: data.noindex !== true,

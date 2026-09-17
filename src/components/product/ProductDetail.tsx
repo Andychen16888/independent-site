@@ -66,8 +66,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }
 
   const bundleItems = [
-    { id: "bundle-1", name: "Rice Bran Peptide Mask", slug: "rice-bran-peptide-mask", price: 45 },
-    { id: "bundle-2", name: "Ginseng Peptide Eye Cream", slug: "ginseng-peptide-eye-cream", price: 62 },
+    { id: "bundle-1", name: "Portable Power Bank 20000mAh", slug: "portable-power-bank-20000mah", price: 24.5 },
+    { id: "bundle-2", name: "Smart LED Strip Light Kit", slug: "smart-led-strip-light-kit", price: 15.5 },
   ]
 
   return (
@@ -256,23 +256,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
             reviews={[
               {
                 id: "r1", rating: 5, title: "Absolutely love it",
-                content: "This serum has transformed my skin! I've been using it for 3 weeks and the results are incredible.",
+                content: "Wholesale buyers keep reordering these. Consistent quality and reliable freight. Highly recommended.",
                 isVerified: true,
-                user: { firstName: "Sarah" },
+                user: { firstName: "Marcus" },
                 createdAt: new Date("2026-04-20"),
               },
               {
-                id: "r2", rating: 4, title: "Great product",
-                content: "Really high quality. My skin feels noticeably smoother and more hydrated.",
+                id: "r2", rating: 4, title: "Great value",
+                content: "Really high quality and the inspection photos gave us full confidence before shipment.",
                 isVerified: true,
-                user: { firstName: "Emily" },
+                user: { firstName: "Aline" },
                 createdAt: new Date("2026-04-15"),
               },
               {
                 id: "r3", rating: 5, title: "Worth every penny",
-                content: "I've tried many peptide serums and this is by far the best. The texture is amazing.",
+                content: "I've ordered from many suppliers and this is by far the most reliable. On-time delivery and zero defects.",
                 isVerified: false,
-                user: { firstName: "Jessica" },
+                user: { firstName: "Dong-mei" },
                 createdAt: new Date("2026-04-10"),
               },
             ]}

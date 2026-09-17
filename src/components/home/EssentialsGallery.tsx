@@ -16,17 +16,17 @@ export interface CollectionContent {
 }
 
 const DEFAULT_COLLECTIONS: CollectionContent = {
-  eyebrow: "Craftsmanship",
-  title: "Handmade Living",
-  tagline: "Objects that bring warmth, story, and intention into your home",
+  eyebrow: "Home & Kitchen",
+  title: "Everyday Essentials",
+  tagline: "Practical, durable goods for homes, hotels, and wholesale buyers",
   collections: [
-    { title: "Ceramics", description: "Hand-thrown pottery from ancient kilns", href: "/categories/handmade-living?sub=ceramics" },
-    { title: "Woodcraft", description: "Carved teak and bamboo art pieces", href: "/categories/handmade-living?sub=woodcraft" },
-    { title: "Textiles", description: "Handwoven silk and linen home goods", href: "/categories/handmade-living?sub=textiles" },
-    { title: "Decor", description: "Curated objects for mindful spaces", href: "/categories/handmade-living?sub=decor" },
+    { title: "Kitchenware", description: "Cookware, dinnerware, and barware staples", href: "/categories/home-kitchen?sub=kitchenware" },
+    { title: "Storage", description: "Containers and organizers for every room", href: "/categories/home-kitchen?sub=storage" },
+    { title: "Tableware", description: "Dinnerware sets for homes and hospitality", href: "/categories/home-kitchen?sub=tableware" },
+    { title: "Home Decor", description: "Functional decor loved by resellers", href: "/categories/home-kitchen?sub=decor" },
   ],
-  ctaLabel: "Explore All Collections",
-  ctaHref: "/categories/handmade-living",
+  ctaLabel: "Explore Home & Kitchen",
+  ctaHref: "/categories/home-kitchen",
 }
 
 export function CollectionGallerySection({ content = DEFAULT_COLLECTIONS }: { content?: CollectionContent }) {

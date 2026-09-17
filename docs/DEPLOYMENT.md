@@ -57,66 +57,60 @@ ssh root@your-server-ip
 # 更新系统
 apt update && apt upgrade -y
 
-# ========== 立即安全加固（前置，必须最先执行） ==========
+# ========== 安全加固 ==========
 
-# 1. 创建部署用户并赋予 sudo
-adduser deploy
-usermod -aG sudo deploy
+# 1. 确保 SSH 密钥登录已配置（强烈建议先上传公钥，再禁用密码登录）
+#    如果还没有配置密钥，请先在本地执行：ssh-copy-id root@your-server-ip
+#    确认能用密钥登录后再执行下面的步骤
 
-# 2. 配置 SSH 密钥登录（不要复制密码！在本地执行 ssh-copy-id）
-exit  # 退出 root 会话，回到本地
-ssh-copy-id deploy@your-server-ip  # 在本地终端执行，上传公钥
-ssh deploy@your-server-ip          # 用新用户登录
+# 2. 禁止密码登录（仅允许密钥登录）
+sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl restart sshd
 
-# 3. 禁止 root 和密码登录
-sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sudo sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
-
-# 4. 立即启用防火墙（放行所有必要端口）
-sudo ufw --force reset
-sudo ufw default deny incoming
-sudo ufw default deny outgoing
-sudo ufw allow in on lo
-sudo ufw allow out on lo
+# 3. 启用防火墙（放行所有必要端口）
+ufw --force reset
+ufw default deny incoming
+ufw default deny outgoing
+ufw allow in on lo
+ufw allow out on lo
 
 # --- 入站规则 ---
-sudo ufw allow in 22/tcp       # SSH — 远程管理
-sudo ufw allow in 80/tcp       # HTTP — Nginx 网页服务
-sudo ufw allow in 443/tcp      # HTTPS — Nginx SSL 网页服务
+ufw allow in 22/tcp       # SSH — 远程管理
+ufw allow in 80/tcp       # HTTP — Nginx 网页服务
+ufw allow in 443/tcp      # HTTPS — Nginx SSL 网页服务
 
 # --- 出站规则 ---
-sudo ufw allow out 22/tcp      # SSH — git pull、rsync、远程管理
-sudo ufw allow out 53/udp      # DNS — 域名解析
-sudo ufw allow out 80/tcp      # HTTP — API 调用、git clone、npm install、系统更新
-sudo ufw allow out 443/tcp     # HTTPS — API 调用(Stripe/PayPal/OpenAI)、git、npm、系统更新
-sudo ufw allow out 123/udp     # NTP — 时间同步（SSL 证书验证必需）
-sudo ufw allow out 587/tcp     # SMTP Submission — Gmail SMTP 发送邮件
-sudo ufw allow out 465/tcp     # SMTPS — 备用邮件发送端口
-sudo ufw allow out 25/tcp      # SMTP — 基础邮件发送（部分 VPS 厂商默认封锁）
+ufw allow out 22/tcp      # SSH — git pull、rsync、远程管理
+ufw allow out 53/udp      # DNS — 域名解析
+ufw allow out 80/tcp      # HTTP — API 调用、git clone、npm install、系统更新
+ufw allow out 443/tcp     # HTTPS — API 调用(Stripe/PayPal/OpenAI)、git、npm、系统更新
+ufw allow out 123/udp     # NTP — 时间同步（SSL 证书验证必需）
+ufw allow out 587/tcp     # SMTP Submission — Gmail SMTP 发送邮件
+ufw allow out 465/tcp     # SMTPS — 备用邮件发送端口
+ufw allow out 25/tcp      # SMTP — 基础邮件发送（部分 VPS 厂商默认封锁）
 
 # --- 可选（按需放行） ---
-# sudo ufw allow out 5432/tcp  # PostgreSQL — 仅远程数据库需要（默认 localhost 无需放行）
-# sudo ufw allow out 6379/tcp  # Redis — 仅远程 Redis 需要
+# ufw allow out 5432/tcp  # PostgreSQL — 仅远程数据库需要（默认 localhost 无需放行）
+# ufw allow out 6379/tcp  # Redis — 仅远程 Redis 需要
 
 # --- 诊断与监控 ---
-sudo ufw allow in proto icmp   # ICMP — 允许 ping 入站（故障排查）
-sudo ufw allow out proto icmp  # ICMP — 允许 ping 出站（故障排查）
+ufw allow in proto icmp   # ICMP — 允许 ping 入站（故障排查）
+ufw allow out proto icmp  # ICMP — 允许 ping 出站（故障排查）
 
-sudo ufw --force enable
-sudo ufw status verbose
+ufw --force enable
+ufw status verbose
 
-# 5. 安装 fail2ban（SSH 防爆破）
-sudo apt install -y fail2ban
-sudo systemctl enable --now fail2ban
+# 4. 安装 fail2ban（SSH 防爆破）
+apt install -y fail2ban
+systemctl enable --now fail2ban
 
-# 6. 开启自动安全更新
-sudo apt install -y unattended-upgrades
-sudo dpkg-reconfigure -plow unattended-upgrades
+# 5. 开启自动安全更新
+apt install -y unattended-upgrades
+dpkg-reconfigure -plow unattended-upgrades
 
-# 7. 安装基础工具
-sudo apt install -y curl wget git vim
+# 6. 安装基础工具
+apt install -y curl wget git vim
 
 echo "✓ 安全加固完成，可以继续部署"
 ```
@@ -125,10 +119,9 @@ echo "✓ 安全加固完成，可以继续部署"
 
 | 原则 | 说明 |
 |------|------|
-| **最小权限** | 永远用普通用户（`deploy`）操作，禁止 root 日常使用 |
+| **密钥认证** | 禁用密码登录，SSH key + 口令短语 |
 | **最小暴露** | Node 服务必须绑定 `127.0.0.1`，只通过 Nginx 对外 |
 | **最小端口** | 入站仅开放 22/80/443；出站仅开放 DNS/NTP/HTTP/HTTPS/邮件服务端口 |
-| **密钥认证** | 禁用密码登录，SSH key + 口令短语 |
 | **定期审查** | 每周检查进程列表、网络连接、cron 任务 |
 
 #### 常见木马特征（部署后应定期检查）
@@ -197,7 +190,6 @@ sudo systemctl enable redis
 sudo apt install -y docker.io docker-compose-v2
 sudo systemctl start docker
 sudo systemctl enable docker
-sudo usermod -aG docker deploy
 ```
 
 ### 1.4 配置 PostgreSQL
@@ -230,7 +222,7 @@ sudo systemctl restart postgresql
 # 方式一：从 Git 仓库克隆
 cd /var/www
 git clone https://github.com/Andychen16888/b2b-independent-site.git
-sudo chown -R deploy:deploy b2b-independent-site
+chown -R root:root b2b-independent-site
 cd b2b-independent-site
 # 或使用 rsync 从本地推送
 # rsync -avz --exclude 'node_modules' --exclude '.next' --exclude '.env' ./ b2b-independent-site/
@@ -360,7 +352,7 @@ NODE_ENV=production node .next/standalone/server.js
 # 首次部署先克隆代码
 cd /var/www
 git clone https://github.com/Andychen16888/b2b-independent-site.git
-sudo chown -R deploy:deploy b2b-independent-site
+chown -R root:root b2b-independent-site
 cd b2b-independent-site
 
 # 创建 .dockerignore
@@ -1071,7 +1063,7 @@ EOF
 | Secret | 说明 |
 |--------|------|
 | `HOST` | 服务器 IP |
-| `USERNAME` | SSH 用户名 (如 deploy) |
+| `USERNAME` | SSH 用户名 (root) |
 | `SSH_KEY` | SSH 私钥 |
 | `DATABASE_URL` | 数据库连接字符串 |
 
@@ -1186,7 +1178,7 @@ chmod +x /usr/local/bin/deploy.sh
 | Secret | 说明 |
 |--------|------|
 | `HOST` | 服务器 IP |
-| `USERNAME` | SSH 用户名 (如 deploy) |
+| `USERNAME` | SSH 用户名 (root) |
 | `SSH_KEY` | SSH 私钥 |
 | `DATABASE_URL` | 数据库连接字符串 |
 
@@ -1444,8 +1436,6 @@ swapon --show
 ### 17.1 服务器安全（防入侵基础）
 
 - [ ] SSH 使用密钥登录，禁用密码登录（`PasswordAuthentication no`）
-- [ ] 禁用 root 直接 SSH 登录（`PermitRootLogin no`）
-- [ ] 使用普通用户（`deploy`）进行日常操作
 - [ ] 开启 UFW 防火墙，仅允许 22/80/443 端口入站
 - [ ] UFW 出站规则限制：仅允许 DNS(53)、HTTP(80)、HTTPS(443) 和 loopback
 - [ ] 安装并配置 fail2ban（SSH 防爆破，maxretry=3）

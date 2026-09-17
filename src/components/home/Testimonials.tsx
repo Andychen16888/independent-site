@@ -8,29 +8,29 @@ export interface Testimonial { name: string; location?: string; rating?: number;
 
 export const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
-    name: "Sarah M.",
-    location: "New York",
+    name: "Marcus L.",
+    location: "Hamburg, Germany",
     rating: 5,
-    text: "The peptide serum transformed my skincare routine. My skin has never looked this radiant. It's the perfect balance of science and nature.",
-    product: "Peptide Hydration Serum",
+    text: "We resell the LED night lights and power banks in our retail stores. Consistent quality, on-time shipments, and pricing that leaves real margin. They've become our go-to supplier.",
+    product: "LED Motion Sensor Night Light",
   },
   {
-    name: "Emily R.",
-    location: "Los Angeles",
+    name: "Aline B.",
+    location: "Lyon, France",
     rating: 5,
-    text: "I purchased a ceramic tea set from the Handmade collection and it's absolutely breathtaking. Each piece tells a story. It has become the centerpiece of my morning ritual.",
-    product: "Artisan Tea Collection",
+    text: "The ceramic dinnerware set sells out every season. Pre-shipment inspection photos and certificates give us total confidence, and the MOQ was flexible enough for us to start small.",
+    product: "Ceramic Dinnerware Set",
   },
   {
-    name: "Jessica K.",
-    location: "London",
+    name: "Dong-mei H.",
+    location: "Singapore",
     rating: 5,
-    text: "Finally, a brand that understands true luxury — it's about ingredients that work and objects that matter. The overnight mask is pure magic.",
-    product: "Overnight Recovery Mask",
+    text: "Finally a sourcing partner that handles quality control and freight end to end. Our first order of TWS earbuds arrived on time and defect-free. Highly recommended for B2B buyers.",
+    product: "TWS Wireless Earbuds Pro",
   },
 ]
 
-export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Kind Words", heading = "From Our Community" }: { items?: Testimonial[]; eyebrow?: string; heading?: string }) {
+export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Buyer Reviews", heading = "Trusted by Importers Worldwide" }: { items?: Testimonial[]; eyebrow?: string; heading?: string }) {
   const [current, setCurrent] = useState(0)
   const safe = items && items.length > 0 ? items : DEFAULT_TESTIMONIALS
 

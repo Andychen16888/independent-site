@@ -53,20 +53,20 @@ export default async function BlogPostPage({ params }: Props) {
       dateModified: (post.updatedAt || post.publishedAt).toISOString(),
       image: post.coverImage,
       url: postUrl,
-      articleSection: tags.some((t) => t === "skincare" || t === "beauty")
-        ? "Beauty"
-        : tags.some((t) => t === "artisan" || t === "ceramics" || t === "japan")
-          ? "Craftsmanship"
-          : "Lifestyle",
+      articleSection: tags.some((t) => t === "importing" || t === "sourcing")
+        ? "Importing"
+        : tags.some((t) => t === "logistics" || t === "freight")
+          ? "Logistics"
+          : "B2B Trade",
       keywords: post.tags || "",
       speakable: { cssSelector: [".blog-content h1", ".blog-content h2", ".blog-content blockquote"] },
     }),
     // GEO: Person entity for author authority signal — LLMs track author expertise
     personSchema({
       name: post.author,
-      description: `Content creator and lifestyle expert at ${seo.siteName}`,
+      description: `Content creator and trade expert at ${seo.siteName}`,
       jobTitle: "Content Editor",
-      knowsAbout: ["skincare", "beauty rituals", "artisanal crafts", "mindful living"],
+      knowsAbout: ["importing", "sourcing", "quality control", "international logistics"],
     }),
   ]
 

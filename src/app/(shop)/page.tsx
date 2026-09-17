@@ -3,8 +3,8 @@ import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
 import { HeroBanner, type HeroSlide, DEFAULT_HERO_SLIDES } from "@/components/home/HeroBanner"
 import { BrandStory, type BrandStoryContent } from "@/components/home/BrandStory"
 import { FeaturedCategories, type FeaturedCategory } from "@/components/home/FeaturedCategories"
-import { PromoFeatureSection, type PromoContent } from "@/components/home/PeptideSkincare"
-import { CollectionGallerySection, type CollectionContent } from "@/components/home/HandmadeLiving"
+import { PromoFeatureSection, type PromoContent } from "@/components/home/FactoryDirect"
+import { CollectionGallerySection, type CollectionContent } from "@/components/home/EssentialsGallery"
 import { Testimonials, type Testimonial } from "@/components/home/Testimonials"
 import { InstagramFeed, type InstagramConfig } from "@/components/home/InstagramFeed"
 import { NewsletterSection } from "@/components/home/NewsletterSection"
@@ -85,7 +85,7 @@ export default async function HomePage() {
   const getSiteSeoResult = await getSiteSeo()
   const seoParagraphs = [
     siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
-    `Discover the ${getSiteSeoResult.siteName} collection: premium skincare, peptide serums, natural formulas, and handmade home goods. Built for retail shoppers and wholesale B2B buyers alike — shop online, order in bulk, or contact our team for trade pricing and partnership inquiries.`,
+    `Discover the ${getSiteSeoResult.siteName} collection: certified electronics, LED lighting, kitchenware, and everyday household goods. Built for retail shoppers and wholesale B2B buyers alike — shop online, order in bulk, or contact our team for trade pricing and partnership inquiries.`,
   ].filter(Boolean)
 
   const featuredLinks: SEOLink[] = [
@@ -96,8 +96,8 @@ export default async function HomePage() {
   ]
   const seoLinks: SEOLink[] = [
     ...featuredLinks,
-    ...(featuredCats.some((c) => c.slug === "beauty")
-      ? [{ label: "Beauty Journal", href: "/blog" }]
+    ...(featuredCats.some((c) => c.slug === "electronics")
+      ? [{ label: "Importing Guide", href: "/blog" }]
       : []),
   ]
 

@@ -17,29 +17,29 @@ export interface PromoContent {
 }
 
 const DEFAULT_PROMO: PromoContent = {
-  eyebrow: "The Science of Beauty",
-  title: "Peptide Skincare",
-  body: "Our peptide formulations combine cutting-edge biotechnology with centuries-old Asian botanical wisdom. Each product is designed to work in harmony with your skin's natural rhythms.",
+  eyebrow: "Why Buy Direct",
+  title: "Factory-Direct Electronics",
+  body: "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",
   features: [
     {
-      title: "Advanced Peptide Technology",
-      description: "Multi-weight peptides that penetrate deeper for visible results",
+      title: "Certified Quality",
+      description: "CE, FCC, and RoHS certified products verified before shipment",
     },
     {
-      title: "Botanical Actives",
-      description: "Fermented Asian botanicals — ginseng, green tea, and rice bran",
+      title: "Factory-Direct Pricing",
+      description: "Wholesale rates without middlemen or retail markups",
     },
     {
-      title: "Minimalist Formulations",
-      description: "Clean, effective ingredients. No parabens, sulfates, or synthetic fragrances",
+      title: "Low MOQ Options",
+      description: "Start small with standard SKUs, scale up as you grow",
     },
     {
-      title: "Sustainable Luxury",
-      description: "Refillable glass vessels and biodegradable packaging",
+      title: "Global Logistics",
+      description: "Air and sea freight options with tracking to your door",
     },
   ],
-  ctaLabel: "View All Skincare",
-  ctaHref: "/categories/beauty",
+  ctaLabel: "View All Products",
+  ctaHref: "/products",
 }
 
 export function PromoFeatureSection({ promo = DEFAULT_PROMO }: { promo?: PromoContent }) {

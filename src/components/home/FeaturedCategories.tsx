@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
-import { HiOutlineSparkles, HiOutlineSwatch, HiOutlineShoppingBag } from "react-icons/hi2"
+import { HiOutlineBolt, HiOutlineHome, HiOutlineShoppingBag } from "react-icons/hi2"
 
 export interface FeaturedCategory {
   title: string
@@ -14,31 +14,31 @@ export interface FeaturedCategory {
   icon?: "sparkles" | "swatch" | "bag"
 }
 
-const FALLBACK_ICONS = [HiOutlineSparkles, HiOutlineSwatch, HiOutlineShoppingBag]
+const FALLBACK_ICONS = [HiOutlineBolt, HiOutlineHome, HiOutlineShoppingBag]
 const FALLBACK_BGS = ["bg-gradient-to-br from-ivory to-sage/10", "bg-gradient-to-br from-ivory to-blush/10", "bg-gradient-to-br from-ivory to-gold/10"]
 
 export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
   {
-    title: "Beauty",
-    subtitle: "Peptide Skincare",
-    description: "Advanced formulations rooted in Eastern botanical wisdom",
-    href: "/categories/beauty",
+    title: "Electronics",
+    subtitle: "LED & Smart Devices",
+    description: "Certified electronics and LED lighting at wholesale prices",
+    href: "/categories/electronics",
     icon: "sparkles",
-    image: "/images/category-beauty.jpg",
+    image: "/images/category-electronics.jpg",
   },
   {
-    title: "Handmade Living",
-    subtitle: "Artisanal Objects",
-    description: "One-of-a-kind pieces crafted by master artisans",
-    href: "/categories/handmade-living",
+    title: "Home & Kitchen",
+    subtitle: "Everyday Essentials",
+    description: "Practical, durable goods sourced from certified factories",
+    href: "/categories/home-kitchen",
     icon: "swatch",
     image: "/images/category-living.jpg",
   },
 ]
 
 function iconFor(name?: string) {
-  if (name === "sparkles") return HiOutlineSparkles
-  if (name === "swatch") return HiOutlineSwatch
+  if (name === "sparkles") return HiOutlineBolt
+  if (name === "swatch") return HiOutlineHome
   return HiOutlineShoppingBag
 }
 

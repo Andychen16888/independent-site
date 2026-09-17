@@ -283,6 +283,16 @@ npm run db:seed
 
 > **顺序不能错**: 必须先 `db:migrate`（应用迁移、创建表）再 `db:seed`（填充数据），否则 seed 会报 `table does not exist`。
 > **首次部署或已有数据库升级**: 都使用 `npm run db:migrate`（`prisma migrate deploy`），Prisma 会自动跳过已应用的迁移。`db:push` 仅用于无迁移文件的临时环境，生产环境不要使用。
+>
+> **迁移历史**: `prisma/migrations/` 现以 `20260917000000_init` 为唯一基线迁移（包含完整 schema 建表语句）。全新空数据库直接执行 `db:migrate` 即可，无需先 `db push`。
+>
+> **首次部署迁移失败（`relation "categories" does not exist`）时**: 这是旧版迁移依赖本地 `db push` 建表所致，升级到当前代码后重置一次空库即可：
+> ```bash
+> sudo -u postgres psql -d postgres -c 'DROP DATABASE IF EXISTS commerce_db;'
+> sudo -u postgres psql -d postgres -c "CREATE DATABASE commerce_db OWNER commerce_user;"
+> npm run db:migrate
+> npm run db:seed
+> ```
 
 ### 3.4 启动应用
 

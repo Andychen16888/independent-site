@@ -1,14 +1,26 @@
 import { Metadata } from "next"
 import { SEOData } from "@/types"
 
-export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Global Commerce"
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
-export const defaultDescription = "Premium skincare and artisanal home decor brand blending Eastern beauty rituals with modern science."
+export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+export const defaultDescription = "Premium skincare, artisanal home decor, and quality everyday commodities sourced directly from China for retail and wholesale B2B buyers worldwide."
 
-export function generateMetadata(data: SEOData & { siteName?: string; siteDescription?: string } = { title: "", description: "" }): Metadata {
+/** Return an absolute URL for a given site path (or as-is if already absolute). */
+export function absoluteUrl(path: string): string {
+  if (!path) return siteUrl
+  return path.startsWith("http") ? path : `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`
+}
+
+export function generateMetadata(
+  data: SEOData & { siteName?: string; siteDescription?: string } = { title: "", description: "" }
+): Metadata {
   const name = data.siteName || siteName
   const title = data.title ? `${data.title} | ${name}` : name
   const description = data.description || data.siteDescription || defaultDescription
+  const canonical = data.canonical ? absoluteUrl(data.canonical) : undefined
+  const ogImage = data.ogImage
+    ? [{ url: absoluteUrl(data.ogImage), width: 1200, height: 630, alt: title }]
+    : [{ url: `${siteUrl}/og-default.jpg`, width: 1200, height: 630, alt: name }]
 
   return {
     title: data.title ? `${data.title} | ${name}` : name,
@@ -16,27 +28,36 @@ export function generateMetadata(data: SEOData & { siteName?: string; siteDescri
     keywords: data.keywords,
     metadataBase: new URL(siteUrl),
     alternates: {
-      canonical: data.canonical || siteUrl,
-      languages: {
-        "en-US": siteUrl,
-      },
+      canonical,
+      languages: canonical ? { "en-US": canonical } : { "en-US": siteUrl },
     },
     openGraph: {
       title,
       description,
-      url: data.canonical || siteUrl,
+      url: canonical,
       siteName: name,
-      images: data.ogImage
-        ? [{ url: data.ogImage, width: 1200, height: 630, alt: title }]
-        : [{ url: "/og-default.jpg", width: 1200, height: 630, alt: name }],
+      images: ogImage,
       type: (data.ogType === "article" ? "article" : "website") as "website" | "article",
       locale: "en_US",
+      ...(data.articlePublishedTime
+        ? {
+            type: "article" as const,
+            article: {
+              publishedTime: data.articlePublishedTime,
+              ...(data.articleModifiedTime ? { modifiedTime: data.articleModifiedTime } : {}),
+              ...(data.articleAuthors && data.articleAuthors.length
+                ? { authors: data.articleAuthors }
+                : {}),
+              ...(data.articleTags && data.articleTags.length ? { tags: data.articleTags } : {}),
+            },
+          }
+        : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: data.ogImage ? [data.ogImage] : [],
+      images: [absoluteUrl(data.ogImage || "/og-default.jpg")],
       site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@orbrand",
     },
     robots: {
@@ -44,10 +65,6 @@ export function generateMetadata(data: SEOData & { siteName?: string; siteDescri
       follow: data.nofollow !== true,
       "max-image-preview": "large",
       "max-snippet": -1,
-    },
-    other: {
-      "geo.region": "US",
-      "geo.placename": "United States",
     },
   }
 }
@@ -63,7 +80,7 @@ export function generateProductSchema(product: any) {
       "@type": "Brand",
       name: product.brand || siteName,
     },
-    image: product.images?.map((i: any) => i.url) || [],
+    image: product.images?.map((i: any) => absoluteUrl(i.url)) || [],
     offers: {
       "@type": "Offer",
       price: product.unitPrice.toString(),
@@ -91,7 +108,7 @@ export function generateBreadcrumbSchema(items: { name: string; url: string }[])
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url,
+      item: absoluteUrl(item.url),
     })),
   }
 }

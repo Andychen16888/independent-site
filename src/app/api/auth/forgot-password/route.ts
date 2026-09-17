@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       data: { resetToken, resetTokenExpires },
     })
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
     const resetUrl = `${siteUrl}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`
 
     await sendPasswordResetEmail(user.email, resetUrl)

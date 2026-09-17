@@ -37,7 +37,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedMedia, setSelectedMedia] = useState(0)
   const addItem = useCartStore((s) => s.addItem)
   const toggleItem = useWishlistStore((s) => s.toggleItem)
-  const isInWishlist = useWishlistStore((s) => s.isInWishlist)
+  const wishlistItems = useWishlistStore((s) => s.items)
 
   const discount = product.originalPrice
     ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
@@ -177,10 +177,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <button
               onClick={() => toggleItem(product.id)}
               className={`btn-outline px-4 ${
-                isInWishlist(product.id) ? "text-rosegold border-rosegold" : ""
+                wishlistItems.includes(product.id) ? "text-rosegold border-rosegold" : ""
               }`}
             >
-              {isInWishlist(product.id) ? <HiHeart className="w-5 h-5" /> : <HiOutlineHeart className="w-5 h-5" />}
+              {wishlistItems.includes(product.id) ? <HiHeart className="w-5 h-5" /> : <HiOutlineHeart className="w-5 h-5" />}
             </button>
           </div>
 

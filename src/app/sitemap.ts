@@ -10,7 +10,11 @@ type SitemapEntry = {
   images?: string[]
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+
+function absUrl(u: string): string {
+  return u.startsWith("http") ? u : `${baseUrl}${u.startsWith("/") ? u : `/${u}`}`
+}
 
 export const dynamic = "force-dynamic"
 
@@ -33,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     prisma.blogPost.findMany({
       where: { isPublished: true, publishedAt: { not: null } },
-      select: { slug: true, updatedAt: true },
+      select: { slug: true, updatedAt: true, coverImage: true },
     }),
     prisma.page.findMany({
       where: { isPublished: true },
@@ -47,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updatedAt,
       changeFrequency: "weekly",
       priority: 0.8,
-      images: p.images[0] ? [p.images[0].url] : undefined,
+      images: p.images[0] ? [absUrl(p.images[0].url)] : undefined,
     })
   }
 
@@ -66,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: post.updatedAt,
       changeFrequency: "monthly",
       priority: 0.6,
+      images: post.coverImage ? [absUrl(post.coverImage)] : undefined,
     })
   }
 

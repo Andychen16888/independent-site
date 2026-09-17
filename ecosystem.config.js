@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "orient-beauty",
+      name: "b2b-independent-site",
       script: ".next/standalone/server.js",
       cwd: __dirname,
       env: {

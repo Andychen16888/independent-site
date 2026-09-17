@@ -11,6 +11,7 @@ export const metadata: Metadata = generateMetadata({
   title: "Journal",
   description: "Explore beauty rituals, artisan stories, and mindful living inspiration from the journal.",
   keywords: "journal, blog, stories, insights",
+  canonical: "/blog",
 })
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 export default async function BlogPage({ searchParams }: Props) {
   const { tag } = await searchParams
   const activeTag = tag || "all"
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
   const posts = await prisma.blogPost.findMany({
     where: { isPublished: true, publishedAt: { not: null } },

@@ -24,9 +24,15 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
   useEffect(() => {
     fetch(`/api/orders/${orderId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+        return res.json()
+      })
       .then(setOrder)
-      .catch(console.error)
+      .catch((err) => {
+        console.error(err)
+        setOrder(null)
+      })
       .finally(() => setLoading(false))
   }, [orderId])
 

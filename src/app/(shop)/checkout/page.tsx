@@ -6,6 +6,8 @@ import { generateMetadata } from "@/lib/seo/generate-metadata"
 export const metadata = generateMetadata({
   title: "Checkout",
   description: "Complete your order securely.",
+  noindex: true,
+  nofollow: true,
 })
 
 export default function CheckoutPage() {

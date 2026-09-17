@@ -16,6 +16,7 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
   const [applied, setApplied] = useState<{
     code: string
     discount: number
+    discountValue: number
     discountType: string
   } | null>(null)
 
@@ -59,7 +60,7 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
           <div>
             <span className="text-sage font-medium">{applied.code}</span>
             <span className="text-stone ml-2">
-              (-{applied.discountType === "PERCENTAGE" ? `${applied.discount}%` : formatPrice(applied.discount)})
+              (-{applied.discountType === "PERCENTAGE" ? `${applied.discountValue}%` : formatPrice(applied.discount)})
             </span>
           </div>
           <button

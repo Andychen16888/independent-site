@@ -55,6 +55,42 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  .ai-markdown p {
+    @apply mb-2 text-sm leading-relaxed;
+  }
+  .ai-markdown p:last-child {
+    @apply mb-0;
+  }
+  .ai-markdown ul {
+    @apply list-disc pl-5 mb-2 space-y-1 text-sm leading-relaxed;
+  }
+  .ai-markdown ol {
+    @apply list-decimal pl-5 mb-2 space-y-1 text-sm leading-relaxed;
+  }
+  .ai-markdown li {
+    @apply mb-1;
+  }
+  .ai-markdown a {
+    @apply text-stone underline underline-offset-2 decoration-mist break-all;
+  }
+  .ai-markdown a:hover {
+    @apply text-charcoal decoration-charcoal;
+  }
+  .ai-markdown strong {
+    @apply font-semibold text-charcoal;
+  }
+  .ai-markdown blockquote {
+    @apply border-l-2 border-mist pl-3 text-stone italic my-2;
+  }
+  .ai-markdown h1,
+  .ai-markdown h2,
+  .ai-markdown h3 {
+    @apply text-sm font-semibold text-charcoal mb-2;
+  }
+  .ai-markdown code {
+    @apply bg-mist px-1 py-0.5 text-xs rounded-sm break-all;
+  }
+
   .section-padding {
     @apply py-16 md:py-24 lg:py-32;
   }

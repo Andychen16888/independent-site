@@ -21,9 +21,15 @@ export function OrdersList() {
 
   useEffect(() => {
     fetch("/api/orders")
-      .then((r) => r.json())
-      .then(setOrders)
-      .catch(console.error)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Request failed: ${r.status}`)
+        return r.json()
+      })
+      .then((data) => setOrders(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.error(err)
+        setOrders([])
+      })
       .finally(() => setLoading(false))
   }, [])
 

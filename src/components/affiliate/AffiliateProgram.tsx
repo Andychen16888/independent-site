@@ -57,7 +57,7 @@ export function AffiliateProgram() {
         <span className="text-caption mb-4 block">Partner With Us</span>
         <h1 className="heading-xl mb-6">Affiliate Program</h1>
         <p className="text-body max-w-2xl mx-auto">
-          Share the beauty of Eastern-inspired skincare and artisanal living with your audience. 
+          Share quality, factory-direct products from China with your audience. 
           Earn generous commissions while promoting products you believe in.
         </p>
       </div>

@@ -7,8 +7,8 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get("category")
     const sort = searchParams.get("sort")
     const q = searchParams.get("q")
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "20")
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1)
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10) || 20))
 
     const where: any = { status: "ACTIVE" }
 

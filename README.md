@@ -1,6 +1,6 @@
-# Oriental Beauty — E-commerce Platform
+# Commodities From China — E-commerce Platform
 
-A luxury beauty e-commerce platform built with Next.js 15, featuring Stripe/PayPal payments, AI chat, affiliate program, and admin dashboard.
+A B2B/B2C e-commerce platform built with Next.js 15, featuring Stripe/PayPal payments, OpenAI AI customer-service chat, affiliate program, and admin dashboard.
 
 ## Quick Start
 

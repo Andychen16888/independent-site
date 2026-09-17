@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
-  const name = process.env.NEXT_PUBLIC_SITE_NAME || "Global Commerce"
+  const name = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
   const description =
     process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
     "Premium products for everyday living."

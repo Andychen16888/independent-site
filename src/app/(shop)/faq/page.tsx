@@ -18,12 +18,13 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: "faq, shipping information, returns policy",
     siteName: seo.siteName,
     siteDescription: seo.siteDescription,
+    canonical: "/faq",
   })
 }
 
 export default async function FAQPage() {
   const seo = await getSiteSeo()
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const raw = await getSetting("content.faq", "[]")
   let faqs: FaqItem[] = []
   try {

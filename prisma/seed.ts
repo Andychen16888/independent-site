@@ -26,7 +26,7 @@ async function main() {
         email: adminEmail,
         passwordHash,
         firstName: "Admin",
-        lastName: "Oriental Beauty",
+        lastName: "Commodities From China",
         role: "ADMIN",
       },
     })
@@ -64,7 +64,7 @@ async function main() {
       name: "Peptide Hydration Serum",
       slug: "peptide-hydration-serum",
       sku: "OB-001",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "A lightweight, fast-absorbing serum packed with multi-weight hyaluronic acid and copper peptides to deeply hydrate and support skin barrier repair.",
       shortDescription: "Deep hydration serum with copper peptides and hyaluronic acid",
       unitPrice: 48.00,
@@ -81,7 +81,7 @@ async function main() {
       name: "Vitamin C Brightening Cream",
       slug: "vitamin-c-brightening-cream",
       sku: "OB-002",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "A rich yet silky moisturizer featuring stabilized vitamin C and niacinamide to brighten skin tone, reduce dark spots, and improve overall radiance.",
       shortDescription: "Brightening moisturizer with vitamin C and niacinamide",
       unitPrice: 42.00,
@@ -98,7 +98,7 @@ async function main() {
       name: "Retinol Night Oil",
       slug: "retinol-night-oil",
       sku: "OB-003",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "A gentle yet effective overnight treatment combining encapsulated retinol with squalane and rosehip oil to smooth fine lines and improve skin texture while you sleep.",
       shortDescription: "Overnight retinol treatment with squalane and rosehip oil",
       unitPrice: 52.00,
@@ -115,7 +115,7 @@ async function main() {
       name: "Ceramide Barrier Balm",
       slug: "ceramide-barrier-balm",
       sku: "OB-004",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "An ultra-nourishing balm formulated with ceramides, panthenol, and shea butter to restore and strengthen the skin barrier for compromised or dry skin types.",
       shortDescription: "Nourishing barrier repair balm with ceramides and shea butter",
       unitPrice: 38.00,
@@ -132,7 +132,7 @@ async function main() {
       name: "Handcrafted Soy Candle - Jasmine",
       slug: "handcrafted-soy-candle-jasmine",
       sku: "OB-101",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "Hand-poured soy wax candle with natural jasmine essential oil. Burns cleanly for 45+ hours in a hand-thrown ceramic vessel.",
       shortDescription: "Soy wax candle with natural jasmine essential oil",
       unitPrice: 28.00,
@@ -149,7 +149,7 @@ async function main() {
       name: "Linen Tea Towel Set",
       slug: "linen-tea-towel-set",
       sku: "OB-102",
-      brand: "Oriental Beauty",
+      brand: "Commodities From China",
       description: "Set of three stonewashed linen tea towels in neutral earth tones. Pre-washed for softness, each measures 18x28 inches.",
       shortDescription: "Set of 3 stonewashed linen tea towels",
       unitPrice: 34.00,
@@ -221,39 +221,40 @@ async function main() {
 
 async function seedSiteSettings() {
   const settings: Record<string, string> = {
-    "site.name": "Oriental Beauty",
-    "site.slogan": "Where East meets West",
-    "site.description": "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor.",
+    "site.name": "Commodities From China",
+    "site.slogan": "Sourced from China, delivered worldwide",
+    "site.description": "Sourced directly from China. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers worldwide.",
     "site.logo": "",
     "site.favicon": "",
     "site.language": "en",
     "site.currency": "USD",
     "site.promoBar": "New customers save 10%",
-    "contact.email": "hello@orientalbeauty.com",
+    "contact.email": "info@commoditychina.com",
     "contact.phone": "+1-888-555-0100",
     "contact.whatsapp": "",
-    "company.name": "Oriental Beauty Inc.",
-    "company.address": "Los Angeles, CA, United States",
-    "company.brief": "Premium retailer of peptide skincare and handcrafted oriental home decor.",
-    "footer.about": "Where Eastern beauty rituals meet artisanal craftsmanship. Curating the finest peptide skincare and authentic handcrafted pieces.",
+    "company.name": "Commodities From China Inc.",
+    "company.address": "Guangzhou, Guangdong, China",
+    "company.brief": "Direct sourcing from trusted Chinese suppliers. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale buyers.",
+    "footer.about": "Sourced directly from China. Premium peptide skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers worldwide.",
     "footer.copyright": "All rights reserved.",
-    "social.facebook": "https://www.facebook.com/orientalbeauty",
-    "social.instagram": "https://www.instagram.com/orientalbeauty",
+    "social.facebook": "https://www.facebook.com/commoditychina",
+    "social.instagram": "https://www.instagram.com/commoditychina",
     "social.linkedin": "",
     "social.youtube": "",
-    "social.twitter": "https://twitter.com/orientalbeauty",
-    "seo.homeTitle": "Oriental Beauty | Premium Skincare & Artisanal Living",
-    "seo.homeDescription": "Discover the perfect blend of Eastern beauty rituals and artisanal craftsmanship. Premium peptide skincare and authentic oriental home decor.",
-    "seo.defaultKeywords": "peptide skincare, oriental beauty, handmade ceramics, asian skincare, artisanal home decor",
+    "social.twitter": "https://twitter.com/commoditychina",
+    "seo.homeTitle": "Commodities From China | Wholesale Skincare & Artisanal Home Decor",
+    "seo.homeDescription": "Sourced directly from China for retail and wholesale B2B buyers. Premium peptide skincare, natural formulas, and artisanal home decor.",
+    "seo.defaultKeywords": "peptide skincare, commodities from china, wholesale skincare, b2b wholesale, handmade ceramics, artisanal home decor",
     "content.featuredEyebrow": "Explore",
     "content.featuredHeading": "Our Collections",
-    "content.featuredTagline": "Two worlds, one philosophy — beauty that honors tradition and nature",
+    "content.featuredTagline": "Factory-direct sourcing, quality goods, worldwide delivery",
     "content.brandStory": JSON.stringify({
       eyebrow: "Our Story",
-      title: "Bridging Two Worlds",
+      title: "From China to the World",
       paragraphs: [
-        "Oriental Beauty was born from a simple belief — that the finest skincare rituals and the most beautiful home objects share a common origin: respect for nature and devotion to craftsmanship.",
-        "We travel across Asia to partner with artisans who have perfected their craft over generations, and collaborate with scientists who reimagine traditional ingredients through modern peptide technology.",
+        "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
+        "We partner with factories, farmers, and artisans across China who have perfected their craft over generations, from peptide skincare formulated in modern labs to ceramics shaped by hand.",
+        "Whether you shop retail or buy wholesale in bulk, we deliver factory-direct quality with reliable global shipping and dedicated support.",
       ],
       ctaLabel: "Read Our Story",
       ctaHref: "/pages/about",
@@ -294,7 +295,7 @@ async function seedSiteSettings() {
       },
       {
         name: "Emily R.",
-        location: "Los Angeles",
+        location: "Guangzhou",
         rating: 5,
         text: "I purchased a ceramic tea set from the Handmade collection and it's absolutely breathtaking. Each piece tells a story. It has become the centerpiece of my morning ritual.",
         product: "Artisan Tea Collection",
@@ -308,9 +309,9 @@ async function seedSiteSettings() {
       },
     ]),
     "content.instagram": JSON.stringify({
-      handle: "@OrientalBeauty",
-      handleUrl: "https://www.instagram.com/orientalbeauty",
-      tagline: "Tag us @OrientalBeauty for a chance to be featured",
+      handle: "@commoditychina",
+      handleUrl: "https://www.instagram.com/commoditychina",
+      tagline: "Tag us @commoditychina for a chance to be featured",
       posts: [],
     }),
     "content.faq": JSON.stringify([
@@ -353,17 +354,17 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
   {
     title: "About Us",
     slug: "about",
-    excerpt: "Our story — where East meets West.",
-    content: `<h1>Where East Meets West</h1><p>Our journey began in the ancient markets of Kyoto, the bustling beauty labs of Seoul, and the quiet ceramics studios of Jingdezhen. We traveled across Asia to discover the traditions, ingredients, and craftsmanship that have stood the test of time.</p><p>We believe that true luxury is intentional. It's the knowledge that what you bring into your home and onto your skin was made with care, by people who respect the earth and honor their craft.</p>`,
+    excerpt: "Our story — sourcing quality goods from China for the world.",
+    content: `<h1>From China to the World</h1><p>Our journey began in the factories, farms, and workshops of China — from modern skincare labs in Guangzhou to ceramics studios in Jingdezhen. We traveled the country to find makers who share one standard: quality you can trust.</p><p>We believe that buying well is simpler when good products move directly from maker to buyer. That's why we handle sourcing, quality control, and shipping ourselves — so you get factory-direct value every time.</p>`,
     seoTitle: "About Us",
-    seoDescription: "Discover the story behind the brand — where Eastern beauty rituals meet artisanal craftsmanship.",
-    seoKeywords: "about us, our story, brand story",
+    seoDescription: "Discover how Commodities From China sources quality skincare, home decor, and everyday goods directly from Chinese suppliers.",
+    seoKeywords: "about us, our story, sourcing from china, b2b wholesale",
   },
   {
     title: "Contact Us",
     slug: "contact",
     excerpt: "Get in touch — we respond within 24 hours.",
-    content: `<h1>Contact Us</h1><p>We'd love to hear from you. Send us a message and we'll respond within 24 hours.</p><p>Email: hello@orientalbeauty.com</p>`,
+    content: `<h1>Contact Us</h1><p>We'd love to hear from you — whether you're shopping retail or need a wholesale quote. Send us a message and we'll respond within 24 hours.</p><p>Email: info@commoditychina.com</p>`,
     seoTitle: "Contact Us",
     seoDescription: "Contact our support team for orders, products, and general inquiries.",
     seoKeywords: "contact, support",
@@ -417,7 +418,7 @@ const defaultBlogPosts: { title: string; slug: string; excerpt: string; content:
 
 <h2>Why Layering Matters</h2>
 
-<p>Layering your skincare correctly can make the difference between radiant, youthful skin and a routine that never reaches its full potential. At Oriental Beauty, we've perfected a peptide-layering system that maximizes absorption and efficacy.</p>
+<p>Layering your skincare correctly can make the difference between radiant, youthful skin and a routine that never reaches its full potential. At Commodities From China, we've perfected a peptide-layering system that maximizes absorption and efficacy.</p>
 
 <h2>The Science of Peptides</h2>
 
@@ -473,7 +474,7 @@ const defaultBlogPosts: { title: string; slug: string; excerpt: string; content:
 
 <blockquote>"The kiln is alive. It breathes, it sighs, it tells you when the pieces are ready."</blockquote>
 
-<h2>The Oriental Beauty Collection</h2>
+<h2>The Signature Collection</h2>
 
 <p>For our Handmade Living collection, Tanaka-san creates:</p>
 
@@ -524,7 +525,7 @@ const defaultBlogPosts: { title: string; slug: string; excerpt: string; content:
 
 <h2>Our Approach</h2>
 
-<p>At Oriental Beauty, we combine traditional fermentation techniques with modern peptide technology. Our ingredients are fermented for 72 hours using traditional methods, then combined with multi-weight peptides for maximum efficacy.</p>`,
+<p>At Commodities From China, we combine traditional fermentation techniques with modern peptide technology. Our ingredients are fermented for 72 hours using traditional methods, then combined with multi-weight peptides for maximum efficacy.</p>`,
     author: "Content Editor",
     tags: "skincare, science, fermentation, korean beauty, japanese beauty",
     publishedAt: "2026-04-05",

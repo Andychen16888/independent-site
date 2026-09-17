@@ -5,15 +5,21 @@ import { Footer } from "@/components/layout/Footer"
 import { ChatButton } from "@/components/chat/ChatButton"
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [menus, settings] = await Promise.all([
+  const [menus, settings, chatProducts] = await Promise.all([
     prisma.menu.findMany({
       where: { isActive: true, parentId: null },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     }),
     getSiteSettings(),
+    prisma.product.findMany({
+      where: { status: "ACTIVE", deletedAt: null },
+      orderBy: [{ isBestSeller: "desc" }, { createdAt: "desc" }],
+      take: 4,
+      include: { images: { take: 1 } },
+    }),
   ])
 
-  const siteName = settings["site.name"] || "Global Commerce"
+  const siteName = settings["site.name"] || "Commodities From China"
   const siteSlogan = settings["site.slogan"] || ""
 
   const navItems = menus.map((m) => ({ name: m.label, href: m.url }))
@@ -45,7 +51,16 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         youtube={settings["social.youtube"]}
         twitter={settings["social.twitter"]}
       />
-      <ChatButton />
+      <ChatButton
+        products={chatProducts.map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          price: Number(p.unitPrice),
+          image: p.images[0]?.url || null,
+          tag: p.isBestSeller ? "Best Seller" : p.isNew ? "New" : undefined,
+        }))}
+      />
     </>
   )
 }

@@ -36,8 +36,9 @@ export async function POST(req: Request) {
         discount = Math.min(discount, Number(coupon.maxDiscount))
       }
     } else if (coupon.discountType === "FIXED_AMOUNT") {
-      discount = Number(coupon.discountValue)
+      discount = Math.min(Number(coupon.discountValue), subtotal)
     }
+    discount = Math.max(0, discount)
 
     return NextResponse.json({
       valid: true,

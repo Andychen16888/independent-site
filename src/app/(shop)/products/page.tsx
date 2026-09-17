@@ -9,8 +9,9 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = generateMetadata({
   title: "All Products",
-  description: "Browse our complete collection of premium peptide skincare and artisanal home decor. Discover the perfect blend of Eastern beauty rituals and mindful living.",
-  keywords: "peptide skincare, beauty products, artisan home decor, oriental beauty shop, buy skincare online",
+  description: "Browse our complete collection of premium peptide skincare and artisanal home decor. Factory-direct quality for retail and wholesale B2B buyers.",
+  keywords: "peptide skincare, wholesale skincare, artisan home decor, b2b wholesale, buy skincare online",
+  canonical: "/products",
 })
 
 interface Props {
@@ -64,7 +65,7 @@ export default async function ProductsPage({ searchParams }: Props) {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
   const schemas = [
     breadcrumbSchema([

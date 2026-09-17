@@ -6,6 +6,8 @@ import { generateMetadata } from "@/lib/seo/generate-metadata"
 export const metadata = generateMetadata({
   title: "Shopping Cart",
   description: "Review your items and proceed to checkout.",
+  noindex: true,
+  nofollow: true,
 })
 
 export default function CartPage() {

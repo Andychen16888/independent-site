@@ -29,7 +29,7 @@ export function CartContent() {
 
   const subtotal = getSubtotal()
   const shipping = subtotal >= 100 ? 0 : 12
-  const total = subtotal + shipping - discount
+  const total = Math.max(0, subtotal + shipping - discount)
 
   return (
     <div className="grid lg:grid-cols-[1fr_380px] gap-12">

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!category) return {}
 
   const seo = await getSiteSeo()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   return genMeta({
     title: category.seoTitle || `${category.name} | Products`,
     description: category.seoDescription || category.description || `Shop ${category.name}`,
@@ -74,7 +74,7 @@ export default async function CategoryPage({ params }: Props) {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const children = withParents.filter((c) => c.parentId === category.id)
 
   const schemas = [

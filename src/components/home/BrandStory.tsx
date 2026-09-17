@@ -17,7 +17,7 @@ const DEFAULT_BRAND_STORY: BrandStoryContent = {
   eyebrow: "Our Story",
   title: "Bridging Two Worlds",
   paragraphs: [
-    "Oriental Beauty was born from a simple belief — that the finest skincare rituals and the most beautiful home objects share a common origin: respect for nature and devotion to craftsmanship.",
+    "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
     "We travel across Asia to partner with artisans who have perfected their craft over generations, and collaborate with scientists who reimagine traditional ingredients through modern peptide technology.",
   ],
   ctaLabel: "Read Our Story",

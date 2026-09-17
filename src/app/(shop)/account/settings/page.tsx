@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Container } from "@/components/ui/Container"
 import { AccountSidebar } from "@/components/account/AccountSidebar"
@@ -11,9 +11,19 @@ export default function AccountSettingsPage() {
   const { data: session } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: session?.user?.name?.split(" ")[0] || "",
-    lastName: session?.user?.name?.split(" ").slice(1).join(" ") || "",
+    firstName: "",
+    lastName: "",
   })
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      const name = session.user.name
+      setFormData({
+        firstName: name.split(" ")[0] || "",
+        lastName: name.split(" ").slice(1).join(" ") || "",
+      })
+    }
+  }, [session])
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await getPage(slug)
   if (!page || !page.isPublished) return {}
   const seo = await getSiteSeo()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   return genMeta({
     title: page.seoTitle || page.title,
     description: page.seoDescription || page.excerpt || "",
@@ -42,7 +42,7 @@ export default async function PageView({ params }: Props) {
   const page = await getPage(slug)
   if (!page || !page.isPublished) notFound()
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const pageUrl = `${baseUrl}/pages/${slug}`
 
   const schemas = [

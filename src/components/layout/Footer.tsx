@@ -26,15 +26,15 @@ const DEFAULT_SOCIAL_LINKS = [
 ]
 
 export async function Footer({
-  siteName = "ORIENTAL",
-  siteSlogan = "BEAUTY",
+  siteName = "Commodities From China",
+  siteSlogan = "Sourced from China",
   logo = "",
-  about = "Where Eastern beauty rituals meet artisanal craftsmanship. Curating the finest peptide skincare and authentic handcrafted pieces.",
-  contactEmail = "hello@orientalbeauty.com",
+  about = "Direct from China to the world. We supply premium skincare, artisanal home decor, and everyday commodities for retail and wholesale B2B buyers.",
+  contactEmail = "info@commoditychina.com",
   contactPhone = "",
-  address = "Los Angeles, CA",
-  hours = "Mon–Fri, 9am–6pm PST",
-  copyrightSuffix = "Oriental Beauty",
+  address = "Guangzhou, Guangdong, China",
+  hours = "Mon–Fri, 9am–6pm CST",
+  copyrightSuffix = "Commodities From China",
   facebook = "",
   instagram = "",
   linkedin = "",

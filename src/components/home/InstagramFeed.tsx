@@ -12,9 +12,9 @@ export interface InstagramConfig {
 }
 
 const DEFAULT_INSTAGRAM: InstagramConfig = {
-  handle: "@OrientalBeauty",
-  handleUrl: "https://instagram.com",
-  tagline: "Tag us @OrientalBeauty for a chance to be featured",
+  handle: "@commoditychina",
+  handleUrl: "https://instagram.com/commoditychina",
+  tagline: "Tag us @commoditychina for a chance to be featured",
   posts: [],
 }
 

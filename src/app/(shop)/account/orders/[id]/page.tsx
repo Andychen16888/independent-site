@@ -7,6 +7,8 @@ import { generateMetadata } from "@/lib/seo/generate-metadata"
 export const metadata = generateMetadata({
   title: "Order Details",
   description: "View your order details and tracking information.",
+  noindex: true,
+  nofollow: true,
 })
 
 export default async function OrderDetailPage({

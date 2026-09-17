@@ -11,15 +11,41 @@ export async function POST(req: Request) {
 
     const { productId, orderId, rating, title, content } = await req.json()
 
+    if (!productId) {
+      return NextResponse.json({ error: "Product is required" }, { status: 400 })
+    }
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return NextResponse.json({ error: "Rating must be an integer between 1 and 5" }, { status: 400 })
+    }
+
+    const productExists = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+    })
+    if (!productExists) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
+    }
+
+    const userId = (session.user as any).id
+
+    let isVerified = false
+    if (orderId) {
+      const order = await prisma.order.findFirst({
+        where: { id: orderId, userId },
+        include: { items: { where: { productId }, take: 1 } },
+      })
+      isVerified = !!order?.items.length
+    }
+
     const review = await prisma.review.create({
       data: {
         productId,
         orderId,
-        userId: (session.user as any).id,
+        userId,
         rating,
         title,
         content,
-        isVerified: !!orderId,
+        isVerified,
       },
     })
 

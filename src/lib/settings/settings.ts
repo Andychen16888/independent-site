@@ -45,7 +45,7 @@ export async function updateSiteSettings(input: Record<string, string>) {
 }
 
 export const SITE_DEFAULTS: Record<string, string> = {
-  "site.name": "Global Commerce",
+  "site.name": "Commodities From China",
   "site.slogan": "",
   "site.description": "",
 }

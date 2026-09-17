@@ -6,7 +6,7 @@ import { ProductDetail } from "@/components/product/ProductDetail"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
-import { breadcrumbSchema, productSchema, howToSchema, videoObjectSchema, articleSchema } from "@/lib/seo/structured-data"
+import { breadcrumbSchema, productSchema, howToSchema, videoObjectSchema, articleSchema, faqPageSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
 interface Props {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogType: "product",
     siteName: seo.siteName,
     siteDescription: seo.siteDescription,
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"}/products/${product.slug}`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"}/products/${product.slug}`,
   })
 }
 
@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const productUrl = `${baseUrl}/products/${serializedProduct.slug}`
 
   const schemas = [
@@ -119,6 +119,11 @@ export default async function ProductPage({ params }: Props) {
           uploadDate: serializedProduct.createdAt.toISOString(),
           duration: "PT2M",
         }))
+      : []),
+    ...(serializedProduct.faqs && serializedProduct.faqs.length > 0
+      ? [faqPageSchema(
+          serializedProduct.faqs.map((f) => ({ question: f.question, answer: f.answer }))
+        )]
       : []),
   ]
 

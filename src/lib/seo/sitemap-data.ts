@@ -1,4 +1,4 @@
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
 export interface SitemapEntry {
   url: string
@@ -15,7 +15,6 @@ export const staticRoutes: SitemapEntry[] = [
   { url: `${baseUrl}/blog`, changeFrequency: "weekly", priority: 0.8 },
   { url: `${baseUrl}/faq`, changeFrequency: "monthly", priority: 0.5 },
   { url: `${baseUrl}/affiliate`, changeFrequency: "monthly", priority: 0.5 },
-  { url: `${baseUrl}/search`, changeFrequency: "monthly", priority: 0.2 },
 ]
 
 export const allRoutes: SitemapEntry[] = [...staticRoutes]

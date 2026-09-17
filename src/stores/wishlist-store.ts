@@ -34,6 +34,6 @@ export const useWishlistStore = create<WishlistStore>()(
 
       isInWishlist: (productId) => get().items.includes(productId),
     }),
-    { name: "orient-beauty-wishlist" }
+    { name: "b2b-independent-site-wishlist" }
   )
 )

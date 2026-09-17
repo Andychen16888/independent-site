@@ -21,6 +21,20 @@ export async function GET(
 ) {
   const { filename } = await params
 
+  // Reject traversal attempts and path separators outright.
+  const normalized = path.posix.normalize(filename)
+  if (
+    !filename ||
+    filename !== normalized ||
+    filename === "." ||
+    filename === ".." ||
+    filename.includes("/") ||
+    filename.includes("\\") ||
+    filename.includes("..")
+  ) {
+    return NextResponse.json({ error: "File not found" }, { status: 404 })
+  }
+
   const ext = filename.split(".").pop()?.toLowerCase() || ""
   const contentType = MIME_MAP[ext] || "application/octet-stream"
 

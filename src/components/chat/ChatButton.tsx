@@ -3,10 +3,12 @@
 import { ChatWidget } from "./ChatWidget"
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2"
 import { motion, AnimatePresence } from "framer-motion"
+import type { ChatProduct } from "./types"
 
-export function ChatButton() {
+export function ChatButton({ products = [] }: { products?: ChatProduct[] }) {
   return (
     <ChatWidget
+      products={products}
       trigger={
         <motion.button
           whileHover={{ scale: 1.05 }}

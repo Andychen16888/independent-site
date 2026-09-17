@@ -26,7 +26,7 @@ const cormorant = Cormorant_Garamond({
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSiteSeo()
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const ogImage = seo.logo && /^https?:\/\//.test(seo.logo)
     ? { url: seo.logo, width: 1200, height: 630, alt: seo.siteName }
     : { url: "/og-default.jpg", width: 1200, height: 630, alt: seo.siteName }
@@ -45,7 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: baseUrl,
-      languages: { [seo.language]: "/" },
+      languages: {
+        [seo.language === "zh" ? "zh" : "en"]: "/",
+        "x-default": "/",
+      },
     },
     openGraph: {
       type: "website",
@@ -91,7 +94,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const seo = await getSiteSeo()
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const socialLinks = [
     seo.social.facebook,
     seo.social.instagram,

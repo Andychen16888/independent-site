@@ -2,8 +2,11 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { HiOutlineXMark, HiOutlinePaperAirplane, HiOutlineSparkles } from "react-icons/hi2"
+import { marked } from "marked"
+import DOMPurify from "isomorphic-dompurify"
+import { HiOutlineXMark, HiOutlinePaperAirplane, HiOutlineSparkles, HiOutlineArrowPath } from "react-icons/hi2"
 import { ProductSuggestions } from "./ProductSuggestions"
+import type { ChatProduct } from "./types"
 
 interface Message {
   role: "user" | "assistant"
@@ -12,23 +15,36 @@ interface Message {
 
 interface ChatWidgetProps {
   trigger: React.ReactNode
+  products?: ChatProduct[]
 }
+
+const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "our store"
 
 const WELCOME_MESSAGE: Message = {
   role: "assistant",
-  content: `Hello! I'm your personal shopping assistant at ${process.env.NEXT_PUBLIC_SITE_NAME || "our store"}. ✨ I can help you find the perfect product, explore our collections, or answer any questions about our store. How can I assist you today?`
+  content: `Hello! I'm your personal shopping assistant at ${siteName}. I can help you find products, compare options, check shipping, or learn about us. How can I help you today?`
 }
 
 const SUGGESTED_QUESTIONS = [
-  "What's good for dry skin?",
-  "Tell me about your peptide serums",
-  "I need a housewarming gift",
-  "What's your best seller?",
-  "Do you have anything for eye wrinkles?",
-  "Show me handmade ceramics",
+  "What's the fastest delivery option?",
+  "Do you offer wholesale or bulk pricing?",
+  "What's your return policy?",
+  "Show me your best sellers",
+  "Do you ship internationally?",
+  "How do I track my order?",
 ]
 
-export function ChatWidget({ trigger }: ChatWidgetProps) {
+marked.setOptions({ gfm: true, breaks: true })
+
+function renderMarkdown(content: string): string {
+  try {
+    return DOMPurify.sanitize(marked.parse(content) as string)
+  } catch {
+    return content
+  }
+}
+
+export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState("")
@@ -47,11 +63,16 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
     }
   }, [isOpen, messages, scrollToBottom])
 
+  const resetChat = () => {
+    setMessages([WELCOME_MESSAGE])
+    setInput("")
+  }
+
   const handleSend = async (text?: string) => {
     const content = text || input
     if (!content.trim() || isLoading) return
 
-    const userMessage: Message = { role: "user", content: content.trim() }
+    const userMessage: Message = { role: "user", content: content.trim().slice(0, 2000) }
     const updatedMessages = [...messages, userMessage]
     setMessages(updatedMessages)
     setInput("")
@@ -62,11 +83,18 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
+          messages: updatedMessages.slice(-20).map((m) => ({ role: m.role, content: m.content })),
         }),
       })
 
-      if (!res.ok) throw new Error("Chat request failed")
+      if (!res.ok) {
+        let errorText = "Chat request failed"
+        try {
+          const data = await res.json()
+          if (data?.error) errorText = data.error
+        } catch {}
+        throw new Error(errorText)
+      }
 
       const reader = res.body?.getReader()
       if (!reader) throw new Error("No reader available")
@@ -74,6 +102,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
       let assistantContent = ""
       setMessages((prev) => [...prev, { role: "assistant", content: "" }])
 
+      let streamError: string | null = null
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -92,14 +121,28 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                 next[next.length - 1] = { role: "assistant", content: assistantContent }
                 return next
               })
+            } else if (data.error) {
+              streamError = data.error
             }
-          } catch {}
+          } catch {
+            // Ignore malformed chunks but continue streaming
+          }
+          if (streamError) break
         }
+        if (streamError) break
+      }
+
+      if (streamError) {
+        throw new Error(streamError)
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : ""
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "I apologize, but I'm having trouble connecting. Please try again or email our support team for immediate assistance." },
+        {
+          role: "assistant",
+          content: `I apologize, but I couldn't complete that request${message ? `: ${message}` : ""}. Please try again or contact our support team.`,
+        },
       ])
     } finally {
       setIsLoading(false)
@@ -135,20 +178,29 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                   <HiOutlineSparkles className="w-4 h-4 text-gold" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{process.env.NEXT_PUBLIC_SITE_NAME || "Store"}</p>
+                  <p className="text-sm font-medium">{siteName}</p>
                   <p className="text-[10px] text-ivory/60 tracking-wider uppercase">AI Sales Assistant</p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-white/10 rounded transition-colors"
-              >
-                <HiOutlineXMark className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={resetChat}
+                  title="Start a new conversation"
+                  className="p-1.5 hover:bg-white/10 rounded transition-colors"
+                >
+                  <HiOutlineArrowPath className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1.5 hover:bg-white/10 rounded transition-colors"
+                >
+                  <HiOutlineXMark className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin">
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               {messages.map((msg, i) => (
                 <div
                   key={i}
@@ -161,13 +213,26 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                         : "bg-cream text-charcoal rounded-tr-lg rounded-br-lg rounded-bl-lg"
                     }`}
                   >
-                    {msg.content || (msg.role === "assistant" && i === messages.length - 1 && isLoading ? (
-                      <span className="inline-flex gap-1">
-                        <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </span>
-                    ) : null)}
+                    {msg.content ? (
+                      msg.role === "user" ? (
+                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                      ) : (
+                        <div
+                          className="ai-markdown break-words"
+                          dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }}
+                        />
+                      )
+                    ) : (
+                      msg.role === "assistant" &&
+                      i === messages.length - 1 &&
+                      isLoading && (
+                        <span className="inline-flex gap-1">
+                          <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <span className="w-2 h-2 bg-stone rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               ))}
@@ -180,8 +245,8 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                       <button
                         key={q}
                         onClick={() => handleSend(q)}
-                        className="text-xs px-3 py-2 bg-mist text-stone hover:bg-charcoal hover:text-ivory transition-colors"
                         disabled={isLoading}
+                        className="text-xs px-3 py-2 bg-mist text-stone hover:bg-charcoal hover:text-ivory transition-colors"
                       >
                         {q}
                       </button>
@@ -190,7 +255,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                 </div>
               )}
 
-              <ProductSuggestions />
+              {products.length > 0 && <ProductSuggestions products={products} />}
 
               <div ref={messagesEndRef} />
             </div>
@@ -206,6 +271,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                   onKeyDown={handleKeyDown}
                   placeholder="Ask me anything..."
                   disabled={isLoading}
+                  maxLength={2000}
                   className="flex-1 px-4 py-2.5 bg-cream text-sm outline-none border border-transparent focus:border-charcoal/30 transition-colors placeholder:text-stone/50"
                 />
                 <button
@@ -217,7 +283,7 @@ export function ChatWidget({ trigger }: ChatWidgetProps) {
                 </button>
               </div>
               <p className="text-[10px] text-stone/50 mt-2 text-center">
-                Powered by OpenAI — Responses are AI-generated
+                Powered by OpenAI — Responses are AI-generated.
               </p>
             </div>
           </motion.div>

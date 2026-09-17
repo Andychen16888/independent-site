@@ -23,7 +23,7 @@ export default async function BlogPostPage({ params }: Props) {
   })
   if (!post || !post.publishedAt) notFound()
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const postUrl = `${baseUrl}/blog/${slug}`
   const datePublished = post.publishedAt.toISOString()
   const tags = (post.tags || "").split(",").map((t) => t.trim()).filter(Boolean)

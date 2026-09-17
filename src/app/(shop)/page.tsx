@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
-import { getSiteSettings } from "@/lib/settings/settings"
+import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
 import { HeroBanner, type HeroSlide, DEFAULT_HERO_SLIDES } from "@/components/home/HeroBanner"
 import { BrandStory, type BrandStoryContent } from "@/components/home/BrandStory"
 import { FeaturedCategories, type FeaturedCategory } from "@/components/home/FeaturedCategories"
@@ -53,7 +53,7 @@ export default async function HomePage() {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   })
 
-  // Hero slides from DB banners (fall back to the default orient slides pre-seed).
+  // Hero slides from DB banners (fall back to the default hero slides pre-seed).
   const heroSlides: HeroSlide[] = banners.length
     ? banners.map((b) => ({
         title: b.title,
@@ -81,7 +81,19 @@ export default async function HomePage() {
   const instagram = parseJson<InstagramConfig | null>(settings["content.instagram"], null)
 
   const siteDescription = settings["site.description"]
-  const featuredLinks: SEOLink[] = featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` }))
+
+  const getSiteSeoResult = await getSiteSeo()
+  const seoParagraphs = [
+    siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
+    `Discover the ${getSiteSeoResult.siteName} collection: premium skincare, peptide serums, natural formulas, and handmade home goods. Built for retail shoppers and wholesale B2B buyers alike — shop online, order in bulk, or contact our team for trade pricing and partnership inquiries.`,
+  ].filter(Boolean)
+
+  const featuredLinks: SEOLink[] = [
+    ...featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` })),
+    { label: "All Products", href: "/products" },
+    { label: "FAQ", href: "/faq" },
+    { label: "About Us", href: "/pages/about" },
+  ]
   const seoLinks: SEOLink[] = [
     ...featuredLinks,
     ...(featuredCats.some((c) => c.slug === "beauty")
@@ -117,8 +129,8 @@ export default async function HomePage() {
       <InstagramFeed config={instagram || undefined} />
       <NewsletterSection />
       <SEOSection
-        heading={settings["seo.homeTitle"] || undefined}
-        paragraphs={siteDescription ? [siteDescription] : []}
+        heading={settings["seo.homeTitle"] || getSiteSeoResult.homepageTitle || undefined}
+        paragraphs={seoParagraphs}
         links={seoLinks}
       />
     </>

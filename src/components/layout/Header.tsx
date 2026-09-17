@@ -75,10 +75,10 @@ function PromoBar({ text }: { text: string }) {
 
 export function Header({
   navItems = DEFAULT_NAV,
-  siteName = "ORIENTAL",
-  siteSlogan = "BEAUTY",
+  siteName = "Commodities From China",
+  siteSlogan = "Sourced from China",
   logo = "",
-  promoBar = "New customers save 10%",
+  promoBar = "Wholesale & retail pricing available worldwide",
 }: {
   navItems?: { name: string; href: string }[]
   siteName?: string
@@ -89,11 +89,16 @@ export function Header({
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const pathname = usePathname()
   const { data: session } = useSession()
   const cartCount = useCartStore((s) => s.getItemCount())
   const wishlistCount = useWishlistStore((s) => s.items.length)
   const safeNav = navItems && navItems.length > 0 ? navItems : DEFAULT_NAV
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -174,7 +179,7 @@ export function Header({
 
             <Link href="/wishlist" className="relative p-2 text-stone hover:text-charcoal transition-colors">
               <HiOutlineHeart className="w-5 h-5" />
-              {wishlistCount > 0 && (
+              {isMounted && wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-charcoal text-white text-[10px] flex items-center justify-center rounded-full">
                   {wishlistCount}
                 </span>
@@ -187,7 +192,7 @@ export function Header({
 
             <Link href="/cart" className="relative p-2 text-stone hover:text-charcoal transition-colors">
               <HiOutlineShoppingBag className="w-5 h-5" />
-              {cartCount > 0 && (
+              {isMounted && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-charcoal text-white text-[10px] flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>

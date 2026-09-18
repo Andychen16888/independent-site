@@ -302,6 +302,11 @@ cd /var/www/b2b-independent-site
 # 确保拉取最新代码 (否则可能运行旧版 next start 而非 standalone)
 git pull origin main
 
+# 【前置检查】确认 standalone 构建产物存在，否则先执行 3.1 的构建步骤
+test -f .next/standalone/server.js && echo "build ok, ready to start"
+# 若上面没有输出 "build ok"，说明还没构建，禁止直接 pm2 start，请先回头执行 3.1:
+#   npm ci --legacy-peer-deps && npm run db:generate && npm run build:server
+
 # 启动方式一 (推荐): 使用 ecosystem.config.js (自动读取环境变量配置)
 # 注意: ecosystem.config.js 已配置 HOST=127.0.0.1，确保 Node 仅监听本地
 pm2 start ecosystem.config.js
@@ -313,6 +318,8 @@ pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
 ```
+
+> **从未见过 "Script not found: .../standalone/server.js" 的原因**: 说明 3.1 的构建步骤还没有执行，`.next/standalone/` 目录并​​不存在。请回到 3.1 执行 `npm ci` + `npm run db:generate` + `npm run build:server`，产物生成后再执行本节的 `pm2 start`。每次 `git pull` 拉取新代码后，也需要重新执行一次 3.1 的构建（`npm run build:server`），否则旧版本会一直运行。
 
 ### 3.5 验证部署
 
@@ -347,6 +354,7 @@ pm2 logs b2b-independent-site --lines 50
 NODE_ENV=production node .next/standalone/server.js
 
 # 常见原因：
+# - Script not found: .../standalone/server.js → 未执行 3.1 构建，先 npm run build:server 生成产物
 # - .env 中 DATABASE_URL 配置错误 → 检查数据库连接
 # - 端口 3000 被占用 → lsof -i :3000
 # - node_modules 不完整 → npm ci --legacy-peer-deps

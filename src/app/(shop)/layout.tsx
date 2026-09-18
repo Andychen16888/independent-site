@@ -33,7 +33,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         logo={settings["site.logo"]}
         promoBar={settings["site.promoBar"] || ""}
       />
-      <div className="h-[100px] md:h-[116px]" />
+      <div className="h-[92px] md:h-[141px]" />
       <main className="min-h-screen">{children}</main>
       <Footer
         siteName={siteName}

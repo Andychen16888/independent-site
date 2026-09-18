@@ -121,7 +121,7 @@ export function Header({
     >
       <PromoBar text={promoBar} />
       <Container>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center h-16 md:h-20">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center h-14 md:h-16">
           <div className="flex items-center min-w-0">
             <button
               className="md:hidden p-2 -ml-2 shrink-0"
@@ -130,29 +130,12 @@ export function Header({
             >
               {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
             </button>
-
-            <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
-              {safeNav.map((item) => (
-                <Link
-                  key={item.name + item.href}
-                  href={item.href}
-                  className={cn(
-                    "whitespace-nowrap text-xs tracking-widest uppercase transition-colors duration-300",
-                    pathname.startsWith(item.href)
-                      ? "text-charcoal"
-                      : "text-stone hover:text-charcoal"
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
           </div>
 
           <Link href="/" className="justify-self-center px-2 min-w-0 text-center">
             {logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={logo} alt={siteName} className="max-h-12 md:max-h-14 w-auto" />
+              <img src={logo} alt={siteName} className="max-h-10 md:max-h-12 w-auto" />
             ) : (
               <>
                 <span className="block font-serif text-lg md:text-2xl tracking-[0.12em] text-charcoal text-center whitespace-nowrap">
@@ -202,6 +185,23 @@ export function Header({
             </Link>
           </div>
         </div>
+
+        <nav className="hidden md:flex items-center justify-center gap-8 lg:gap-10 py-3 border-t border-mist">
+          {safeNav.map((item) => (
+            <Link
+              key={item.name + item.href}
+              href={item.href}
+              className={cn(
+                "whitespace-nowrap text-xs tracking-widest uppercase transition-colors duration-300",
+                pathname.startsWith(item.href)
+                  ? "text-charcoal"
+                  : "text-stone hover:text-charcoal"
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
       </Container>
 
       <AnimatePresence>

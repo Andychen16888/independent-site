@@ -32,4 +32,9 @@ cp .env.example .env.local
 
 ## Deployment
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for VPS, Docker, and CI/CD deployment guides.
+Deployment has two independent guides (choose one, do not mix commands):
+
+- [Non-Docker (PM2/standalone)](docs/DEPLOYMENT-NON-DOCKER.md) — recommended, lowest footprint, currently in production
+- [Docker (docker compose)](docs/DEPLOYMENT-DOCKER.md)
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the overview, environment variables, payments, SEO/GEO, and admin setup.

@@ -1,0 +1,426 @@
+# 部署指南 ②：非 Docker 部署（PM2 直跑，推荐）
+
+> 适用：1 核 2GB 起步的小内存 VPS（Vultr / DigitalOcean 等），已用于生产环境验证。
+> 技术栈：Ubuntu 22.04 + Node.js 20 + PostgreSQL 16 + Nginx + PM2
+> 配套文档：[Docker 部署教程](./DEPLOYMENT-DOCKER.md)　|　[部署总览与通用参考](./DEPLOYMENT.md)
+>
+> ⚠️ 本教程与 Docker 教程**互相独立**，二选一即可。请全程只按本教程执行，不要混用两个教程的命令。
+
+---
+
+## 目录
+
+1. [服务器准备与安全加固](#1-服务器准备与安全加固)
+2. [安装依赖](#2-安装依赖)
+3. [配置 PostgreSQL](#3-配置-postgresql)
+4. [获取代码与环境变量](#4-获取代码与环境变量)
+5. [构建应用](#5-构建应用)
+6. [数据库迁移与种子数据](#6-数据库迁移与种子数据)
+7. [启动应用 (PM2)](#7-启动应用-pm2)
+8. [Nginx 配置](#8-nginx-配置)
+9. [SSL 证书 (Let's Encrypt)](#9-ssl-证书-lets-encrypt)
+10. [验证部署](#10-验证部署)
+11. [更新部署](#11-更新部署)
+12. [运维命令](#12-运维命令)
+13. [故障排查](#13-故障排查)
+14. [通用参考（支付/邮件/SEO/管理后台）](#14-通用参考支付邮件seo管理后台)
+
+---
+
+## 1. 服务器准备与安全加固
+
+### 1.1 最低配置
+
+| 配置项 | 最低 | 推荐 |
+|--------|------|------|
+| CPU | 1 核 | 2 核 |
+| 内存 | 2 GB（建议加 2G swap） | 4 GB |
+| 硬盘 | 20 GB SSD | 40 GB SSD |
+| 系统 | Ubuntu 22.04 | Ubuntu 22.04 LTS |
+
+> 1 核 2G 小机器强烈建议先加 swap，防止 `next build` 时 OOM：
+>
+> ```bash
+> sudo fallocate -l 2G /swapfile
+> sudo chmod 600 /swapfile
+> sudo mkswap /swapfile
+> sudo swapon /swapfile
+> echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+> ```
+
+### 1.2 安全加固（部署前必须完成）
+
+> **原则**：新服务器在完成加固前，暴露时间越短越好。以下步骤在安装任何依赖 / 克隆代码**之前**完成。
+
+```bash
+# 连接服务器
+ssh root@your-server-ip
+
+# 更新系统
+apt update && apt upgrade -y
+
+# 1. 禁止密码登录（仅密钥）。先在本地 ssh-copy-id 传好公钥
+sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl restart sshd
+
+# 2. 防火墙 (UFW)
+ufw --force reset
+ufw default deny incoming
+ufw default deny outgoing
+ufw allow in on lo
+ufw allow out on lo
+
+ufw allow in 22/tcp
+ufw allow in 80/tcp
+ufw allow in 443/tcp
+
+ufw allow out 22/tcp
+ufw allow out 53/udp
+ufw allow out 80/tcp
+ufw allow out 443/tcp
+ufw allow out 123/udp
+ufw allow out 587/tcp
+ufw allow out 465/tcp
+ufw allow out 25/tcp
+
+ufw allow in proto icmp
+ufw allow out proto icmp
+
+ufw --force enable
+ufw status verbose
+
+# 3. fail2ban (SSH 防爆破) + 自动安全更新
+apt install -y fail2ban unattended-upgrades
+systemctl enable --now fail2ban
+
+# 4. 基础工具
+apt install -y curl wget git vim
+```
+
+---
+
+## 2. 安装依赖
+
+```bash
+# Node.js 20 LTS
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+node -v          # v20.x
+npm -v           # 10.x
+
+# PostgreSQL 16
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+sudo apt update
+sudo apt install -y postgresql-16
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Nginx
+sudo apt install -y nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# PM2
+sudo npm install -g pm2
+
+# Redis (可选，用于缓存)
+sudo apt install -y redis-server
+sudo systemctl start redis
+sudo systemctl enable redis
+```
+
+> **不要安装 Docker** —— 那是另一个部署方式（见 Docker 教程）。本教程用系统级 Node + PM2。
+
+---
+
+## 3. 配置 PostgreSQL
+
+```bash
+sudo -u postgres psql
+```
+
+在 psql 里执行（名称可自定义，后续 `.env` 保持一致）：
+
+```sql
+CREATE USER commerce_user WITH PASSWORD 'your-strong-password';
+CREATE DATABASE commerce_db OWNER commerce_user;
+GRANT ALL PRIVILEGES ON DATABASE commerce_db TO commerce_user;
+\c commerce_db
+GRANT ALL ON SCHEMA public TO commerce_user;
+\q
+```
+
+> 数据库只需本地访问，**不要**开启远程连接（`listen_addresses` 保持 `localhost`）。
+
+---
+
+## 4. 获取代码与环境变量
+
+```bash
+cd /var/www
+git clone https://github.com/Andychen16888/B2B-Independent-Site.git
+chown -R root:root b2b-independent-site
+cd b2b-independent-site
+```
+
+创建 `.env`：
+
+```bash
+cd /var/www/b2b-independent-site
+cp .env.example .env
+nano .env
+```
+
+**必填项**（其余可留空）：
+
+| 变量 | 说明 | 示例 |
+|------|------|------|
+| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://commerce_user:密码@localhost:5432/commerce_db?schema=public` |
+| `NEXTAUTH_SECRET` | 随机密钥 | `openssl rand -base64 32` 生成 |
+| `NEXTAUTH_URL` | 站点 https 地址 | `https://commoditychina.com` |
+| `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
+| `NEXT_PUBLIC_SITE_NAME` | 站点名 | `Commodities From China` |
+
+> 详细变量说明见 [DEPLOYMENT.md § 环境变量](./DEPLOYMENT.md#环境变量)。
+
+---
+
+## 5. 构建应用
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 安装依赖（必须 --legacy-peer-deps，规避 Stripe/Auth.js 的 peer 冲突）
+npm ci --legacy-peer-deps
+
+# 生成 Prisma Client
+npm run db:generate
+
+# 构建 Next.js（standalone 模式，自动复制静态资源）
+npm run build:server
+```
+
+> **说明**
+> - 必须用 `npm ci --legacy-peer-deps`：`@stripe/react-stripe-js@6.3.0` 要求 `@stripe/stripe-js >=9.3.1 <10.0.0` 而项目锁定 `6.1.0`，不带 flag 会报 `ERESOLVE` 直接失败。
+> - `next build` 时若 OOM，脚本已内置 `NODE_OPTIONS=--max-old-space-size=4096`；1 核 2G 机器请先加 swap（见 1.1）。
+> - 构建产物在 `.next/standalone/`，**运行时必须用 `node .next/standalone/server.js`，不能用 `next start`**。
+
+**构建好之后立刻确认产物存在：**
+
+```bash
+test -f .next/standalone/server.js && echo "build ok, ready to start"
+```
+
+如果没有输出 `build ok`，先回去重新构建，**禁止直接启动**。
+
+---
+
+## 6. 数据库迁移与种子数据
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 应用迁移（prisma migrate deploy，幂等，自动跳过已应用的部分）
+npm run db:migrate
+
+# 填充种子数据（管理员账号、分类、商品、页面、博客、站点设置）
+npm run db:seed
+```
+
+> **顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
+>
+> 项目迁移历史以 `20260917000000_init` 为唯一基线迁移（包含完整 schema 建表）。全新空库直接 `db:migrate` 即可，**无需先 `db push`**。
+>
+> 历史遗留排错：若首次迁移报 `relation "categories" does not exist`，说明是旧版依赖 `db push` 的迁移残留，重置空库后重跑：
+> ```bash
+> sudo -u postgres psql -d postgres -c 'DROP DATABASE IF EXISTS commerce_db;'
+> sudo -u postgres psql -d postgres -c "CREATE DATABASE commerce_db OWNER commerce_user;"
+> npm run db:migrate
+> npm run db:seed
+> ```
+
+---
+
+## 7. 启动应用 (PM2)
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 前置检查（若没有输出 build ok，先回到第 5 节构建）
+test -f .next/standalone/server.js && echo "build ok, ready to start"
+
+# 启动（ecosystem.config.js 已配置 HOST=127.0.0.1，仅本地监听）
+pm2 start ecosystem.config.js
+
+# 保存进程列表 + 开机自启
+pm2 save
+pm2 startup
+
+# 查看状态
+pm2 status
+# 应显示 b2b-independent-site 为 online
+```
+
+> `ecosystem.config.js` 已指定 `script: ".next/standalone/server.js"`，无需手动传参。若直接启动：
+> ```bash
+> pm2 start .next/standalone/server.js --name b2b-independent-site -- --hostname 127.0.0.1
+> ```
+
+---
+
+## 8. Nginx 配置
+
+仓库自带完整 server 块模板 `b2b-independent-site.nginx.conf`（含 HTTP→HTTPS 跳转、静态缓存、上传代理）。复制并替换域名即可：
+
+```bash
+# 复制模板并替换 your-domain.com 为你的域名（示例：commoditychina.com）
+sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
+sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+
+# 启用站点
+sudo ln -sf /etc/nginx/sites-available/b2b-independent-site /etc/nginx/sites-enabled/
+
+# 删除默认欢迎页站点（避免与本站 server_name 冲突）
+sudo rm -f /etc/nginx/sites-enabled/default
+
+# 测试 + 重载
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+> 若 `nginx -t` 报 `cannot load certificate ... fullchain.pem`，说明 SSL 证书还没申请——去第 9 节先申请证书再回来测试。模板中的 80 端口 server 块保留。
+>
+> 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理 60s 超时。
+
+---
+
+## 9. SSL 证书 (Let's Encrypt)
+
+> **前置**：域名 A/AAAA 记录已解析到本服务器 IP；Nginx 80 端口配置已就绪。
+
+```bash
+sudo apt update
+sudo apt install -y certbot python3-certbot-nginx
+
+# 申请证书（certbot 会自动改写 nginx 配置加 SSL；把域名替换成你的）
+sudo certbot --nginx -d commoditychina.com -d www.commoditychina.com
+
+# 测试自动续期
+sudo certbot renew --dry-run
+```
+
+> ⚠️ `certbot --nginx` 会修改 nginx 配置文件，但可能移除站点自定义 location（安全头、/static/、/uploads/）。申请成功后**重新执行第 8 节**的复制+替换域名+重载命令，确保自定义配置恢复。证书文件本身不依赖站点配置，重载无影响。
+>
+> 若你更习惯手动 webroot 模式（先有 HTTP-only nginx，再补 HTTPS server 块），模板 `b2b-independent-site.nginx.conf` 的 80 block 已含 `/.well-known/acme-challenge/` 验证路径，可用：
+> ```bash
+> sudo certbot certonly --webroot -w /var/www/b2b-independent-site/public -d commoditychina.com -d www.commoditychina.com --email you@example.com --agree-tos --no-eff-email
+> ```
+> 之后恢复完整模板并替换域名即可。
+
+---
+
+## 10. 验证部署
+
+```bash
+# 1. PM2 运行状态
+pm2 status
+
+# 2. 健康检查（不依赖数据库）
+curl http://localhost:3000/api/health
+# 应返回 {"status":"ok","timestamp":"...","uptime":...,"memory":...}
+
+# 3. 本机 HTTP
+curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
+
+# 4. 从外部（域名已解析后）
+curl -I https://commoditychina.com          # 期望 HTTP/2 200
+curl -I http://commoditychina.com           # 期望 301 → https
+```
+
+---
+
+## 11. 更新部署
+
+每次拉取新代码后重新构建并重启：
+
+```bash
+cd /var/www/b2b-independent-site
+
+git pull origin main
+npm ci --legacy-peer-deps
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run build:server
+pm2 restart b2b-independent-site
+```
+
+可打包成一键脚本：
+
+```bash
+cat > /usr/local/bin/deploy.sh << 'EOF'
+#!/bin/bash
+set -e
+cd /var/www/b2b-independent-site
+git pull origin main
+npm ci --legacy-peer-deps
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run build:server
+pm2 restart b2b-independent-site
+echo "Deployment complete!"
+EOF
+chmod +x /usr/local/bin/deploy.sh
+```
+
+---
+
+## 12. 运维命令
+
+```bash
+pm2 status                                  # 进程状态
+pm2 logs b2b-independent-site --lines 100   # 最近日志
+pm2 restart b2b-independent-site            # 重启
+pm2 stop b2b-independent-site               # 停止
+pm2 monit                                   # 实时监控
+pm2 startup && pm2 save                     # 开机自启
+
+# 日志文件
+tail -f /var/www/b2b-independent-site/logs/out.log
+tail -f /var/www/b2b-independent-site/logs/err.log
+
+# 数据库备份
+pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m%d).sql
+```
+
+> 完整监控、备份、安全 checklist 见 [DEPLOYMENT.md](./DEPLOYMENT.md)。
+
+---
+
+## 13. 故障排查
+
+| 现象 | 排查 |
+|------|------|
+| `pm2 status` 为 `errored` | `pm2 logs b2b-independent-site --lines 50` |
+| `Script not found: .../standalone/server.js` | 没执行第 5 节构建。先 `npm run build:server` 再启动 |
+| 迁移报 `table does not exist` | 迁移/种子顺序反了，或旧迁移残留，按第 6 节重置空库 |
+| `npm install` 报 ERESOLVE | 必须 `npm ci --legacy-peer-deps` |
+| 502 Bad Gateway | `curl http://localhost:3000/api/health`；`sudo nginx -t` |
+| `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
+| OOM 构建失败 | 加 swap（第 1.1 节） |
+
+---
+
+## 14. 通用参考（支付/邮件/SEO/管理后台）
+
+以下内容与部署方式无关，部署完成后按需配置，请看 [DEPLOYMENT.md](./DEPLOYMENT.md)：
+
+- 环境变量完整说明
+- Stripe / PayPal 支付配置
+- Gmail SMTP 邮件
+- 管理后台初始化与登录
+- 数据库备份 / 监控 / 安全 checklist
+- SEO / GEO / CDN 优化
+- CI/CD 自动部署

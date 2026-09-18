@@ -121,43 +121,45 @@ export function Header({
     >
       <PromoBar text={promoBar} />
       <Container>
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <button
-            className="md:hidden p-2 -ml-2"
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-            aria-label="Menu"
-          >
-            {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
-          </button>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center h-16 md:h-20">
+          <div className="flex items-center min-w-0">
+            <button
+              className="md:hidden p-2 -ml-2 shrink-0"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              aria-label="Menu"
+            >
+              {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
+            </button>
 
-          <nav className="hidden md:flex items-center space-x-10">
-            {safeNav.map((item) => (
-              <Link
-                key={item.name + item.href}
-                href={item.href}
-                className={cn(
-                  "text-xs tracking-widest uppercase transition-colors duration-300",
-                  pathname.startsWith(item.href)
-                    ? "text-charcoal"
-                    : "text-stone hover:text-charcoal"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+            <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
+              {safeNav.map((item) => (
+                <Link
+                  key={item.name + item.href}
+                  href={item.href}
+                  className={cn(
+                    "whitespace-nowrap text-xs tracking-widest uppercase transition-colors duration-300",
+                    pathname.startsWith(item.href)
+                      ? "text-charcoal"
+                      : "text-stone hover:text-charcoal"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2">
+          <Link href="/" className="justify-self-center px-2 min-w-0 text-center">
             {logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={logo} alt={siteName} className="max-h-12 md:max-h-14 w-auto" />
             ) : (
               <>
-                <span className="font-serif text-xl md:text-2xl tracking-[0.3em] text-charcoal">
+                <span className="block font-serif text-lg md:text-2xl tracking-[0.12em] text-charcoal text-center whitespace-nowrap">
                   {siteName}
                 </span>
                 {siteSlogan && (
-                  <span className="block text-[10px] tracking-[0.5em] text-stone text-center">
+                  <span className="hidden md:block text-[9px] md:text-[10px] tracking-[0.25em] text-stone text-center truncate max-w-[420px]">
                     {siteSlogan}
                   </span>
                 )}
@@ -165,7 +167,7 @@ export function Header({
             )}
           </Link>
 
-          <div className="flex items-center space-x-4 md:space-x-6">
+          <div className="flex items-center justify-end space-x-4 md:space-x-6 shrink-0">
             <div className="hidden md:block">
               <CurrencyToggle />
             </div>

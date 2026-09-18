@@ -8,7 +8,7 @@ import {
   HiOutlineUsers, HiOutlineCurrencyDollar, HiOutlineDocumentText,
   HiOutlinePhoto, HiOutlineMegaphone, HiOutlineChartBar,
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
-  HiOutlineDocument, HiOutlineBars3,
+  HiOutlineDocument, HiOutlineBars3, HiOutlineServerStack,
 } from "react-icons/hi2"
 
 const navItems = [
@@ -57,10 +57,22 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-white/10 space-y-1">
+        <Link
+          href="/admin/monitoring"
+          className={cn(
+            "flex items-center gap-3 px-2 py-2 text-sm rounded transition-colors",
+            pathname.startsWith("/admin/monitoring")
+              ? "bg-white/10 text-ivory"
+              : "text-stone hover:text-ivory hover:bg-white/5"
+          )}
+        >
+          <HiOutlineServerStack className="w-4 h-4" />
+          System Monitoring
+        </Link>
         <Link
           href="/"
-          className="flex items-center gap-3 px-2 py-2 text-sm text-stone hover:text-ivory transition-colors"
+          className="flex items-center gap-3 px-2 py-2 text-sm text-stone hover:text-ivory transition-colors rounded"
         >
           <HiOutlineArrowLeftOnRectangle className="w-4 h-4" />
           Back to Store

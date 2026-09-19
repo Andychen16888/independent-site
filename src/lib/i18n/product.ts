@@ -21,10 +21,14 @@ export async function fetchProductTranslations(
   const ids = [...new Set(productIds)].filter(Boolean)
   if (!translationNeeded(locale) || ids.length === 0) return map
 
-  const rows = await prisma.productTranslation.findMany({
-    where: { locale, productId: { in: ids } },
-  })
-  for (const row of rows) map.set(row.productId, row)
+  try {
+    const rows = await prisma.productTranslation.findMany({
+      where: { locale, productId: { in: ids } },
+    })
+    for (const row of rows) map.set(row.productId, row)
+  } catch (error) {
+    console.error(`[i18n] Failed to load product translations for locale "${locale}". Run "npx prisma migrate deploy" to apply the product_translations migration.`, error)
+  }
   return map
 }
 

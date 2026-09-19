@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  outputFileTracingIncludes: {
+    "/*": ["./messages/**/*.json"],
+  },
   staleTimes: {
     dynamic: 0,
   },

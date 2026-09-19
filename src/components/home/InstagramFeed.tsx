@@ -4,20 +4,7 @@ import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
-
-export interface InstagramConfig {
-  handle?: string
-  handleUrl?: string
-  tagline?: string
-  posts?: string[]
-}
-
-export const DEFAULT_INSTAGRAM: InstagramConfig = {
-  handle: "@commoditychina",
-  handleUrl: "https://instagram.com/commoditychina",
-  tagline: "Tag us @commoditychina for a chance to be featured",
-  posts: [],
-}
+import { DEFAULT_INSTAGRAM, type InstagramConfig } from "@/lib/home-content"
 
 export function InstagramFeed({ config = DEFAULT_INSTAGRAM }: { config?: InstagramConfig }) {
   const safe = config.handle ? config : DEFAULT_INSTAGRAM

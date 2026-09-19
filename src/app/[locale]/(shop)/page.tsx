@@ -1,16 +1,32 @@
 import { prisma } from "@/lib/db/prisma"
 import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
 import { getTranslations } from "next-intl/server"
-import { HeroBanner, type HeroSlide, DEFAULT_HERO_SLIDES } from "@/components/home/HeroBanner"
-import { BrandStory, type BrandStoryContent, DEFAULT_BRAND_STORY } from "@/components/home/BrandStory"
-import { FeaturedCategories, type FeaturedCategory, DEFAULT_FEATURED_CATEGORIES } from "@/components/home/FeaturedCategories"
-import { PromoFeatureSection, type PromoContent, DEFAULT_PROMO } from "@/components/home/FactoryDirect"
-import { CollectionGallerySection, type CollectionContent, DEFAULT_COLLECTIONS } from "@/components/home/EssentialsGallery"
-import { Testimonials, type Testimonial, DEFAULT_TESTIMONIALS } from "@/components/home/Testimonials"
-import { InstagramFeed, type InstagramConfig, DEFAULT_INSTAGRAM } from "@/components/home/InstagramFeed"
+import { HeroBanner } from "@/components/home/HeroBanner"
+import { BrandStory } from "@/components/home/BrandStory"
+import { FeaturedCategories } from "@/components/home/FeaturedCategories"
+import { PromoFeatureSection } from "@/components/home/FactoryDirect"
+import { CollectionGallerySection } from "@/components/home/EssentialsGallery"
+import { Testimonials } from "@/components/home/Testimonials"
+import { InstagramFeed } from "@/components/home/InstagramFeed"
 import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
+import {
+  DEFAULT_FEATURED_CATEGORIES,
+  DEFAULT_COLLECTIONS,
+  DEFAULT_HERO_SLIDES,
+  DEFAULT_BRAND_STORY,
+  DEFAULT_PROMO,
+  DEFAULT_TESTIMONIALS,
+  DEFAULT_INSTAGRAM,
+  type HeroSlide,
+  type FeaturedCategory,
+  type PromoContent,
+  type CollectionContent,
+  type BrandStoryContent,
+  type Testimonial,
+  type InstagramConfig,
+} from "@/lib/home-content"
 
 function parseJson<T>(value: string | undefined, fallback: T): T {
   if (!value) return fallback

@@ -3,26 +3,7 @@
 import { motion } from "framer-motion"
 import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
-
-export interface BrandStoryContent {
-  eyebrow?: string
-  title: string
-  paragraphs?: string[]
-  image?: string
-  ctaLabel?: string
-  ctaHref?: string
-}
-
-export const DEFAULT_BRAND_STORY: BrandStoryContent = {
-  eyebrow: "Our Story",
-  title: "Quality Goods, Direct from the Source",
-  paragraphs: [
-    "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-    "We build long-term partnerships with certified manufacturers across China — from electronics factories in Shenzhen to kitchenware producers in Guangzhou — and inspect every batch before it ships.",
-  ],
-  ctaLabel: "Read Our Story",
-  ctaHref: "/pages/about",
-}
+import { DEFAULT_BRAND_STORY, type BrandStoryContent } from "@/lib/home-content"
 
 export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandStoryContent }) {
   const safe = content.title ? content : DEFAULT_BRAND_STORY

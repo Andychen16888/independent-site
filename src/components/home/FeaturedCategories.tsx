@@ -5,37 +5,10 @@ import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { useTranslations } from "next-intl"
 import { HiOutlineBolt, HiOutlineHome, HiOutlineShoppingBag } from "react-icons/hi2"
-
-export interface FeaturedCategory {
-  title: string
-  subtitle?: string
-  description?: string
-  href: string
-  image?: string
-  icon?: "sparkles" | "swatch" | "bag"
-}
+import { DEFAULT_FEATURED_CATEGORIES, type FeaturedCategory } from "@/lib/home-content"
 
 const FALLBACK_ICONS = [HiOutlineBolt, HiOutlineHome, HiOutlineShoppingBag]
 const FALLBACK_BGS = ["bg-gradient-to-br from-ivory to-sage/10", "bg-gradient-to-br from-ivory to-blush/10", "bg-gradient-to-br from-ivory to-gold/10"]
-
-export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
-  {
-    title: "Electronics",
-    subtitle: "LED & Smart Devices",
-    description: "Certified electronics and LED lighting at wholesale prices",
-    href: "/categories/electronics",
-    icon: "sparkles",
-    image: "/images/category-electronics.jpg",
-  },
-  {
-    title: "Home & Kitchen",
-    subtitle: "Everyday Essentials",
-    description: "Practical, durable goods sourced from certified factories",
-    href: "/categories/home-kitchen",
-    icon: "swatch",
-    image: "/images/category-living.jpg",
-  },
-]
 
 function iconFor(name?: string) {
   if (name === "sparkles") return HiOutlineBolt

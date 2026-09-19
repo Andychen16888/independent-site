@@ -4,32 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
-
-export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
-
-export const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  {
-    name: "Marcus L.",
-    location: "Hamburg, Germany",
-    rating: 5,
-    text: "We resell the LED night lights and power banks in our retail stores. Consistent quality, on-time shipments, and pricing that leaves real margin. They've become our go-to supplier.",
-    product: "LED Motion Sensor Night Light",
-  },
-  {
-    name: "Aline B.",
-    location: "Lyon, France",
-    rating: 5,
-    text: "The ceramic dinnerware set sells out every season. Pre-shipment inspection photos and certificates give us total confidence, and the MOQ was flexible enough for us to start small.",
-    product: "Ceramic Dinnerware Set",
-  },
-  {
-    name: "Dong-mei H.",
-    location: "Singapore",
-    rating: 5,
-    text: "Finally a sourcing partner that handles quality control and freight end to end. Our first order of TWS earbuds arrived on time and defect-free. Highly recommended for B2B buyers.",
-    product: "TWS Wireless Earbuds Pro",
-  },
-]
+import { DEFAULT_TESTIMONIALS, type Testimonial } from "@/lib/home-content"
 
 export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Buyer Reviews", heading = "Trusted by Importers Worldwide" }: { items?: Testimonial[]; eyebrow?: string; heading?: string }) {
   const [current, setCurrent] = useState(0)

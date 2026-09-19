@@ -3,31 +3,7 @@
 import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
-
-export interface CollectionItem { title: string; description?: string; href: string }
-
-export interface CollectionContent {
-  eyebrow?: string
-  title: string
-  tagline?: string
-  collections?: CollectionItem[]
-  ctaLabel?: string
-  ctaHref?: string
-}
-
-export const DEFAULT_COLLECTIONS: CollectionContent = {
-  eyebrow: "Home & Kitchen",
-  title: "Everyday Essentials",
-  tagline: "Practical, durable goods for homes, hotels, and wholesale buyers",
-  collections: [
-    { title: "Kitchenware", description: "Cookware, dinnerware, and barware staples", href: "/categories/home-kitchen?sub=kitchenware" },
-    { title: "Storage", description: "Containers and organizers for every room", href: "/categories/home-kitchen?sub=storage" },
-    { title: "Tableware", description: "Dinnerware sets for homes and hospitality", href: "/categories/home-kitchen?sub=tableware" },
-    { title: "Home Decor", description: "Functional decor loved by resellers", href: "/categories/home-kitchen?sub=decor" },
-  ],
-  ctaLabel: "Explore Home & Kitchen",
-  ctaHref: "/categories/home-kitchen",
-}
+import { DEFAULT_COLLECTIONS, type CollectionContent } from "@/lib/home-content"
 
 export function CollectionGallerySection({ content = DEFAULT_COLLECTIONS }: { content?: CollectionContent }) {
   const safe = content.title ? content : DEFAULT_COLLECTIONS

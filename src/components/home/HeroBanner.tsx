@@ -5,50 +5,7 @@ import { Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/Container"
-
-export interface HeroSlide {
-  title: string
-  subtitle?: string
-  description?: string
-  cta?: string
-  href?: string
-  bg?: string
-  image?: string
-  align?: "left" | "center" | "right" | string
-}
-
-export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
-  {
-    title: "Factory-Direct B2B Sourcing",
-    subtitle: "Sourced from China, delivered worldwide",
-    description: "Quality electronics, LED lighting, and daily commodities at wholesale prices",
-    cta: "Browse Products",
-    href: "/products",
-    bg: "bg-gradient-to-br from-sage/20 to-ivory",
-    image: "/images/hero-electronics.jpg",
-    align: "left",
-  },
-  {
-    title: "Wholesale Pricing",
-    subtitle: "Built for retailers and distributors",
-    description: "Tiered bulk pricing, private label options, and reliable supply schedules",
-    cta: "Explore Categories",
-    href: "/categories/electronics",
-    bg: "bg-gradient-to-bl from-blush/20 to-ivory",
-    image: "/images/hero-wholesale.jpg",
-    align: "right",
-  },
-  {
-    title: "Quality You Can Trust",
-    subtitle: "Certified goods, inspected every batch",
-    description: "CE, FCC, and RoHS certified products with pre-shipment inspection",
-    cta: "Our Story",
-    href: "/pages/about",
-    bg: "bg-gradient-to-tr from-gold/10 to-ivory",
-    image: "/images/hero-lifestyle.jpg",
-    align: "center",
-  },
-]
+import { DEFAULT_HERO_SLIDES, type HeroSlide } from "@/lib/home-content"
 
 const FALLBACK_BGS = ["bg-gradient-to-br from-sage/20 to-ivory", "bg-gradient-to-bl from-blush/20 to-ivory", "bg-gradient-to-tr from-gold/10 to-ivory"]
 

@@ -3,44 +3,7 @@
 import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
-
-export interface FeatureItem { title: string; description: string }
-
-export interface PromoContent {
-  eyebrow?: string
-  title: string
-  body?: string
-  features?: FeatureItem[]
-  image?: string
-  ctaLabel?: string
-  ctaHref?: string
-}
-
-export const DEFAULT_PROMO: PromoContent = {
-  eyebrow: "Why Buy Direct",
-  title: "Factory-Direct Electronics",
-  body: "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",
-  features: [
-    {
-      title: "Certified Quality",
-      description: "CE, FCC, and RoHS certified products verified before shipment",
-    },
-    {
-      title: "Factory-Direct Pricing",
-      description: "Wholesale rates without middlemen or retail markups",
-    },
-    {
-      title: "Low MOQ Options",
-      description: "Start small with standard SKUs, scale up as you grow",
-    },
-    {
-      title: "Global Logistics",
-      description: "Air and sea freight options with tracking to your door",
-    },
-  ],
-  ctaLabel: "View All Products",
-  ctaHref: "/products",
-}
+import { DEFAULT_PROMO, type PromoContent } from "@/lib/home-content"
 
 export function PromoFeatureSection({ promo = DEFAULT_PROMO }: { promo?: PromoContent }) {
   const safe = promo.title ? promo : DEFAULT_PROMO

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma"
 import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
 import { getTranslations } from "next-intl/server"
+import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
 import { HeroBanner } from "@/components/home/HeroBanner"
 import { BrandStory } from "@/components/home/BrandStory"
 import { FeaturedCategories } from "@/components/home/FeaturedCategories"
@@ -37,7 +38,13 @@ function parseJson<T>(value: string | undefined, fallback: T): T {
   }
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const useDbContent = locale === "en"
   const settings = await getSiteSettings()
   const t = await getTranslations("home")
   const tl = await getTranslations("home.links")
@@ -72,27 +79,39 @@ export default async function HomePage() {
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   })
 
-  // Hero slides from DB banners (fall back to localized default hero slides).
+  const bestSellerMapped = bestSellers.map(mapProduct)
+  const homeFeaturedMapped = homeFeatured.map(mapProduct)
+  const translations = await fetchProductTranslations(
+    [...bestSellerMapped, ...homeFeaturedMapped].map((p) => p.id),
+    locale
+  )
+  const localizedBestSellers = applyProductLocalizations(bestSellerMapped, translations)
+  const localizedHomeFeatured = applyProductLocalizations(homeFeaturedMapped, translations)
+
+  // Hero slides: DB banners provide images/links/alignment; text comes from
+  // DB only on the default locale, otherwise from localized messages.
+  const defaultSlides = (t.raw("hero.slides") as Record<string, string>[]).map((s, i) => ({
+    title: s.title,
+    subtitle: s.subtitle,
+    description: s.description,
+    cta: s.cta,
+    href: DEFAULT_HERO_SLIDES[i]?.href,
+    bg: DEFAULT_HERO_SLIDES[i]?.bg,
+    image: DEFAULT_HERO_SLIDES[i]?.image,
+    align: DEFAULT_HERO_SLIDES[i]?.align,
+  }))
+
   const heroSlides: HeroSlide[] = banners.length
-    ? banners.map((b) => ({
-        title: b.title,
-        subtitle: b.eyebrow || b.subtitle || undefined,
-        description: b.description || undefined,
-        cta: b.ctaText || undefined,
+    ? banners.map((b, i) => ({
+        title: useDbContent ? b.title : defaultSlides[i]?.title || b.title,
+        subtitle: useDbContent ? b.eyebrow || b.subtitle || undefined : defaultSlides[i]?.subtitle || b.subtitle || undefined,
+        description: useDbContent ? b.description || undefined : defaultSlides[i]?.description || b.description || undefined,
+        cta: useDbContent ? b.ctaText || undefined : defaultSlides[i]?.cta || b.ctaText || undefined,
         href: b.link || undefined,
-        image: b.image || undefined,
+        image: b.image || defaultSlides[i]?.image || undefined,
         align: b.alignment || "left",
       }))
-    : (t.raw("hero.slides") as Record<string, string>[]).map((s, i) => ({
-        title: s.title,
-        subtitle: s.subtitle,
-        description: s.description,
-        cta: s.cta,
-        href: DEFAULT_HERO_SLIDES[i]?.href,
-        bg: DEFAULT_HERO_SLIDES[i]?.bg,
-        image: DEFAULT_HERO_SLIDES[i]?.image,
-        align: DEFAULT_HERO_SLIDES[i]?.align,
-      }))
+    : defaultSlides
 
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({
     title: c.name,
@@ -107,13 +126,14 @@ export default async function HomePage() {
     ...(((t.raw("featuredCategories.cards") as Record<string, string>[])[i] || {}) as object),
   }))
 
-  const featuredCategories = featured.length > 0 ? featured : featuredFallback
+  const featuredCategories: FeaturedCategory[] =
+    useDbContent && featured.length > 0 ? featured : featuredFallback
 
-  const promo1 = parseJson<PromoContent | null>(settings["content.promo1"], null)
-  const promo2 = parseJson<CollectionContent | null>(settings["content.promo2"], null)
-  const brandStory = parseJson<BrandStoryContent | null>(settings["content.brandStory"], null)
-  const testimonials = parseJson<Testimonial[] | null>(settings["content.testimonials"], null)
-  const instagram = parseJson<InstagramConfig | null>(settings["content.instagram"], null)
+  const promo1 = useDbContent ? parseJson<PromoContent | null>(settings["content.promo1"], null) : null
+  const promo2 = useDbContent ? parseJson<CollectionContent | null>(settings["content.promo2"], null) : null
+  const brandStory = useDbContent ? parseJson<BrandStoryContent | null>(settings["content.brandStory"], null) : null
+  const testimonials = useDbContent ? parseJson<Testimonial[] | null>(settings["content.testimonials"], null) : null
+  const instagram = useDbContent ? parseJson<InstagramConfig | null>(settings["content.instagram"], null) : null
 
   const promoFallback: PromoContent = {
     ...DEFAULT_PROMO,
@@ -159,10 +179,12 @@ export default async function HomePage() {
   const siteDescription = settings["site.description"]
 
   const getSiteSeoResult = await getSiteSeo()
-  const seoParagraphs = [
-    siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
-    t("seoParagraph", { siteName: getSiteSeoResult.siteName }),
-  ].filter(Boolean)
+  const seoParagraphs = useDbContent
+    ? [
+        siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
+        t("seoParagraph", { siteName: getSiteSeoResult.siteName }),
+      ].filter(Boolean)
+    : [t("seoParagraph", { siteName: getSiteSeoResult.siteName })].filter(Boolean)
 
   const featuredLinks: SEOLink[] = [
     ...featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` })),
@@ -183,22 +205,22 @@ export default async function HomePage() {
       <BrandStory content={brandStory || brandStoryFallback} />
       <FeaturedCategories
         categories={featuredCategories}
-        eyebrow={settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow")}
-        heading={settings["content.featuredHeading"] || t("featuredCategories.heading")}
-        tagline={settings["content.featuredTagline"] || undefined}
+        eyebrow={useDbContent ? settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow") : t("featuredCategories.eyebrow")}
+        heading={useDbContent ? settings["content.featuredHeading"] || t("featuredCategories.heading") : t("featuredCategories.heading")}
+        tagline={useDbContent ? settings["content.featuredTagline"] || undefined : undefined}
       />
       <PromoFeatureSection promo={promo1 || promoFallback} />
       {homeFeatured.length > 0 && (
         <ProductCarousel
           title={t("carouselFeatured.title")}
           subtitle={t("carouselFeatured.subtitle")}
-          products={homeFeatured.map(mapProduct)}
+          products={localizedHomeFeatured}
         />
       )}
       <ProductCarousel
         title={t("carouselBestSellers.title")}
         subtitle={t("carouselBestSellers.subtitle")}
-        products={bestSellers.length ? bestSellers.map(mapProduct) : homeFeatured.map(mapProduct)}
+        products={localizedBestSellers.length ? localizedBestSellers : localizedHomeFeatured}
       />
       <CollectionGallerySection content={promo2 || collectionsFallback} />
       <Testimonials
@@ -209,7 +231,7 @@ export default async function HomePage() {
       <InstagramFeed config={instagram || instagramFallback} />
       <NewsletterSection />
       <SEOSection
-        heading={settings["seo.homeTitle"] || getSiteSeoResult.homepageTitle || t("seo.heading")}
+        heading={useDbContent ? settings["seo.homeTitle"] || getSiteSeoResult.homepageTitle || t("seo.heading") : t("seo.heading")}
         paragraphs={seoParagraphs}
         links={seoLinks}
       />

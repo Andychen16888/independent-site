@@ -23,6 +23,11 @@ const DEFAULT_NAV = [
 
 function getNavKey(href: string): string | null {
   switch (href) {
+    case "/":
+    case "/home":
+      return "home"
+    case "/products":
+      return "products"
     case "/categories/electronics":
       return "electronics"
     case "/categories/home-kitchen":
@@ -31,6 +36,12 @@ function getNavKey(href: string): string | null {
       return "journal"
     case "/pages/about":
       return "about"
+    case "/pages/contact":
+      return "contact"
+    case "/wishlist":
+      return "wishlist"
+    case "/account":
+      return "account"
     default:
       return null
   }

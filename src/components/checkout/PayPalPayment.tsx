@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import { toast } from "react-hot-toast"
 import { HiOutlineLockClosed } from "react-icons/hi2"
@@ -15,12 +15,12 @@ interface PayPalPaymentProps {
 const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || ""
 
 export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: PayPalPaymentProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const t = useTranslations("checkout")
 
   if (!paypalClientId) {
     return (
       <div className="border border-mist p-6 text-center">
-        <p className="text-sm text-stone">PayPal is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID in your environment.</p>
+        <p className="text-sm text-stone">{t("paypalNotConfigured")}</p>
       </div>
     )
   }
@@ -36,7 +36,7 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs text-stone mb-2">
           <HiOutlineLockClosed className="w-3 h-3" />
-          <span>Secured by PayPal</span>
+          <span>{t("securedByPaypal")}</span>
         </div>
 
         <PayPalButtons
@@ -48,7 +48,6 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
             tagline: false,
           }}
           createOrder={async () => {
-            setIsLoading(true)
             try {
               const res = await fetch("/api/paypal/create-order", {
                 method: "POST",
@@ -56,13 +55,11 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
                 body: JSON.stringify({ amount, currency }),
               })
               const data = await res.json()
-              if (!res.ok) throw new Error(data.error || "Failed to create order")
+              if (!res.ok) throw new Error(data.error || t("paypalInitFailed"))
               return data.id
             } catch (error: any) {
-              toast.error(error.message || "Failed to initialize PayPal")
+              toast.error(error.message || t("paypalInitFailed"))
               throw error
-            } finally {
-              setIsLoading(false)
             }
           }}
           onApprove={async (data) => {
@@ -73,26 +70,26 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
                 body: JSON.stringify({ orderId: data.orderID }),
               })
               const capture = await res.json()
-              if (!res.ok) throw new Error(capture.error || "Payment capture failed")
+              if (!res.ok) throw new Error(capture.error || t("paypalCaptureFailed"))
 
               if (capture.status === "COMPLETED") {
                 onSuccess(data.orderID, capture.captureId)
-                toast.success("Payment successful via PayPal!")
+                toast.success(t("paypalSuccess"))
               } else {
-                onError("Payment was not completed")
+                onError(t("paypalNotCompleted"))
               }
             } catch (error: any) {
-              onError(error.message || "Payment capture failed")
-              toast.error(error.message || "Payment failed")
+              onError(error.message || t("paypalCaptureFailed"))
+              toast.error(error.message || t("paymentFailed"))
             }
           }}
           onError={(err) => {
             console.error("PayPal error:", err)
             onError("PayPal payment failed. Please try again.")
-            toast.error("PayPal payment failed")
+            toast.error(t("paymentFailed"))
           }}
           onCancel={() => {
-            toast("Payment cancelled", { icon: "✋" })
+            toast(t("paypalCancelled"), { icon: "✋" })
           }}
         />
       </div>

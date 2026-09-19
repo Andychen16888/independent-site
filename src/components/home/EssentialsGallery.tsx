@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 
@@ -15,7 +15,7 @@ export interface CollectionContent {
   ctaHref?: string
 }
 
-const DEFAULT_COLLECTIONS: CollectionContent = {
+export const DEFAULT_COLLECTIONS: CollectionContent = {
   eyebrow: "Home & Kitchen",
   title: "Everyday Essentials",
   tagline: "Practical, durable goods for homes, hotels, and wholesale buyers",

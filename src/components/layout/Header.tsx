@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link, usePathname } from "@/i18n/navigation"
 import { useSession, signOut } from "next-auth/react"
+import { useTranslations } from "next-intl"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { cn } from "@/lib/utils/cn"
@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { HiXMark, HiOutlineGift } from "react-icons/hi2"
 import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyingGlass, HiOutlineBars3, HiOutlineXMark } from "react-icons/hi2"
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
+import { LanguageSelector } from "@/components/ui/LanguageSelector"
 
 const DEFAULT_NAV = [
   { name: "Electronics", href: "/categories/electronics" },
@@ -20,9 +21,25 @@ const DEFAULT_NAV = [
   { name: "About", href: "/pages/about" },
 ]
 
+function getNavKey(href: string): string | null {
+  switch (href) {
+    case "/categories/electronics":
+      return "electronics"
+    case "/categories/home-kitchen":
+      return "homeKitchen"
+    case "/blog":
+      return "journal"
+    case "/pages/about":
+      return "about"
+    default:
+      return null
+  }
+}
+
 function PromoBar({ text }: { text: string }) {
   const [isVisible, setIsVisible] = useState(true)
   const [dismissed, setDismissed] = useState(false)
+  const t = useTranslations("header")
 
   useEffect(() => {
     try {
@@ -58,7 +75,7 @@ function PromoBar({ text }: { text: string }) {
         <button
           onClick={handleDismiss}
           className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-ivory/10 rounded transition-colors"
-          aria-label="Dismiss promotion"
+          aria-label={t("dismissPromo")}
         >
           <HiXMark className="w-3.5 h-3.5" />
         </button>
@@ -94,7 +111,14 @@ export function Header({
   const { data: session } = useSession()
   const cartCount = useCartStore((s) => s.getItemCount())
   const wishlistCount = useWishlistStore((s) => s.items.length)
+  const t = useTranslations("header")
+  const tnav = useTranslations("navigation")
   const safeNav = navItems && navItems.length > 0 ? navItems : DEFAULT_NAV
+
+  const getNavLabel = (item: { name: string; href: string }) => {
+    const key = getNavKey(item.href)
+    return key ? tnav(key) : item.name
+  }
 
   useEffect(() => {
     setIsMounted(true)
@@ -126,7 +150,7 @@ export function Header({
             <button
               className="md:hidden p-2 -ml-2 shrink-0"
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              aria-label="Menu"
+              aria-label={t("menu")}
             >
               {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
             </button>
@@ -151,13 +175,14 @@ export function Header({
           </Link>
 
           <div className="flex items-center justify-end space-x-4 md:space-x-6 shrink-0">
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-4 md:gap-6">
+              <LanguageSelector />
               <CurrencyToggle />
             </div>
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="p-2 text-stone hover:text-charcoal transition-colors"
-              aria-label="Search"
+              aria-label={t("search")}
             >
               <HiOutlineMagnifyingGlass className="w-5 h-5" />
             </button>
@@ -198,7 +223,7 @@ export function Header({
                   : "text-stone hover:text-charcoal"
               )}
             >
-              {item.name}
+              {getNavLabel(item)}
             </Link>
           ))}
         </nav>
@@ -222,17 +247,21 @@ export function Header({
                     pathname.startsWith(item.href) ? "text-charcoal" : "text-stone"
                   )}
                 >
-                  {item.name}
+                  {getNavLabel(item)}
                 </Link>
               ))}
+              <div className="flex items-center gap-6 pt-2">
+                <LanguageSelector />
+                <CurrencyToggle />
+              </div>
               <div className="pt-4 border-t border-mist space-y-4">
                 {session ? (
                   <>
-                    <Link href="/account" className="block py-2 text-sm tracking-widest uppercase text-stone">My Account</Link>
-                    <button onClick={() => signOut()} className="block py-2 text-sm tracking-widest uppercase text-stone">Sign Out</button>
+                    <Link href="/account" className="block py-2 text-sm tracking-widest uppercase text-stone">{t("myAccount")}</Link>
+                    <button onClick={() => signOut()} className="block py-2 text-sm tracking-widest uppercase text-stone">{t("signOut")}</button>
                   </>
                 ) : (
-                  <Link href="/auth/signin" className="block py-2 text-sm tracking-widest uppercase text-stone">Sign In</Link>
+                  <Link href="/auth/signin" className="block py-2 text-sm tracking-widest uppercase text-stone">{t("signIn")}</Link>
                 )}
               </div>
             </Container>
@@ -253,7 +282,7 @@ export function Header({
                 <input
                   type="text"
                   name="q"
-                  placeholder="Search products..."
+                  placeholder={t("searchPlaceholder")}
                   className="w-full bg-transparent border-b border-charcoal py-3 pr-10 text-lg outline-none font-light"
                   autoFocus
                 />

@@ -1,5 +1,6 @@
 "use client"
 
+import { useLocale, useTranslations } from "next-intl"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
 import { Container } from "@/components/ui/Container"
@@ -17,6 +18,8 @@ interface BlogContentProps {
 }
 
 export function BlogContent({ post }: BlogContentProps) {
+  const t = useTranslations("blog")
+  const locale = useLocale()
   const looksLikeHtml = /<\s*[a-z][\s\S]*>/i.test(post.content)
   const htmlContent = DOMPurify.sanitize(
     looksLikeHtml ? post.content : (marked.parse(post.content, { breaks: true }) as string)
@@ -27,10 +30,10 @@ export function BlogContent({ post }: BlogContentProps) {
       <article className="max-w-3xl mx-auto pb-16">
         <header className="mb-12 text-center">
           <span className="text-caption mb-4 block">
-            {formatDate(post.publishedAt)}
+            {formatDate(post.publishedAt, locale)}
           </span>
           <h1 className="heading-lg mb-4">{post.title}</h1>
-          <p className="text-sm text-stone">By {post.author}</p>
+          <p className="text-sm text-stone">{t("by", { author: post.author })}</p>
           {post.tags && (
             <div className="flex justify-center gap-2 mt-4">
               {post.tags.split(",").map((tag) => (

@@ -1,34 +1,40 @@
 import { getToken } from "next-auth/jwt"
 import { NextRequest, NextResponse } from "next/server"
+import createIntlMiddleware from "next-intl/middleware"
+import { routing } from "@/i18n/routing"
+
+const intlMiddleware = createIntlMiddleware(routing)
 
 export async function middleware(req: NextRequest) {
-  try {
-    // Try both cookie names — HTTP sites use next-auth.session-token,
-    // but NEXTAUTH_URL=https:// forces __Secure-next-auth.session-token
-    let token = await getToken({ req, secureCookie: false })
-    if (!token) {
-      token = await getToken({ req, secureCookie: true })
+  const path = req.nextUrl.pathname
+
+  if (path.startsWith("/admin")) {
+    try {
+      let token = await getToken({ req, secureCookie: false })
+      if (!token) {
+        token = await getToken({ req, secureCookie: true })
+      }
+
+      if (!token) {
+        const callbackUrl = encodeURIComponent(path)
+        return NextResponse.redirect(
+          new URL(`/en/auth/signin?callbackUrl=${callbackUrl}`, req.url)
+        )
+      }
+
+      if (token.role !== "ADMIN") {
+        return NextResponse.redirect(new URL("/en/account", req.url))
+      }
+
+      return NextResponse.next()
+    } catch {
+      return NextResponse.redirect(new URL("/en/auth/signin", req.url))
     }
-
-    const path = req.nextUrl.pathname
-
-    if (!path.startsWith("/admin")) return NextResponse.next()
-
-    if (!token) {
-      const callbackUrl = encodeURIComponent(path)
-      return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${callbackUrl}`, req.url))
-    }
-
-    if (token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/account", req.url))
-    }
-  } catch {
-    return NextResponse.redirect(new URL("/auth/signin", req.url))
   }
 
-  return NextResponse.next()
+  return intlMiddleware(req)
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 }

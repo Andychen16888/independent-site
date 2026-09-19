@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
 import { ImageZoom } from "./ImageZoom"
@@ -38,6 +39,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const addItem = useCartStore((s) => s.addItem)
   const toggleItem = useWishlistStore((s) => s.toggleItem)
   const wishlistItems = useWishlistStore((s) => s.items)
+  const t = useTranslations("product")
+  const locale = useLocale()
 
   const discount = product.originalPrice
     ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
@@ -45,7 +48,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   const allMedia = [
     ...(product.images?.map((img, i) => ({ type: "image" as const, url: img.url, alt: img.alt || product.name, index: i })) || []),
-    ...(product.videos?.map((vid, i) => ({ type: "video" as const, url: vid.url, title: vid.title || "Video", index: i })) || []),
+    ...(product.videos?.map((vid, i) => ({ type: "video" as const, url: vid.url, title: vid.title || t("video"), index: i })) || []),
   ]
   const currentMedia = allMedia[selectedMedia]
 
@@ -135,14 +138,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
           <div className="flex items-baseline gap-3 mb-8">
             <span className="text-2xl font-serif">
-              {formatPrice(Number(product.unitPrice), product.currency)}
+              {formatPrice(Number(product.unitPrice), product.currency, locale)}
             </span>
             {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
               <>
                 <span className="text-lg text-stone line-through">
-                  {formatPrice(Number(product.originalPrice), product.currency)}
+                  {formatPrice(Number(product.originalPrice), product.currency, locale)}
                 </span>
-                <span className="text-sm text-rosegold">Save {discount}%</span>
+                <span className="text-sm text-rosegold">{t("savePercent", { percent: discount })}</span>
               </>
             )}
           </div>
@@ -152,7 +155,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="p-3 hover:bg-mist transition-colors"
-                aria-label="Decrease quantity"
+                aria-label={t("decreaseQuantity")}
               >
                 <HiOutlineMinus className="w-4 h-4" />
               </button>
@@ -160,19 +163,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                 className="p-3 hover:bg-mist transition-colors"
-                aria-label="Increase quantity"
+                aria-label={t("increaseQuantity")}
               >
                 <HiOutlinePlus className="w-4 h-4" />
               </button>
             </div>
             <span className="text-xs text-stone">
-              {product.stock > 0 ? `${product.stock} in stock` : "Sold out"}
+              {product.stock > 0 ? t("inStock", { count: product.stock }) : t("soldOut")}
             </span>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
             <Button onClick={handleAddToCart} disabled={product.stock <= 0} size="lg" className="flex-1">
-              {product.stock <= 0 ? "Sold Out" : "Add to Cart"}
+              {product.stock <= 0 ? t("soldOut") : t("addToCart")}
             </Button>
             <button
               onClick={() => toggleItem(product.id)}
@@ -187,25 +190,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-4 py-6 border-t border-mist text-sm text-stone">
             <div className="flex items-center gap-3">
               <HiOutlineTruck className="w-5 h-5" />
-              <span>Free shipping on orders over $100</span>
+              <span>{t("freeShipping")}</span>
             </div>
             <div className="flex items-center gap-3">
               <HiOutlineArrowPath className="w-5 h-5" />
-              <span>30-day easy returns</span>
+              <span>{t("easyReturns")}</span>
             </div>
             <div className="flex items-center gap-3">
               <HiOutlineShieldCheck className="w-5 h-5" />
-              <span>Secure checkout with Stripe & PayPal</span>
+              <span>{t("secureCheckout")}</span>
             </div>
           </div>
 
           <div className="mt-6">
-            <p className="text-xs text-stone mb-2">SKU: {product.sku}</p>
+            <p className="text-xs text-stone mb-2">{t("sku", { sku: product.sku })}</p>
           </div>
 
           <details className="mt-6 border-t border-mist pt-6">
             <summary className="text-sm tracking-widest uppercase cursor-pointer text-charcoal hover:text-stone transition-colors">
-              Description
+              {t("description")}
             </summary>
             <div
               className="text-body mt-4 leading-relaxed prose prose-stone max-w-none"
@@ -216,7 +219,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {product.parameters && product.parameters.length > 0 && (
             <details className="mt-4 border-t border-mist pt-6">
               <summary className="text-sm tracking-widest uppercase cursor-pointer text-charcoal hover:text-stone transition-colors">
-                Product Details
+                {t("productDetails")}
               </summary>
               <dl className="mt-4 space-y-3">
                 {product.parameters.map((param, i) => (
@@ -246,6 +249,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               name: product.name,
               slug: product.slug,
               unitPrice: Number(product.unitPrice),
+              currency: product.currency,
             }}
             bundleItems={bundleItems}
           />

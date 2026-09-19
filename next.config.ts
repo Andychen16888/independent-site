@@ -1,4 +1,7 @@
 import type { NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
+
+const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -14,11 +17,17 @@ const nextConfig: NextConfig = {
     const privateRoutes = [
       "/admin/:path*",
       "/api/:path*",
+      "/:locale/account/:path*",
       "/account/:path*",
+      "/:locale/auth/:path*",
       "/auth/:path*",
+      "/:locale/cart",
       "/cart",
+      "/:locale/checkout/:path*",
       "/checkout/:path*",
+      "/:locale/wishlist",
       "/wishlist",
+      "/:locale/search",
       "/search",
     ]
     return [
@@ -52,12 +61,19 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     const pages = ["about", "contact", "shipping", "privacy", "terms"]
-    return pages.map((slug) => ({
-      source: `/${slug}`,
-      destination: `/pages/${slug}`,
-      permanent: true,
-    }))
+    return [
+      ...pages.map((slug) => ({
+        source: `/:locale/${slug}`,
+        destination: `/:locale/pages/${slug}`,
+        permanent: true,
+      })),
+      ...pages.map((slug) => ({
+        source: `/${slug}`,
+        destination: `/en/pages/${slug}`,
+        permanent: true,
+      })),
+    ]
   },
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)

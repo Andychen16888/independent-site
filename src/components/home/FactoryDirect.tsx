@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 
@@ -16,7 +16,7 @@ export interface PromoContent {
   ctaHref?: string
 }
 
-const DEFAULT_PROMO: PromoContent = {
+export const DEFAULT_PROMO: PromoContent = {
   eyebrow: "Why Buy Direct",
   title: "Factory-Direct Electronics",
   body: "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",

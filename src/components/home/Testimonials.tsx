@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
 
 export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
@@ -32,6 +33,7 @@ export const DEFAULT_TESTIMONIALS: Testimonial[] = [
 
 export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Buyer Reviews", heading = "Trusted by Importers Worldwide" }: { items?: Testimonial[]; eyebrow?: string; heading?: string }) {
   const [current, setCurrent] = useState(0)
+  const t = useTranslations("home.testimonials")
   const safe = items && items.length > 0 ? items : DEFAULT_TESTIMONIALS
 
   if (safe.length === 0) return null
@@ -74,7 +76,7 @@ export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Buyer Re
                 {testimonial.name}{testimonial.location ? ` — ${testimonial.location}` : ""}
               </p>
               {testimonial.product && (
-                <p className="text-xs text-ivory/40 mt-1">Verified Buyer of {testimonial.product}</p>
+                <p className="text-xs text-ivory/40 mt-1">{t("verifiedBuyerOf", { product: testimonial.product })}</p>
               )}
             </motion.div>
           </AnimatePresence>
@@ -88,7 +90,7 @@ export function Testimonials({ items = DEFAULT_TESTIMONIALS, eyebrow = "Buyer Re
                   className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     index === idx ? "bg-ivory w-6" : "bg-ivory/30"
                   }`}
-                  aria-label={`Testimonial ${index + 1}`}
+                  aria-label={t("testimonialLabel", { index: index + 1 })}
                 />
               ))}
             </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
+import { useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "framer-motion"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
@@ -20,20 +21,6 @@ interface ChatWidgetProps {
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "our store"
 
-const WELCOME_MESSAGE: Message = {
-  role: "assistant",
-  content: `Hello! I'm your personal shopping assistant at ${siteName}. I can help you find products, compare options, check shipping, or learn about us. How can I help you today?`
-}
-
-const SUGGESTED_QUESTIONS = [
-  "What's the fastest delivery option?",
-  "Do you offer wholesale or bulk pricing?",
-  "What's your return policy?",
-  "Show me your best sellers",
-  "Do you ship internationally?",
-  "How do I track my order?",
-]
-
 marked.setOptions({ gfm: true, breaks: true })
 
 function renderMarkdown(content: string): string {
@@ -46,11 +33,17 @@ function renderMarkdown(content: string): string {
 
 export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const t = useTranslations("chat")
+
+  const [messages, setMessages] = useState<Message[]>(() => [
+    { role: "assistant", content: t("welcome", { siteName }) },
+  ])
+
+  const suggestedQuestions = t.raw("suggested") as string[]
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -64,7 +57,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
   }, [isOpen, messages, scrollToBottom])
 
   const resetChat = () => {
-    setMessages([WELCOME_MESSAGE])
+    setMessages([{ role: "assistant", content: t("welcome", { siteName }) }])
     setInput("")
   }
 
@@ -88,7 +81,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
       })
 
       if (!res.ok) {
-        let errorText = "Chat request failed"
+        let errorText = t("failed")
         try {
           const data = await res.json()
           if (data?.error) errorText = data.error
@@ -141,7 +134,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
         ...prev,
         {
           role: "assistant",
-          content: `I apologize, but I couldn't complete that request${message ? `: ${message}` : ""}. Please try again or contact our support team.`,
+          content: t("fallback", { optional: message ? `: ${message}` : "" }),
         },
       ])
     } finally {
@@ -158,7 +151,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)} aria-label="Open chat">
+      <button onClick={() => setIsOpen(true)} aria-label={t("openChat")}>
         {trigger}
       </button>
 
@@ -179,13 +172,13 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{siteName}</p>
-                  <p className="text-[10px] text-ivory/60 tracking-wider uppercase">AI Sales Assistant</p>
+                  <p className="text-[10px] text-ivory/60 tracking-wider uppercase">{t("title")}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={resetChat}
-                  title="Start a new conversation"
+                  title={t("newConversation")}
                   className="p-1.5 hover:bg-white/10 rounded transition-colors"
                 >
                   <HiOutlineArrowPath className="w-4 h-4" />
@@ -239,9 +232,9 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
 
               {messages.length === 1 && (
                 <div className="pt-2">
-                  <p className="text-xs text-stone mb-3 tracking-wider uppercase">Quick Questions</p>
+                  <p className="text-xs text-stone mb-3 tracking-wider uppercase">{t("quickQuestions")}</p>
                   <div className="flex flex-wrap gap-2">
-                    {SUGGESTED_QUESTIONS.map((q) => (
+                    {suggestedQuestions.map((q) => (
                       <button
                         key={q}
                         onClick={() => handleSend(q)}
@@ -269,7 +262,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask me anything..."
+                  placeholder={t("placeholder")}
                   disabled={isLoading}
                   maxLength={2000}
                   className="flex-1 px-4 py-2.5 bg-cream text-sm outline-none border border-transparent focus:border-charcoal/30 transition-colors placeholder:text-stone/50"
@@ -283,7 +276,7 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
                 </button>
               </div>
               <p className="text-[10px] text-stone/50 mt-2 text-center">
-                Powered by OpenAI — Responses are AI-generated.
+                {t("poweredBy")}
               </p>
             </div>
           </motion.div>

@@ -196,6 +196,8 @@ async function main() {
     console.log(`  Product created: ${prod.name}`)
   }
 
+  await seedProductTranslations()
+
   await seedSiteSettings()
 
   const defaultMenus = [
@@ -625,6 +627,291 @@ async function seedDefaultBlogPosts() {
     })
     console.log(`Blog post created: ${post.slug}`)
   }
+}
+
+interface ProductTranslationData {
+  name: string
+  shortDescription: string
+  description: string
+  seoTitle: string
+  seoDescription: string
+}
+
+const productTranslations: Record<string, Record<string, ProductTranslationData>> = {
+  "led-motion-sensor-night-light": {
+    zh: {
+      name: "LED人体感应夜灯",
+      shortDescription: "可充电LED人体感应夜灯",
+      description: "一款紧凑型LED夜灯，内置人体感应器和自动调光功能。节能省电、USB可充电，适合走廊、卧室和衣柜使用。",
+      seoTitle: "LED人体感应夜灯批发采购",
+      seoDescription: "批发可充电LED人体感应夜灯，内置感应器、自动调光，节能省电，适合走廊卧室使用。",
+    },
+    es: {
+      name: "Luz Nocturna LED con Sensor de Movimiento",
+      shortDescription: "Luz nocturna LED recargable con sensor de movimiento",
+      description: "Una lámpara nocturna LED compacta con sensor de movimiento integrado y atenuación automática. Eficiente, recargable por USB e ideal para pasillos, dormitorios y armarios.",
+      seoTitle: "Luz Nocturna LED con Sensor de Movimiento al por mayor",
+      seoDescription: "Luz nocturna LED recargable con sensor de movimiento y atenuación automática para pasillos y dormitorios.",
+    },
+    pt: {
+      name: "Luminária LED com Sensor de Movimento",
+      shortDescription: "Luminária LED recarregável com sensor de movimento",
+      description: "Uma luminária noturna LED compacta com sensor de movimento integrado e escurecimento automático. Eficiente, recarregável via USB e ideal para corredores, quartos e armários.",
+      seoTitle: "Luminária LED com Sensor de Movimento no atacado",
+      seoDescription: "Luminária noturna LED recarregável com sensor de movimento para corredores e quartos.",
+    },
+    fr: {
+      name: "Veilleuse LED avec Détecteur de Mouvement",
+      shortDescription: "Veilleuse LED rechargeable à détecteur de mouvement",
+      description: "Une veilleuse LED compacte avec détecteur de mouvement intégré et gradation automatique. Économe en énergie, rechargeable par USB et idéale pour les couloirs, chambres et placards.",
+      seoTitle: "Veilleuse LED à Détecteur de Mouvement en gros",
+      seoDescription: "Veilleuse LED rechargeable avec détecteur de mouvement et gradation automatique.",
+    },
+    de: {
+      name: "LED Nachtlicht mit Bewegungssensor",
+      shortDescription: "Wiederaufladbares LED Nachtlicht mit Bewegungssensor",
+      description: "Ein kompaktes LED Nachtlicht mit integriertem Bewegungssensor und automatischer Dimmung. Energiesparend, per USB aufladbar und ideal für Flure, Schlafzimmer und Abstellräume.",
+      seoTitle: "LED Nachtlicht mit Bewegungssensor im Großhandel",
+      seoDescription: "Wiederaufladbares LED Nachtlicht mit Bewegungssensor und automatischer Dimmung.",
+    },
+    ru: {
+      name: "LED-ночник с датчиком движения",
+      shortDescription: "Перезаряжаемый LED-ночник с датчиком движения",
+      description: "Компактный LED-ночник со встроенным датчиком движения и автоматическим затемнением. Энергоэффективный, заряжается через USB, идеален для коридоров, спален и гардеробных.",
+      seoTitle: "LED-ночник с датчиком движения оптом",
+      seoDescription: "Перезаряжаемый LED-ночник с датчиком движения и автоматическим затемнением.",
+    },
+    ar: {
+      name: "مصباح ليلي LED مع مستشعر حركة",
+      shortDescription: "مصباح ليلي LED قابل للشحن مع مستشعر حركة",
+      description: "مصباح ليلي LED صغير مدمج مع مستشعر حركة مدمج وتعتيم تلقائي. موفر للطاقة وقابل للشحن عبر USB، مثالي للممرات وغرف النوم وخزائن الملابس.",
+      seoTitle: "مصباح ليلي LED مع مستشعر حركة بالجملة",
+      seoDescription: "مصباح ليلي LED قابل للشحن مع مستشعر حركة وتعتيم تلقائي.",
+    },
+  },
+  "portable-power-bank-20000mah": {
+    zh: {
+      name: "20000mAh便携充电宝",
+      shortDescription: "20000mAh双USB快充充电宝",
+      description: "大容量20000mAh充电宝，支持双USB输出和快充。纤薄铝合金机身，LED电量显示，过充保护，日常供电可靠。",
+      seoTitle: "20000mAh便携充电宝批发",
+      seoDescription: "批发20000mAh双USB快充充电宝，铝合金机身，LED电量显示，过充保护。",
+    },
+    es: {
+      name: "Batería Externa 20000mAh",
+      shortDescription: "Batería portátil de 20000mAh con doble puerto USB y carga rápida",
+      description: "Batería externa de alta capacidad de 20000mAh con salida USB dual y carga rápida. Cuerpo de aluminio fino, indicador LED y protección contra sobrecarga.",
+      seoTitle: "Batería Externa 20000mAh al por mayor",
+      seoDescription: "Batería portátil de 20000mAh con doble puerto USB y carga rápida para uso diario.",
+    },
+    pt: {
+      name: "Power Bank 20000mAh",
+      shortDescription: "Power bank portátil 20000mAh com porta USB dupla e carregamento rápido",
+      description: "Power bank de alta capacidade de 20000mAh com saída USB dupla e suporte a carga rápida. Corpo em alumínio fino, indicador LED e proteção contra sobrecarga.",
+      seoTitle: "Power Bank 20000mAh no atacado",
+      seoDescription: "Power bank portátil 20000mAh com porta USB dupla e carregamento rápido.",
+    },
+    fr: {
+      name: "Batterie Externe 20000mAh",
+      shortDescription: "Batterie externe 20000mAh à double port USB et charge rapide",
+      description: "Batterie externe haute capacité de 20000mAh avec sortie USB double et charge rapide. Corps en aluminium fin, indicateur LED et protection contre la surcharge.",
+      seoTitle: "Batterie Externe 20000mAh en gros",
+      seoDescription: "Batterie portable 20000mAh à double port USB et charge rapide.",
+    },
+    de: {
+      name: "Powerbank 20000mAh",
+      shortDescription: "Tragbare Powerbank mit 20000mAh, Dual-USB und Schnellladung",
+      description: "High-Capacity-Powerbank mit 20000mAh, Dual-USB-Ausgang und Schnellladefunktion. Schlankes Aluminiumgehäuse, LED-Anzeige und Überladeschutz.",
+      seoTitle: "Powerbank 20000mAh im Großhandel",
+      seoDescription: "Tragbare Powerbank mit 20000mAh, Dual-USB und Schnellladefunktion.",
+    },
+    ru: {
+      name: "Повербанк 20000 мАч",
+      shortDescription: "Портативный повербанк 20000 мАч с двумя USB и быстрой зарядкой",
+      description: "Повербанк высокой ёмкости 20000 мАч с двумя USB-портами и поддержкой быстрой зарядки. Тонкий алюминиевый корпус, LED-индикатор и защита от перезаряда.",
+      seoTitle: "Повербанк 20000 мАч оптом",
+      seoDescription: "Портативный повербанк 20000 мАч с двумя USB-портами и быстрой зарядкой.",
+    },
+    ar: {
+      name: "بنك طاقة 20000mAh",
+      shortDescription: "بنك طاقة محمول 20000mAh بمنفذي USB وشحن سريع",
+      description: "بنك طاقة عالي السعة 20000mAh مع مخرجين USB ودعم الشحن السريع. جسم ألومنيوم رفيع، مؤشر LED وحماية من الشحن الزائد.",
+      seoTitle: "بنك طاقة 20000mAh بالجملة",
+      seoDescription: "بنك طاقة محمول 20000mAh بمنفذي USB وشحن سريع.",
+    },
+  },
+  "tws-wireless-earbuds-pro": {
+    zh: {
+      name: "TWS专业无线蓝牙耳机",
+      shortDescription: "蓝牙5.3主动降噪真无线耳机",
+      description: "真无线耳机，蓝牙5.3，主动降噪，配合充电盒总续航可达30小时。IPX5防水，适合运动健身和日常通勤。",
+      seoTitle: "TWS主动降噪无线耳机批发",
+      seoDescription: "批发蓝牙5.3主动降噪真无线耳机，30小时总续航，IPX5防水。",
+    },
+    es: {
+      name: "Auriculares Inalámbricos TWS Pro",
+      shortDescription: "Auriculares inalámbricos con Bluetooth 5.3 y cancelación de ruido",
+      description: "Auriculares verdaderamente inalámbricos con Bluetooth 5.3, cancelación activa de ruido y hasta 30 horas de reproducción total con el estuche de carga. Resistencia al agua IPX5.",
+      seoTitle: "Auriculares TWS con cancelación de ruido al por mayor",
+      seoDescription: "Auriculares inalámbricos Bluetooth 5.3 con cancelación de ruido y 30 horas de batería.",
+    },
+    pt: {
+      name: "Fones de Ouvido Sem Fio TWS Pro",
+      shortDescription: "Fones sem fio com Bluetooth 5.3 e cancelamento de ruído",
+      description: "Fones verdadeiramente sem fio com Bluetooth 5.3, cancelamento ativo de ruído e até 30 horas de reprodução com o estojo de carregamento. Resistência à água IPX5.",
+      seoTitle: "Fones TWS com cancelamento de ruído no atacado",
+      seoDescription: "Fones de ouvido Bluetooth 5.3 com cancelamento de ruído e 30 horas de bateria.",
+    },
+    fr: {
+      name: "Écouteurs Sans Fil TWS Pro",
+      shortDescription: "Écouteurs Bluetooth 5.3 avec réduction de bruit active",
+      description: "Écouteurs véritablement sans fil avec Bluetooth 5.3, réduction active du bruit et jusqu'à 30 heures d'écoute avec le boîtier de charge. Résistance à l'eau IPX5.",
+      seoTitle: "Écouteurs TWS à réduction de bruit en gros",
+      seoDescription: "Écouteurs sans fil Bluetooth 5.3 avec réduction de bruit et 30 heures d'autonomie.",
+    },
+    de: {
+      name: "TWS Kabellose Ohrhörer Pro",
+      shortDescription: "Kabellose Ohrhörer mit Bluetooth 5.3 und aktiver Geräuschunterdrückung",
+      description: "Echte kabellose Ohrhörer mit Bluetooth 5.3, aktiver Geräuschunterdrückung und bis zu 30 Stunden Wiedergabe mit dem Ladecase. Wasserschutz IPX5.",
+      seoTitle: "TWS Ohrhörer mit Geräuschunterdrückung im Großhandel",
+      seoDescription: "Kabellose Bluetooth 5.3 Ohrhörer mit Geräuschunterdrückung und 30 Stunden Akku.",
+    },
+    ru: {
+      name: "TWS Беспроводные наушники Pro",
+      shortDescription: "Беспроводные наушники Bluetooth 5.3 с активным шумоподавлением",
+      description: "Настоящие беспроводные наушники с Bluetooth 5.3, активным шумоподавлением и до 30 часов работы с зарядным кейсом. Влагозащита IPX5.",
+      seoTitle: "TWS наушники с шумоподавлением оптом",
+      seoDescription: "Беспроводные наушники Bluetooth 5.3 с шумоподавлением и 30 часами работы.",
+    },
+    ar: {
+      name: "سماعات TWS اللاسلكية الاحترافية",
+      shortDescription: "سماعات لاسلكية بتقنية Bluetooth 5.3 وإلغاء الضوضاء",
+      description: "سماعات لاسلكية حقيقية مع Bluetooth 5.3 وإلغاء الضوضاء النشط وما يصل إلى 30 ساعة من التشغيل مع علبة الشحن. مقاومة للماء IPX5.",
+      seoTitle: "سماعات TWS مع إلغاء الضوضاء بالجملة",
+      seoDescription: "سماعات لاسلكية Bluetooth 5.3 مع إلغاء الضوضاء و30 ساعة من البطارية.",
+    },
+  },
+  "smart-led-strip-light-kit": {
+    zh: {
+      name: "智能LED灯带套装",
+      shortDescription: "5米RGB智能LED灯带，支持App和语音控制",
+      description: "5米RGB智能LED灯带，支持App和语音控制，1600万色，音乐同步模式。背胶设计，安装快速整洁。",
+      seoTitle: "智能RGB LED灯带批发",
+      seoDescription: "批发5米RGB智能LED灯带，App和语音控制，1600万色，音乐同步。",
+    },
+    es: {
+      name: "Tira LED Inteligente de 5m",
+      shortDescription: "Tira LED RGB inteligente de 5 metros con control por app y voz",
+      description: "Kit de tira LED RGB inteligente de 5 metros con control por app y voz, 16 millones de colores y modo de sincronización musical. Adhesivo en el reverso para una instalación rápida.",
+      seoTitle: "Tira LED RGB inteligente al por mayor",
+      seoDescription: "Tira LED RGB inteligente de 5 metros con control por app, 16 millones de colores y música.",
+    },
+    pt: {
+      name: "Kit de Fita LED Inteligente",
+      shortDescription: "Fita LED RGB inteligente de 5 m com controle por app e voz",
+      description: "Kit de fita LED RGB inteligente de 5 metros com controle por app e voz, 16 milhões de cores e modo de sincronização musical. Adesivo atrás para instalação rápida.",
+      seoTitle: "Fita LED RGB inteligente no atacado",
+      seoDescription: "Fita LED RGB inteligente de 5 metros com controle por app e sincronização musical.",
+    },
+    fr: {
+      name: "Ruban LED Intelligent 5m",
+      shortDescription: "Ruban LED RGB intelligent de 5 m avec contrôle par appli et voix",
+      description: "Ruban LED RGB intelligent de 5 mètres avec contrôle par appli et voix, 16 millions de couleurs et mode sync musicale. Adhésif au dos pour une installation rapide.",
+      seoTitle: "Ruban LED RGB intelligent en gros",
+      seoDescription: "Ruban LED RGB intelligent de 5 mètres avec contrôle par appli et 16 millions de couleurs.",
+    },
+    de: {
+      name: "Smartes LED-Streifen-Set 5m",
+      shortDescription: "Intelligentes RGB-LED-Band 5 m mit App- und Sprachsteuerung",
+      description: "5 Meter smartes RGB-LED-Band mit App- und Sprachsteuerung, 16 Millionen Farben und Musik-Synchronmodus. Selbstklebend für eine schnelle, saubere Montage.",
+      seoTitle: "Smartes RGB-LED-Band im Großhandel",
+      seoDescription: "Intelligentes RGB-LED-Band 5 m mit App-Steuerung und Musik-Synchronmodus.",
+    },
+    ru: {
+      name: "Умная LED-лента 5 м",
+      shortDescription: "Умная RGB LED-лента 5 м с управлением через приложение и голосом",
+      description: "Умная RGB LED-лента 5 метров с управлением через приложение и голосом, 16 миллионов цветов и режим синхронизации с музыкой. Самоклеящаяся основа для быстрого монтажа.",
+      seoTitle: "Умная RGB LED-лента оптом",
+      seoDescription: "Умная RGB LED-лента 5 м с управлением через приложение и синхронизацией с музыкой.",
+    },
+    ar: {
+      name: "شريط LED ذكي 5م",
+      shortDescription: "شريط LED RGB ذكي بطول 5 أمتار مع تحكم بالتطبيق والصوت",
+      description: "شريط LED RGB ذكي بطول 5 أمتار مع تحكم بالتطبيق والصوت، 16 مليون لون ووضع مزامنة الموسيقى. لاصق من الخلف لتركيب سريع ونظيف.",
+      seoTitle: "شريط LED RGB ذكي بالجملة",
+      seoDescription: "شريط LED RGB ذكي بطول 5 أمتار مع تحكم بالتطبيق و16 مليون لون.",
+    },
+  },
+  "ceramic-dinnerware-set-16-piece": {
+    zh: {
+      name: "陶瓷餐具套装（16件）",
+      shortDescription: "16件套陶瓷餐具套装",
+      description: "完整的16件套陶瓷餐具，包括餐盘、沙拉盘、碗和马克杯。耐用炻器釉面，可微波炉和洗碗机使用。",
+      seoTitle: "16件套陶瓷餐具套装批发",
+      seoDescription: "批发16件套陶瓷餐具，包含餐盘、沙拉盘、碗和马克杯，可微波炉和洗碗机使用。",
+    },
+    es: {
+      name: "Vajilla de Cerámica (16 piezas)",
+      shortDescription: "Vajilla de cerámica de 16 piezas",
+      description: "Juego de vajilla de cerámica completo de 16 piezas con platos de comida, platos de ensalada, tazones y tazas. Acabado de gres duradero, apto para microondas y lavavajillas.",
+      seoTitle: "Vajilla de cerámica de 16 piezas al por mayor",
+      seoDescription: "Vajilla de cerámica de 16 piezas apta para microondas y lavavajillas.",
+    },
+    pt: {
+      name: "Conjunto de Louça de Cerâmica (16 peças)",
+      shortDescription: "Conjunto de louça de cerâmica com 16 peças",
+      description: "Conjunto completo de louça de cerâmica com 16 peças, incluindo pratos de jantar, pratos de salada, tigelas e canecas. Acabamento em grés durável, próprio para micro-ondas e lava-louças.",
+      seoTitle: "Conjunto de louça de cerâmica de 16 peças no atacado",
+      seoDescription: "Conjunto de cerâmica de 16 peças próprio para micro-ondas e lava-louças.",
+    },
+    fr: {
+      name: "Service de Table en Céramique (16 pièces)",
+      shortDescription: "Service de table en céramique de 16 pièces",
+      description: "Service de table en céramique complet de 16 pièces comprenant assiettes de dîner, assiettes à salade, bols et tasses. Fini en grès durable, compatible micro-ondes et lave-vaisselle.",
+      seoTitle: "Service de table en céramique de 16 pièces en gros",
+      seoDescription: "Service en céramique de 16 pièces compatible micro-ondes et lave-vaisselle.",
+    },
+    de: {
+      name: "Keramik-Geschirrset (16-teilig)",
+      shortDescription: "16-teiliges Keramik-Geschirrset",
+      description: "Komplettes 16-teiliges Keramik-Geschirrset mit Esstellern, Salattellern, Schalen und Tassen. Langlebige Steinzeugoberfläche, mikrowellen- und spülmaschinengeeignet.",
+      seoTitle: "16-teiliges Keramik-Geschirrset im Großhandel",
+      seoDescription: "16-teiliges Keramik-Geschirrset, mikrowellen- und spülmaschinengeeignet.",
+    },
+    ru: {
+      name: "Керамический сервиз (16 предметов)",
+      shortDescription: "Керамический сервиз из 16 предметов",
+      description: "Полный керамический сервиз из 16 предметов: обеденные тарелки, салатные тарелки, миски и кружки. Прочное покрытие из керамогранита, подходит для микроволновки и посудомоечной машины.",
+      seoTitle: "Керамический сервиз из 16 предметов оптом",
+      seoDescription: "Керамический сервиз из 16 предметов, подходит для микроволновки и посудомоечной машины.",
+    },
+    ar: {
+      name: "طقم أواني خزفية (16 قطعة)",
+      shortDescription: "طقم أواني خزفية من 16 قطعة",
+      description: "طقم أواني خزفية كامل من 16 قطعة يشمل أطباق العشاء وأطباق السلطة والأوعية والأكواب. تشطيب خزفي متين، آمن للاستخدام في الميكروويف وغسالة الأطباق.",
+      seoTitle: "طقم أواني خزفية من 16 قطعة بالجملة",
+      seoDescription: "طقم خزفي من 16 قطعة آمن للاستخدام في الميكروويف وغسالة الأطباق.",
+    },
+  },
+}
+
+async function seedProductTranslations() {
+  for (const [slug, perLocale] of Object.entries(productTranslations)) {
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      select: { id: true },
+    })
+    if (!product) continue
+
+    for (const [locale, data] of Object.entries(perLocale)) {
+      await prisma.productTranslation.upsert({
+        where: { productId_locale: { productId: product.id, locale } },
+        update: {},
+        create: { productId: product.id, locale, ...data },
+      })
+    }
+  }
+  console.log("Product translations seeded.")
 }
 
 main()

@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "首页",
+    "allProducts": "全部产品",
+    "journal": "资讯",
+    "faq": "常见问题",
+    "search": "搜索",
+    "cartTitle": "购物车",
+    "wishlist": "心愿单",
+    "checkout": "结算",
+    "myAccount": "我的账户",
+    "orders": "订单",
+    "addresses": "收货地址",
+    "reviews": "评价",
+    "affiliate": "联盟推广",
+    "dashboard": "概览",
+    "backToHome": "返回首页",
+    "browseProducts": "浏览产品",
+    "notFoundTitle": "页面未找到",
+    "notFoundDescription": "您查找的页面不存在或已被移动。",
+    "errorTitle": "出了点问题",
+    "errorDescription": "发生意外错误，请稍后重试。",
+    "tryAgain": "重试",
+    "loading": "加载中...",
+    "noProductsFound": "未找到相关产品",
+    "noProductsInCategory": "此分类暂无产品。",
+    "viewAllProducts": "查看全部产品",
+    "exploreCollection": "探索系列",
+    "continueShopping": "继续购物",
+    "somethingWentWrong": "出错了，请重试。",
+    "success": "成功",
+    "sale": "促销",
+    "new": "新品",
+    "best": "热销",
+    "image": "图片",
+    "soldOut": "已售罄",
+    "inStock": "库存 {count} 件",
+    "imagePlaceholder": "产品图片"
+  },
+  "navigation": {
+    "home": "首页",
+    "products": "全部产品",
+    "electronics": "电子产品",
+    "homeKitchen": "家居厨房",
+    "journal": "资讯",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "wishlist": "心愿单",
+    "account": "账户"
+  },
+  "header": {
+    "menu": "菜单",
+    "search": "搜索",
+    "searchPlaceholder": "搜索产品...",
+    "dismissPromo": "关闭促销提示",
+    "signIn": "登录",
+    "signOut": "退出登录",
+    "myAccount": "我的账户",
+    "language": "选择语言",
+    "currency": "货币",
+    "openChat": "打开聊天"
+  },
+  "footer": {
+    "shop": "商店",
+    "support": "支持",
+    "connect": "关注我们",
+    "rightsReserved": "© {year} {name}。保留所有权利。",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "allProducts": "全部产品",
+    "newArrivals": "新品上架",
+    "bestSellers": "热销榜单",
+    "shippingReturns": "配送与退货"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "工厂直供 B2B 采购",
+          "subtitle": "源自中国，全球送达",
+          "description": "批发价供应优质电子产品、LED 照明及日用百货",
+          "cta": "浏览产品"
+        },
+        {
+          "title": "批发价格",
+          "subtitle": "面向零售商与分销商",
+          "description": "阶梯批量价格、贴牌定制与稳定供货计划",
+          "cta": "探索分类"
+        },
+        {
+          "title": "值得信赖的品质",
+          "subtitle": "认证产品，每批检验",
+          "description": "CE、FCC 和 RoHS 认证产品，发货前全面检验",
+          "cta": "了解我们"
+        }
+      ],
+      "slideLabel": "第 {index} 张"
+    },
+    "featuredCategories": {
+      "eyebrow": "探索",
+      "heading": "精选系列",
+      "cards": [
+        {
+          "title": "电子产品",
+          "subtitle": "LED 与智能设备",
+          "description": "批发价供应经认证的电子产品与 LED 照明"
+        },
+        {
+          "title": "家居厨房",
+          "subtitle": "日常必需品",
+          "description": "源自认证工厂的实用耐用商品"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "我们的故事",
+      "title": "优质商品，源头直供",
+      "paragraphs": [
+        "Commodities From China 的创立源于一个简单的信念——优质商品应当从中国制造商直接流向世界各地的买家，减少不必要的中间环节与加价。",
+        "我们与中国各地的认证制造商建立长期合作，从深圳的电子工厂到广州的厨具生产企业，每一批货物在发货前均经过检验。"
+      ],
+      "cta": "阅读我们的故事"
+    },
+    "promo": {
+      "eyebrow": "为何直购",
+      "title": "工厂直供电子产品",
+      "body": "我们与中国认证制造商合作，以批发价格为您提供经测试、有文件记录并配送全球的优质电子产品。",
+      "features": [
+        {
+          "title": "认证品质",
+          "description": "CE、FCC 和 RoHS 认证产品，发货前核验"
+        },
+        {
+          "title": "工厂直供价格",
+          "description": "无中间商与零售加价的批发价格"
+        },
+        {
+          "title": "低起订量选项",
+          "description": "从标准 SKU 小批量起步，随业务增长灵活扩大"
+        },
+        {
+          "title": "全球物流",
+          "description": "空运与海运可选，全程跟踪直达门到门"
+        }
+      ],
+      "cta": "查看全部产品"
+    },
+    "carouselFeatured": {
+      "title": "精选推荐",
+      "subtitle": "本季为您精心挑选"
+    },
+    "carouselBestSellers": {
+      "title": "热销榜单",
+      "subtitle": "买家最喜爱的产品之选"
+    },
+    "collections": {
+      "eyebrow": "家居厨房",
+      "title": "日常必需品",
+      "tagline": "为家庭、酒店及批发买家准备的实用耐用品",
+      "items": [
+        {
+          "title": "厨房用品",
+          "description": "锅具、餐具与吧台用品"
+        },
+        {
+          "title": "收纳整理",
+          "description": "适用于各个房间的收纳盒与整理用品"
+        },
+        {
+          "title": "餐桌用品",
+          "description": "适用于家庭与酒店餐饮的餐具套装"
+        },
+        {
+          "title": "家居装饰",
+          "description": "备受经销商青睐的实用装饰品"
+        }
+      ],
+      "cta": "探索家居厨房"
+    },
+    "testimonials": {
+      "eyebrow": "买家评价",
+      "heading": "深受全球进口商信赖",
+      "verifiedBuyerOf": "{product} 的认证买家",
+      "testimonialLabel": "评价 {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "德国汉堡",
+          "text": "我们在零售门店分销 LED 小夜灯和移动电源。品质稳定、发货准时、价格留有充足利润空间。他们已成为我们的首选供应商。",
+          "product": "LED 感应小夜灯"
+        },
+        {
+          "name": "Aline B.",
+          "location": "法国里昂",
+          "text": "陶瓷餐具套装每季都售罄。发货前检验照片和认证文件让我们完全放心，且起订量足够灵活，便于我们小规模起步。",
+          "product": "陶瓷餐具套装"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "新加坡",
+          "text": "终于找到一家从质检到货运全程负责的采购伙伴。我们的首批 TWS 耳机订单准时到达且零瑕疵。强烈推荐给 B2B 买家。",
+          "product": "TWS 无线蓝牙耳机 Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "关注我们",
+      "follow": "在 Instagram 关注",
+      "tagline": "发布时 @commoditychina，即有机会获得展示"
+    },
+    "newsletter": {
+      "eyebrow": "保持联系",
+      "heading": "加入我们的私享圈",
+      "body": "第一时间了解新品到货与专属系列，首单还可享 10% 优惠。",
+      "placeholder": "输入您的邮箱",
+      "subscribing": "订阅中...",
+      "subscribe": "订阅",
+      "success": "欢迎加入！请查收邮箱中的 10% 优惠码。",
+      "error": "出错了，请重试。",
+      "disclaimer": "绝不发送垃圾邮件，可随时退订。订阅即表示您同意我们的隐私政策。"
+    },
+    "seo": {
+      "heading": "探索我们的系列"
+    },
+    "seoParagraph": "探索 {siteName} 系列产品：认证电子产品、LED 照明、厨具及日常家居用品。面向零售消费者与批发 B2B 买家——可在线选购、批量订购，或联系我们的团队获取贸易价格与合作咨询。",
+    "links": {
+      "allProducts": "全部产品",
+      "faq": "常见问题",
+      "aboutUs": "关于我们",
+      "importingGuide": "进口指南"
+    }
+  },
+  "product": {
+    "image": "图片",
+    "addToWishlist": "加入心愿单",
+    "new": "新品",
+    "best": "热销",
+    "soldOut": "已售罄",
+    "inStock": "库存 {count} 件",
+    "savePercent": "省 {percent}%",
+    "decreaseQuantity": "减少数量",
+    "increaseQuantity": "增加数量",
+    "addToCart": "加入购物车",
+    "freeShipping": "订单满 $100 免运费",
+    "easyReturns": "30 天无忧退换",
+    "secureCheckout": "Stripe 与 PayPal 安全结算",
+    "sku": "货号：{sku}",
+    "description": "产品描述",
+    "productDetails": "产品详情",
+    "video": "视频",
+    "reviews": {
+      "title": "客户评价",
+      "reviewCount": "{count} 条评价",
+      "sortNewest": "最新",
+      "sortHighest": "评分最高",
+      "sortLowest": "评分最低",
+      "noReviews": "暂无评价，快来抢首评！",
+      "verifiedPurchase": "已认证购买",
+      "anonymous": "匿名",
+      "leaveReview": "发表评价"
+    },
+    "frequentlyBought": {
+      "title": "经常一起购买",
+      "bundlePrice": "套装价格：",
+      "youSave": "您节省：",
+      "addAll": "全部加入购物车",
+      "addedAll": "所有商品已加入购物车！"
+    },
+    "socialShare": {
+      "share": "分享",
+      "copyLink": "复制链接",
+      "shareOn": "分享到 {name}",
+      "copied": "链接已复制！"
+    },
+    "related": {
+      "title": "搭配推荐",
+      "subtitle": "经常一起购买"
+    },
+    "faq": {
+      "title": "常见问题"
+    },
+    "carousel": {
+      "scrollLeft": "向左滚动",
+      "scrollRight": "向右滚动"
+    }
+  },
+  "products": {
+    "title": "全部产品",
+    "description": "探索我们品类齐全的电子产品、LED 照明与家居日用百货。",
+    "metaDescription": "在线选购电子产品、LED 照明、厨具及家居日用商品，工厂直供品质，面向零售与批发 B2B 买家。",
+    "filters": {
+      "sortBy": "排序方式",
+      "newest": "最新上架",
+      "priceLowHigh": "价格：从低到高",
+      "priceHighLow": "价格：从高到低",
+      "bestSellers": "热销优先",
+      "priceRange": "价格区间",
+      "under": "{amount} 以下",
+      "range": "{min} - {max}",
+      "over": "{amount} 以上"
+    }
+  },
+  "category": {
+    "noProducts": "此分类暂无产品。"
+  },
+  "blog": {
+    "title": "资讯",
+    "metaDescription": "来自 Commodities From China 资讯的进口指南、采购技巧与市场洞察。",
+    "eyebrow": "指南与洞察",
+    "heading": "资讯",
+    "subtitle": "来自我们团队与合作伙伴的实用进口、采购与物流知识。",
+    "all": "全部",
+    "by": "作者：{author}",
+    "noPosts": "暂无文章。"
+  },
+  "faq": {
+    "metaDescription": "关于 {siteName} 产品、物流、退换货的常见问题解答。",
+    "eyebrow": "支持",
+    "title": "常见问题",
+    "noFaqs": "暂无常见问题。",
+    "freeShippingNote": "订单满 {amount} 免标准运费。"
+  },
+  "search": {
+    "title": "搜索结果",
+    "description": "搜索我们品类齐全的电子产品、LED 照明、厨具及家居日用商品。",
+    "resultsFor": "“{query}”的搜索结果",
+    "showingResults": "共 {count} 条“{query}”的结果",
+    "enterTerm": "输入搜索词以查找产品"
+  },
+  "cart": {
+    "metaDescription": "核对商品并前往结算。",
+    "emptyTitle": "您的购物车是空的",
+    "emptyMessage": "您还没有添加任何商品。",
+    "orderSummary": "订单摘要",
+    "subtotal": "小计",
+    "discount": "优惠",
+    "shipping": "运费",
+    "free": "免费",
+    "freeShippingNote": "订单满 $100 免运费",
+    "total": "合计",
+    "proceedToCheckout": "前往结算",
+    "removeItem": "移除商品",
+    "qty": "数量：{qty}",
+    "secureCheckout": "Stripe 与 PayPal 安全结算",
+    "continueShopping": "继续购物",
+    "decreaseQuantity": "减少数量",
+    "increaseQuantity": "增加数量",
+    "title": "购物车"
+  },
+  "checkout": {
+    "metaDescription": "安全完成您的订单。",
+    "contact": "联系方式",
+    "shippingAddress": "收货地址",
+    "payment": "支付方式",
+    "creditCard": "信用卡",
+    "cardHint": "Visa、万事达、美国运通",
+    "paypal": "PayPal",
+    "paypalTagline": "使用您的账户支付",
+    "securedByStripe": "由 Stripe 安全保障",
+    "orderSummary": "订单摘要",
+    "qty": "数量：{qty}",
+    "subtotal": "小计",
+    "shipping": "运费",
+    "free": "免费",
+    "tax": "税费（{rate}%）",
+    "total": "合计",
+    "secureCheckoutNote": "Stripe 与 PayPal 安全结算",
+    "encryptedNote": "您的支付信息已加密",
+    "continueToPayment": "前往支付",
+    "editShipping": "修改收货信息",
+    "emailPlaceholder": "邮箱",
+    "phonePlaceholder": "电话（选填）",
+    "firstNamePlaceholder": "名字",
+    "lastNamePlaceholder": "姓氏",
+    "addressPlaceholder": "街道地址",
+    "apartmentPlaceholder": "公寓、楼层等（选填）",
+    "cityPlaceholder": "城市",
+    "statePlaceholder": "省/州",
+    "zipPlaceholder": "邮政编码",
+    "orderCreatedFailed": "订单创建失败",
+    "orderPlaced": "订单已成功提交！",
+    "failedToCreate": "订单创建失败",
+    "cartEmpty": "您的购物车是空的",
+    "configError": "出了点问题",
+    "pay": "支付 {amount}",
+    "initializingPayment": "正在初始化支付...",
+    "paymentFailed": "支付失败",
+    "paymentSuccessful": "支付成功！",
+    "initFailed": "支付初始化失败",
+    "cardUnavailable": "信用卡支付暂不可用。",
+    "paypalNotConfigured": "PayPal 未配置。请在环境中设置 NEXT_PUBLIC_PAYPAL_CLIENT_ID。",
+    "securedByPaypal": "由 PayPal 安全保障",
+    "paypalInitFailed": "PayPal 初始化失败",
+    "paypalCaptureFailed": "支付扣款失败",
+    "paypalSuccess": "PayPal 支付成功！",
+    "paypalNotCompleted": "支付未完成",
+    "paypalCancelled": "支付已取消",
+    "orderConfirmed": "订单已确认",
+    "thankYou": "感谢您的购买，确认邮件将很快发送至您的邮箱。",
+    "viewOrder": "查看订单",
+    "shopNow": "立即购物",
+    "title": "结账"
+  },
+  "auth": {
+    "invalidCredentials": "邮箱或密码错误",
+    "welcomeBack": "欢迎回来",
+    "signInSubtitle": "登录您的账户",
+    "orContinueWith": "或继续使用",
+    "google": "Google",
+    "noAccount": "还没有账户？",
+    "createOne": "立即注册",
+    "emailPlaceholder": "邮箱",
+    "passwordPlaceholder": "密码",
+    "signIn": "登录",
+    "forgotPassword": "忘记密码？",
+    "createAccount": "创建账户",
+    "createAccountSubtitle": "加入 {siteName} 社区",
+    "alreadyHaveAccount": "已有账户？",
+    "signInLink": "登录",
+    "firstNamePlaceholder": "名字",
+    "lastNamePlaceholder": "姓氏",
+    "registrationFailed": "注册失败",
+    "checkYourEmail": "请查收邮件",
+    "checkYourEmailBody": "如果该邮箱存在对应账户，我们已发送密码重置链接，链接将在 1 小时内有效。",
+    "backToSignIn": "返回登录",
+    "forgotTitle": "忘记密码",
+    "forgotSubtitle": "输入您的邮箱，我们将发送重置链接。",
+    "sendResetLink": "发送重置链接",
+    "sending": "发送中...",
+    "rememberPassword": "记得密码？",
+    "invalidResetLink": "重置链接无效，请重新申请。",
+    "passwordsDontMatch": "两次输入的密码不一致",
+    "passwordTooShort": "密码至少需要 8 个字符",
+    "resetting": "重置中...",
+    "resetSuccessTitle": "密码已重置",
+    "resetSuccessBody": "您的密码已成功重置。",
+    "setNewPassword": "设置新密码",
+    "setNewPasswordSubtitle": "为您的账户选择一个新的密码。",
+    "newPasswordPlaceholder": "新密码",
+    "confirmPasswordPlaceholder": "确认新密码",
+    "resetPassword": "重置密码",
+    "somethingWentWrong": "出错了"
+  },
+  "account": {
+    "myAccount": "我的账户",
+    "sidebar": {
+      "overview": "概览",
+      "orders": "订单",
+      "addresses": "收货地址",
+      "wishlist": "心愿单",
+      "reviews": "评价",
+      "affiliate": "联盟推广",
+      "settings": "账户设置"
+    },
+    "welcome": "欢迎",
+    "signOut": "退出登录",
+    "overview": {
+      "orders": "订单",
+      "wishlist": "心愿单",
+      "points": "积分",
+      "recentOrders": "最近订单",
+      "noOrders": "暂无订单",
+      "startShopping": "开始购物"
+    },
+    "settings": {
+      "title": "账户设置",
+      "profile": "个人资料",
+      "email": "邮箱",
+      "saveChanges": "保存更改",
+      "changePassword": "修改密码",
+      "updatePassword": "更新密码",
+      "firstNamePlaceholder": "名字",
+      "lastNamePlaceholder": "姓氏",
+      "currentPasswordPlaceholder": "当前密码",
+      "newPasswordPlaceholder": "新密码",
+      "confirmPasswordPlaceholder": "确认新密码",
+      "profileUpdated": "个人资料已更新",
+      "updateFailed": "更新失败",
+      "passwordUpdated": "密码已更新"
+    },
+    "reviewsPage": {
+      "title": "我的评价",
+      "noReviews": "暂无评价",
+      "noReviewsBody": "购买并评价产品后，评价将显示在此处。"
+    },
+    "ordersPage": {
+      "title": "我的订单"
+    },
+    "orders": {
+      "noOrders": "暂无订单",
+      "items": "{count} 件商品",
+      "browseProducts": "浏览产品",
+      "orderDetails": "订单详情"
+    },
+    "addresses": {
+      "title": "收货地址",
+      "count": "{count} 条地址",
+      "addAddress": "添加地址",
+      "setDefault": "设为默认",
+      "save": "保存",
+      "update": "更新",
+      "cancel": "取消",
+      "noAddresses": "暂无地址",
+      "defaultBadge": "默认",
+      "edit": "编辑",
+      "delete": "删除",
+      "firstNamePlaceholder": "名字",
+      "lastNamePlaceholder": "姓氏",
+      "addressPlaceholder": "街道地址",
+      "apartmentPlaceholder": "公寓（选填）",
+      "cityPlaceholder": "城市",
+      "statePlaceholder": "省/州",
+      "zipPlaceholder": "邮政编码",
+      "phonePlaceholder": "电话",
+      "updated": "地址已更新",
+      "added": "地址已添加",
+      "saveFailed": "地址保存失败",
+      "deleteConfirm": "确定删除此地址？",
+      "deleted": "地址已删除",
+      "deleteFailed": "删除失败"
+    },
+    "ordersDetail": {
+      "metaTitle": "订单详情",
+      "metaDescription": "查看您的订单详情与物流追踪信息。",
+      "title": "订单详情"
+    }
+  },
+  "orders": {
+    "notFound": "未找到订单",
+    "backToOrders": "返回订单列表",
+    "orderNumber": "订单编号",
+    "date": "日期",
+    "payment": "支付方式",
+    "total": "合计",
+    "shipping": "运费",
+    "standard": "标准",
+    "items": "商品",
+    "qty": "数量：{qty}",
+    "tracking": "物流追踪",
+    "trackingNumber": "运单号",
+    "carrier": "承运商",
+    "trackingHistory": "物流轨迹",
+    "leaveReview": "发表评价",
+    "itemCount": "{count} 件商品",
+    "noOrders": "暂无订单",
+    "browseProducts": "浏览产品"
+  },
+  "affiliate": {
+    "metaTitle": "联盟推广计划",
+    "metaDescription": "加入我们的联盟推广计划，分享您喜爱的产品赚取佣金。",
+    "notJoined": "您尚未加入联盟推广计划。",
+    "applyNow": "立即申请",
+    "underReview": "您的申请正在审核中。",
+    "reviewNote": "我们通常会在 2-3 个工作日内回复。",
+    "title": "联盟推广后台",
+    "totalEarned": "累计收益",
+    "referrals": "引荐人数",
+    "conversions": "转化数",
+    "commissionRate": "佣金比例",
+    "yourLink": "您的推广链接",
+    "copy": "复制",
+    "copied": "已复制！",
+    "recentReferrals": "最近引荐",
+    "tableDate": "日期",
+    "tableOrder": "订单",
+    "tableCommission": "佣金",
+    "tableStatus": "状态",
+    "shareText": "了解 {siteName}：",
+    "ourStore": "我们的商店",
+    "shareOnTwitter": "分享到 Twitter",
+    "pinOnPinterest": "在 Pinterest 上分享",
+    "partnerEyebrow": "与我们合作",
+    "partnerSubtitle": "向您的受众分享来自中国的优质工厂直供产品。推广您信赖的产品，赚取丰厚佣金。",
+    "joinTitle": "立即申请",
+    "joinSubtitle": "加入我们的联盟推广计划，今天就开始赚钱。",
+    "emailPlaceholder": "您的邮箱",
+    "reviewTimeline": "我们会在 2-3 个工作日内审核所有申请。",
+    "appSubmitted": "申请已提交！我们将进行审核并尽快与您联系。",
+    "appFailed": "出错了，请重试。",
+    "benefits": [
+      {
+        "title": "赚取 5-15% 佣金",
+        "description": "通过您的推广链接促成的每笔销售均可获得丰厚佣金"
+      },
+      {
+        "title": "专属推广链接",
+        "description": "为您的推广内容自动生成的跟踪链接"
+      },
+      {
+        "title": "专属支持",
+        "description": "专属联盟客户经理与独家资源"
+      },
+      {
+        "title": "实时数据分析",
+        "description": "实时跟踪点击、转化与佣金数据"
+      }
+    ],
+    "dashboardLabel": "仪表盘"
+  },
+  "coupon": {
+    "applied": "优惠券已使用！您节省了 {amount}",
+    "invalid": "优惠券无效",
+    "failed": "优惠券校验失败",
+    "remove": "移除",
+    "apply": "使用",
+    "placeholder": "优惠券代码",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "您好！我是 {siteName} 的个人购物助手。我可以帮您查找产品、对比选项、了解配送或关于我们。今天有什么可以帮您？",
+    "quickQuestions": "快速提问",
+    "title": "AI 销售助手",
+    "openChat": "打开聊天",
+    "newConversation": "开始新的对话",
+    "placeholder": "输入您的问题...",
+    "failed": "聊天请求失败",
+    "fallback": "很抱歉，我无法完成该请求{optional}。请重试或联系我们的客服团队。",
+    "poweredBy": "由 OpenAI 提供技术支持——回复由 AI 生成。",
+    "popularProducts": "热门产品",
+    "add": "添加",
+    "addedToCart": "{name} 已加入购物车！",
+    "suggested": [
+      "最快的配送方式是什么？",
+      "是否支持批发或批量价格？",
+      "你们的退换货政策是什么？",
+      "给我看看热销产品",
+      "是否支持国际配送？",
+      "如何跟踪我的订单？"
+    ]
+  },
+  "wishlist": {
+    "title": "收藏夹",
+    "empty": "您的收藏夹是空的",
+    "metaDescription": "收藏您喜爱的产品，随时选购。"
+  }
+}

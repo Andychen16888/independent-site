@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { formatPrice, formatDate } from "@/lib/utils/format"
 import { Badge } from "@/components/ui/Badge"
 
@@ -21,6 +22,8 @@ interface OrderDetailProps {
 export function OrderDetail({ orderId }: OrderDetailProps) {
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const t = useTranslations("orders")
+  const locale = useLocale()
 
   useEffect(() => {
     fetch(`/api/orders/${orderId}`)
@@ -49,9 +52,9 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
   if (!order) {
     return (
       <div className="bg-cream p-12 text-center">
-        <p className="text-body">Order not found</p>
+        <p className="text-body">{t("notFound")}</p>
         <Link href="/account/orders" className="btn-outline mt-4 inline-block text-xs">
-          Back to Orders
+          {t("backToOrders")}
         </Link>
       </div>
     )
@@ -62,7 +65,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       <div className="bg-cream p-6 md:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
-            <p className="text-xs text-stone tracking-wider uppercase mb-1">Order Number</p>
+            <p className="text-xs text-stone tracking-wider uppercase mb-1">{t("orderNumber")}</p>
             <p className="font-serif text-lg">{order.orderNumber}</p>
           </div>
           <Badge variant={statusColors[order.status] || "default"}>
@@ -72,26 +75,26 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
           <div>
-            <p className="text-xs text-stone tracking-wider uppercase mb-1">Date</p>
-            <p>{formatDate(order.createdAt)}</p>
+            <p className="text-xs text-stone tracking-wider uppercase mb-1">{t("date")}</p>
+            <p>{formatDate(order.createdAt, locale)}</p>
           </div>
           <div>
-            <p className="text-xs text-stone tracking-wider uppercase mb-1">Payment</p>
+            <p className="text-xs text-stone tracking-wider uppercase mb-1">{t("payment")}</p>
             <p>{order.paymentStatus}</p>
           </div>
           <div>
-            <p className="text-xs text-stone tracking-wider uppercase mb-1">Total</p>
-            <p className="font-medium">{formatPrice(Number(order.total))}</p>
+            <p className="text-xs text-stone tracking-wider uppercase mb-1">{t("total")}</p>
+            <p className="font-medium">{formatPrice(Number(order.total), undefined, locale)}</p>
           </div>
           <div>
-            <p className="text-xs text-stone tracking-wider uppercase mb-1">Shipping</p>
-            <p>{order.shippingMethod || "Standard"}</p>
+            <p className="text-xs text-stone tracking-wider uppercase mb-1">{t("shipping")}</p>
+            <p>{order.shippingMethod || t("standard")}</p>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 className="font-serif text-lg mb-4">Items</h3>
+        <h3 className="font-serif text-lg mb-4">{t("items")}</h3>
         <div className="divide-y divide-mist border border-mist">
           {order.items?.map((item: any) => (
             <div key={item.id} className="flex gap-4 p-4">
@@ -100,9 +103,9 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                 <Link href={`/products/${item.productId || ""}`} className="text-sm hover:text-stone">
                   {item.productName}
                 </Link>
-                <p className="text-xs text-stone mt-1">Qty: {item.quantity}</p>
+                <p className="text-xs text-stone mt-1">{t("qty", { qty: item.quantity })}</p>
               </div>
-              <p className="text-sm">{formatPrice(Number(item.totalPrice))}</p>
+              <p className="text-sm">{formatPrice(Number(item.totalPrice), undefined, locale)}</p>
             </div>
           ))}
         </div>
@@ -110,27 +113,27 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
       {order.trackingNumber && (
         <div className="bg-cream p-6">
-          <h3 className="font-serif text-base mb-4">Tracking</h3>
+          <h3 className="font-serif text-base mb-4">{t("tracking")}</h3>
           <div className="text-sm space-y-2">
             <div className="flex justify-between">
-              <span className="text-stone">Tracking Number</span>
+              <span className="text-stone">{t("trackingNumber")}</span>
               <span className="font-mono">{order.trackingNumber}</span>
             </div>
             {order.trackingProvider && (
               <div className="flex justify-between">
-                <span className="text-stone">Carrier</span>
+                <span className="text-stone">{t("carrier")}</span>
                 <span>{order.trackingProvider}</span>
               </div>
             )}
             {order.tracking?.length > 0 && (
               <div className="mt-4 space-y-3">
-                <p className="text-xs text-stone tracking-wider uppercase">Tracking History</p>
+                <p className="text-xs text-stone tracking-wider uppercase">{t("trackingHistory")}</p>
                 {order.tracking.map((event: any) => (
                   <div key={event.id} className="flex gap-3">
                     <div className="w-2 h-2 mt-1.5 bg-sage rounded-full flex-shrink-0" />
                     <div>
                       <p className="text-sm">{event.status || event.message}</p>
-                      <p className="text-xs text-stone">{event.location && `${event.location} — `}{formatDate(event.timestamp)}</p>
+                      <p className="text-xs text-stone">{event.location && `${event.location} — `}{formatDate(event.timestamp, locale)}</p>
                     </div>
                   </div>
                 ))}
@@ -142,14 +145,14 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
 
       <div className="flex gap-4">
         <Link href="/account/orders" className="btn-outline text-xs">
-          Back to Orders
+          {t("backToOrders")}
         </Link>
         {order.status === "DELIVERED" && (
           <Link
             href={`/products?order=${order.id}`}
             className="btn-outline text-xs"
           >
-            Leave a Review
+            {t("leaveReview")}
           </Link>
         )}
       </div>

@@ -1,4 +1,5 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/hi2"
@@ -24,6 +25,15 @@ const DEFAULT_SOCIAL_LINKS = [
   { name: "Pinterest", href: "#" },
   { name: "TikTok", href: "#" },
 ]
+
+const FOOTER_KEYS = new Set([
+  "allProducts",
+  "newArrivals",
+  "bestSellers",
+  "privacy",
+  "terms",
+  "shippingReturns",
+])
 
 export async function Footer({
   siteName = "Commodities From China",
@@ -68,6 +78,15 @@ export async function Footer({
       take: 8,
     }),
   ])
+
+  const t = await getTranslations("footer")
+  const tnav = await getTranslations("navigation")
+
+  const getLabel = (href: string, fallback: string) => {
+    const key = navKeyForHref(href)
+    if (!key) return fallback
+    return FOOTER_KEYS.has(key) ? t(key) : tnav(key)
+  }
 
   const shopLinks = categories.length
     ? categories.map((c) => ({ name: c.name, href: `/categories/${c.slug}` }))
@@ -137,12 +156,12 @@ export async function Footer({
           </div>
 
           <div>
-            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">Shop</h4>
+            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">{t("shop")}</h4>
             <ul className="space-y-3">
               {shopLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
-                    {link.name}
+                    {getLabel(link.href, link.name)}
                   </Link>
                 </li>
               ))}
@@ -150,19 +169,19 @@ export async function Footer({
           </div>
 
           <div>
-            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">Support</h4>
+            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">{t("support")}</h4>
             <ul className="space-y-3">
               {supportLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
-                    {link.name}
+                    {getLabel(link.href, link.name)}
                   </Link>
                 </li>
               ))}
               {aboutLinks.length > 0 && aboutLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
-                    {link.name}
+                    {getLabel(link.href, link.name)}
                   </Link>
                 </li>
               ))}
@@ -170,7 +189,7 @@ export async function Footer({
           </div>
 
           <div>
-            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">Connect</h4>
+            <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">{t("connect")}</h4>
             <ul className="space-y-3">
               {connectLinks.map((link) => (
                 <li key={link.name}>
@@ -185,14 +204,41 @@ export async function Footer({
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-stone">
-            &copy; {new Date().getFullYear()} {copyrightSuffix}. All rights reserved.
+            {t("rightsReserved", { year: new Date().getFullYear(), name: copyrightSuffix })}
           </p>
           <div className="flex items-center gap-6 text-xs text-stone">
-            {pages.some((p) => p.slug === "privacy") && <Link href="/pages/privacy" className="hover:text-ivory transition-colors">Privacy Policy</Link>}
-            {pages.some((p) => p.slug === "terms") && <Link href="/pages/terms" className="hover:text-ivory transition-colors">Terms of Service</Link>}
+            {pages.some((p) => p.slug === "privacy") && <Link href="/pages/privacy" className="hover:text-ivory transition-colors">{t("privacy")}</Link>}
+            {pages.some((p) => p.slug === "terms") && <Link href="/pages/terms" className="hover:text-ivory transition-colors">{t("terms")}</Link>}
           </div>
         </div>
       </Container>
     </footer>
   )
+}
+
+function navKeyForHref(href: string): string | null {
+  switch (href) {
+    case "/products":
+      return "allProducts"
+    case "/categories/electronics":
+      return "electronics"
+    case "/categories/home-kitchen":
+      return "homeKitchen"
+    case "/products?sort=newest":
+      return "newArrivals"
+    case "/products?sort=bestseller":
+      return "bestSellers"
+    case "/pages/contact":
+      return "contact"
+    case "/pages/about":
+      return "about"
+    case "/pages/privacy":
+      return "privacy"
+    case "/pages/terms":
+      return "terms"
+    case "/pages/shipping":
+      return "shippingReturns"
+    default:
+      return null
+  }
 }

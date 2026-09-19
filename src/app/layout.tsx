@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Cormorant_Garamond } from "next/font/google"
+import { NextIntlClientProvider } from "next-intl"
+import { getLocale, getMessages } from "next-intl/server"
 import { Providers } from "@/components/layout/Providers"
 import { FacebookPixel, GoogleAnalytics, GoogleAds } from "@/components/marketing/AdScripts"
 import {
@@ -9,6 +11,7 @@ import {
   brandSchema,
 } from "@/lib/seo/structured-data"
 import { getSiteSeo } from "@/lib/settings/settings"
+import { routing, rtlLocales } from "@/i18n/routing"
 import "./globals.css"
 
 const inter = Inter({
@@ -24,8 +27,23 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 })
 
+function buildAlternates(baseUrl: string, locale: string, path = "/") {
+  const languages: Record<string, string> = {}
+  for (const loc of routing.locales) {
+    languages[loc] = `${baseUrl}/${loc}${path === "/" ? "" : path}`
+  }
+  return {
+    canonical: `${baseUrl}/${locale}${path === "/" ? "" : path}`,
+    languages: {
+      ...languages,
+      "x-default": `${baseUrl}/en${path === "/" ? "" : path}`,
+    },
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSiteSeo()
+  const locale = await getLocale()
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const ogImage = seo.logo && /^https?:\/\//.test(seo.logo)
     ? { url: seo.logo, width: 1200, height: 630, alt: seo.siteName }
@@ -43,16 +61,10 @@ export async function generateMetadata(): Promise<Metadata> {
     creator: seo.siteName,
     publisher: seo.siteName,
     metadataBase: new URL(baseUrl),
-    alternates: {
-      canonical: baseUrl,
-      languages: {
-        [seo.language === "zh" ? "zh" : "en"]: "/",
-        "x-default": "/",
-      },
-    },
+    alternates: buildAlternates(baseUrl, locale),
     openGraph: {
       type: "website",
-      locale: seo.language === "zh" ? "zh_CN" : "en_US",
+      locale: locale === "zh" ? "zh_CN" : "en_US",
       siteName: seo.siteName,
       title: seo.homepageTitle,
       description: seo.homepageDescription,
@@ -93,8 +105,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const seo = await getSiteSeo()
+  const [seo, locale, messages] = await Promise.all([
+    getSiteSeo(),
+    getLocale(),
+    getMessages(),
+  ])
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const dir = rtlLocales.has(locale) ? "rtl" : "ltr"
   const socialLinks = [
     seo.social.facebook,
     seo.social.instagram,
@@ -127,7 +144,7 @@ export default async function RootLayout({
   const favicon = seo.favicon && /^https?:\/\//.test(seo.favicon) ? seo.favicon : undefined
 
   return (
-    <html lang={seo.language} className={`${inter.variable} ${cormorant.variable}`}>
+    <html lang={locale} dir={dir} className={`${inter.variable} ${cormorant.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -148,7 +165,9 @@ export default async function RootLayout({
       <GoogleAnalytics />
       <GoogleAds />
       <body className="min-h-screen bg-ivory text-charcoal antialiased">
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

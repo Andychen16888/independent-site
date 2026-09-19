@@ -1,11 +1,12 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
+import { useLocale, useTranslations } from "next-intl"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { Badge } from "@/components/ui/Badge"
 import { cn } from "@/lib/utils/cn"
-import { getDiscountPercentage } from "@/lib/utils/format"
+import { getDiscountPercentage, formatPrice } from "@/lib/utils/format"
 import { HiOutlineHeart, HiHeart } from "react-icons/hi2"
 
 interface ProductCardProps {
@@ -16,6 +17,7 @@ interface ProductCardProps {
     unitPrice: number
     originalPrice?: number | null
     stock: number
+    currency?: string
     images?: { url: string; alt?: string | null }[]
     isNew?: boolean
     isBestSeller?: boolean
@@ -25,6 +27,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product, priority }: ProductCardProps) {
   const { isInWishlist, toggleItem } = useWishlistStore()
+  const t = useTranslations("product")
+  const tc = useTranslations("common")
+  const locale = useLocale()
   const discount = product.originalPrice
     ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
     : 0
@@ -47,19 +52,19 @@ export function ProductCard({ product, priority }: ProductCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-stone/30 text-xs tracking-wider uppercase">
-              Image
+              {tc("imagePlaceholder")}
             </div>
           )}
 
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {discount > 0 && <Badge variant="sale">-{discount}%</Badge>}
-            {product.isNew && <Badge variant="new">New</Badge>}
-            {product.isBestSeller && <Badge variant="best">Best</Badge>}
+            {product.isNew && <Badge variant="new">{t("new")}</Badge>}
+            {product.isBestSeller && <Badge variant="best">{t("best")}</Badge>}
           </div>
 
           {product.stock <= 0 && (
             <div className="absolute inset-0 bg-ivory/60 flex items-center justify-center">
-              <span className="text-xs tracking-widest uppercase text-charcoal">Sold Out</span>
+              <span className="text-xs tracking-widest uppercase text-charcoal">{t("soldOut")}</span>
             </div>
           )}
 
@@ -74,7 +79,7 @@ export function ProductCard({ product, priority }: ProductCardProps) {
                 ? "text-rosegold"
                 : "text-stone/60 hover:text-charcoal opacity-0 group-hover:opacity-100"
             )}
-            aria-label="Add to wishlist"
+            aria-label={t("addToWishlist")}
           >
             {isInWishlist(product.id) ? (
               <HiHeart className="w-5 h-5" />
@@ -90,10 +95,10 @@ export function ProductCard({ product, priority }: ProductCardProps) {
           {product.name}
         </h3>
         <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-sm">${Number(product.unitPrice).toFixed(2)}</span>
+          <span className="text-sm">{formatPrice(product.unitPrice, product.currency || "USD", locale)}</span>
           {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
             <span className="text-sm text-stone line-through">
-              ${Number(product.originalPrice).toFixed(2)}
+              {formatPrice(Number(product.originalPrice), product.currency || "USD", locale)}
             </span>
           )}
         </div>

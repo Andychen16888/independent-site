@@ -1,6 +1,7 @@
 "use client"
 
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
 
@@ -11,21 +12,20 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations("common")
   return (
     <div className="min-h-screen flex items-center justify-center bg-ivory">
       <Container>
         <div className="max-w-md mx-auto text-center">
           <p className="font-serif text-8xl text-mist mb-6">500</p>
-          <h1 className="heading-lg mb-4">Something Went Wrong</h1>
-          <p className="text-body mb-8">
-            An unexpected error occurred. Please try again later.
-          </p>
+          <h1 className="heading-lg mb-4">{t("errorTitle")}</h1>
+          <p className="text-body mb-8">{t("errorDescription")}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={reset} variant="primary">
-              Try Again
+              {t("tryAgain")}
             </Button>
             <Link href="/" className="btn-outline inline-flex items-center justify-center">
-              Back to Home
+              {t("backToHome")}
             </Link>
           </div>
         </div>

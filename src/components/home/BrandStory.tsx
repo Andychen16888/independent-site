@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 
 export interface BrandStoryContent {
@@ -13,7 +13,7 @@ export interface BrandStoryContent {
   ctaHref?: string
 }
 
-const DEFAULT_BRAND_STORY: BrandStoryContent = {
+export const DEFAULT_BRAND_STORY: BrandStoryContent = {
   eyebrow: "Our Story",
   title: "Quality Goods, Direct from the Source",
   paragraphs: [

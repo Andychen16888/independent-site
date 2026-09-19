@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 
 export interface SEOLink { label: string; href: string }

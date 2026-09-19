@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "Accueil",
+    "allProducts": "Tous les produits",
+    "journal": "Magazine",
+    "faq": "FAQ",
+    "search": "Recherche",
+    "cartTitle": "Panier",
+    "wishlist": "Liste de souhaits",
+    "checkout": "Commander",
+    "myAccount": "Mon compte",
+    "orders": "Commandes",
+    "addresses": "Adresses",
+    "reviews": "Avis",
+    "affiliate": "Affiliation",
+    "dashboard": "Tableau de bord",
+    "backToHome": "Retour à l'accueil",
+    "browseProducts": "Voir les produits",
+    "notFoundTitle": "Page introuvable",
+    "notFoundDescription": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "errorTitle": "Une erreur est survenue",
+    "errorDescription": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+    "tryAgain": "Réessayer",
+    "loading": "Chargement...",
+    "noProductsFound": "Aucun produit trouvé",
+    "noProductsInCategory": "Aucun produit dans cette catégorie pour le moment.",
+    "viewAllProducts": "Voir tous les produits",
+    "exploreCollection": "Explorer la collection",
+    "continueShopping": "Continuer mes achats",
+    "somethingWentWrong": "Une erreur est survenue. Veuillez réessayer.",
+    "success": "Succès",
+    "sale": "Promo",
+    "new": "Nouveau",
+    "best": "Meilleure vente",
+    "image": "Image",
+    "soldOut": "Épuisé",
+    "inStock": "{count} en stock",
+    "imagePlaceholder": "Image du produit"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "products": "Produits",
+    "electronics": "Électronique",
+    "homeKitchen": "Maison & cuisine",
+    "journal": "Magazine",
+    "about": "À propos",
+    "contact": "Contact",
+    "wishlist": "Liste de souhaits",
+    "account": "Compte"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Recherche",
+    "searchPlaceholder": "Rechercher des produits...",
+    "dismissPromo": "Fermer la promotion",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "myAccount": "Mon compte",
+    "language": "Choisir la langue",
+    "currency": "Devise",
+    "openChat": "Ouvrir le chat"
+  },
+  "footer": {
+    "shop": "Boutique",
+    "support": "Assistance",
+    "connect": "Nous suivre",
+    "rightsReserved": "© {year} {name}. Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "allProducts": "Tous les produits",
+    "newArrivals": "Nouveautés",
+    "bestSellers": "Meilleures ventes",
+    "shippingReturns": "Expédition & retours"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "Approvisionnement B2B direct d'usine",
+          "subtitle": "Sourcing en Chine, livraison dans le monde entier",
+          "description": "Électronique, éclairage LED et produits du quotidien de qualité à prix de gros",
+          "cta": "Voir les produits"
+        },
+        {
+          "title": "Prix de gros",
+          "subtitle": "Conçu pour les détaillants et les distributeurs",
+          "description": "Tarifs dégressifs, options de marque privée et approvisionnement fiable",
+          "cta": "Explorer les catégories"
+        },
+        {
+          "title": "Une qualité de confiance",
+          "subtitle": "Produits certifiés, inspectés par lot",
+          "description": "Produits certifiés CE, FCC et RoHS avec inspection avant expédition",
+          "cta": "Notre histoire"
+        }
+      ],
+      "slideLabel": "Diapositive {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "Explorez",
+      "heading": "Nos collections",
+      "cards": [
+        {
+          "title": "Électronique",
+          "subtitle": "LED et objets connectés",
+          "description": "Électronique et éclairage LED certifiés à prix de gros"
+        },
+        {
+          "title": "Maison & cuisine",
+          "subtitle": "Essentiels du quotidien",
+          "description": "Produits pratiques et durables issus de fabricants certifiés"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Notre histoire",
+      "title": "Des produits de qualité, directement à la source",
+      "paragraphs": [
+        "Commodities From China est née d'une conviction simple : les produits de qualité doivent aller directement des fabricants chinois aux acheteurs du monde entier, sans intermédiaires ni marges inutiles.",
+        "Nous bâtissons des partenariats durables avec des fabricants certifiés partout en Chine, des usines d'électronique de Shenzhen aux fabricants d'ustensiles de cuisine de Guangzhou, et nous inspectons chaque lot avant expédition."
+      ],
+      "cta": "Lire notre histoire"
+    },
+    "promo": {
+      "eyebrow": "Pourquoi acheter direct",
+      "title": "Électronique directe d'usine",
+      "body": "Nous nous associons à des fabricants certifiés de toute la Chine pour vous offrir une électronique de qualité à prix de gros — testée, documentée et expédiée dans le monde entier.",
+      "features": [
+        {
+          "title": "Qualité certifiée",
+          "description": "Produits certifiés CE, FCC et RoHS vérifiés avant expédition"
+        },
+        {
+          "title": "Prix direct d'usine",
+          "description": "Tarifs de gros sans intermédiaires ni marges de détail"
+        },
+        {
+          "title": "Quantités minimales faibles",
+          "description": "Commencez avec des références standard, puis augmentez"
+        },
+        {
+          "title": "Logistique mondiale",
+          "description": "Fret aérien et maritime avec suivi jusqu'à votre porte"
+        }
+      ],
+      "cta": "Voir tous les produits"
+    },
+    "carouselFeatured": {
+      "title": "En vedette",
+      "subtitle": "Sélectionné pour vous cette saison"
+    },
+    "carouselBestSellers": {
+      "title": "Meilleures ventes",
+      "subtitle": "Nos produits préférés, choisis par vous"
+    },
+    "collections": {
+      "eyebrow": "Maison & cuisine",
+      "title": "Essentiels du quotidien",
+      "tagline": "Produits pratiques et durables pour foyers, hôtels et acheteurs en gros",
+      "items": [
+        {
+          "title": "Ustensiles de cuisine",
+          "description": "Casseroles, vaisselle et arts de la table"
+        },
+        {
+          "title": "Rangement",
+          "description": "Contenants et organisateurs pour chaque pièce"
+        },
+        {
+          "title": "Vaisselle",
+          "description": "Services de table pour la maison et l'hôtellerie"
+        },
+        {
+          "title": "Décoration",
+          "description": "Une décoration fonctionnelle appréciée des revendeurs"
+        }
+      ],
+      "cta": "Explorer maison & cuisine"
+    },
+    "testimonials": {
+      "eyebrow": "Avis d'acheteurs",
+      "heading": "La confiance des importateurs du monde entier",
+      "verifiedBuyerOf": "Acheteur vérifié de {product}",
+      "testimonialLabel": "Témoignage {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "Hambourg, Allemagne",
+          "text": "Nous revendons les veilleuses LED et les batteries externes dans nos magasins. Qualité constante, expéditions à l'heure et prix qui laissent une vraie marge. Ils sont devenus notre fournisseur de référence.",
+          "product": "Veilleuse LED à détection de mouvement"
+        },
+        {
+          "name": "Aline B.",
+          "location": "Lyon, France",
+          "text": "Le service de vaisselle en céramique se vend chaque saison. Les photos d'inspection avant expédition et les certificats nous donnent une totale confiance, et la quantité minimale était assez flexible pour démarrer petit.",
+          "product": "Service de vaisselle en céramique"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "Singapour",
+          "text": "Enfin un partenaire qui gère le contrôle qualité et le fret de bout en bout. Notre première commande d'écouteurs TWS est arrivée à temps et sans défaut. Hautement recommandé pour les acheteurs B2B.",
+          "product": "Écouteurs sans fil TWS Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "Suivez-nous",
+      "follow": "Suivre sur Instagram",
+      "tagline": "Taguez @commoditychina pour avoir une chance d'être mis en avant"
+    },
+    "newsletter": {
+      "eyebrow": "Restez connecté",
+      "heading": "Rejoignez notre cercle",
+      "body": "Soyez les premiers à découvrir les nouveautés et collections exclusives, et profitez de 10 % de réduction sur votre première commande.",
+      "placeholder": "Saisissez votre e-mail",
+      "subscribing": "Inscription...",
+      "subscribe": "S'abonner",
+      "success": "Bienvenue dans le cercle ! Vérifiez votre boîte mail pour votre code de 10 % de réduction.",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "disclaimer": "Jamais de spam. Désabonnez-vous à tout moment. En vous abonnant, vous acceptez notre politique de confidentialité."
+    },
+    "seo": {
+      "heading": "Découvrez nos collections"
+    },
+    "seoParagraph": "Découvrez la collection {siteName} : électronique certifiée, éclairage LED, arts de la cuisine et articles ménagers du quotidien. Pensée pour les acheteurs au détail comme pour les acheteurs B2B en gros — commandez en ligne, en volume, ou contactez notre équipe pour les tarifs de gros et les partenariats.",
+    "links": {
+      "allProducts": "Tous les produits",
+      "faq": "FAQ",
+      "aboutUs": "À propos",
+      "importingGuide": "Guide d'importation"
+    }
+  },
+  "product": {
+    "image": "Image",
+    "addToWishlist": "Ajouter à la liste de souhaits",
+    "new": "Nouveau",
+    "best": "Meilleure vente",
+    "soldOut": "Épuisé",
+    "inStock": "{count} en stock",
+    "savePercent": "Économisez {percent}%",
+    "decreaseQuantity": "Diminuer la quantité",
+    "increaseQuantity": "Augmenter la quantité",
+    "addToCart": "Ajouter au panier",
+    "freeShipping": "Livraison gratuite dès $100 d'achat",
+    "easyReturns": "Retours faciles sous 30 jours",
+    "secureCheckout": "Paiement sécurisé Stripe & PayPal",
+    "sku": "Réf. : {sku}",
+    "description": "Description",
+    "productDetails": "Détails du produit",
+    "video": "Vidéo",
+    "reviews": {
+      "title": "Avis clients",
+      "reviewCount": "{count} avis",
+      "sortNewest": "Plus récents",
+      "sortHighest": "Meilleure note",
+      "sortLowest": "Note la plus basse",
+      "noReviews": "Aucun avis pour le moment. Soyez le premier à donner votre avis !",
+      "verifiedPurchase": "Achat vérifié",
+      "anonymous": "Anonyme",
+      "leaveReview": "Laisser un avis"
+    },
+    "frequentlyBought": {
+      "title": "Achetés souvent ensemble",
+      "bundlePrice": "Prix du lot :",
+      "youSave": "Vous économisez :",
+      "addAll": "Tout ajouter au panier",
+      "addedAll": "Tous les articles ont été ajoutés au panier !"
+    },
+    "socialShare": {
+      "share": "Partager",
+      "copyLink": "Copier le lien",
+      "shareOn": "Partager sur {name}",
+      "copied": "Lien copié !"
+    },
+    "related": {
+      "title": "Complètez le rituel",
+      "subtitle": "Souvent achetés ensemble"
+    },
+    "faq": {
+      "title": "Questions fréquentes"
+    },
+    "carousel": {
+      "scrollLeft": "Défiler vers la gauche",
+      "scrollRight": "Défiler vers la droite"
+    }
+  },
+  "products": {
+    "title": "Tous les produits",
+    "description": "Découvrez notre collection complète d'électronique, d'éclairage LED et d'articles ménagers.",
+    "metaDescription": "Parcourez notre collection complète d'électronique, d'éclairage LED, d'arts de la cuisine et d'articles ménagers. Qualité usine pour les acheteurs au détail et B2B en gros.",
+    "filters": {
+      "sortBy": "Trier par",
+      "newest": "Plus récents",
+      "priceLowHigh": "Prix : croissant",
+      "priceHighLow": "Prix : décroissant",
+      "bestSellers": "Meilleures ventes",
+      "priceRange": "Fourchette de prix",
+      "under": "Moins de {amount}",
+      "range": "{min} - {max}",
+      "over": "Plus de {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "Aucun produit dans cette catégorie pour le moment."
+  },
+  "blog": {
+    "title": "Magazine",
+    "metaDescription": "Guides d'importation, conseils de sourcing et analyses du marché du magazine Commodities From China.",
+    "eyebrow": "Guides & analyses",
+    "heading": "Le Magazine",
+    "subtitle": "Des connaissances pratiques sur l'importation, le sourcing et la logistique — de notre équipe et de nos partenaires.",
+    "all": "Tout",
+    "by": "Par {author}",
+    "noPosts": "Aucun article pour le moment."
+  },
+  "faq": {
+    "metaDescription": "Questions fréquentes sur les produits, les livraisons et les retours de {siteName}.",
+    "eyebrow": "Assistance",
+    "title": "Questions fréquentes",
+    "noFaqs": "Aucune question fréquente pour le moment.",
+    "freeShippingNote": "Livraison standard gratuite pour toute commande supérieure à {amount}."
+  },
+  "search": {
+    "title": "Résultats de recherche",
+    "description": "Recherchez dans notre gamme d'électronique, d'éclairage LED, d'arts de la cuisine et d'articles ménagers.",
+    "resultsFor": "Résultats pour « {query} »",
+    "showingResults": "{count} résultat(s) pour « {query} »",
+    "enterTerm": "Saisissez un terme pour trouver des produits"
+  },
+  "cart": {
+    "metaDescription": "Vérifiez vos articles et procédez au paiement.",
+    "emptyTitle": "Votre panier est vide",
+    "emptyMessage": "Il semble que vous n'ayez encore rien ajouté.",
+    "orderSummary": "Récapitulatif",
+    "subtotal": "Sous-total",
+    "discount": "Remise",
+    "shipping": "Livraison",
+    "free": "Gratuit",
+    "freeShippingNote": "Livraison gratuite dès $100 d'achat",
+    "total": "Total",
+    "proceedToCheckout": "Procéder au paiement",
+    "removeItem": "Retirer l'article",
+    "qty": "Qté : {qty}",
+    "secureCheckout": "Paiement sécurisé Stripe & PayPal",
+    "continueShopping": "Continuer Vos Achats",
+    "decreaseQuantity": "Diminuer la quantité",
+    "increaseQuantity": "Augmenter la quantité",
+    "title": "Panier"
+  },
+  "checkout": {
+    "metaDescription": "Finalisez votre commande en toute sécurité.",
+    "contact": "Contact",
+    "shippingAddress": "Adresse de livraison",
+    "payment": "Paiement",
+    "creditCard": "Carte bancaire",
+    "cardHint": "Visa, Mastercard, Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "Payez avec votre compte",
+    "securedByStripe": "Sécurisé par Stripe",
+    "orderSummary": "Récapitulatif",
+    "qty": "Qté : {qty}",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "free": "Gratuit",
+    "tax": "Taxes ({rate}%)",
+    "total": "Total",
+    "secureCheckoutNote": "Paiement sécurisé Stripe & PayPal",
+    "encryptedNote": "Vos informations de paiement sont chiffrées",
+    "continueToPayment": "Continuer vers le paiement",
+    "editShipping": "Modifier la livraison",
+    "emailPlaceholder": "E-mail",
+    "phonePlaceholder": "Téléphone (facultatif)",
+    "firstNamePlaceholder": "Prénom",
+    "lastNamePlaceholder": "Nom",
+    "addressPlaceholder": "Adresse",
+    "apartmentPlaceholder": "Appartement, étage, etc. (facultatif)",
+    "cityPlaceholder": "Ville",
+    "statePlaceholder": "Région",
+    "zipPlaceholder": "Code postal",
+    "orderCreatedFailed": "Échec de la création de la commande",
+    "orderPlaced": "Commande passée avec succès !",
+    "failedToCreate": "Impossible de créer la commande",
+    "cartEmpty": "Votre panier est vide",
+    "configError": "Une erreur est survenue",
+    "pay": "Payer {amount}",
+    "initializingPayment": "Initialisation du paiement...",
+    "paymentFailed": "Le paiement a échoué",
+    "paymentSuccessful": "Paiement réussi !",
+    "initFailed": "Échec de l'initialisation du paiement",
+    "cardUnavailable": "Le paiement par carte n'est pas disponible pour le moment.",
+    "paypalNotConfigured": "PayPal n'est pas configuré. Définissez NEXT_PUBLIC_PAYPAL_CLIENT_ID dans votre environnement.",
+    "securedByPaypal": "Sécurisé par PayPal",
+    "paypalInitFailed": "Échec de l'initialisation de PayPal",
+    "paypalCaptureFailed": "Échec de la capture du paiement",
+    "paypalSuccess": "Paiement PayPal réussi !",
+    "paypalNotCompleted": "Le paiement n'a pas été finalisé",
+    "paypalCancelled": "Paiement annulé",
+    "orderConfirmed": "Commande confirmée",
+    "thankYou": "Merci pour votre achat. Vous recevrez bientôt un e-mail de confirmation.",
+    "viewOrder": "Voir la commande",
+    "shopNow": "Acheter",
+    "title": "Paiement"
+  },
+  "auth": {
+    "invalidCredentials": "E-mail ou mot de passe invalide",
+    "welcomeBack": "Bon retour",
+    "signInSubtitle": "Connectez-vous à votre compte",
+    "orContinueWith": "Ou continuer avec",
+    "google": "Google",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "createOne": "Créez-en un",
+    "emailPlaceholder": "E-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "signIn": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "createAccount": "Créer un compte",
+    "createAccountSubtitle": "Rejoignez la communauté {siteName}",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "signInLink": "Connectez-vous",
+    "firstNamePlaceholder": "Prénom",
+    "lastNamePlaceholder": "Nom",
+    "registrationFailed": "Échec de l'inscription",
+    "checkYourEmail": "Vérifiez votre e-mail",
+    "checkYourEmailBody": "Si un compte existe avec cet e-mail, nous avons envoyé un lien de réinitialisation. Il expire dans 1 heure.",
+    "backToSignIn": "Retour à la connexion",
+    "forgotTitle": "Mot de passe oublié",
+    "forgotSubtitle": "Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "sending": "Envoi...",
+    "rememberPassword": "Vous vous souvenez de votre mot de passe ?",
+    "invalidResetLink": "Lien de réinitialisation invalide. Veuillez en demander un nouveau.",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères",
+    "resetting": "Réinitialisation...",
+    "resetSuccessTitle": "Mot de passe réinitialisé",
+    "resetSuccessBody": "Votre mot de passe a été réinitialisé avec succès.",
+    "setNewPassword": "Définir un nouveau mot de passe",
+    "setNewPasswordSubtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+    "newPasswordPlaceholder": "Nouveau mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "somethingWentWrong": "Une erreur est survenue"
+  },
+  "account": {
+    "myAccount": "Mon compte",
+    "sidebar": {
+      "overview": "Aperçu",
+      "orders": "Commandes",
+      "addresses": "Adresses",
+      "wishlist": "Liste de souhaits",
+      "reviews": "Avis",
+      "affiliate": "Affiliation",
+      "settings": "Paramètres"
+    },
+    "welcome": "Bienvenue",
+    "signOut": "Se déconnecter",
+    "overview": {
+      "orders": "Commandes",
+      "wishlist": "Liste de souhaits",
+      "points": "Points",
+      "recentOrders": "Commandes récentes",
+      "noOrders": "Aucune commande pour le moment",
+      "startShopping": "Commencer mes achats"
+    },
+    "settings": {
+      "title": "Paramètres du compte",
+      "profile": "Profil",
+      "email": "E-mail",
+      "saveChanges": "Enregistrer les modifications",
+      "changePassword": "Changer le mot de passe",
+      "updatePassword": "Mettre à jour le mot de passe",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom",
+      "currentPasswordPlaceholder": "Mot de passe actuel",
+      "newPasswordPlaceholder": "Nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe",
+      "profileUpdated": "Profil mis à jour",
+      "updateFailed": "Échec de la mise à jour",
+      "passwordUpdated": "Mot de passe mis à jour"
+    },
+    "reviewsPage": {
+      "title": "Mes avis",
+      "noReviews": "Aucun avis pour le moment",
+      "noReviewsBody": "Vos avis apparaîtront ici après avoir acheté et noté des produits."
+    },
+    "ordersPage": {
+      "title": "Mes commandes"
+    },
+    "orders": {
+      "noOrders": "Aucune commande pour le moment",
+      "items": "{count} article(s)",
+      "browseProducts": "Voir les produits",
+      "orderDetails": "Détails de la commande"
+    },
+    "addresses": {
+      "title": "Adresses",
+      "count": "{count} adresse(s)",
+      "addAddress": "Ajouter une adresse",
+      "setDefault": "Définir par défaut",
+      "save": "Enregistrer",
+      "update": "Mettre à jour",
+      "cancel": "Annuler",
+      "noAddresses": "Aucune adresse pour le moment",
+      "defaultBadge": "Par défaut",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom",
+      "addressPlaceholder": "Adresse",
+      "apartmentPlaceholder": "Appartement (facultatif)",
+      "cityPlaceholder": "Ville",
+      "statePlaceholder": "Région",
+      "zipPlaceholder": "Code postal",
+      "phonePlaceholder": "Téléphone",
+      "updated": "Adresse mise à jour",
+      "added": "Adresse ajoutée",
+      "saveFailed": "Échec de l'enregistrement de l'adresse",
+      "deleteConfirm": "Supprimer cette adresse ?",
+      "deleted": "Adresse supprimée",
+      "deleteFailed": "Échec de la suppression"
+    },
+    "ordersDetail": {
+      "metaTitle": "Détails de la commande",
+      "metaDescription": "Consultez les détails de votre commande et le suivi de livraison.",
+      "title": "Détails de la commande"
+    }
+  },
+  "orders": {
+    "notFound": "Commande introuvable",
+    "backToOrders": "Retour aux commandes",
+    "orderNumber": "Numéro de commande",
+    "date": "Date",
+    "payment": "Paiement",
+    "total": "Total",
+    "shipping": "Livraison",
+    "standard": "Standard",
+    "items": "Articles",
+    "qty": "Qté : {qty}",
+    "tracking": "Suivi",
+    "trackingNumber": "Numéro de suivi",
+    "carrier": "Transporteur",
+    "trackingHistory": "Historique de suivi",
+    "leaveReview": "Laisser un avis",
+    "itemCount": "{count} article(s)",
+    "noOrders": "Aucune commande pour le moment",
+    "browseProducts": "Voir les produits"
+  },
+  "affiliate": {
+    "metaTitle": "Programme d'affiliation",
+    "metaDescription": "Rejoignez notre programme d'affiliation et gagnez des commissions en partageant les produits que vous aimez.",
+    "notJoined": "Vous n'avez pas encore rejoint le programme d'affiliation.",
+    "applyNow": "Postuler maintenant",
+    "underReview": "Votre candidature est en cours d'examen.",
+    "reviewNote": "Nous répondons généralement sous 2-3 jours ouvrés.",
+    "title": "Tableau de bord affiliation",
+    "totalEarned": "Total gagné",
+    "referrals": "Parrainages",
+    "conversions": "Conversions",
+    "commissionRate": "Taux de commission",
+    "yourLink": "Votre lien de parrainage",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "recentReferrals": "Parrainages récents",
+    "tableDate": "Date",
+    "tableOrder": "Commande",
+    "tableCommission": "Commission",
+    "tableStatus": "Statut",
+    "shareText": "Découvrez {siteName} : ",
+    "ourStore": "notre boutique",
+    "shareOnTwitter": "Partager sur Twitter",
+    "pinOnPinterest": "Épingler sur Pinterest",
+    "partnerEyebrow": "Devenez partenaire",
+    "partnerSubtitle": "Partagez à votre audience des produits de qualité, directement issus des usines de Chine. Gagnez des commissions généreuses en promouvant des produits auxquels vous croyez.",
+    "joinTitle": "Postuler maintenant",
+    "joinSubtitle": "Rejoignez notre programme d'affiliation et commencez à gagner dès aujourd'hui.",
+    "emailPlaceholder": "Votre adresse e-mail",
+    "reviewTimeline": "Nous examinons toutes les candidatures sous 2-3 jours ouvrés.",
+    "appSubmitted": "Candidature envoyée ! Nous allons l'examiner et revenir vers vous.",
+    "appFailed": "Une erreur est survenue. Veuillez réessayer.",
+    "benefits": [
+      {
+        "title": "Gagnez de 5 % à 15 % de commission",
+        "description": "Des commissions généreuses sur chaque vente réalisée via votre lien"
+      },
+      {
+        "title": "Liens de parrainage uniques",
+        "description": "Liens de suivi générés automatiquement pour vos contenus"
+      },
+      {
+        "title": "Accompagnement dédié",
+        "description": "Un gestionnaire d'affiliés personnel et des ressources exclusives"
+      },
+      {
+        "title": "Analyses en temps réel",
+        "description": "Suivez clics, conversions et commissions en temps réel"
+      }
+    ],
+    "dashboardLabel": "Tableau de bord"
+  },
+  "coupon": {
+    "applied": "Code appliqué ! Vous avez économisé {amount}",
+    "invalid": "Code invalide",
+    "failed": "Échec de la validation du code",
+    "remove": "Retirer",
+    "apply": "Appliquer",
+    "placeholder": "Code promo",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "Bonjour ! Je suis votre assistant shopping personnel chez {siteName}. Je peux vous aider à trouver des produits, comparer les options, vérifier les livraisons ou en savoir plus sur nous. Comment puis-je vous aider aujourd'hui ?",
+    "quickQuestions": "Questions rapides",
+    "title": "Assistant commercial IA",
+    "openChat": "Ouvrir le chat",
+    "newConversation": "Démarrer une nouvelle conversation",
+    "placeholder": "Posez-moi une question...",
+    "failed": "Échec de la demande de chat",
+    "fallback": "Je suis désolé, je n'ai pas pu traiter cette demande{optional}. Veuillez réessayer ou contacter notre équipe d'assistance.",
+    "poweredBy": "Propulsé par OpenAI — Les réponses sont générées par IA.",
+    "popularProducts": "Produits populaires",
+    "add": "Ajouter",
+    "addedToCart": "{name} ajouté au panier !",
+    "suggested": [
+      "Quelle est l'option de livraison la plus rapide ?",
+      "Proposez-vous des prix de gros ou par volume ?",
+      "Quelle est votre politique de retour ?",
+      "Montrez-moi vos meilleures ventes",
+      "Livrez-vous à l'international ?",
+      "Comment suivre ma commande ?"
+    ]
+  },
+  "wishlist": {
+    "title": "Liste de Souhaits",
+    "empty": "Votre liste de souhaits est vide",
+    "metaDescription": "Enregistrez vos produits préférés et achetez-les à tout moment."
+  }
+}

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils/format"
 import { HiStar, HiOutlineStar } from "react-icons/hi2"
 
@@ -35,6 +36,8 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "md
 
 export function ProductReviews({ reviews, stats }: ProductReviewsProps) {
   const [sortBy, setSortBy] = useState<"newest" | "highest" | "lowest">("newest")
+  const t = useTranslations("product.reviews")
+  const locale = useLocale()
 
   const sorted = [...reviews].sort((a, b) => {
     if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -44,13 +47,13 @@ export function ProductReviews({ reviews, stats }: ProductReviewsProps) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="heading-md mb-8">Customer Reviews</h2>
+      <h2 className="heading-md mb-8">{t("title")}</h2>
 
       <div className="grid md:grid-cols-[280px_1fr] gap-8 mb-12">
         <div className="bg-cream p-6 text-center">
           <p className="text-4xl font-serif mb-2">{stats.average.toFixed(1)}</p>
           <StarRating rating={Math.round(stats.average)} size="md" />
-          <p className="text-sm text-stone mt-2">{stats.total} review(s)</p>
+          <p className="text-sm text-stone mt-2">{t("reviewCount", { count: stats.total })}</p>
           <div className="mt-4 space-y-1">
             {[5, 4, 3, 2, 1].map((star) => (
               <div key={star} className="flex items-center gap-2 text-xs">
@@ -69,21 +72,21 @@ export function ProductReviews({ reviews, stats }: ProductReviewsProps) {
 
         <div>
           <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-stone">{sorted.length} review(s)</p>
+            <p className="text-sm text-stone">{t("reviewCount", { count: sorted.length })}</p>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               className="text-sm bg-transparent border border-charcoal/20 px-3 py-2 outline-none"
             >
-              <option value="newest">Newest</option>
-              <option value="highest">Highest Rated</option>
-              <option value="lowest">Lowest Rated</option>
+              <option value="newest">{t("sortNewest")}</option>
+              <option value="highest">{t("sortHighest")}</option>
+              <option value="lowest">{t("sortLowest")}</option>
             </select>
           </div>
 
           <div className="space-y-6">
             {sorted.length === 0 ? (
-              <p className="text-body text-center py-8">No reviews yet. Be the first to review!</p>
+              <p className="text-body text-center py-8">{t("noReviews")}</p>
             ) : (
               sorted.map((review) => (
                 <div key={review.id} className="border-b border-mist pb-6">
@@ -91,7 +94,7 @@ export function ProductReviews({ reviews, stats }: ProductReviewsProps) {
                     <StarRating rating={review.rating} />
                     {review.isVerified && (
                       <span className="text-[10px] text-sage tracking-wider uppercase bg-sage/10 px-2 py-0.5">
-                        Verified Purchase
+                        {t("verifiedPurchase")}
                       </span>
                     )}
                   </div>
@@ -107,7 +110,7 @@ export function ProductReviews({ reviews, stats }: ProductReviewsProps) {
                     </div>
                   )}
                   <p className="text-xs text-stone mt-2">
-                    {review.user.firstName || "Anonymous"} — {formatDate(review.createdAt)}
+                    {review.user.firstName || t("anonymous")} — {formatDate(review.createdAt, locale)}
                   </p>
                 </div>
               ))

@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "Home",
+    "allProducts": "All Products",
+    "journal": "Journal",
+    "faq": "FAQ",
+    "search": "Search",
+    "cartTitle": "Shopping Cart",
+    "wishlist": "Wishlist",
+    "checkout": "Checkout",
+    "myAccount": "My Account",
+    "orders": "Orders",
+    "addresses": "Addresses",
+    "reviews": "Reviews",
+    "affiliate": "Affiliate",
+    "dashboard": "Dashboard",
+    "backToHome": "Back to Home",
+    "browseProducts": "Browse Products",
+    "notFoundTitle": "Page Not Found",
+    "notFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+    "errorTitle": "Something Went Wrong",
+    "errorDescription": "An unexpected error occurred. Please try again later.",
+    "tryAgain": "Try Again",
+    "loading": "Loading...",
+    "noProductsFound": "No products found",
+    "noProductsInCategory": "No products in this category yet.",
+    "viewAllProducts": "View All Products",
+    "exploreCollection": "Explore Collection",
+    "continueShopping": "Continue Shopping",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "success": "Success",
+    "sale": "Sale",
+    "new": "New",
+    "best": "Best",
+    "image": "Image",
+    "soldOut": "Sold Out",
+    "inStock": "{count} in stock",
+    "imagePlaceholder": "Product Image"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "electronics": "Electronics",
+    "homeKitchen": "Home & Kitchen",
+    "journal": "Journal",
+    "about": "About",
+    "contact": "Contact",
+    "wishlist": "Wishlist",
+    "account": "Account"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Search",
+    "searchPlaceholder": "Search products...",
+    "dismissPromo": "Dismiss promotion",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "myAccount": "My Account",
+    "language": "Select language",
+    "currency": "Currency",
+    "openChat": "Open chat"
+  },
+  "footer": {
+    "shop": "Shop",
+    "support": "Support",
+    "connect": "Connect",
+    "rightsReserved": "© {year} {name}. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "allProducts": "All Products",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "shippingReturns": "Shipping & Returns"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "Factory-Direct B2B Sourcing",
+          "subtitle": "Sourced from China, delivered worldwide",
+          "description": "Quality electronics, LED lighting, and daily commodities at wholesale prices",
+          "cta": "Browse Products"
+        },
+        {
+          "title": "Wholesale Pricing",
+          "subtitle": "Built for retailers and distributors",
+          "description": "Tiered bulk pricing, private label options, and reliable supply schedules",
+          "cta": "Explore Categories"
+        },
+        {
+          "title": "Quality You Can Trust",
+          "subtitle": "Certified goods, inspected every batch",
+          "description": "CE, FCC, and RoHS certified products with pre-shipment inspection",
+          "cta": "Our Story"
+        }
+      ],
+      "slideLabel": "Slide {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "Explore",
+      "heading": "Our Collections",
+      "cards": [
+        {
+          "title": "Electronics",
+          "subtitle": "LED & Smart Devices",
+          "description": "Certified electronics and LED lighting at wholesale prices"
+        },
+        {
+          "title": "Home & Kitchen",
+          "subtitle": "Everyday Essentials",
+          "description": "Practical, durable goods sourced from certified factories"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Our Story",
+      "title": "Quality Goods, Direct from the Source",
+      "paragraphs": [
+        "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
+        "We build long-term partnerships with certified manufacturers across China — from electronics factories in Shenzhen to kitchenware producers in Guangzhou — and inspect every batch before it ships."
+      ],
+      "cta": "Read Our Story"
+    },
+    "promo": {
+      "eyebrow": "Why Buy Direct",
+      "title": "Factory-Direct Electronics",
+      "body": "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",
+      "features": [
+        {
+          "title": "Certified Quality",
+          "description": "CE, FCC, and RoHS certified products verified before shipment"
+        },
+        {
+          "title": "Factory-Direct Pricing",
+          "description": "Wholesale rates without middlemen or retail markups"
+        },
+        {
+          "title": "Low MOQ Options",
+          "description": "Start small with standard SKUs, scale up as you grow"
+        },
+        {
+          "title": "Global Logistics",
+          "description": "Air and sea freight options with tracking to your door"
+        }
+      ],
+      "cta": "View All Products"
+    },
+    "carouselFeatured": {
+      "title": "Featured",
+      "subtitle": "Handpicked for you this season"
+    },
+    "carouselBestSellers": {
+      "title": "Best Sellers",
+      "subtitle": "Our most-loved products, chosen by you"
+    },
+    "collections": {
+      "eyebrow": "Home & Kitchen",
+      "title": "Everyday Essentials",
+      "tagline": "Practical, durable goods for homes, hotels, and wholesale buyers",
+      "items": [
+        {
+          "title": "Kitchenware",
+          "description": "Cookware, dinnerware, and barware staples"
+        },
+        {
+          "title": "Storage",
+          "description": "Containers and organizers for every room"
+        },
+        {
+          "title": "Tableware",
+          "description": "Dinnerware sets for homes and hospitality"
+        },
+        {
+          "title": "Home Decor",
+          "description": "Functional decor loved by resellers"
+        }
+      ],
+      "cta": "Explore Home & Kitchen"
+    },
+    "testimonials": {
+      "eyebrow": "Buyer Reviews",
+      "heading": "Trusted by Importers Worldwide",
+      "verifiedBuyerOf": "Verified Buyer of {product}",
+      "testimonialLabel": "Testimonial {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "Hamburg, Germany",
+          "text": "We resell the LED night lights and power banks in our retail stores. Consistent quality, on-time shipments, and pricing that leaves real margin. They've become our go-to supplier.",
+          "product": "LED Motion Sensor Night Light"
+        },
+        {
+          "name": "Aline B.",
+          "location": "Lyon, France",
+          "text": "The ceramic dinnerware set sells out every season. Pre-shipment inspection photos and certificates give us total confidence, and the MOQ was flexible enough for us to start small.",
+          "product": "Ceramic Dinnerware Set"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "Singapore",
+          "text": "Finally a sourcing partner that handles quality control and freight end to end. Our first order of TWS earbuds arrived on time and defect-free. Highly recommended for B2B buyers.",
+          "product": "TWS Wireless Earbuds Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "Follow Us",
+      "follow": "Follow on Instagram",
+      "tagline": "Tag us @commoditychina for a chance to be featured"
+    },
+    "newsletter": {
+      "eyebrow": "Stay Connected",
+      "heading": "Join Our Inner Circle",
+      "body": "Be the first to discover new arrivals, exclusive collections, and receive 10% off your first order.",
+      "placeholder": "Enter your email",
+      "subscribing": "Subscribing...",
+      "subscribe": "Subscribe",
+      "success": "Welcome to the circle! Check your inbox for your 10% off code.",
+      "error": "Something went wrong. Please try again.",
+      "disclaimer": "No spam, ever. Unsubscribe anytime. By subscribing, you agree to our Privacy Policy."
+    },
+    "seo": {
+      "heading": "Discover Our Collections"
+    },
+    "seoParagraph": "Discover the {siteName} collection: certified electronics, LED lighting, kitchenware, and everyday household goods. Built for retail shoppers and wholesale B2B buyers alike — shop online, order in bulk, or contact our team for trade pricing and partnership inquiries.",
+    "links": {
+      "allProducts": "All Products",
+      "faq": "FAQ",
+      "aboutUs": "About Us",
+      "importingGuide": "Importing Guide"
+    }
+  },
+  "product": {
+    "image": "Image",
+    "addToWishlist": "Add to wishlist",
+    "new": "New",
+    "best": "Best",
+    "soldOut": "Sold Out",
+    "inStock": "{count} in stock",
+    "savePercent": "Save {percent}%",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "addToCart": "Add to Cart",
+    "freeShipping": "Free shipping on orders over $100",
+    "easyReturns": "30-day easy returns",
+    "secureCheckout": "Secure checkout with Stripe & PayPal",
+    "sku": "SKU: {sku}",
+    "description": "Description",
+    "productDetails": "Product Details",
+    "video": "Video",
+    "reviews": {
+      "title": "Customer Reviews",
+      "reviewCount": "{count} review(s)",
+      "sortNewest": "Newest",
+      "sortHighest": "Highest Rated",
+      "sortLowest": "Lowest Rated",
+      "noReviews": "No reviews yet. Be the first to review!",
+      "verifiedPurchase": "Verified Purchase",
+      "anonymous": "Anonymous",
+      "leaveReview": "Leave a Review"
+    },
+    "frequentlyBought": {
+      "title": "Frequently Bought Together",
+      "bundlePrice": "Bundle price:",
+      "youSave": "You save:",
+      "addAll": "Add All to Cart",
+      "addedAll": "Added all items to cart!"
+    },
+    "socialShare": {
+      "share": "Share",
+      "copyLink": "Copy link",
+      "shareOn": "Share on {name}",
+      "copied": "Link copied!"
+    },
+    "related": {
+      "title": "Complete the Ritual",
+      "subtitle": "Frequently bought together"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "carousel": {
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right"
+    }
+  },
+  "products": {
+    "title": "All Products",
+    "description": "Discover our complete collection of electronics, LED lighting, and household commodities.",
+    "metaDescription": "Browse our complete collection of electronics, LED lighting, kitchenware, and household commodities. Factory-direct quality for retail and wholesale B2B buyers.",
+    "filters": {
+      "sortBy": "Sort By",
+      "newest": "Newest",
+      "priceLowHigh": "Price: Low to High",
+      "priceHighLow": "Price: High to Low",
+      "bestSellers": "Best Sellers",
+      "priceRange": "Price Range",
+      "under": "Under {amount}",
+      "range": "{min} - {max}",
+      "over": "Over {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "No products in this category yet."
+  },
+  "blog": {
+    "title": "Journal",
+    "metaDescription": "Importing guides, sourcing tips, and market insights from the Commodities From China journal.",
+    "eyebrow": "Guides & Insights",
+    "heading": "The Journal",
+    "subtitle": "Practical importing, sourcing, and logistics knowledge — from our team and partners.",
+    "all": "All",
+    "by": "By {author}",
+    "noPosts": "No posts yet."
+  },
+  "faq": {
+    "metaDescription": "Frequently asked questions about {siteName} products, shipping, returns, and more.",
+    "eyebrow": "Support",
+    "title": "Frequently Asked Questions",
+    "noFaqs": "No frequently asked questions yet.",
+    "freeShippingNote": "Free standard shipping on orders over {amount}."
+  },
+  "search": {
+    "title": "Search Results",
+    "description": "Search our collection of electronics, LED lighting, kitchenware, and household commodities.",
+    "resultsFor": "Results for \"{query}\"",
+    "showingResults": "Showing {count} result(s) for \"{query}\"",
+    "enterTerm": "Enter a search term to find products"
+  },
+  "cart": {
+    "metaDescription": "Review your items and proceed to checkout.",
+    "emptyTitle": "Your cart is empty",
+    "emptyMessage": "Looks like you haven't added anything yet.",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "shipping": "Shipping",
+    "free": "Free",
+    "freeShippingNote": "Free shipping on orders over $100",
+    "total": "Total",
+    "proceedToCheckout": "Proceed to Checkout",
+    "removeItem": "Remove item",
+    "qty": "Qty: {qty}",
+    "secureCheckout": "Secure checkout via Stripe & PayPal",
+    "continueShopping": "Continue Shopping",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "title": "Shopping Cart"
+  },
+  "checkout": {
+    "metaDescription": "Complete your order securely.",
+    "contact": "Contact",
+    "shippingAddress": "Shipping Address",
+    "payment": "Payment",
+    "creditCard": "Credit Card",
+    "cardHint": "Visa, Mastercard, Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "Pay with your account",
+    "securedByStripe": "Secured by Stripe",
+    "orderSummary": "Order Summary",
+    "qty": "Qty: {qty}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "tax": "Tax ({rate}%)",
+    "total": "Total",
+    "secureCheckoutNote": "Secure checkout via Stripe & PayPal",
+    "encryptedNote": "Your payment info is encrypted",
+    "continueToPayment": "Continue to Payment",
+    "editShipping": "Edit Shipping",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Phone (optional)",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "addressPlaceholder": "Address",
+    "apartmentPlaceholder": "Apartment, suite, etc. (optional)",
+    "cityPlaceholder": "City",
+    "statePlaceholder": "State",
+    "zipPlaceholder": "ZIP code",
+    "orderCreatedFailed": "Order creation failed",
+    "orderPlaced": "Order placed successfully!",
+    "failedToCreate": "Failed to create order",
+    "cartEmpty": "Your cart is empty",
+    "configError": "Something went wrong",
+    "pay": "Pay {amount}",
+    "initializingPayment": "Initializing payment...",
+    "paymentFailed": "Payment failed",
+    "paymentSuccessful": "Payment successful!",
+    "initFailed": "Failed to initialize payment",
+    "cardUnavailable": "Credit card payment is not available at this time.",
+    "paypalNotConfigured": "PayPal is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID in your environment.",
+    "securedByPaypal": "Secured by PayPal",
+    "paypalInitFailed": "Failed to initialize PayPal",
+    "paypalCaptureFailed": "Payment capture failed",
+    "paypalSuccess": "Payment successful via PayPal!",
+    "paypalNotCompleted": "Payment was not completed",
+    "paypalCancelled": "Payment cancelled",
+    "orderConfirmed": "Order Confirmed",
+    "thankYou": "Thank you for your purchase. You'll receive a confirmation email shortly.",
+    "viewOrder": "View Order",
+    "shopNow": "Shop Now",
+    "title": "Checkout"
+  },
+  "auth": {
+    "invalidCredentials": "Invalid email or password",
+    "welcomeBack": "Welcome Back",
+    "signInSubtitle": "Sign in to your account",
+    "orContinueWith": "Or continue with",
+    "google": "Google",
+    "noAccount": "Don't have an account?",
+    "createOne": "Create one",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "signIn": "Sign In",
+    "forgotPassword": "Forgot password?",
+    "createAccount": "Create Account",
+    "createAccountSubtitle": "Join the {siteName} community",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "registrationFailed": "Registration failed",
+    "checkYourEmail": "Check Your Email",
+    "checkYourEmailBody": "If an account exists with that email, we've sent a password reset link. It expires in 1 hour.",
+    "backToSignIn": "Back to sign in",
+    "forgotTitle": "Forgot Password",
+    "forgotSubtitle": "Enter your email and we'll send you a reset link.",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "rememberPassword": "Remember your password?",
+    "invalidResetLink": "Invalid reset link. Please request a new one.",
+    "passwordsDontMatch": "Passwords don't match",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "resetting": "Resetting...",
+    "resetSuccessTitle": "Password Reset",
+    "resetSuccessBody": "Your password has been reset successfully.",
+    "setNewPassword": "Set New Password",
+    "setNewPasswordSubtitle": "Choose a new password for your account.",
+    "newPasswordPlaceholder": "New password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "resetPassword": "Reset Password",
+    "somethingWentWrong": "Something went wrong"
+  },
+  "account": {
+    "myAccount": "My Account",
+    "sidebar": {
+      "overview": "Overview",
+      "orders": "Orders",
+      "addresses": "Addresses",
+      "wishlist": "Wishlist",
+      "reviews": "Reviews",
+      "affiliate": "Affiliate",
+      "settings": "Settings"
+    },
+    "welcome": "Welcome",
+    "signOut": "Sign Out",
+    "overview": {
+      "orders": "Orders",
+      "wishlist": "Wishlist",
+      "points": "Points",
+      "recentOrders": "Recent Orders",
+      "noOrders": "No orders yet",
+      "startShopping": "Start Shopping"
+    },
+    "settings": {
+      "title": "Account Settings",
+      "profile": "Profile",
+      "email": "Email",
+      "saveChanges": "Save Changes",
+      "changePassword": "Change Password",
+      "updatePassword": "Update Password",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "currentPasswordPlaceholder": "Current password",
+      "newPasswordPlaceholder": "New password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "profileUpdated": "Profile updated",
+      "updateFailed": "Update failed",
+      "passwordUpdated": "Password updated"
+    },
+    "reviewsPage": {
+      "title": "My Reviews",
+      "noReviews": "No reviews yet",
+      "noReviewsBody": "Reviews will appear here after you purchase and review products."
+    },
+    "ordersPage": {
+      "title": "My Orders"
+    },
+    "orders": {
+      "noOrders": "No orders yet",
+      "items": "{count} item(s)",
+      "browseProducts": "Browse Products",
+      "orderDetails": "Order Details"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "count": "{count} address(es)",
+      "addAddress": "Add Address",
+      "setDefault": "Set as default",
+      "save": "Save",
+      "update": "Update",
+      "cancel": "Cancel",
+      "noAddresses": "No addresses yet",
+      "defaultBadge": "Default",
+      "edit": "Edit",
+      "delete": "Delete",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "addressPlaceholder": "Address",
+      "apartmentPlaceholder": "Apartment (optional)",
+      "cityPlaceholder": "City",
+      "statePlaceholder": "State",
+      "zipPlaceholder": "ZIP",
+      "phonePlaceholder": "Phone",
+      "updated": "Address updated",
+      "added": "Address added",
+      "saveFailed": "Failed to save address",
+      "deleteConfirm": "Delete this address?",
+      "deleted": "Address deleted",
+      "deleteFailed": "Failed to delete"
+    },
+    "ordersDetail": {
+      "metaTitle": "Order Details",
+      "metaDescription": "View your order details and tracking information.",
+      "title": "Order Details"
+    }
+  },
+  "orders": {
+    "notFound": "Order not found",
+    "backToOrders": "Back to Orders",
+    "orderNumber": "Order Number",
+    "date": "Date",
+    "payment": "Payment",
+    "total": "Total",
+    "shipping": "Shipping",
+    "standard": "Standard",
+    "items": "Items",
+    "qty": "Qty: {qty}",
+    "tracking": "Tracking",
+    "trackingNumber": "Tracking Number",
+    "carrier": "Carrier",
+    "trackingHistory": "Tracking History",
+    "leaveReview": "Leave a Review",
+    "itemCount": "{count} item(s)",
+    "noOrders": "No orders yet",
+    "browseProducts": "Browse Products"
+  },
+  "affiliate": {
+    "metaTitle": "Affiliate Program",
+    "metaDescription": "Join our affiliate program and earn commissions by sharing products you love.",
+    "notJoined": "You haven't joined the affiliate program yet.",
+    "applyNow": "Apply Now",
+    "underReview": "Your application is under review.",
+    "reviewNote": "We typically respond within 2-3 business days.",
+    "title": "Affiliate Dashboard",
+    "totalEarned": "Total Earned",
+    "referrals": "Referrals",
+    "conversions": "Conversions",
+    "commissionRate": "Commission Rate",
+    "yourLink": "Your Referral Link",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "recentReferrals": "Recent Referrals",
+    "tableDate": "Date",
+    "tableOrder": "Order",
+    "tableCommission": "Commission",
+    "tableStatus": "Status",
+    "shareText": "Check out {siteName}: ",
+    "ourStore": "our store",
+    "shareOnTwitter": "Share on Twitter",
+    "pinOnPinterest": "Pin on Pinterest",
+    "partnerEyebrow": "Partner With Us",
+    "partnerSubtitle": "Share quality, factory-direct products from China with your audience. Earn generous commissions while promoting products you believe in.",
+    "joinTitle": "Apply Now",
+    "joinSubtitle": "Join our affiliate program and start earning today.",
+    "emailPlaceholder": "Your email address",
+    "reviewTimeline": "We review all applications within 2-3 business days.",
+    "appSubmitted": "Application submitted! We'll review and get back to you.",
+    "appFailed": "Something went wrong. Please try again.",
+    "benefits": [
+      {
+        "title": "Earn 5-15% Commission",
+        "description": "Generous commissions on every sale made through your referral link"
+      },
+      {
+        "title": "Unique Referral Links",
+        "description": "Automatically generated tracking links for your content"
+      },
+      {
+        "title": "Dedicated Support",
+        "description": "Personal affiliate manager and exclusive resources"
+      },
+      {
+        "title": "Real-time Analytics",
+        "description": "Track clicks, conversions, and commissions in real-time"
+      }
+    ],
+    "dashboardLabel": "Dashboard"
+  },
+  "coupon": {
+    "applied": "Coupon applied! You saved {amount}",
+    "invalid": "Invalid coupon",
+    "failed": "Failed to validate coupon",
+    "remove": "Remove",
+    "apply": "Apply",
+    "placeholder": "Coupon code",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "Hello! I'm your personal shopping assistant at {siteName}. I can help you find products, compare options, check shipping, or learn about us. How can I help you today?",
+    "quickQuestions": "Quick Questions",
+    "title": "AI Sales Assistant",
+    "openChat": "Open chat",
+    "newConversation": "Start a new conversation",
+    "placeholder": "Ask me anything...",
+    "failed": "Chat request failed",
+    "fallback": "I apologize, but I couldn't complete that request{optional}. Please try again or contact our support team.",
+    "poweredBy": "Powered by OpenAI — Responses are AI-generated.",
+    "popularProducts": "Popular Products",
+    "add": "Add",
+    "addedToCart": "{name} added to cart!",
+    "suggested": [
+      "What's the fastest delivery option?",
+      "Do you offer wholesale or bulk pricing?",
+      "What's your return policy?",
+      "Show me your best sellers",
+      "Do you ship internationally?",
+      "How do I track my order?"
+    ]
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Your wishlist is empty",
+    "metaDescription": "Save your favorite products and shop them anytime."
+  }
+}

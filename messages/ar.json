@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "الرئيسية",
+    "allProducts": "جميع المنتجات",
+    "journal": "المجلة",
+    "faq": "الأسئلة الشائعة",
+    "search": "بحث",
+    "cartTitle": "سلة التسوق",
+    "wishlist": "المفضلة",
+    "checkout": "إتمام الطلب",
+    "myAccount": "حسابي",
+    "orders": "الطلبات",
+    "addresses": "العناوين",
+    "reviews": "التقييمات",
+    "affiliate": "التسويق بالعمولة",
+    "dashboard": "لوحة التحكم",
+    "backToHome": "العودة إلى الرئيسية",
+    "browseProducts": "تصفح المنتجات",
+    "notFoundTitle": "الصفحة غير موجودة",
+    "notFoundDescription": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "errorTitle": "حدث خطأ ما",
+    "errorDescription": "حدث خطأ غير متوقع. يرجى المحاولة لاحقاً.",
+    "tryAgain": "إعادة المحاولة",
+    "loading": "جارٍ التحميل...",
+    "noProductsFound": "لم يتم العثور على منتجات",
+    "noProductsInCategory": "لا توجد منتجات في هذه الفئة حالياً.",
+    "viewAllProducts": "عرض جميع المنتجات",
+    "exploreCollection": "استكشاف المجموعة",
+    "continueShopping": "مواصلة التسوق",
+    "somethingWentWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "success": "تم بنجاح",
+    "sale": "تخفيض",
+    "new": "جديد",
+    "best": "الأكثر مبيعاً",
+    "image": "صورة",
+    "soldOut": "نفدت الكمية",
+    "inStock": "{count} متوفر",
+    "imagePlaceholder": "صورة المنتج"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "electronics": "الإلكترونيات",
+    "homeKitchen": "المنزل والمطبخ",
+    "journal": "المجلة",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "wishlist": "المفضلة",
+    "account": "الحساب"
+  },
+  "header": {
+    "menu": "القائمة",
+    "search": "بحث",
+    "searchPlaceholder": "ابحث عن منتجات...",
+    "dismissPromo": "إخفاء العرض",
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "myAccount": "حسابي",
+    "language": "اختر اللغة",
+    "currency": "العملة",
+    "openChat": "فتح الدردشة"
+  },
+  "footer": {
+    "shop": "المتجر",
+    "support": "الدعم",
+    "connect": "تواصل معنا",
+    "rightsReserved": "© {year} {name}. جميع الحقوق محفوظة.",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "allProducts": "جميع المنتجات",
+    "newArrivals": "وصل حديثاً",
+    "bestSellers": "الأكثر مبيعاً",
+    "shippingReturns": "الشحن والإرجاع"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "توريد B2B مباشرة من المصنع",
+          "subtitle": "تصنيع في الصين، توصيل حول العالم",
+          "description": "إلكترونيات وإضاءة LED ومنتجات يومية عالية الجودة بأسعار الجملة",
+          "cta": "عرض المنتجات"
+        },
+        {
+          "title": "أسعار الجملة",
+          "subtitle": "مصمم لمتاجر التجزئة والموزعين",
+          "description": "أسعار متدرجة حسب الكمية، وخيارات العلامة الخاصة، وتوريد موثوق",
+          "cta": "استكشاف الفئات"
+        },
+        {
+          "title": "جودة تثق بها",
+          "subtitle": "منتجات معتمدة، مفحوصة على دفعات",
+          "description": "منتجات معتمدة بشهادات CE وFCC وRoHS مع فحص قبل الشحن",
+          "cta": "قصتنا"
+        }
+      ],
+      "slideLabel": "الشريحة {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "استكشف",
+      "heading": "مجموعاتنا",
+      "cards": [
+        {
+          "title": "الإلكترونيات",
+          "subtitle": "LED والأجهزة الذكية",
+          "description": "إلكترونيات وإضاءة LED معتمدة بأسعار الجملة"
+        },
+        {
+          "title": "المنزل والمطبخ",
+          "subtitle": "أساسيات يومية",
+          "description": "منتجات عملية ومتينة من مصانع معتمدة"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "قصتنا",
+      "title": "منتجات عالية الجودة، مباشرة من المصدر",
+      "paragraphs": [
+        "وُلدت Commodities From China من فكرة بسيطة: يجب أن تصل المنتجات عالية الجودة من المصنّعين الصينيين مباشرةً إلى المشترين حول العالم، دون وسطاء أو هوامش غير ضرورية.",
+        "نبني شراكات طويلة الأمد مع مصنّعين معتمدين في جميع أنحاء الصين، من مصانع الإلكترونيات في شنتشن إلى مصنّعي أدوات المطبخ في قوانغتشو، ونفحص كل دفعة قبل الشحن."
+      ],
+      "cta": "اقرأ قصتنا"
+    },
+    "promo": {
+      "eyebrow": "لماذا تشتري مباشرةً",
+      "title": "إلكترونيات مباشرة من المصنع",
+      "body": "نتعاون مع مصنّعين معتمدين من جميع أنحاء الصين لنقدم لك إلكترونيات عالية الجودة بأسعار الجملة — مختبرة وموثقة ومشحونة إلى جميع أنحاء العالم.",
+      "features": [
+        {
+          "title": "جودة معتمدة",
+          "description": "منتجات معتمدة بشهادات CE وFCC وRoHS تُفحص قبل الشحن"
+        },
+        {
+          "title": "أسعار المصنع مباشرةً",
+          "description": "تعريفات الجملة دون وسطاء أو هوامش التجزئة"
+        },
+        {
+          "title": "حد أدنى منخفض للطلبات",
+          "description": "ابدأ بأكواد SKU قياسية، ثم توسّع مع نموّك"
+        },
+        {
+          "title": "لوجستيات عالمية",
+          "description": "شحن جوي وبحري مع تتبع حتى باب منزلك"
+        }
+      ],
+      "cta": "عرض جميع المنتجات"
+    },
+    "carouselFeatured": {
+      "title": "منتجات مميزة",
+      "subtitle": "اخترناها لك لهذا الموسم"
+    },
+    "carouselBestSellers": {
+      "title": "الأكثر مبيعاً",
+      "subtitle": "منتجاتنا المفضلة، التي اخترتموها"
+    },
+    "collections": {
+      "eyebrow": "المنزل والمطبخ",
+      "title": "أساسيات يومية",
+      "tagline": "منتجات عملية ومتينة للمنازل والفنادق والمشترين بالجملة",
+      "items": [
+        {
+          "title": "أدوات المطبخ",
+          "description": "أواني وأطباق وأدوات مائدة"
+        },
+        {
+          "title": "التخزين",
+          "description": "حاويات ومنظمات لكل غرفة"
+        },
+        {
+          "title": "أطقم المائدة",
+          "description": "أطقم سفرة للمنازل والفنادق"
+        },
+        {
+          "title": "الديكور",
+          "description": "ديكور عملي محبوب من تجار التجزئة"
+        }
+      ],
+      "cta": "استكشاف المنزل والمطبخ"
+    },
+    "testimonials": {
+      "eyebrow": "آراء المشترين",
+      "heading": "موثوق من المستوردين حول العالم",
+      "verifiedBuyerOf": "مشترٍ موثق لـ {product}",
+      "testimonialLabel": "شهادة {index}",
+      "items": [
+        {
+          "name": "ماركوس ل.",
+          "location": "هامبورغ، ألمانيا",
+          "text": "نبيع مصابيح LED الليلية وأجهزة الشحن المحمولة في متاجرنا. جودة ثابتة وشحن في الوقت المحدد وأسعار تترك هامشاً حقيقياً. أصبحوا موردنا الأساسي.",
+          "product": "مصباح ليلي LED بمستشعر حركة"
+        },
+        {
+          "name": "ألين ب.",
+          "location": "ليون، فرنسا",
+          "text": "طقم السفرة الخزفي يُنفد في كل موسم. صور الفحص قبل الشحن والشهادات تمنحنا ثقة كاملة، وكان الحد الأدنى للطلب مرناً بما يكفي للبدء صغيراً.",
+          "product": "طقم سفرة خزفي"
+        },
+        {
+          "name": "دونغ مي ه.",
+          "location": "سنغافورة",
+          "text": "أخيراً شريك يتولى مراقبة الجودة والشحن من البداية للنهاية. وصلت أول طلبية سماعات TWS في موعدها دون أي عيوب. أوصي به بشدة لمشتري B2B.",
+          "product": "سماعات TWS اللاسلكية Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "تابعنا",
+      "follow": "تابعنا على Instagram",
+      "tagline": "أشر إلى @commoditychina لتظهر في الصفحة"
+    },
+    "newsletter": {
+      "eyebrow": "ابقَ على تواصل",
+      "heading": "انضم إلى دائرتنا",
+      "body": "كن أول من يكتشف المنتجات الجديدة والمجموعات الحصرية، واحصل على خصم 10% على طلبك الأول.",
+      "placeholder": "أدخل بريدك الإلكتروني",
+      "subscribing": "جارٍ الاشتراك...",
+      "subscribe": "اشترك",
+      "success": "مرحباً بك في الدائرة! تحقق من بريدك الإلكتروني لاستلام كود الخصم 10%.",
+      "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "disclaimer": "لا رسائل مزعجة أبداً. يمكنك إلغاء الاشتراك في أي وقت. بالاشتراك أنت توافق على سياسة الخصوصية."
+    },
+    "seo": {
+      "heading": "اكتشف مجموعاتنا"
+    },
+    "seoParagraph": "اكتشف مجموعة {siteName}: إلكترونيات معتمدة، إضاءة LED، أدوات مطبخ ومنتجات منزلية يومية. صُممت لمتسوقي التجزئة ومشتري B2B بالجملة — اطلب عبر الإنترنت أو بالكميات، أو تواصل مع فريقنا بخصوص أسعار الاستيراد والشراكات.",
+    "links": {
+      "allProducts": "جميع المنتجات",
+      "faq": "الأسئلة الشائعة",
+      "aboutUs": "من نحن",
+      "importingGuide": "دليل الاستيراد"
+    }
+  },
+  "product": {
+    "image": "صورة",
+    "addToWishlist": "أضف إلى المفضلة",
+    "new": "جديد",
+    "best": "الأكثر مبيعاً",
+    "soldOut": "نفدت الكمية",
+    "inStock": "{count} متوفر",
+    "savePercent": "وفر {percent}%",
+    "decreaseQuantity": "إنقاص الكمية",
+    "increaseQuantity": "زيادة الكمية",
+    "addToCart": "أضف إلى السلة",
+    "freeShipping": "شحن مجاني للطلبات فوق $100",
+    "easyReturns": "إرجاع سهل خلال 30 يوماً",
+    "secureCheckout": "دفع آمن عبر Stripe وPayPal",
+    "sku": "SKU: {sku}",
+    "description": "الوصف",
+    "productDetails": "تفاصيل المنتج",
+    "video": "الفيديو",
+    "reviews": {
+      "title": "تقييمات العملاء",
+      "reviewCount": "{count} تقييماً",
+      "sortNewest": "الأحدث",
+      "sortHighest": "الأعلى تقييماً",
+      "sortLowest": "الأدنى تقييماً",
+      "noReviews": "لا توجد تقييمات بعد. كن أول من يقيّم!",
+      "verifiedPurchase": "شراء موثق",
+      "anonymous": "مجهول",
+      "leaveReview": "اكتب تقييماً"
+    },
+    "frequentlyBought": {
+      "title": "يُشترى عادةً معاً",
+      "bundlePrice": "سعر المجموعة:",
+      "youSave": "أنت توفر:",
+      "addAll": "أضف الكل إلى السلة",
+      "addedAll": "تمت إضافة جميع المنتجات إلى السلة!"
+    },
+    "socialShare": {
+      "share": "مشاركة",
+      "copyLink": "نسخ الرابط",
+      "shareOn": "مشاركة عبر {name}",
+      "copied": "تم نسخ الرابط!"
+    },
+    "related": {
+      "title": "أكمل الروتين",
+      "subtitle": "يُشترى عادةً معاً"
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة"
+    },
+    "carousel": {
+      "scrollLeft": "مرر لليسار",
+      "scrollRight": "مرر لليمين"
+    }
+  },
+  "products": {
+    "title": "جميع المنتجات",
+    "description": "اكتشف مجموعتنا الكاملة من الإلكترونيات وإضاءة LED والمنتجات المنزلية.",
+    "metaDescription": "تصفح مجموعتنا الكاملة من الإلكترونيات وإضاءة LED وأدوات المطبخ والمنتجات المنزلية. جودة المصنع لمتسوقي التجزئة ومشتري B2B بالجملة.",
+    "filters": {
+      "sortBy": "ترتيب حسب",
+      "newest": "الأحدث",
+      "priceLowHigh": "السعر: من الأقل إلى الأعلى",
+      "priceHighLow": "السعر: من الأعلى إلى الأقل",
+      "bestSellers": "الأكثر مبيعاً",
+      "priceRange": "نطاق السعر",
+      "under": "أقل من {amount}",
+      "range": "{min} - {max}",
+      "over": "أكثر من {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "لا توجد منتجات في هذه الفئة حالياً."
+  },
+  "blog": {
+    "title": "المجلة",
+    "metaDescription": "أدلة الاستيراد ونصائح التوريد ورؤى السوق من مجلة Commodities From China.",
+    "eyebrow": "أدلة ورؤى",
+    "heading": "المجلة",
+    "subtitle": "معرفة عملية حول الاستيراد والتوريد واللوجستيات — من فريقنا وشركائنا.",
+    "all": "الكل",
+    "by": "بقلم {author}",
+    "noPosts": "لا توجد مقالات بعد."
+  },
+  "faq": {
+    "metaDescription": "الأسئلة الشائعة حول منتجات {siteName} والشحن والإرجاع.",
+    "eyebrow": "الدعم",
+    "title": "الأسئلة الشائعة",
+    "noFaqs": "لا توجد أسئلة شائعة بعد.",
+    "freeShippingNote": "شحن قياسي مجاني للطلبات فوق {amount}."
+  },
+  "search": {
+    "title": "نتائج البحث",
+    "description": "ابحث في مجموعتنا من الإلكترونيات وإضاءة LED وأدوات المطبخ والمنتجات المنزلية.",
+    "resultsFor": "نتائج البحث عن \"{query}\"",
+    "showingResults": "إظهار {count} نتيجة لـ \"{query}\"",
+    "enterTerm": "اكتب كلمة للعثور على منتجات"
+  },
+  "cart": {
+    "metaDescription": "راجع منتجاتك وانتقل إلى إتمام الطلب.",
+    "emptyTitle": "سلة التسوق فارغة",
+    "emptyMessage": "يبدو أنك لم تضف أي شيء بعد.",
+    "orderSummary": "ملخص الطلب",
+    "subtotal": "المجموع الفرعي",
+    "discount": "الخصم",
+    "shipping": "الشحن",
+    "free": "مجاني",
+    "freeShippingNote": "شحن مجاني للطلبات فوق $100",
+    "total": "الإجمالي",
+    "proceedToCheckout": "إتمام الطلب",
+    "removeItem": "إزالة المنتج",
+    "qty": "الكمية: {qty}",
+    "secureCheckout": "دفع آمن عبر Stripe وPayPal",
+    "continueShopping": "متابعة التسوق",
+    "decreaseQuantity": "إنقاص الكمية",
+    "increaseQuantity": "زيادة الكمية",
+    "title": "سلة التسوق"
+  },
+  "checkout": {
+    "metaDescription": "أكمل طلبك بأمان.",
+    "contact": "المعلومات",
+    "shippingAddress": "عنوان الشحن",
+    "payment": "الدفع",
+    "creditCard": "بطاقة ائتمان",
+    "cardHint": "Visa، Mastercard، Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "ادفع عبر حسابك",
+    "securedByStripe": "محمي بواسطة Stripe",
+    "orderSummary": "ملخص الطلب",
+    "qty": "الكمية: {qty}",
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "free": "مجاني",
+    "tax": "الضرائب ({rate}%)",
+    "total": "الإجمالي",
+    "secureCheckoutNote": "دفع آمن عبر Stripe وPayPal",
+    "encryptedNote": "معلومات الدفع الخاصة بك مشفرة",
+    "continueToPayment": "متابعة إلى الدفع",
+    "editShipping": "تعديل الشحن",
+    "emailPlaceholder": "البريد الإلكتروني",
+    "phonePlaceholder": "الهاتف (اختياري)",
+    "firstNamePlaceholder": "الاسم الأول",
+    "lastNamePlaceholder": "اسم العائلة",
+    "addressPlaceholder": "العنوان",
+    "apartmentPlaceholder": "شقة، جناح، إلخ. (اختياري)",
+    "cityPlaceholder": "المدينة",
+    "statePlaceholder": "الولاية",
+    "zipPlaceholder": "الرمز البريدي",
+    "orderCreatedFailed": "فشل إنشاء الطلب",
+    "orderPlaced": "تم إتمام الطلب بنجاح!",
+    "failedToCreate": "تعذر إنشاء الطلب",
+    "cartEmpty": "سلة التسوق فارغة",
+    "configError": "حدث خطأ ما",
+    "pay": "ادفع {amount}",
+    "initializingPayment": "جارٍ تهيئة الدفع...",
+    "paymentFailed": "فشل الدفع",
+    "paymentSuccessful": "تم الدفع بنجاح!",
+    "initFailed": "تعذر تهيئة الدفع",
+    "cardUnavailable": "الدفع بالبطاقة غير متاح حالياً.",
+    "paypalNotConfigured": "PayPal غير مهيأ. عيّن NEXT_PUBLIC_PAYPAL_CLIENT_ID في بيئتك.",
+    "securedByPaypal": "محمي بواسطة PayPal",
+    "paypalInitFailed": "تعذر تهيئة PayPal",
+    "paypalCaptureFailed": "فشل تحويل الدفع",
+    "paypalSuccess": "تم الدفع عبر PayPal بنجاح!",
+    "paypalNotCompleted": "لم يكتمل الدفع",
+    "paypalCancelled": "تم إلغاء الدفع",
+    "orderConfirmed": "تم تأكيد الطلب",
+    "thankYou": "شكراً لشرائك. ستصل رسالة تأكيد إلى بريدك الإلكتروني قريباً.",
+    "viewOrder": "عرض الطلب",
+    "shopNow": "تسوق الآن",
+    "title": "إتمام الطلب"
+  },
+  "auth": {
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "welcomeBack": "مرحباً بعودتك",
+    "signInSubtitle": "سجل الدخول إلى حسابك",
+    "orContinueWith": "أو تابع عبر",
+    "google": "Google",
+    "noAccount": "ليس لديك حساب؟",
+    "createOne": "أنشئ حساباً",
+    "emailPlaceholder": "البريد الإلكتروني",
+    "passwordPlaceholder": "كلمة المرور",
+    "signIn": "تسجيل الدخول",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "createAccount": "إنشاء حساب",
+    "createAccountSubtitle": "انضم إلى مجتمع {siteName}",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signInLink": "تسجيل الدخول",
+    "firstNamePlaceholder": "الاسم الأول",
+    "lastNamePlaceholder": "اسم العائلة",
+    "registrationFailed": "فشل التسجيل",
+    "checkYourEmail": "تحقق من بريدك الإلكتروني",
+    "checkYourEmailBody": "إذا كان هناك حساب بهذا البريد، فقد أرسلنا رابط إعادة التعيين. ينتهي صلاحيته بعد ساعة واحدة.",
+    "backToSignIn": "العودة إلى تسجيل الدخول",
+    "forgotTitle": "نسيت كلمة المرور",
+    "forgotSubtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "sending": "جارٍ الإرسال...",
+    "rememberPassword": "تذكرت كلمة المرور؟",
+    "invalidResetLink": "رابط إعادة التعيين غير صالح. يرجى طلب رابط جديد.",
+    "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
+    "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+    "resetting": "جارٍ إعادة التعيين...",
+    "resetSuccessTitle": "تمت إعادة تعيين كلمة المرور",
+    "resetSuccessBody": "تمت إعادة تعيين كلمة مرورك بنجاح.",
+    "setNewPassword": "تعيين كلمة مرور جديدة",
+    "setNewPasswordSubtitle": "اختر كلمة مرور جديدة لحسابك.",
+    "newPasswordPlaceholder": "كلمة المرور الجديدة",
+    "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "somethingWentWrong": "حدث خطأ ما"
+  },
+  "account": {
+    "myAccount": "حسابي",
+    "sidebar": {
+      "overview": "نظرة عامة",
+      "orders": "الطلبات",
+      "addresses": "العناوين",
+      "wishlist": "المفضلة",
+      "reviews": "التقييمات",
+      "affiliate": "التسويق بالعمولة",
+      "settings": "الإعدادات"
+    },
+    "welcome": "مرحباً",
+    "signOut": "تسجيل الخروج",
+    "overview": {
+      "orders": "الطلبات",
+      "wishlist": "المفضلة",
+      "points": "النقاط",
+      "recentOrders": "الطلبات الأخيرة",
+      "noOrders": "لا توجد طلبات بعد",
+      "startShopping": "ابدأ التسوق"
+    },
+    "settings": {
+      "title": "إعدادات الحساب",
+      "profile": "الملف الشخصي",
+      "email": "البريد الإلكتروني",
+      "saveChanges": "حفظ التغييرات",
+      "changePassword": "تغيير كلمة المرور",
+      "updatePassword": "تحديث كلمة المرور",
+      "firstNamePlaceholder": "الاسم الأول",
+      "lastNamePlaceholder": "اسم العائلة",
+      "currentPasswordPlaceholder": "كلمة المرور الحالية",
+      "newPasswordPlaceholder": "كلمة المرور الجديدة",
+      "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+      "profileUpdated": "تم تحديث الملف الشخصي",
+      "updateFailed": "فشل التحديث",
+      "passwordUpdated": "تم تحديث كلمة المرور"
+    },
+    "reviewsPage": {
+      "title": "تقييماتي",
+      "noReviews": "لا توجد تقييمات بعد",
+      "noReviewsBody": "ستظهر تقييماتك هنا بعد شراء وتقييم المنتجات."
+    },
+    "ordersPage": {
+      "title": "طلباتي"
+    },
+    "orders": {
+      "noOrders": "لا توجد طلبات بعد",
+      "items": "{count} منتجاً",
+      "browseProducts": "تصفح المنتجات",
+      "orderDetails": "تفاصيل الطلب"
+    },
+    "addresses": {
+      "title": "العناوين",
+      "count": "{count} عنوان",
+      "addAddress": "إضافة عنوان",
+      "setDefault": "تعيين كعنوان افتراضي",
+      "save": "حفظ",
+      "update": "تحديث",
+      "cancel": "إلغاء",
+      "noAddresses": "لا توجد عناوين بعد",
+      "defaultBadge": "افتراضي",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "firstNamePlaceholder": "الاسم الأول",
+      "lastNamePlaceholder": "اسم العائلة",
+      "addressPlaceholder": "العنوان",
+      "apartmentPlaceholder": "شقة (اختياري)",
+      "cityPlaceholder": "المدينة",
+      "statePlaceholder": "الولاية",
+      "zipPlaceholder": "الرمز البريدي",
+      "phonePlaceholder": "الهاتف",
+      "updated": "تم تحديث العنوان",
+      "added": "تمت إضافة العنوان",
+      "saveFailed": "فشل حفظ العنوان",
+      "deleteConfirm": "حذف هذا العنوان؟",
+      "deleted": "تم حذف العنوان",
+      "deleteFailed": "فشل الحذف"
+    },
+    "ordersDetail": {
+      "metaTitle": "تفاصيل الطلب",
+      "metaDescription": "عرض تفاصيل طلبك ومعلومات التتبع.",
+      "title": "تفاصيل الطلب"
+    }
+  },
+  "orders": {
+    "notFound": "الطلب غير موجود",
+    "backToOrders": "العودة إلى الطلبات",
+    "orderNumber": "رقم الطلب",
+    "date": "التاريخ",
+    "payment": "الدفع",
+    "total": "الإجمالي",
+    "shipping": "الشحن",
+    "standard": "قياسي",
+    "items": "المنتجات",
+    "qty": "الكمية: {qty}",
+    "tracking": "التتبع",
+    "trackingNumber": "رقم التتبع",
+    "carrier": "شركة الشحن",
+    "trackingHistory": "سجل التتبع",
+    "leaveReview": "اكتب تقييماً",
+    "itemCount": "{count} منتجاً",
+    "noOrders": "لا توجد طلبات بعد",
+    "browseProducts": "تصفح المنتجات"
+  },
+  "affiliate": {
+    "metaTitle": "برنامج التسويق بالعمولة",
+    "metaDescription": "انضم إلى برنامج التسويق بالعمولة واكسب عمولات من خلال مشاركة المنتجات التي تحبها.",
+    "notJoined": "لم تنضم بعد إلى برنامج التسويق بالعمولة.",
+    "applyNow": "قدّم طلبك الآن",
+    "underReview": "طلبك قيد المراجعة.",
+    "reviewNote": "نرد عادةً خلال 2-3 أيام عمل.",
+    "title": "لوحة التسويق بالعمولة",
+    "totalEarned": "إجمالي الأرباح",
+    "referrals": "الإحالات",
+    "conversions": "التحويلات",
+    "commissionRate": "نسبة العمولة",
+    "yourLink": "رابط الإحالة الخاص بك",
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "recentReferrals": "الإحالات الأخيرة",
+    "tableDate": "التاريخ",
+    "tableOrder": "الطلب",
+    "tableCommission": "العمولة",
+    "tableStatus": "الحالة",
+    "shareText": "اطلع على {siteName}: ",
+    "ourStore": "متجرنا",
+    "shareOnTwitter": "مشاركة على Twitter",
+    "pinOnPinterest": "تثبيت على Pinterest",
+    "partnerEyebrow": "كن شريكنا",
+    "partnerSubtitle": "شارك منتجات عالية الجودة مباشرة من مصانع الصين مع جمهورك. اكسب عمولات سخية من خلال الترويج لمنتجات تؤمن بها.",
+    "joinTitle": "قدّم طلبك الآن",
+    "joinSubtitle": "انضم إلى برنامجنا وابدأ الربح اليوم.",
+    "emailPlaceholder": "عنوان بريدك الإلكتروني",
+    "reviewTimeline": "نراجع جميع الطلبات خلال 2-3 أيام عمل.",
+    "appSubmitted": "تم إرسال الطلب! سنراجعه ونعود إليك.",
+    "appFailed": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "benefits": [
+      {
+        "title": "اكسب عمولة 5% إلى 15%",
+        "description": "عمولات سخية على كل عملية بيع عبر رابط الإحالة الخاص بك"
+      },
+      {
+        "title": "روابط إحالة فريدة",
+        "description": "روابط تتبع تُنشأ تلقائياً لمحتواك"
+      },
+      {
+        "title": "دعم مخصص",
+        "description": "مدير شريك خاص بك وموارد حصرية"
+      },
+      {
+        "title": "تحليلات فورية",
+        "description": "تابع النقرات والتحويلات والعمولات في الوقت الفعلي"
+      }
+    ],
+    "dashboardLabel": "لوحة التحكم"
+  },
+  "coupon": {
+    "applied": "تم تطبيق الكود! لقد وفرت {amount}",
+    "invalid": "كود غير صالح",
+    "failed": "فشل التحقق من الكود",
+    "remove": "إزالة",
+    "apply": "تطبيق",
+    "placeholder": "كود الخصم",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "مرحباً! أنا مساعد التسوق الشخصي في {siteName}. يمكنني مساعدتك في العثور على المنتجات أو مقارنة الخيارات أو الاستفسار عن الشحن أو التعرف علينا أكثر. كيف يمكنني مساعدتك اليوم؟",
+    "quickQuestions": "أسئلة سريعة",
+    "title": "مساعد المبيعات بالذكاء الاصطناعي",
+    "openChat": "فتح الدردشة",
+    "newConversation": "بدء محادثة جديدة",
+    "placeholder": "اسألني عن أي شيء...",
+    "failed": "فشل طلب الدردشة",
+    "fallback": "آسف، لم أتمكن من معالجة هذا الطلب{optional}. يرجى المحاولة مرة أخرى أو التواصل مع فريق الدعم.",
+    "poweredBy": "مدعوم من OpenAI — يتم توليد الردود بواسطة الذكاء الاصطناعي.",
+    "popularProducts": "المنتجات الشائعة",
+    "add": "إضافة",
+    "addedToCart": "تمت إضافة {name} إلى السلة!",
+    "suggested": [
+      "ما أسرع خيار شحن؟",
+      "هل تقدمون أسعار جملة أو كميات؟",
+      "ما سياسة الإرجاع؟",
+      "اعرض الأكثر مبيعاً",
+      "هل تشحنون دولياً؟",
+      "كيف أتتبع طلبي؟"
+    ]
+  },
+  "wishlist": {
+    "title": "قائمة الرغبات",
+    "empty": "قائمة رغباتك فارغة",
+    "metaDescription": "احفظ منتجاتك المفضلة واشترها في أي وقت."
+  }
+}

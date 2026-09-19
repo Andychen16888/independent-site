@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/Button"
 import { formatPrice } from "@/lib/utils/format"
 import { useCartStore } from "@/stores/cart-store"
@@ -16,12 +16,15 @@ interface BundleItem {
 }
 
 interface FrequentlyBoughtTogetherProps {
-  mainProduct: { id: string; name: string; slug: string; unitPrice: number }
+  mainProduct: { id: string; name: string; slug: string; unitPrice: number; currency?: string }
   bundleItems: BundleItem[]
 }
 
 export function FrequentlyBoughtTogether({ mainProduct, bundleItems }: FrequentlyBoughtTogetherProps) {
   const addItem = useCartStore((s) => s.addItem)
+  const t = useTranslations("product.frequentlyBought")
+  const locale = useLocale()
+  const currency = mainProduct.currency || "USD"
   const allItems = [
     { ...mainProduct, price: Number(mainProduct.unitPrice), image: "" },
     ...bundleItems,
@@ -43,14 +46,14 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleItems }: Frequentl
         stock: 999,
       })
     })
-    toast.success("Added all items to cart!")
+    toast.success(t("addedAll"))
   }
 
   if (bundleItems.length === 0) return null
 
   return (
     <div className="bg-cream p-6 md:p-8">
-      <h3 className="font-serif text-lg mb-6">Frequently Bought Together</h3>
+      <h3 className="font-serif text-lg mb-6">{t("title")}</h3>
 
       <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
         {allItems.map((item, index) => (
@@ -78,24 +81,24 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleItems }: Frequentl
                 {item.name}
               </Link>
             </span>
-            <span className="ml-auto">{formatPrice(item.price)}</span>
+            <span className="ml-auto">{formatPrice(item.price, currency, locale)}</span>
           </label>
         ))}
       </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-stone">Bundle price:</span>
-          <span className="font-medium">{formatPrice(bundlePrice)}</span>
+          <span className="text-stone">{t("bundlePrice")}</span>
+          <span className="font-medium">{formatPrice(bundlePrice, currency, locale)}</span>
         </div>
         {savings > 0 && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-sage">You save:</span>
-            <span className="text-sage">{formatPrice(savings)}</span>
+            <span className="text-sage">{t("youSave")}</span>
+            <span className="text-sage">{formatPrice(savings, currency, locale)}</span>
           </div>
         )}
         <Button onClick={handleAddAll} className="w-full">
-          Add All to Cart — {formatPrice(bundlePrice)}
+          {t("addAll")} — {formatPrice(bundlePrice, currency, locale)}
         </Button>
       </div>
     </div>

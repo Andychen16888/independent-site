@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { HiOutlineShare, HiCheck } from "react-icons/hi2"
 
 interface SocialShareProps {
@@ -57,7 +58,7 @@ const platforms = [
   },
   {
     name: "LinkedIn",
-    href: (u: string, t: string, d?: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}`,
+    href: (u: string, _t: string, _d?: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}`,
     color: "hover:bg-[#0A66C2] hover:text-white",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -80,6 +81,7 @@ const platforms = [
 
 export function SocialShare({ url, title, description, image }: SocialShareProps) {
   const [copied, setCopied] = useState(false)
+  const t = useTranslations("product.socialShare")
 
   const copyLink = async () => {
     try {
@@ -100,7 +102,7 @@ export function SocialShare({ url, title, description, image }: SocialShareProps
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs tracking-widest uppercase text-stone mr-1">Share</span>
+      <span className="text-xs tracking-widest uppercase text-stone mr-1">{t("share")}</span>
       {platforms.map((p) => {
         const href = p.href.length === 4
           ? p.href(url, title, description, image)
@@ -111,7 +113,7 @@ export function SocialShare({ url, title, description, image }: SocialShareProps
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            title={`Share on ${p.name}`}
+            title={t("shareOn", { name: p.name })}
             className={`w-9 h-9 flex items-center justify-center rounded-full border border-mist text-stone transition-all duration-200 ${p.color}`}
           >
             {p.icon}
@@ -120,7 +122,7 @@ export function SocialShare({ url, title, description, image }: SocialShareProps
       })}
       <button
         onClick={copyLink}
-        title="Copy link"
+        title={t("copyLink")}
         className={`w-9 h-9 flex items-center justify-center rounded-full border border-mist text-stone transition-all duration-200 hover:bg-sage hover:text-white`}
       >
         {copied ? <HiCheck className="w-4 h-4 text-green-600" /> : <HiOutlineShare className="w-4 h-4" />}

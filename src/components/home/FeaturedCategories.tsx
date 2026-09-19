@@ -1,8 +1,9 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
+import { useTranslations } from "next-intl"
 import { HiOutlineBolt, HiOutlineHome, HiOutlineShoppingBag } from "react-icons/hi2"
 
 export interface FeaturedCategory {
@@ -44,6 +45,7 @@ function iconFor(name?: string) {
 
 export function FeaturedCategories({ categories = DEFAULT_FEATURED_CATEGORIES, eyebrow = "Explore", heading = "Our Collections", tagline }: { categories?: FeaturedCategory[]; eyebrow?: string; heading?: string; tagline?: string }) {
   const safe = categories && categories.length > 0 ? categories : DEFAULT_FEATURED_CATEGORIES
+  const tc = useTranslations("common")
 
   return (
     <section className="section-padding bg-cream">
@@ -84,7 +86,7 @@ export function FeaturedCategories({ categories = DEFAULT_FEATURED_CATEGORIES, e
                     </h3>
                     {category.description && <p className="text-body max-w-xs">{category.description}</p>}
                     <span className="inline-block mt-6 text-xs tracking-widest uppercase border-b border-charcoal pb-1 w-fit group-hover:border-stone transition-colors">
-                      Explore Collection
+                      {tc("exploreCollection")}
                     </span>
                   </div>
                 </Link>

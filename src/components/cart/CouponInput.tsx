@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/Button"
 import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
@@ -19,6 +20,8 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
     discountValue: number
     discountType: string
   } | null>(null)
+  const t = useTranslations("coupon")
+  const locale = useLocale()
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,12 +39,12 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
       if (data.valid) {
         setApplied(data.coupon)
         onApplyDiscount(data.coupon.discount)
-        toast.success(`Coupon applied! You saved ${formatPrice(data.coupon.discount)}`)
+        toast.success(t("applied", { amount: formatPrice(data.coupon.discount, undefined, locale) }))
       } else {
-        toast.error(data.error || "Invalid coupon")
+        toast.error(data.error || t("invalid"))
       }
     } catch {
-      toast.error("Failed to validate coupon")
+      toast.error(t("failed"))
     } finally {
       setApplying(false)
     }
@@ -60,14 +63,14 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
           <div>
             <span className="text-sage font-medium">{applied.code}</span>
             <span className="text-stone ml-2">
-              (-{applied.discountType === "PERCENTAGE" ? `${applied.discountValue}%` : formatPrice(applied.discount)})
+              (-{applied.discountType === "PERCENTAGE" ? `${applied.discountValue}%` : formatPrice(applied.discount, undefined, locale)})
             </span>
           </div>
           <button
             onClick={handleRemove}
             className="text-xs text-stone hover:text-charcoal underline underline-offset-4"
           >
-            Remove
+            {t("remove")}
           </button>
         </div>
       ) : (
@@ -76,11 +79,11 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder="Coupon code"
+            placeholder={t("placeholder")}
             className="flex-1 px-4 py-2 bg-transparent border border-charcoal/20 focus:border-charcoal outline-none text-sm"
           />
           <Button type="submit" loading={applying} size="sm" variant="outline">
-            Apply
+            {t("apply")}
           </Button>
         </form>
       )}

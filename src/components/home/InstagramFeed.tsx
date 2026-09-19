@@ -1,7 +1,8 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
 
 export interface InstagramConfig {
@@ -11,7 +12,7 @@ export interface InstagramConfig {
   posts?: string[]
 }
 
-const DEFAULT_INSTAGRAM: InstagramConfig = {
+export const DEFAULT_INSTAGRAM: InstagramConfig = {
   handle: "@commoditychina",
   handleUrl: "https://instagram.com/commoditychina",
   tagline: "Tag us @commoditychina for a chance to be featured",
@@ -21,6 +22,7 @@ const DEFAULT_INSTAGRAM: InstagramConfig = {
 export function InstagramFeed({ config = DEFAULT_INSTAGRAM }: { config?: InstagramConfig }) {
   const safe = config.handle ? config : DEFAULT_INSTAGRAM
   const posts = safe.posts && safe.posts.length > 0 ? safe.posts : Array.from({ length: 6 }, () => "")
+  const t = useTranslations("home.instagram")
 
   return (
     <section className="py-16 md:py-20 bg-ivory">
@@ -31,7 +33,7 @@ export function InstagramFeed({ config = DEFAULT_INSTAGRAM }: { config?: Instagr
           viewport={{ once: true }}
           className="section-title"
         >
-          <span className="text-caption mb-4 block">Follow Us</span>
+          <span className="text-caption mb-4 block">{t("eyebrow")}</span>
           <h2>{safe.handle}</h2>
           {safe.tagline && <p>{safe.tagline}</p>}
         </motion.div>
@@ -70,7 +72,7 @@ export function InstagramFeed({ config = DEFAULT_INSTAGRAM }: { config?: Instagr
             target="_blank"
             className="btn-outline text-xs inline-flex"
           >
-            Follow on Instagram
+            {t("follow")}
           </Link>
         </div>
       </Container>

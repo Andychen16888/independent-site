@@ -216,8 +216,9 @@ model Product {
   wishlistItems   WishlistItem[]
   cartItems       CartItem[]
   faqs            ProductFAQ[]
-  relatedProducts ProductRelation[]       @relation("ProductRelationSource")
-  relatedFrom     ProductRelation[]       @relation("ProductRelationTarget")
+  relatedProducts ProductRelation[]        @relation("ProductRelationSource")
+  relatedFrom     ProductRelation[]        @relation("ProductRelationTarget")
+  translations    ProductTranslation[]
 
   @@index([slug])
   @@index([sku])
@@ -303,8 +304,25 @@ model ProductRelation {
   @@map("product_relations")
 }
 
+model ProductTranslation {
+  id              String   @id @default(cuid())
+  productId       String
+  locale          String
+  name            String
+  shortDescription String?
+  description     String?
+  seoTitle        String?
+  seoDescription  String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@index([locale])
+  @@map("product_translations")
+}
+
 model Address {
-  id         String  @id @default(cuid())
+  id        String   @id @default(cuid())
   userId     String?
   firstName  String
   lastName   String

@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next"
 import { prisma } from "@/lib/db/prisma"
-import { staticRoutes } from "@/lib/seo/sitemap-data"
+import { baseUrl, staticRoutes } from "@/lib/seo/sitemap-data"
+import { routing } from "@/i18n/routing"
 
 type SitemapEntry = {
   url: string
@@ -9,8 +10,6 @@ type SitemapEntry = {
   priority?: number
   images?: string[]
 }
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
 function absUrl(u: string): string {
   return u.startsWith("http") ? u : `${baseUrl}${u.startsWith("/") ? u : `/${u}`}`
@@ -25,6 +24,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: entry.changeFrequency || "monthly",
     priority: entry.priority || 0.5,
   }))
+
+  const locales = routing.locales
 
   const [products, categories, posts, pages] = await Promise.all([
     prisma.product.findMany({
@@ -45,42 +46,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   ])
 
-  for (const p of products) {
-    entries.push({
-      url: `${baseUrl}/products/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "weekly",
-      priority: 0.8,
-      images: p.images[0] ? [absUrl(p.images[0].url)] : undefined,
-    })
-  }
+  for (const locale of locales) {
+    const prefix = `/${locale}`
 
-  for (const c of categories) {
-    entries.push({
-      url: `${baseUrl}/categories/${c.slug}`,
-      lastModified: c.updatedAt,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    })
-  }
+    for (const p of products) {
+      entries.push({
+        url: `${baseUrl}${prefix}/products/${p.slug}`,
+        lastModified: p.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.8,
+        images: p.images[0] ? [absUrl(p.images[0].url)] : undefined,
+      })
+    }
 
-  for (const post of posts) {
-    entries.push({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updatedAt,
-      changeFrequency: "monthly",
-      priority: 0.6,
-      images: post.coverImage ? [absUrl(post.coverImage)] : undefined,
-    })
-  }
+    for (const c of categories) {
+      entries.push({
+        url: `${baseUrl}${prefix}/categories/${c.slug}`,
+        lastModified: c.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.7,
+      })
+    }
 
-  for (const page of pages) {
-    entries.push({
-      url: `${baseUrl}/pages/${page.slug}`,
-      lastModified: page.updatedAt,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    })
+    for (const post of posts) {
+      entries.push({
+        url: `${baseUrl}${prefix}/blog/${post.slug}`,
+        lastModified: post.updatedAt,
+        changeFrequency: "monthly",
+        priority: 0.6,
+        images: post.coverImage ? [absUrl(post.coverImage)] : undefined,
+      })
+    }
+
+    for (const page of pages) {
+      entries.push({
+        url: `${baseUrl}${prefix}/pages/${page.slug}`,
+        lastModified: page.updatedAt,
+        changeFrequency: "monthly",
+        priority: 0.5,
+      })
+    }
   }
 
   return entries

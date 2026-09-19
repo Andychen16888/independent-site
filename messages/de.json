@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "Start",
+    "allProducts": "Alle Produkte",
+    "journal": "Magazin",
+    "faq": "FAQ",
+    "search": "Suche",
+    "cartTitle": "Warenkorb",
+    "wishlist": "Wunschliste",
+    "checkout": "Kasse",
+    "myAccount": "Mein Konto",
+    "orders": "Bestellungen",
+    "addresses": "Adressen",
+    "reviews": "Bewertungen",
+    "affiliate": "Affiliate",
+    "dashboard": "Übersicht",
+    "backToHome": "Zurück zur Startseite",
+    "browseProducts": "Produkte ansehen",
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundDescription": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "errorTitle": "Etwas ist schief gelaufen",
+    "errorDescription": "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "tryAgain": "Erneut versuchen",
+    "loading": "Laden...",
+    "noProductsFound": "Keine Produkte gefunden",
+    "noProductsInCategory": "In dieser Kategorie gibt es noch keine Produkte.",
+    "viewAllProducts": "Alle Produkte ansehen",
+    "exploreCollection": "Kollektion entdecken",
+    "continueShopping": "Weiter einkaufen",
+    "somethingWentWrong": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "success": "Erfolg",
+    "sale": "Angebot",
+    "new": "Neu",
+    "best": "Bestseller",
+    "image": "Bild",
+    "soldOut": "Ausverkauft",
+    "inStock": "{count} auf Lager",
+    "imagePlaceholder": "Produktbild"
+  },
+  "navigation": {
+    "home": "Start",
+    "products": "Produkte",
+    "electronics": "Elektronik",
+    "homeKitchen": "Haus & Küche",
+    "journal": "Magazin",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "wishlist": "Wunschliste",
+    "account": "Konto"
+  },
+  "header": {
+    "menu": "Menü",
+    "search": "Suche",
+    "searchPlaceholder": "Produkte suchen...",
+    "dismissPromo": "Aktion ausblenden",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "myAccount": "Mein Konto",
+    "language": "Sprache wählen",
+    "currency": "Währung",
+    "openChat": "Chat öffnen"
+  },
+  "footer": {
+    "shop": "Shop",
+    "support": "Support",
+    "connect": "Verbinden",
+    "rightsReserved": "© {year} {name}. Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "AGB",
+    "allProducts": "Alle Produkte",
+    "newArrivals": "Neuheiten",
+    "bestSellers": "Bestseller",
+    "shippingReturns": "Versand & Rückgabe"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "B2B-Beschaffung direkt ab Werk",
+          "subtitle": "Sourcing in China, Lieferung weltweit",
+          "description": "Elektronik, LED-Beleuchtung und Qualitätsprodukte für den Alltag zu Großhandelspreisen",
+          "cta": "Produkte ansehen"
+        },
+        {
+          "title": "Großhandelspreise",
+          "subtitle": "Für Händler und Distributoren gemacht",
+          "description": "Gestaffelte Staffelpreise, Private-Label-Optionen und zuverlässige Beschaffung",
+          "cta": "Kategorien entdecken"
+        },
+        {
+          "title": "Qualität, der Sie vertrauen können",
+          "subtitle": "Zertifizierte Produkte, chargenweise geprüft",
+          "description": "CE-, FCC- und RoHS-zertifizierte Produkte mit Inspektion vor dem Versand",
+          "cta": "Unsere Geschichte"
+        }
+      ],
+      "slideLabel": "Folie {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "Entdecken",
+      "heading": "Unsere Kollektionen",
+      "cards": [
+        {
+          "title": "Elektronik",
+          "subtitle": "LED und smarte Geräte",
+          "description": "Zertifizierte Elektronik und LED-Beleuchtung zu Großhandelspreisen"
+        },
+        {
+          "title": "Haus & Küche",
+          "subtitle": "Alltags-Essentials",
+          "description": "Praktische und langlebige Produkte aus zertifizierten Fabriken"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Unsere Geschichte",
+      "title": "Qualitätsprodukte direkt von der Quelle",
+      "paragraphs": [
+        "Commodities From China entstand aus einer einfachen Überzeugung: Qualitätsprodukte sollten direkt von chinesischen Herstellern zu Käufern weltweit gelangen — ohne Zwischenhändler und unnötige Aufschläge.",
+        "Wir pflegen langfristige Partnerschaften mit zertifizierten Herstellern in ganz China, von Elektronikfabriken in Shenzhen bis zu Küchenausstattern in Guangzhou, und prüfen jede Charge vor dem Versand."
+      ],
+      "cta": "Unsere Geschichte lesen"
+    },
+    "promo": {
+      "eyebrow": "Warum direkt kaufen",
+      "title": "Elektronik direkt ab Werk",
+      "body": "Wir arbeiten mit zertifizierten Herstellern aus ganz China zusammen, um Ihnen Qualitätselektronik zu Großhandelspreisen zu liefern — getestet, dokumentiert und weltweit versendet.",
+      "features": [
+        {
+          "title": "Zertifizierte Qualität",
+          "description": "CE-, FCC- und RoHS-zertifizierte Produkte, vor dem Versand geprüft"
+        },
+        {
+          "title": "Direkte Fabrikpreise",
+          "description": "Großhandelspreise ohne Zwischenhändler oder Handelsaufschläge"
+        },
+        {
+          "title": "Niedrige Mindestbestellmengen",
+          "description": "Starten Sie mit Standard-SKUs und skalieren Sie mit Ihrem Wachstum"
+        },
+        {
+          "title": "Globale Logistik",
+          "description": "Luft- und Seefracht mit Sendungsverfolgung bis vor Ihre Haustür"
+        }
+      ],
+      "cta": "Alle Produkte ansehen"
+    },
+    "carouselFeatured": {
+      "title": "Empfohlen",
+      "subtitle": "Für Sie in dieser Saison ausgewählt"
+    },
+    "carouselBestSellers": {
+      "title": "Bestseller",
+      "subtitle": "Unsere Favoriten, von Ihnen gewählt"
+    },
+    "collections": {
+      "eyebrow": "Haus & Küche",
+      "title": "Alltags-Essentials",
+      "tagline": "Praktische und langlebige Produkte für Haushalte, Hotels und Großhandelskäufer",
+      "items": [
+        {
+          "title": "Küchenutensilien",
+          "description": "Töpfe, Geschirr und Tischaccessoires"
+        },
+        {
+          "title": "Aufbewahrung",
+          "description": "Behälter und Organizer für jeden Raum"
+        },
+        {
+          "title": "Geschirr",
+          "description": "Tischgedecke für Zuhause und Gastgewerbe"
+        },
+        {
+          "title": "Deko",
+          "description": "Funktionale Deko, beliebt bei Wiederverkäufern"
+        }
+      ],
+      "cta": "Haus & Küche entdecken"
+    },
+    "testimonials": {
+      "eyebrow": "Käuferstimmen",
+      "heading": "Von Importeuren weltweit geschätzt",
+      "verifiedBuyerOf": "Verifizierter Käufer von {product}",
+      "testimonialLabel": "Bewertung {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "Hamburg, Deutschland",
+          "text": "Wir verkaufen die LED-Nachtlichter und Powerbanks in unseren Filialen. Konstante Qualität, pünktliche Lieferungen und Preise, die eine echte Marge lassen. Sie sind unser Hauptlieferant geworden.",
+          "product": "LED-Nachtlicht mit Bewegungssensor"
+        },
+        {
+          "name": "Aline B.",
+          "location": "Lyon, Frankreich",
+          "text": "Das Keramik-Set ist jede Saison ausverkauft. Die Fotos der Vorab-Inspektion und die Zertifikate geben uns volles Vertrauen, und die Mindestbestellmenge war flexibel genug für einen kleinen Start.",
+          "product": "Keramik-Geschirrset"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "Singapur",
+          "text": "Endlich ein Partner, der Qualitätskontrolle und Fracht von A bis Z übernimmt. Unsere erste Bestellung TWS-Kopfhörer kam pünktlich und fehlerfrei an. Sehr zu empfehlen für B2B-Käufer.",
+          "product": "Kabellose TWS-Kopfhörer Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "Folgen Sie uns",
+      "follow": "Auf Instagram folgen",
+      "tagline": "Markieren Sie @commoditychina, um vorgestellt zu werden"
+    },
+    "newsletter": {
+      "eyebrow": "In Kontakt bleiben",
+      "heading": "Treten Sie unserem Kreis bei",
+      "body": "Entdecken Sie Neuheiten und exklusive Kollektionen als Erste und sichern Sie sich 10 % Rabatt auf Ihre erste Bestellung.",
+      "placeholder": "E-Mail eingeben",
+      "subscribing": "Anmeldung...",
+      "subscribe": "Abonnieren",
+      "success": "Willkommen im Kreis! Prüfen Sie Ihren Posteingang für Ihren 10 %-Rabattcode.",
+      "error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+      "disclaimer": "Kein Spam, versprochen. Jederzeit abbestellbar. Mit dem Abonnieren stimmen Sie unserer Datenschutzrichtlinie zu."
+    },
+    "seo": {
+      "heading": "Entdecken Sie unsere Kollektionen"
+    },
+    "seoParagraph": "Entdecken Sie die Kollektion von {siteName}: zertifizierte Elektronik, LED-Beleuchtung, Küchenartikel und Haushaltswaren für den Alltag. Für Einzelhandelskunden und B2B-Großabnehmer — online bestellen, Mengen bestellen oder unser Team zu Importpreisen und Partnerschaften befragen.",
+    "links": {
+      "allProducts": "Alle Produkte",
+      "faq": "FAQ",
+      "aboutUs": "Über uns",
+      "importingGuide": "Import-Leitfaden"
+    }
+  },
+  "product": {
+    "image": "Bild",
+    "addToWishlist": "Zur Wunschliste hinzufügen",
+    "new": "Neu",
+    "best": "Bestseller",
+    "soldOut": "Ausverkauft",
+    "inStock": "{count} auf Lager",
+    "savePercent": "{percent} % sparen",
+    "decreaseQuantity": "Menge verringern",
+    "increaseQuantity": "Menge erhöhen",
+    "addToCart": "In den Warenkorb",
+    "freeShipping": "Kostenloser Versand ab 100 $",
+    "easyReturns": "Einfache Rückgabe innerhalb von 30 Tagen",
+    "secureCheckout": "Sicherer Checkout mit Stripe & PayPal",
+    "sku": "SKU: {sku}",
+    "description": "Beschreibung",
+    "productDetails": "Produktdetails",
+    "video": "Video",
+    "reviews": {
+      "title": "Kundenbewertungen",
+      "reviewCount": "{count} Bewertung(en)",
+      "sortNewest": "Neueste",
+      "sortHighest": "Beste Bewertungen",
+      "sortLowest": "Schlechteste Bewertungen",
+      "noReviews": "Noch keine Bewertungen. Seien Sie die Erste bzw. der Erste!",
+      "verifiedPurchase": "Verifizierter Kauf",
+      "anonymous": "Anonym",
+      "leaveReview": "Bewertung abgeben"
+    },
+    "frequentlyBought": {
+      "title": "Oft zusammen gekauft",
+      "bundlePrice": "Bundle-Preis:",
+      "youSave": "Sie sparen:",
+      "addAll": "Alles in den Warenkorb",
+      "addedAll": "Alle Artikel wurden zum Warenkorb hinzugefügt!"
+    },
+    "socialShare": {
+      "share": "Teilen",
+      "copyLink": "Link kopieren",
+      "shareOn": "Auf {name} teilen",
+      "copied": "Link kopiert!"
+    },
+    "related": {
+      "title": "Das Ritual vervollständigen",
+      "subtitle": "Häufig zusammen gekauft"
+    },
+    "faq": {
+      "title": "Häufige Fragen"
+    },
+    "carousel": {
+      "scrollLeft": "Nach links scrollen",
+      "scrollRight": "Nach rechts scrollen"
+    }
+  },
+  "products": {
+    "title": "Alle Produkte",
+    "description": "Entdecken Sie unsere komplette Kollektion an Elektronik, LED-Beleuchtung und Haushaltswaren.",
+    "metaDescription": "Stöbern Sie in unserer kompletten Kollektion an Elektronik, LED-Beleuchtung, Küchenartikeln und Haushaltswaren. Fabrikqualität für Einzelhandels- und B2B-Großhandelskäufer.",
+    "filters": {
+      "sortBy": "Sortieren nach",
+      "newest": "Neueste",
+      "priceLowHigh": "Preis: aufsteigend",
+      "priceHighLow": "Preis: absteigend",
+      "bestSellers": "Bestseller",
+      "priceRange": "Preisspanne",
+      "under": "Unter {amount}",
+      "range": "{min} - {max}",
+      "over": "Über {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "In dieser Kategorie gibt es noch keine Produkte."
+  },
+  "blog": {
+    "title": "Magazin",
+    "metaDescription": "Import-Guides, Sourcing-Tipps und Markteinblicke aus dem Commodities From China Magazin.",
+    "eyebrow": "Guides & Einblicke",
+    "heading": "Das Magazin",
+    "subtitle": "Praktisches Wissen über Import, Sourcing und Logistik — von unserem Team und Partnern.",
+    "all": "Alle",
+    "by": "Von {author}",
+    "noPosts": "Noch keine Artikel vorhanden."
+  },
+  "faq": {
+    "metaDescription": "Häufige Fragen zu Produkten, Versand und Rücksendungen von {siteName}.",
+    "eyebrow": "Support",
+    "title": "Häufige Fragen",
+    "noFaqs": "Noch keine häufig gestellten Fragen vorhanden.",
+    "freeShippingNote": "Kostenloser Standardversand bei Bestellungen über {amount}."
+  },
+  "search": {
+    "title": "Suchergebnisse",
+    "description": "Durchsuchen Sie unser Sortiment an Elektronik, LED-Beleuchtung, Küchenartikeln und Haushaltswaren.",
+    "resultsFor": "Ergebnisse für „{query}\"",
+    "showingResults": "{count} Ergebnis(se) für „{query}\"",
+    "enterTerm": "Geben Sie einen Begriff ein, um Produkte zu finden"
+  },
+  "cart": {
+    "metaDescription": "Prüfen Sie Ihre Artikel und fahren Sie zur Kasse fort.",
+    "emptyTitle": "Ihr Warenkorb ist leer",
+    "emptyMessage": "Sieht so aus, als hätten Sie noch nichts hinzugefügt.",
+    "orderSummary": "Bestellübersicht",
+    "subtotal": "Zwischensumme",
+    "discount": "Rabatt",
+    "shipping": "Versand",
+    "free": "Kostenlos",
+    "freeShippingNote": "Kostenloser Versand ab 100 $",
+    "total": "Gesamt",
+    "proceedToCheckout": "Zur Kasse",
+    "removeItem": "Artikel entfernen",
+    "qty": "Menge: {qty}",
+    "secureCheckout": "Sicherer Checkout mit Stripe & PayPal",
+    "continueShopping": "Weiter einkaufen",
+    "decreaseQuantity": "Menge verringern",
+    "increaseQuantity": "Menge erhöhen",
+    "title": "Warenkorb"
+  },
+  "checkout": {
+    "metaDescription": "Schließen Sie Ihre Bestellung sicher ab.",
+    "contact": "Kontakt",
+    "shippingAddress": "Lieferadresse",
+    "payment": "Zahlung",
+    "creditCard": "Kreditkarte",
+    "cardHint": "Visa, Mastercard, Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "Mit Ihrem Konto bezahlen",
+    "securedByStripe": "Geschützt von Stripe",
+    "orderSummary": "Bestellübersicht",
+    "qty": "Menge: {qty}",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "free": "Kostenlos",
+    "tax": "Steuern ({rate}%)",
+    "total": "Gesamt",
+    "secureCheckoutNote": "Sicherer Checkout mit Stripe & PayPal",
+    "encryptedNote": "Ihre Zahlungsdaten sind verschlüsselt",
+    "continueToPayment": "Weiter zur Zahlung",
+    "editShipping": "Versand bearbeiten",
+    "emailPlaceholder": "E-Mail",
+    "phonePlaceholder": "Telefon (optional)",
+    "firstNamePlaceholder": "Vorname",
+    "lastNamePlaceholder": "Nachname",
+    "addressPlaceholder": "Adresse",
+    "apartmentPlaceholder": "Wohnung, Suite usw. (optional)",
+    "cityPlaceholder": "Stadt",
+    "statePlaceholder": "Bundesland",
+    "zipPlaceholder": "PLZ",
+    "orderCreatedFailed": "Fehler beim Erstellen der Bestellung",
+    "orderPlaced": "Bestellung erfolgreich aufgegeben!",
+    "failedToCreate": "Bestellung konnte nicht erstellt werden",
+    "cartEmpty": "Ihr Warenkorb ist leer",
+    "configError": "Etwas ist schief gelaufen",
+    "pay": "{amount} bezahlen",
+    "initializingPayment": "Zahlung wird initialisiert...",
+    "paymentFailed": "Die Zahlung ist fehlgeschlagen",
+    "paymentSuccessful": "Zahlung erfolgreich!",
+    "initFailed": "Zahlung konnte nicht initialisiert werden",
+    "cardUnavailable": "Kreditkartenzahlung ist derzeit nicht verfügbar.",
+    "paypalNotConfigured": "PayPal ist nicht konfiguriert. Legen Sie NEXT_PUBLIC_PAYPAL_CLIENT_ID in Ihrer Umgebung fest.",
+    "securedByPaypal": "Geschützt von PayPal",
+    "paypalInitFailed": "PayPal konnte nicht initialisiert werden",
+    "paypalCaptureFailed": "Fehler beim Einziehen der Zahlung",
+    "paypalSuccess": "PayPal-Zahlung erfolgreich!",
+    "paypalNotCompleted": "Die Zahlung wurde nicht abgeschlossen",
+    "paypalCancelled": "Zahlung abgebrochen",
+    "orderConfirmed": "Bestellung bestätigt",
+    "thankYou": "Vielen Dank für Ihren Einkauf. Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+    "viewOrder": "Bestellung ansehen",
+    "shopNow": "Jetzt einkaufen",
+    "title": "Zur Kasse"
+  },
+  "auth": {
+    "invalidCredentials": "Ungültige E-Mail oder ungültiges Passwort",
+    "welcomeBack": "Willkommen zurück",
+    "signInSubtitle": "Melden Sie sich bei Ihrem Konto an",
+    "orContinueWith": "Oder weiter mit",
+    "google": "Google",
+    "noAccount": "Noch kein Konto?",
+    "createOne": "Eines erstellen",
+    "emailPlaceholder": "E-Mail",
+    "passwordPlaceholder": "Passwort",
+    "signIn": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "createAccount": "Konto erstellen",
+    "createAccountSubtitle": "Werden Sie Teil der {siteName}-Community",
+    "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+    "signInLink": "Anmelden",
+    "firstNamePlaceholder": "Vorname",
+    "lastNamePlaceholder": "Nachname",
+    "registrationFailed": "Registrierung fehlgeschlagen",
+    "checkYourEmail": "Prüfen Sie Ihre E-Mail",
+    "checkYourEmailBody": "Wenn zu dieser E-Mail ein Konto existiert, haben wir einen Link zum Zurücksetzen gesendet. Er ist 1 Stunde gültig.",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "forgotTitle": "Passwort vergessen",
+    "forgotSubtitle": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen.",
+    "sendResetLink": "Link zum Zurücksetzen senden",
+    "sending": "Wird gesendet...",
+    "rememberPassword": "Passwort gemerkt?",
+    "invalidResetLink": "Ungültiger Reset-Link. Bitte fordern Sie einen neuen an.",
+    "passwordsDontMatch": "Die Passwörter stimmen nicht überein",
+    "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein",
+    "resetting": "Wird zurückgesetzt...",
+    "resetSuccessTitle": "Passwort zurückgesetzt",
+    "resetSuccessBody": "Ihr Passwort wurde erfolgreich zurückgesetzt.",
+    "setNewPassword": "Neues Passwort festlegen",
+    "setNewPasswordSubtitle": "Wählen Sie ein neues Passwort für Ihr Konto.",
+    "newPasswordPlaceholder": "Neues Passwort",
+    "confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+    "resetPassword": "Passwort zurücksetzen",
+    "somethingWentWrong": "Etwas ist schiefgelaufen"
+  },
+  "account": {
+    "myAccount": "Mein Konto",
+    "sidebar": {
+      "overview": "Übersicht",
+      "orders": "Bestellungen",
+      "addresses": "Adressen",
+      "wishlist": "Wunschliste",
+      "reviews": "Bewertungen",
+      "affiliate": "Affiliate",
+      "settings": "Einstellungen"
+    },
+    "welcome": "Willkommen",
+    "signOut": "Abmelden",
+    "overview": {
+      "orders": "Bestellungen",
+      "wishlist": "Wunschliste",
+      "points": "Punkte",
+      "recentOrders": "Letzte Bestellungen",
+      "noOrders": "Noch keine Bestellungen",
+      "startShopping": "Einkauf beginnen"
+    },
+    "settings": {
+      "title": "Kontoeinstellungen",
+      "profile": "Profil",
+      "email": "E-Mail",
+      "saveChanges": "Änderungen speichern",
+      "changePassword": "Passwort ändern",
+      "updatePassword": "Passwort aktualisieren",
+      "firstNamePlaceholder": "Vorname",
+      "lastNamePlaceholder": "Nachname",
+      "currentPasswordPlaceholder": "Aktuelles Passwort",
+      "newPasswordPlaceholder": "Neues Passwort",
+      "confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+      "profileUpdated": "Profil aktualisiert",
+      "updateFailed": "Aktualisierung fehlgeschlagen",
+      "passwordUpdated": "Passwort aktualisiert"
+    },
+    "reviewsPage": {
+      "title": "Meine Bewertungen",
+      "noReviews": "Noch keine Bewertungen",
+      "noReviewsBody": "Ihre Bewertungen erscheinen hier, nachdem Sie Produkte gekauft und bewertet haben."
+    },
+    "ordersPage": {
+      "title": "Meine Bestellungen"
+    },
+    "orders": {
+      "noOrders": "Noch keine Bestellungen",
+      "items": "{count} Artikel",
+      "browseProducts": "Produkte ansehen",
+      "orderDetails": "Bestelldetails"
+    },
+    "addresses": {
+      "title": "Adressen",
+      "count": "{count} Adresse(n)",
+      "addAddress": "Adresse hinzufügen",
+      "setDefault": "Als Standard festlegen",
+      "save": "Speichern",
+      "update": "Aktualisieren",
+      "cancel": "Abbrechen",
+      "noAddresses": "Noch keine Adressen",
+      "defaultBadge": "Standard",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "firstNamePlaceholder": "Vorname",
+      "lastNamePlaceholder": "Nachname",
+      "addressPlaceholder": "Adresse",
+      "apartmentPlaceholder": "Wohnung (optional)",
+      "cityPlaceholder": "Stadt",
+      "statePlaceholder": "Bundesland",
+      "zipPlaceholder": "PLZ",
+      "phonePlaceholder": "Telefon",
+      "updated": "Adresse aktualisiert",
+      "added": "Adresse hinzugefügt",
+      "saveFailed": "Fehler beim Speichern der Adresse",
+      "deleteConfirm": "Diese Adresse löschen?",
+      "deleted": "Adresse gelöscht",
+      "deleteFailed": "Fehler beim Löschen"
+    },
+    "ordersDetail": {
+      "metaTitle": "Bestelldetails",
+      "metaDescription": "Sehen Sie sich Ihre Bestelldetails und die Sendungsverfolgung an.",
+      "title": "Bestelldetails"
+    }
+  },
+  "orders": {
+    "notFound": "Bestellung nicht gefunden",
+    "backToOrders": "Zurück zu den Bestellungen",
+    "orderNumber": "Bestellnummer",
+    "date": "Datum",
+    "payment": "Zahlung",
+    "total": "Gesamt",
+    "shipping": "Versand",
+    "standard": "Standard",
+    "items": "Artikel",
+    "qty": "Menge: {qty}",
+    "tracking": "Verfolgung",
+    "trackingNumber": "Sendungsnummer",
+    "carrier": "Spediteur",
+    "trackingHistory": "Verlauf der Sendungsverfolgung",
+    "leaveReview": "Bewertung abgeben",
+    "itemCount": "{count} Artikel",
+    "noOrders": "Noch keine Bestellungen",
+    "browseProducts": "Produkte ansehen"
+  },
+  "affiliate": {
+    "metaTitle": "Affiliate-Programm",
+    "metaDescription": "Treten Sie unserem Affiliate-Programm bei und verdienen Sie Provisionen, indem Sie Produkte teilen, die Sie lieben.",
+    "notJoined": "Sie sind dem Affiliate-Programm noch nicht beigetreten.",
+    "applyNow": "Jetzt bewerben",
+    "underReview": "Ihre Bewerbung wird geprüft.",
+    "reviewNote": "Wir antworten in der Regel innerhalb von 2-3 Werktagen.",
+    "title": "Affiliate-Dashboard",
+    "totalEarned": "Gesamt verdient",
+    "referrals": "Empfehlungen",
+    "conversions": "Conversions",
+    "commissionRate": "Provisionssatz",
+    "yourLink": "Ihr Empfehlungslink",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "recentReferrals": "Letzte Empfehlungen",
+    "tableDate": "Datum",
+    "tableOrder": "Bestellung",
+    "tableCommission": "Provision",
+    "tableStatus": "Status",
+    "shareText": "Schauen Sie sich {siteName} an: ",
+    "ourStore": "unser Shop",
+    "shareOnTwitter": "Auf Twitter teilen",
+    "pinOnPinterest": "Auf Pinterest pinnen",
+    "partnerEyebrow": "Werden Sie unser Partner",
+    "partnerSubtitle": "Teilen Sie Qualitätsprodukte direkt aus chinesischen Fabriken mit Ihrem Publikum. Verdienen Sie großzügige Provisionen, indem Sie Produkte bewerben, an die Sie glauben.",
+    "joinTitle": "Jetzt bewerben",
+    "joinSubtitle": "Treten Sie unserem Affiliate-Programm bei und beginnen Sie noch heute zu verdienen.",
+    "emailPlaceholder": "Ihre E-Mail-Adresse",
+    "reviewTimeline": "Wir prüfen alle Bewerbungen innerhalb von 2-3 Werktagen.",
+    "appSubmitted": "Bewerbung eingereicht! Wir prüfen sie und melden uns bei Ihnen.",
+    "appFailed": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "benefits": [
+      {
+        "title": "Verdienen Sie 5 % bis 15 % Provision",
+        "description": "Großzügige Provisionen bei jedem Verkauf über Ihren Empfehlungslink"
+      },
+      {
+        "title": "Einzigartige Empfehlungslinks",
+        "description": "Automatisch generierte Tracking-Links für Ihre Inhalte"
+      },
+      {
+        "title": "Persönliche Unterstützung",
+        "description": "Ein persönlicher Partner-Manager und exklusive Ressourcen"
+      },
+      {
+        "title": "Echtzeit-Analysen",
+        "description": "Verfolgen Sie Klicks, Conversions und Provisionen in Echtzeit"
+      }
+    ],
+    "dashboardLabel": "Dashboard"
+  },
+  "coupon": {
+    "applied": "Code angewendet! Sie haben {amount} gespart",
+    "invalid": "Ungültiger Code",
+    "failed": "Code konnte nicht geprüft werden",
+    "remove": "Entfernen",
+    "apply": "Anwenden",
+    "placeholder": "Gutscheincode",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "Hallo! Ich bin Ihr persönlicher Shopping-Assistent bei {siteName}. Ich helfe Ihnen beim Finden von Produkten, beim Vergleich von Optionen, bei Versandfragen oder bei allem rund um unser Unternehmen. Wie kann ich Ihnen heute helfen?",
+    "quickQuestions": "Schnelle Fragen",
+    "title": "KI-Verkaufsassistent",
+    "openChat": "Chat öffnen",
+    "newConversation": "Neues Gespräch starten",
+    "placeholder": "Fragen Sie mich etwas...",
+    "failed": "Chat-Anfrage fehlgeschlagen",
+    "fallback": "Es tut mir leid, ich konnte diese Anfrage{optional} nicht verarbeiten. Bitte versuchen Sie es erneut oder kontaktieren Sie unser Support-Team.",
+    "poweredBy": "Betrieben mit OpenAI – Antworten werden von KI generiert.",
+    "popularProducts": "Beliebte Produkte",
+    "add": "Hinzufügen",
+    "addedToCart": "{name} wurde zum Warenkorb hinzugefügt!",
+    "suggested": [
+      "Was ist die schnellste Versandoption?",
+      "Bieten Sie Großhandels- oder Mengenpreise an?",
+      "Wie ist Ihre Rückgabepolitik?",
+      "Zeigen Sie mir Ihre Bestseller",
+      "Liefern Sie international?",
+      "Wie verfolge ich meine Bestellung?"
+    ]
+  },
+  "wishlist": {
+    "title": "Wunschliste",
+    "empty": "Ihre Wunschliste ist leer",
+    "metaDescription": "Speichern Sie Ihre Lieblingsprodukte und kaufen Sie sie jederzeit."
+  }
+}

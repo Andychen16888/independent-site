@@ -1,6 +1,7 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { motion } from "framer-motion"
 import { formatDate } from "@/lib/utils/format"
 
@@ -17,8 +18,11 @@ export interface BlogPostItem {
 }
 
 export function BlogList({ posts }: { posts: BlogPostItem[] }) {
+  const t = useTranslations("blog")
+  const locale = useLocale()
+
   if (posts.length === 0) {
-    return <div className="text-center text-sm text-stone py-12">No posts yet.</div>
+    return <div className="text-center text-sm text-stone py-12">{t("noPosts")}</div>
   }
 
   return (
@@ -39,7 +43,7 @@ export function BlogList({ posts }: { posts: BlogPostItem[] }) {
                 <div className="w-full h-full group-hover:scale-105 transition-transform duration-700" />
               )}
             </div>
-            <span className="text-caption">{formatDate(post.publishedAt)}</span>
+            <span className="text-caption">{formatDate(post.publishedAt, locale)}</span>
             <h3 className="font-serif text-lg mt-2 group-hover:text-stone transition-colors leading-snug">
               {post.title}
             </h3>

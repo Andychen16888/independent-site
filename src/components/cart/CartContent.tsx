@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { useCartStore } from "@/stores/cart-store"
-import { Button } from "@/components/ui/Button"
 import { CouponInput } from "./CouponInput"
 import { formatPrice } from "@/lib/utils/format"
 import { HiOutlineTrash, HiOutlineMinus, HiOutlinePlus, HiOutlineArrowLeft } from "react-icons/hi2"
@@ -11,6 +11,8 @@ import { HiOutlineTrash, HiOutlineMinus, HiOutlinePlus, HiOutlineArrowLeft } fro
 export function CartContent() {
   const { items, removeItem, updateQuantity, getSubtotal } = useCartStore()
   const [discount, setDiscount] = useState(0)
+  const t = useTranslations("cart")
+  const locale = useLocale()
 
   if (items.length === 0) {
     return (
@@ -18,10 +20,10 @@ export function CartContent() {
         <div className="w-16 h-16 mx-auto mb-6 bg-mist rounded-full flex items-center justify-center">
           <HiOutlineTrash className="w-6 h-6 text-stone" />
         </div>
-        <h2 className="heading-md mb-4">Your cart is empty</h2>
-        <p className="text-body mb-8">Looks like you haven&apos;t added anything yet.</p>
+        <h2 className="heading-md mb-4">{t("emptyTitle")}</h2>
+        <p className="text-body mb-8">{t("emptyMessage")}</p>
         <Link href="/products" className="btn-primary">
-          Continue Shopping
+          {t("continueShopping")}
         </Link>
       </div>
     )
@@ -48,13 +50,14 @@ export function CartContent() {
                   {item.name}
                 </h3>
               </Link>
-              <p className="text-sm text-stone mt-1">{formatPrice(item.price)}</p>
+              <p className="text-sm text-stone mt-1">{formatPrice(item.price, undefined, locale)}</p>
 
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center border border-charcoal/20">
                   <button
                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                     className="p-2 hover:bg-mist transition-colors"
+                    aria-label={t("decreaseQuantity")}
                   >
                     <HiOutlineMinus className="w-3 h-3" />
                   </button>
@@ -64,18 +67,19 @@ export function CartContent() {
                   <button
                     onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                     className="p-2 hover:bg-mist transition-colors"
+                    aria-label={t("increaseQuantity")}
                   >
                     <HiOutlinePlus className="w-3 h-3" />
                   </button>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-sm font-medium">
-                    {formatPrice(item.price * item.quantity)}
+                    {formatPrice(item.price * item.quantity, undefined, locale)}
                   </span>
                   <button
                     onClick={() => removeItem(item.productId)}
                     className="text-stone hover:text-charcoal transition-colors"
-                    aria-label="Remove item"
+                    aria-label={t("removeItem")}
                   >
                     <HiOutlineTrash className="w-4 h-4" />
                   </button>
@@ -90,49 +94,49 @@ export function CartContent() {
           className="inline-flex items-center gap-2 text-sm text-stone hover:text-charcoal transition-colors"
         >
           <HiOutlineArrowLeft className="w-4 h-4" />
-          Continue Shopping
+          {t("continueShopping")}
         </Link>
       </div>
 
       <div className="lg:sticky lg:top-28 h-fit">
         <div className="bg-cream p-8 space-y-4">
-          <h3 className="font-serif text-lg">Order Summary</h3>
+          <h3 className="font-serif text-lg">{t("orderSummary")}</h3>
 
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-stone">Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span className="text-stone">{t("subtotal")}</span>
+              <span>{formatPrice(subtotal, undefined, locale)}</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between text-sage">
-                <span>Discount</span>
-                <span>-{formatPrice(discount)}</span>
+                <span>{t("discount")}</span>
+                <span>-{formatPrice(discount, undefined, locale)}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-stone">Shipping</span>
-              <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+              <span className="text-stone">{t("shipping")}</span>
+              <span>{shipping === 0 ? t("free") : formatPrice(shipping, undefined, locale)}</span>
             </div>
             {shipping > 0 && (
               <p className="text-xs text-stone">
-                Free shipping on orders over $100
+                {t("freeShippingNote")}
               </p>
             )}
 
             <CouponInput subtotal={subtotal} onApplyDiscount={setDiscount} />
 
             <div className="border-t border-charcoal/10 pt-3 flex justify-between font-medium">
-              <span>Total</span>
-              <span>{formatPrice(total)}</span>
+              <span>{t("total")}</span>
+              <span>{formatPrice(total, undefined, locale)}</span>
             </div>
           </div>
 
           <Link href="/checkout" className="btn-primary w-full mt-6">
-            Proceed to Checkout
+            {t("proceedToCheckout")}
           </Link>
 
           <div className="text-center text-xs text-stone">
-            <p>Secure checkout via Stripe & PayPal</p>
+            <p>{t("secureCheckout")}</p>
           </div>
         </div>
       </div>

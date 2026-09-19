@@ -1,6 +1,7 @@
 "use client"
 
-import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { useCartStore } from "@/stores/cart-store"
 import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
@@ -8,6 +9,8 @@ import type { ChatProduct } from "./types"
 
 export function ProductSuggestions({ products = [] }: { products?: ChatProduct[] }) {
   const addItem = useCartStore((s) => s.addItem)
+  const t = useTranslations("chat")
+  const locale = useLocale()
 
   if (products.length === 0) return null
 
@@ -22,17 +25,16 @@ export function ProductSuggestions({ products = [] }: { products?: ChatProduct[]
       quantity: 1,
       stock: 99,
     })
-    toast.success(`${product.name} added to cart!`)
+    toast.success(t("addedToCart", { name: product.name }))
   }
 
   return (
     <div className="pt-4 border-t border-mist">
-      <p className="text-xs text-stone tracking-wider uppercase mb-3">Popular Products</p>
+      <p className="text-xs text-stone tracking-wider uppercase mb-3">{t("popularProducts")}</p>
       <div className="space-y-2">
         {products.map((product) => (
           <div key={product.id} className="flex items-center gap-3 bg-cream p-2.5 group">
             {product.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={product.image} alt="" className="w-10 h-10 object-cover bg-mist flex-shrink-0" />
             ) : (
               <div className="w-10 h-10 bg-mist flex-shrink-0" />
@@ -42,7 +44,7 @@ export function ProductSuggestions({ products = [] }: { products?: ChatProduct[]
                 {product.name}
               </Link>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-stone">{formatPrice(product.price)}</span>
+                <span className="text-xs text-stone">{formatPrice(product.price, undefined, locale)}</span>
                 {product.tag && (
                   <span className="text-[10px] text-sage tracking-wider uppercase">{product.tag}</span>
                 )}
@@ -52,7 +54,7 @@ export function ProductSuggestions({ products = [] }: { products?: ChatProduct[]
               onClick={() => handleQuickAdd(product)}
               className="text-[10px] tracking-wider uppercase px-2.5 py-1.5 bg-charcoal text-ivory hover:bg-charcoal/90 transition-colors whitespace-nowrap opacity-0 group-hover:opacity-100"
             >
-              Add
+              {t("add")}
             </button>
           </div>
         ))}

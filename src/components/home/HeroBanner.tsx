@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 
@@ -53,6 +54,7 @@ const FALLBACK_BGS = ["bg-gradient-to-br from-sage/20 to-ivory", "bg-gradient-to
 
 export function HeroBanner({ slides = DEFAULT_HERO_SLIDES }: { slides?: HeroSlide[] }) {
   const [current, setCurrent] = useState(0)
+  const t = useTranslations("home.hero")
   const safeSlides = slides && slides.length > 0 ? slides : DEFAULT_HERO_SLIDES
 
   useEffect(() => {
@@ -139,7 +141,7 @@ export function HeroBanner({ slides = DEFAULT_HERO_SLIDES }: { slides?: HeroSlid
             className={`w-12 h-[2px] transition-all duration-500 ${
               index === current ? "bg-charcoal w-16" : "bg-stone/40"
             }`}
-            aria-label={`Slide ${index + 1}`}
+            aria-label={t("slideLabel", { index: index + 1 })}
           />
         ))}
       </div>

@@ -1,29 +1,32 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link, usePathname } from "@/i18n/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { signOut, useSession } from "next-auth/react"
 import { cn } from "@/lib/utils/cn"
-
-const links = [
-  { name: "Overview", href: "/account" },
-  { name: "Orders", href: "/account/orders" },
-  { name: "Addresses", href: "/account/addresses" },
-  { name: "Wishlist", href: "/wishlist" },
-  { name: "Reviews", href: "/account/reviews" },
-  { name: "Affiliate", href: "/affiliate" },
-  { name: "Settings", href: "/account/settings" },
-]
 
 export function AccountSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const t = useTranslations("account")
+  const ts = useTranslations("account.sidebar")
+  const locale = useLocale()
+
+  const links = [
+    { name: ts("overview"), href: "/account" },
+    { name: ts("orders"), href: "/account/orders" },
+    { name: ts("addresses"), href: "/account/addresses" },
+    { name: ts("wishlist"), href: "/wishlist" },
+    { name: ts("reviews"), href: "/account/reviews" },
+    { name: ts("affiliate"), href: "/affiliate" },
+    { name: ts("settings"), href: "/account/settings" },
+  ]
 
   return (
     <aside className="space-y-6">
       <div className="pb-6 border-b border-mist">
         <p className="text-sm font-medium">
-          {session?.user?.name || "Welcome"}
+          {session?.user?.name || t("welcome")}
         </p>
         <p className="text-xs text-stone mt-1">{session?.user?.email}</p>
       </div>
@@ -46,10 +49,10 @@ export function AccountSidebar() {
       </nav>
 
       <button
-        onClick={() => signOut({ callbackUrl: "/" })}
+        onClick={() => signOut({ callbackUrl: `/${locale}` })}
         className="block py-2 text-sm text-stone hover:text-charcoal transition-colors"
       >
-        Sign Out
+        {t("signOut")}
       </button>
     </aside>
   )

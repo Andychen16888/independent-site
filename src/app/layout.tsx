@@ -12,6 +12,7 @@ import {
 } from "@/lib/seo/structured-data"
 import { getSiteSeo } from "@/lib/settings/settings"
 import { routing, rtlLocales } from "@/i18n/routing"
+import { ogLocaleMap } from "@/lib/seo/generate-metadata"
 import "./globals.css"
 
 const inter = Inter({
@@ -64,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: buildAlternates(baseUrl, locale),
     openGraph: {
       type: "website",
-      locale: locale === "zh" ? "zh_CN" : "en_US",
+      locale: ogLocaleMap[locale] || "en_US",
       siteName: seo.siteName,
       title: seo.homepageTitle,
       description: seo.homepageDescription,

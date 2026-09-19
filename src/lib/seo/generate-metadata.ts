@@ -15,6 +15,10 @@ export const ogLocaleMap: Record<string, string> = {
   de: "de_DE",
   ru: "ru_RU",
   ar: "ar_SA",
+  id: "id_ID",
+  vi: "vi_VN",
+  th: "th_TH",
+  ms: "ms_MY",
 }
 
 /** Return an absolute URL for a given site path (or as-is if already absolute). */

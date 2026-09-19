@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "Beranda",
+    "allProducts": "Semua Produk",
+    "journal": "Jurnal",
+    "faq": "FAQ",
+    "search": "Cari",
+    "cartTitle": "Keranjang Belanja",
+    "wishlist": "Wishlist",
+    "checkout": "Checkout",
+    "myAccount": "Akun Saya",
+    "orders": "Pesanan",
+    "addresses": "Alamat",
+    "reviews": "Ulasan",
+    "affiliate": "Afiliasi",
+    "dashboard": "Dasbor",
+    "backToHome": "Kembali ke Beranda",
+    "browseProducts": "Lihat Produk",
+    "notFoundTitle": "Halaman Tidak Ditemukan",
+    "notFoundDescription": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
+    "errorTitle": "Terjadi Kesalahan",
+    "errorDescription": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi nanti.",
+    "tryAgain": "Coba Lagi",
+    "loading": "Memuat...",
+    "noProductsFound": "Produk tidak ditemukan",
+    "noProductsInCategory": "Belum ada produk dalam kategori ini.",
+    "viewAllProducts": "Lihat Semua Produk",
+    "exploreCollection": "Jelajahi Koleksi",
+    "continueShopping": "Lanjutkan Belanja",
+    "somethingWentWrong": "Terjadi kesalahan. Silakan coba lagi.",
+    "success": "Berhasil",
+    "sale": "Diskon",
+    "new": "Baru",
+    "best": "Terlaris",
+    "image": "Gambar",
+    "soldOut": "Habis",
+    "inStock": "{count} tersedia",
+    "imagePlaceholder": "Gambar Produk"
+  },
+  "navigation": {
+    "home": "Beranda",
+    "products": "Produk",
+    "electronics": "Elektronik",
+    "homeKitchen": "Rumah & Dapur",
+    "journal": "Jurnal",
+    "about": "Tentang",
+    "contact": "Kontak",
+    "wishlist": "Wishlist",
+    "account": "Akun"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Cari",
+    "searchPlaceholder": "Cari produk...",
+    "dismissPromo": "Tutup promosi",
+    "signIn": "Masuk",
+    "signOut": "Keluar",
+    "myAccount": "Akun Saya",
+    "language": "Pilih bahasa",
+    "currency": "Mata Uang",
+    "openChat": "Buka obrolan"
+  },
+  "footer": {
+    "shop": "Belanja",
+    "support": "Bantuan",
+    "connect": "Terhubung",
+    "rightsReserved": "© {year} {name}. Hak cipta dilindungi.",
+    "privacy": "Kebijakan Privasi",
+    "terms": "Syarat Layanan",
+    "allProducts": "Semua Produk",
+    "newArrivals": "Produk Baru",
+    "bestSellers": "Produk Terlaris",
+    "shippingReturns": "Pengiriman & Pengembalian"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "Pengadaan B2B Langsung dari Pabrik",
+          "subtitle": "Bersumber dari China, dikirim ke seluruh dunia",
+          "description": "Elektronik berkualitas, lampu LED, dan komoditas harian dengan harga grosir",
+          "cta": "Lihat Produk"
+        },
+        {
+          "title": "Harga Grosir",
+          "subtitle": "Dibuat untuk pengecer dan distributor",
+          "description": "Harga borongan bertingkat, opsi label pribadi, dan jadwal pasokan yang andal",
+          "cta": "Jelajahi Kategori"
+        },
+        {
+          "title": "Kualitas yang Dapat Dipercaya",
+          "subtitle": "Barang bersertifikat, diperiksa setiap batch",
+          "description": "Produk bersertifikat CE, FCC, dan RoHS dengan pemeriksaan prapengiriman",
+          "cta": "Tentang Kami"
+        }
+      ],
+      "slideLabel": "Slide {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "Jelajahi",
+      "heading": "Koleksi Kami",
+      "cards": [
+        {
+          "title": "Elektronik",
+          "subtitle": "LED & Perangkat Cerdas",
+          "description": "Elektronik dan lampu LED bersertifikat dengan harga grosir"
+        },
+        {
+          "title": "Rumah & Dapur",
+          "subtitle": "Kebutuhan Sehari-hari",
+          "description": "Barang praktis dan tahan lama yang bersumber dari pabrik bersertifikat"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Kisah Kami",
+      "title": "Barang Berkualitas, Langsung dari Sumbernya",
+      "paragraphs": [
+        "Commodities From China didirikan dengan keyakinan sederhana — bahwa barang berkualitas harus mengalir langsung dari produsen China ke pembeli di seluruh dunia, tanpa perantara dan markup yang tidak perlu.",
+        "Kami membangun kemitraan jangka panjang dengan produsen bersertifikat di China — mulai dari pabrik elektronik di Shenzhen hingga produsen perlengkapan dapur di Guangzhou — dan memeriksa setiap batch sebelum dikirim."
+      ],
+      "cta": "Baca Kisah Kami"
+    },
+    "promo": {
+      "eyebrow": "Mengapa Beli Langsung",
+      "title": "Elektronik Langsung dari Pabrik",
+      "body": "Kami bermitra dengan produsen bersertifikat di China untuk menghadirkan elektronik berkualitas dengan harga grosir — teruji, terdokumentasi, dan dikirim ke seluruh dunia.",
+      "features": [
+        {
+          "title": "Kualitas Bersertifikat",
+          "description": "Produk bersertifikat CE, FCC, dan RoHS yang diverifikasi sebelum pengiriman"
+        },
+        {
+          "title": "Harga Langsung Pabrik",
+          "description": "Tarif grosir tanpa perantara atau markup ritel"
+        },
+        {
+          "title": "Opsi MOQ Rendah",
+          "description": "Mulai kecil dengan SKU standar, tingkatkan seiring pertumbuhan bisnis Anda"
+        },
+        {
+          "title": "Logistik Global",
+          "description": "Opsi pengiriman udara dan laut dengan pelacakan hingga ke pintu Anda"
+        }
+      ],
+      "cta": "Lihat Semua Produk"
+    },
+    "carouselFeatured": {
+      "title": "Unggulan",
+      "subtitle": "Dipilih khusus untuk Anda musim ini"
+    },
+    "carouselBestSellers": {
+      "title": "Produk Terlaris",
+      "subtitle": "Produk paling diminati, pilihan Anda"
+    },
+    "collections": {
+      "eyebrow": "Rumah & Dapur",
+      "title": "Kebutuhan Sehari-hari",
+      "tagline": "Barang praktis dan tahan lama untuk rumah, hotel, dan pembeli grosir",
+      "items": [
+        {
+          "title": "Perlengkapan Dapur",
+          "description": "Perkakas masak, peralatan makan, dan peralatan bar"
+        },
+        {
+          "title": "Penyimpanan",
+          "description": "Wadah dan organizer untuk setiap ruangan"
+        },
+        {
+          "title": "Peralatan Makan",
+          "description": "Set peralatan makan untuk rumah dan perhotelan"
+        },
+        {
+          "title": "Dekorasi Rumah",
+          "description": "Dekorasi fungsional yang disukai penjual ulang"
+        }
+      ],
+      "cta": "Jelajahi Rumah & Dapur"
+    },
+    "testimonials": {
+      "eyebrow": "Ulasan Pembeli",
+      "heading": "Dipercaya Importir di Seluruh Dunia",
+      "verifiedBuyerOf": "Pembeli Terverifikasi {product}",
+      "testimonialLabel": "Testimoni {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "Hamburg, Jerman",
+          "text": "Kami menjual ulang lampu LED dan power bank di toko ritel kami. Kualitas konsisten, pengiriman tepat waktu, dan harga yang menyisakan margin nyata. Mereka menjadi pemasok andalan kami.",
+          "product": "Lampu LED Sensor Gerak"
+        },
+        {
+          "name": "Aline B.",
+          "location": "Lyon, Prancis",
+          "text": "Set peralatan makan keramik selalu laku setiap musim. Foto pemeriksaan prapengiriman dan sertifikat memberi kami kepercayaan penuh, dan MOQ cukup fleksibel untuk kami memulai dari skala kecil.",
+          "product": "Set Peralatan Makan Keramik"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "Singapura",
+          "text": "Akhirnya mitra pengadaan yang menangani kontrol kualitas dan pengiriman dari awal hingga akhir. Pesanan pertama earbuds TWS kami tiba tepat waktu dan tanpa cacat. Sangat disarankan untuk pembeli B2B.",
+          "product": "Earbuds Nirkabel TWS Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "Ikuti Kami",
+      "follow": "Ikuti di Instagram",
+      "tagline": "Tandai kami @commoditychina untuk ditampilkan"
+    },
+    "newsletter": {
+      "eyebrow": "Tetap Terhubung",
+      "heading": "Bergabung dengan Lingkaran Kami",
+      "body": "Jadilah yang pertama mengetahui produk baru, koleksi eksklusif, dan dapatkan diskon 10% untuk pesanan pertama Anda.",
+      "placeholder": "Masukkan email Anda",
+      "subscribing": "Mengirim...",
+      "subscribe": "Berlangganan",
+      "success": "Selamat bergabung! Periksa kotak masuk Anda untuk kode diskon 10%.",
+      "error": "Terjadi kesalahan. Silakan coba lagi.",
+      "disclaimer": "Tidak ada spam. Berhenti berlangganan kapan saja. Dengan berlangganan, Anda menyetujui Kebijakan Privasi kami."
+    },
+    "seo": {
+      "heading": "Temukan Koleksi Kami"
+    },
+    "seoParagraph": "Temukan koleksi {siteName}: elektronik bersertifikat, lampu LED, perlengkapan dapur, dan barang kebutuhan rumah tangga sehari-hari. Dibuat untuk pembeli ritel dan pembeli grosir B2B — belanja online, pesan dalam jumlah besar, atau hubungi tim kami untuk harga dagang dan pertanyaan kemitraan.",
+    "links": {
+      "allProducts": "Semua Produk",
+      "faq": "FAQ",
+      "aboutUs": "Tentang Kami",
+      "importingGuide": "Panduan Impor"
+    }
+  },
+  "product": {
+    "image": "Gambar",
+    "addToWishlist": "Tambahkan ke wishlist",
+    "new": "Baru",
+    "best": "Terlaris",
+    "soldOut": "Habis",
+    "inStock": "{count} tersedia",
+    "savePercent": "Hemat {percent}%",
+    "decreaseQuantity": "Kurangi jumlah",
+    "increaseQuantity": "Tambah jumlah",
+    "addToCart": "Tambahkan ke Keranjang",
+    "freeShipping": "Gratis ongkir untuk pesanan di atas $100",
+    "easyReturns": "Pengembalian mudah dalam 30 hari",
+    "secureCheckout": "Checkout aman dengan Stripe & PayPal",
+    "sku": "SKU: {sku}",
+    "description": "Deskripsi",
+    "productDetails": "Detail Produk",
+    "video": "Video",
+    "reviews": {
+      "title": "Ulasan Pelanggan",
+      "reviewCount": "{count} ulasan",
+      "sortNewest": "Terbaru",
+      "sortHighest": "Rating Tertinggi",
+      "sortLowest": "Rating Terendah",
+      "noReviews": "Belum ada ulasan. Jadilah yang pertama memberi ulasan!",
+      "verifiedPurchase": "Pembelian Terverifikasi",
+      "anonymous": "Anonim",
+      "leaveReview": "Tulis Ulasan"
+    },
+    "frequentlyBought": {
+      "title": "Sering Dibeli Bersamaan",
+      "bundlePrice": "Harga paket:",
+      "youSave": "Anda hemat:",
+      "addAll": "Tambahkan Semua ke Keranjang",
+      "addedAll": "Semua item ditambahkan ke keranjang!"
+    },
+    "socialShare": {
+      "share": "Bagikan",
+      "copyLink": "Salin tautan",
+      "shareOn": "Bagikan di {name}",
+      "copied": "Tautan disalin!"
+    },
+    "related": {
+      "title": "Lengkapi Pembelian Anda",
+      "subtitle": "Sering dibeli bersama"
+    },
+    "faq": {
+      "title": "Pertanyaan yang Sering Diajukan"
+    },
+    "carousel": {
+      "scrollLeft": "Gulir ke kiri",
+      "scrollRight": "Gulir ke kanan"
+    }
+  },
+  "products": {
+    "title": "Semua Produk",
+    "description": "Temukan koleksi lengkap kami berupa elektronik, lampu LED, dan komoditas rumah tangga.",
+    "metaDescription": "Jelajahi koleksi lengkap kami berupa elektronik, lampu LED, peralatan dapur, dan komoditas rumah tangga. Kualitas langsung pabrik untuk pembeli ritel dan grosir B2B.",
+    "filters": {
+      "sortBy": "Urutkan Berdasarkan",
+      "newest": "Terbaru",
+      "priceLowHigh": "Harga: Terendah ke Tertinggi",
+      "priceHighLow": "Harga: Tertinggi ke Terendah",
+      "bestSellers": "Produk Terlaris",
+      "priceRange": "Rentang Harga",
+      "under": "Di bawah {amount}",
+      "range": "{min} - {max}",
+      "over": "Di atas {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "Belum ada produk dalam kategori ini."
+  },
+  "blog": {
+    "title": "Jurnal",
+    "metaDescription": "Panduan impor, kiat pengadaan, dan wawasan pasar dari jurnal Commodities From China.",
+    "eyebrow": "Panduan & Wawasan",
+    "heading": "Jurnal",
+    "subtitle": "Pengetahuan praktis seputar impor, pengadaan, dan logistik — dari tim dan mitra kami.",
+    "all": "Semua",
+    "by": "Oleh {author}",
+    "noPosts": "Belum ada tulisan."
+  },
+  "faq": {
+    "metaDescription": "Pertanyaan yang sering diajukan tentang produk {siteName}, pengiriman, pengembalian, dan lainnya.",
+    "eyebrow": "Bantuan",
+    "title": "Pertanyaan yang Sering Diajukan",
+    "noFaqs": "Belum ada pertanyaan yang sering diajukan.",
+    "freeShippingNote": "Gratis ongkir standar untuk pesanan di atas {amount}."
+  },
+  "search": {
+    "title": "Hasil Pencarian",
+    "description": "Cari di koleksi kami: elektronik, lampu LED, peralatan dapur, dan komoditas rumah tangga.",
+    "resultsFor": "Hasil untuk \"{query}\"",
+    "showingResults": "Menampilkan {count} hasil untuk \"{query}\"",
+    "enterTerm": "Masukkan kata kunci pencarian untuk menemukan produk"
+  },
+  "cart": {
+    "metaDescription": "Tinjau item Anda dan lanjutkan ke pembayaran.",
+    "emptyTitle": "Keranjang Anda kosong",
+    "emptyMessage": "Sepertinya Anda belum menambahkan apa pun.",
+    "orderSummary": "Ringkasan Pesanan",
+    "subtotal": "Subtotal",
+    "discount": "Diskon",
+    "shipping": "Pengiriman",
+    "free": "Gratis",
+    "freeShippingNote": "Gratis ongkir untuk pesanan di atas $100",
+    "total": "Total",
+    "proceedToCheckout": "Lanjutkan ke Checkout",
+    "removeItem": "Hapus item",
+    "qty": "Jml: {qty}",
+    "secureCheckout": "Checkout aman melalui Stripe & PayPal",
+    "continueShopping": "Lanjutkan Belanja",
+    "decreaseQuantity": "Kurangi jumlah",
+    "increaseQuantity": "Tambah jumlah",
+    "title": "Keranjang Belanja"
+  },
+  "checkout": {
+    "metaDescription": "Selesaikan pesanan Anda dengan aman.",
+    "contact": "Kontak",
+    "shippingAddress": "Alamat Pengiriman",
+    "payment": "Pembayaran",
+    "creditCard": "Kartu Kredit",
+    "cardHint": "Visa, Mastercard, Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "Bayar dengan akun Anda",
+    "securedByStripe": "Diamankan oleh Stripe",
+    "orderSummary": "Ringkasan Pesanan",
+    "qty": "Jml: {qty}",
+    "subtotal": "Subtotal",
+    "shipping": "Pengiriman",
+    "free": "Gratis",
+    "tax": "Pajak ({rate}%)",
+    "total": "Total",
+    "secureCheckoutNote": "Checkout aman melalui Stripe & PayPal",
+    "encryptedNote": "Informasi pembayaran Anda dienkripsi",
+    "continueToPayment": "Lanjutkan ke Pembayaran",
+    "editShipping": "Ubah Pengiriman",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Telepon (opsional)",
+    "firstNamePlaceholder": "Nama depan",
+    "lastNamePlaceholder": "Nama belakang",
+    "addressPlaceholder": "Alamat",
+    "apartmentPlaceholder": "Apartemen, suite, dll. (opsional)",
+    "cityPlaceholder": "Kota",
+    "statePlaceholder": "Provinsi",
+    "zipPlaceholder": "Kode pos",
+    "orderCreatedFailed": "Gagal membuat pesanan",
+    "orderPlaced": "Pesanan berhasil dibuat!",
+    "failedToCreate": "Gagal membuat pesanan",
+    "cartEmpty": "Keranjang Anda kosong",
+    "configError": "Terjadi kesalahan",
+    "pay": "Bayar {amount}",
+    "initializingPayment": "Menginisialisasi pembayaran...",
+    "paymentFailed": "Pembayaran gagal",
+    "paymentSuccessful": "Pembayaran berhasil!",
+    "initFailed": "Gagal menginisialisasi pembayaran",
+    "cardUnavailable": "Pembayaran kartu kredit tidak tersedia saat ini.",
+    "paypalNotConfigured": "PayPal belum dikonfigurasi. Silakan atur NEXT_PUBLIC_PAYPAL_CLIENT_ID pada lingkungan Anda.",
+    "securedByPaypal": "Diamankan oleh PayPal",
+    "paypalInitFailed": "Gagal menginisialisasi PayPal",
+    "paypalCaptureFailed": "Gagal menangkap pembayaran",
+    "paypalSuccess": "Pembayaran berhasil melalui PayPal!",
+    "paypalNotCompleted": "Pembayaran tidak selesai",
+    "paypalCancelled": "Pembayaran dibatalkan",
+    "orderConfirmed": "Pesanan Dikonfirmasi",
+    "thankYou": "Terima kasih atas pembelian Anda. Anda akan menerima email konfirmasi sebentar lagi.",
+    "viewOrder": "Lihat Pesanan",
+    "shopNow": "Belanja Sekarang",
+    "title": "Checkout"
+  },
+  "auth": {
+    "invalidCredentials": "Email atau kata sandi tidak valid",
+    "welcomeBack": "Selamat Datang Kembali",
+    "signInSubtitle": "Masuk ke akun Anda",
+    "orContinueWith": "Atau lanjutkan dengan",
+    "google": "Google",
+    "noAccount": "Belum punya akun?",
+    "createOne": "Buat satu",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Kata sandi",
+    "signIn": "Masuk",
+    "forgotPassword": "Lupa kata sandi?",
+    "createAccount": "Buat Akun",
+    "createAccountSubtitle": "Bergabunglah dengan komunitas {siteName}",
+    "alreadyHaveAccount": "Sudah punya akun?",
+    "signInLink": "Masuk",
+    "firstNamePlaceholder": "Nama depan",
+    "lastNamePlaceholder": "Nama belakang",
+    "registrationFailed": "Pendaftaran gagal",
+    "checkYourEmail": "Periksa Email Anda",
+    "checkYourEmailBody": "Jika akun dengan email tersebut ada, kami telah mengirimkan tautan pengaturan ulang kata sandi. Tautan berlaku selama 1 jam.",
+    "backToSignIn": "Kembali ke halaman masuk",
+    "forgotTitle": "Lupa Kata Sandi",
+    "forgotSubtitle": "Masukkan email Anda dan kami akan mengirimkan tautan pengaturan ulang.",
+    "sendResetLink": "Kirim Tautan Pengaturan Ulang",
+    "sending": "Mengirim...",
+    "rememberPassword": "Ingat kata sandi Anda?",
+    "invalidResetLink": "Tautan pengaturan ulang tidak valid. Silakan minta yang baru.",
+    "passwordsDontMatch": "Kata sandi tidak cocok",
+    "passwordTooShort": "Kata sandi harus minimal 8 karakter",
+    "resetting": "Mengatur ulang...",
+    "resetSuccessTitle": "Kata Sandi Diatur Ulang",
+    "resetSuccessBody": "Kata sandi Anda berhasil diatur ulang.",
+    "setNewPassword": "Atur Kata Sandi Baru",
+    "setNewPasswordSubtitle": "Pilih kata sandi baru untuk akun Anda.",
+    "newPasswordPlaceholder": "Kata sandi baru",
+    "confirmPasswordPlaceholder": "Konfirmasi kata sandi baru",
+    "resetPassword": "Atur Ulang Kata Sandi",
+    "somethingWentWrong": "Terjadi kesalahan"
+  },
+  "account": {
+    "myAccount": "Akun Saya",
+    "sidebar": {
+      "overview": "Ringkasan",
+      "orders": "Pesanan",
+      "addresses": "Alamat",
+      "wishlist": "Wishlist",
+      "reviews": "Ulasan",
+      "affiliate": "Afiliasi",
+      "settings": "Pengaturan"
+    },
+    "welcome": "Selamat Datang",
+    "signOut": "Keluar",
+    "overview": {
+      "orders": "Pesanan",
+      "wishlist": "Wishlist",
+      "points": "Poin",
+      "recentOrders": "Pesanan Terbaru",
+      "noOrders": "Belum ada pesanan",
+      "startShopping": "Mulai Belanja"
+    },
+    "settings": {
+      "title": "Pengaturan Akun",
+      "profile": "Profil",
+      "email": "Email",
+      "saveChanges": "Simpan Perubahan",
+      "changePassword": "Ubah Kata Sandi",
+      "updatePassword": "Perbarui Kata Sandi",
+      "firstNamePlaceholder": "Nama depan",
+      "lastNamePlaceholder": "Nama belakang",
+      "currentPasswordPlaceholder": "Kata sandi saat ini",
+      "newPasswordPlaceholder": "Kata sandi baru",
+      "confirmPasswordPlaceholder": "Konfirmasi kata sandi baru",
+      "profileUpdated": "Profil diperbarui",
+      "updateFailed": "Pembaruan gagal",
+      "passwordUpdated": "Kata sandi diperbarui"
+    },
+    "reviewsPage": {
+      "title": "Ulasan Saya",
+      "noReviews": "Belum ada ulasan",
+      "noReviewsBody": "Ulasan akan muncul di sini setelah Anda membeli dan memberi ulasan produk."
+    },
+    "ordersPage": {
+      "title": "Pesanan Saya"
+    },
+    "orders": {
+      "noOrders": "Belum ada pesanan",
+      "items": "{count} item",
+      "browseProducts": "Lihat Produk",
+      "orderDetails": "Detail Pesanan"
+    },
+    "addresses": {
+      "title": "Alamat",
+      "count": "{count} alamat",
+      "addAddress": "Tambah Alamat",
+      "setDefault": "Jadikan alamat utama",
+      "save": "Simpan",
+      "update": "Perbarui",
+      "cancel": "Batal",
+      "noAddresses": "Belum ada alamat",
+      "defaultBadge": "Utama",
+      "edit": "Ubah",
+      "delete": "Hapus",
+      "firstNamePlaceholder": "Nama depan",
+      "lastNamePlaceholder": "Nama belakang",
+      "addressPlaceholder": "Alamat",
+      "apartmentPlaceholder": "Apartemen (opsional)",
+      "cityPlaceholder": "Kota",
+      "statePlaceholder": "Provinsi",
+      "zipPlaceholder": "Kode pos",
+      "phonePlaceholder": "Telepon",
+      "updated": "Alamat diperbarui",
+      "added": "Alamat ditambahkan",
+      "saveFailed": "Gagal menyimpan alamat",
+      "deleteConfirm": "Hapus alamat ini?",
+      "deleted": "Alamat dihapus",
+      "deleteFailed": "Gagal menghapus"
+    },
+    "ordersDetail": {
+      "metaTitle": "Detail Pesanan",
+      "metaDescription": "Lihat detail pesanan dan informasi pelacakan Anda.",
+      "title": "Detail Pesanan"
+    }
+  },
+  "orders": {
+    "notFound": "Pesanan tidak ditemukan",
+    "backToOrders": "Kembali ke Pesanan",
+    "orderNumber": "Nomor Pesanan",
+    "date": "Tanggal",
+    "payment": "Pembayaran",
+    "total": "Total",
+    "shipping": "Pengiriman",
+    "standard": "Standar",
+    "items": "Item",
+    "qty": "Jml: {qty}",
+    "tracking": "Pelacakan",
+    "trackingNumber": "Nomor Pelacakan",
+    "carrier": "Jasa Kirim",
+    "trackingHistory": "Riwayat Pelacakan",
+    "leaveReview": "Tulis Ulasan",
+    "itemCount": "{count} item",
+    "noOrders": "Belum ada pesanan",
+    "browseProducts": "Lihat Produk"
+  },
+  "affiliate": {
+    "metaTitle": "Program Afiliasi",
+    "metaDescription": "Bergabunglah dengan program afiliasi kami dan dapatkan komisi dengan membagikan produk yang Anda sukai.",
+    "notJoined": "Anda belum bergabung dengan program afiliasi.",
+    "applyNow": "Ajukan Sekarang",
+    "underReview": "Pengajuan Anda sedang ditinjau.",
+    "reviewNote": "Kami biasanya merespons dalam 2-3 hari kerja.",
+    "title": "Dasbor Afiliasi",
+    "totalEarned": "Total Penghasilan",
+    "referrals": "Referensi",
+    "conversions": "Konversi",
+    "commissionRate": "Tingkat Komisi",
+    "yourLink": "Tautan Referensi Anda",
+    "copy": "Salin",
+    "copied": "Disalin!",
+    "recentReferrals": "Referensi Terbaru",
+    "tableDate": "Tanggal",
+    "tableOrder": "Pesanan",
+    "tableCommission": "Komisi",
+    "tableStatus": "Status",
+    "shareText": "Lihat {siteName}: ",
+    "ourStore": "toko kami",
+    "shareOnTwitter": "Bagikan di Twitter",
+    "pinOnPinterest": "Pin di Pinterest",
+    "partnerEyebrow": "Bermitra dengan Kami",
+    "partnerSubtitle": "Bagikan produk berkualitas langsung dari pabrik China kepada audiens Anda. Dapatkan komisi menarik sambil mempromosikan produk yang Anda yakini.",
+    "joinTitle": "Ajukan Sekarang",
+    "joinSubtitle": "Bergabunglah dengan program afiliasi kami dan mulailah menghasilkan hari ini.",
+    "emailPlaceholder": "Alamat email Anda",
+    "reviewTimeline": "Kami meninjau semua pengajuan dalam 2-3 hari kerja.",
+    "appSubmitted": "Pengajuan terkirim! Kami akan meninjaunya dan menghubungi Anda.",
+    "appFailed": "Terjadi kesalahan. Silakan coba lagi.",
+    "benefits": [
+      {
+        "title": "Komisi 5-15%",
+        "description": "Komisi menarik untuk setiap penjualan melalui tautan referensi Anda"
+      },
+      {
+        "title": "Tautan Referensi Unik",
+        "description": "Tautan pelacakan yang dibuat otomatis untuk konten Anda"
+      },
+      {
+        "title": "Dukungan Khusus",
+        "description": "Manajer afiliasi pribadi dan sumber daya eksklusif"
+      },
+      {
+        "title": "Analitik Waktu Nyata",
+        "description": "Pantau klik, konversi, dan komisi secara real-time"
+      }
+    ],
+    "dashboardLabel": "Dasbor"
+  },
+  "coupon": {
+    "applied": "Kupon diterapkan! Anda hemat {amount}",
+    "invalid": "Kupon tidak valid",
+    "failed": "Gagal memvalidasi kupon",
+    "remove": "Hapus",
+    "apply": "Terapkan",
+    "placeholder": "Kode kupon",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "Halo! Saya asisten belanja pribadi Anda di {siteName}. Saya dapat membantu Anda menemukan produk, membandingkan opsi, mengecek pengiriman, atau mengenal kami. Bagaimana saya bisa membantu Anda hari ini?",
+    "quickQuestions": "Pertanyaan Cepat",
+    "title": "Asisten Penjualan AI",
+    "openChat": "Buka obrolan",
+    "newConversation": "Mulai percakapan baru",
+    "placeholder": "Tanyakan apa saja...",
+    "failed": "Permintaan obrolan gagal",
+    "fallback": "Maaf, saya tidak dapat menyelesaikan permintaan itu{optional}. Silakan coba lagi atau hubungi tim dukungan kami.",
+    "poweredBy": "Didukung oleh OpenAI — Respons dihasilkan AI.",
+    "popularProducts": "Produk Populer",
+    "add": "Tambah",
+    "addedToCart": "{name} ditambahkan ke keranjang!",
+    "suggested": [
+      "Apa opsi pengiriman tercepat?",
+      "Apakah Anda menawarkan harga grosir atau borongan?",
+      "Apa kebijakan pengembalian Anda?",
+      "Tunjukkan produk terlaris Anda",
+      "Apakah Anda mengirim ke luar negeri?",
+      "Bagaimana cara melacak pesanan saya?"
+    ]
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Wishlist Anda kosong",
+    "metaDescription": "Simpan produk favorit Anda dan belanja kapan saja."
+  }
+}

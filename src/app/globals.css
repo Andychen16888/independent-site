@@ -48,6 +48,21 @@
   h1, h2, h3, h4 {
     @apply font-serif;
   }
+
+  /* Thai script has no word spaces: allow graceful line breaking and give
+     tall Thai glyphs extra line height so headings/buttons never clip. */
+  :where(html[lang="th"]) * {
+    overflow-wrap: break-word;
+  }
+  :where(html[lang="th"]) h1,
+  :where(html[lang="th"]) h2,
+  :where(html[lang="th"]) h3,
+  :where(html[lang="th"]) h4,
+  :where(html[lang="th"]) .btn-primary,
+  :where(html[lang="th"]) .btn-outline,
+  :where(html[lang="th"]) .text-caption {
+    line-height: 1.5;
+  }
 }
 
 @layer components {

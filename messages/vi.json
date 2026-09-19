@@ -1,0 +1,636 @@
+{
+  "common": {
+    "home": "Trang chủ",
+    "allProducts": "Tất cả sản phẩm",
+    "journal": "Tạp chí",
+    "faq": "FAQ",
+    "search": "Tìm kiếm",
+    "cartTitle": "Giỏ hàng",
+    "wishlist": "Danh sách yêu thích",
+    "checkout": "Thanh toán",
+    "myAccount": "Tài khoản của tôi",
+    "orders": "Đơn hàng",
+    "addresses": "Địa chỉ",
+    "reviews": "Đánh giá",
+    "affiliate": "Tiếp thị liên kết",
+    "dashboard": "Bảng điều khiển",
+    "backToHome": "Quay về trang chủ",
+    "browseProducts": "Xem sản phẩm",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundDescription": "Trang bạn đang tìm không tồn tại hoặc đã được di chuyển.",
+    "errorTitle": "Đã xảy ra lỗi",
+    "errorDescription": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
+    "tryAgain": "Thử lại",
+    "loading": "Đang tải...",
+    "noProductsFound": "Không tìm thấy sản phẩm nào",
+    "noProductsInCategory": "Chưa có sản phẩm trong danh mục này.",
+    "viewAllProducts": "Xem tất cả sản phẩm",
+    "exploreCollection": "Khám phá bộ sưu tập",
+    "continueShopping": "Tiếp tục mua sắm",
+    "somethingWentWrong": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "success": "Thành công",
+    "sale": "Giảm giá",
+    "new": "Mới",
+    "best": "Bán chạy",
+    "image": "Hình ảnh",
+    "soldOut": "Hết hàng",
+    "inStock": "Còn {count} hàng",
+    "imagePlaceholder": "Hình ảnh sản phẩm"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "products": "Sản phẩm",
+    "electronics": "Điện tử",
+    "homeKitchen": "Nhà & Bếp",
+    "journal": "Tạp chí",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "wishlist": "Yêu thích",
+    "account": "Tài khoản"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm kiếm sản phẩm...",
+    "dismissPromo": "Đóng quảng cáo",
+    "signIn": "Đăng nhập",
+    "signOut": "Đăng xuất",
+    "myAccount": "Tài khoản của tôi",
+    "language": "Chọn ngôn ngữ",
+    "currency": "Tiền tệ",
+    "openChat": "Mở trò chuyện"
+  },
+  "footer": {
+    "shop": "Cửa hàng",
+    "support": "Hỗ trợ",
+    "connect": "Kết nối",
+    "rightsReserved": "© {year} {name}. Bảo lưu mọi quyền.",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản dịch vụ",
+    "allProducts": "Tất cả sản phẩm",
+    "newArrivals": "Hàng mới về",
+    "bestSellers": "Sản phẩm bán chạy",
+    "shippingReturns": "Vận chuyển & Trả hàng"
+  },
+  "home": {
+    "hero": {
+      "slides": [
+        {
+          "title": "Tìm Nguồn Hàng B2B Trực Tiếp Từ Nhà Máy",
+          "subtitle": "Nguồn hàng từ Trung Quốc, giao hàng toàn cầu",
+          "description": "Điện tử chất lượng, đèn LED và hàng tiêu dùng với giá bán sỉ",
+          "cta": "Xem Sản Phẩm"
+        },
+        {
+          "title": "Giá Bán Sỉ",
+          "subtitle": "Dành cho nhà bán lẻ và nhà phân phối",
+          "description": "Giá sỉ theo nhiều cấp, tùy chọn nhãn riêng và lịch cung ứng đáng tin cậy",
+          "cta": "Khám Phá Danh Mục"
+        },
+        {
+          "title": "Chất Lượng Đáng Tin Cậy",
+          "subtitle": "Hàng đạt chứng nhận, kiểm tra từng lô hàng",
+          "description": "Sản phẩm đạt chứng nhận CE, FCC và RoHS kèm kiểm tra trước khi giao",
+          "cta": "Câu Chuyện Của Chúng Tôi"
+        }
+      ],
+      "slideLabel": "Slide {index}"
+    },
+    "featuredCategories": {
+      "eyebrow": "Khám phá",
+      "heading": "Bộ Sưu Tập Của Chúng Tôi",
+      "cards": [
+        {
+          "title": "Điện Tử",
+          "subtitle": "Đèn LED & Thiết Bị Thông Minh",
+          "description": "Điện tử và đèn LED đạt chứng nhận với giá bán sỉ"
+        },
+        {
+          "title": "Nhà & Bếp",
+          "subtitle": "Đồ Dùng Thiết Yếu Hằng Ngày",
+          "description": "Hàng thực dụng, bền bỉ từ các nhà máy đạt chứng nhận"
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Câu Chuyện Của Chúng Tôi",
+      "title": "Hàng Hóa Chất Lượng, Trực Tiếp Từ Nguồn",
+      "paragraphs": [
+        "Commodities From China được thành lập từ một niềm tin đơn giản — rằng hàng hóa chất lượng phải đến trực tiếp từ các nhà sản xuất Trung Quốc đến tay người mua trên toàn thế giới, không qua những khâu trung gian và cộng giá không cần thiết.",
+        "Chúng tôi xây dựng quan hệ đối tác lâu dài với các nhà sản xuất đạt chứng nhận trên khắp Trung Quốc — từ nhà máy điện tử tại Thâm Quyến đến nhà sản xuất dụng cụ nhà bếp tại Quảng Châu — và kiểm tra từng lô hàng trước khi giao."
+      ],
+      "cta": "Đọc Câu Chuyện Của Chúng Tôi"
+    },
+    "promo": {
+      "eyebrow": "Vì Sao Mua Trực Tiếp",
+      "title": "Điện Tử Trực Tiếp Từ Nhà Máy",
+      "body": "Chúng tôi hợp tác với các nhà sản xuất đạt chứng nhận trên khắp Trung Quốc để mang đến cho bạn điện tử chất lượng với giá sỉ — đã kiểm tra, đầy đủ chứng từ và giao hàng toàn cầu.",
+      "features": [
+        {
+          "title": "Chất Lượng Đạt Chứng Nhận",
+          "description": "Sản phẩm đạt chứng nhận CE, FCC và RoHS được xác minh trước khi giao hàng"
+        },
+        {
+          "title": "Giá Trực Tiếp Từ Nhà Máy",
+          "description": "Giá sỉ không qua trung gian hay cộng giá bán lẻ"
+        },
+        {
+          "title": "Tùy Chọn MOQ Linh Hoạt",
+          "description": "Bắt đầu với số lượng nhỏ theo SKU tiêu chuẩn, mở rộng khi bạn phát triển"
+        },
+        {
+          "title": "Logistics Toàn Cầu",
+          "description": "Vận chuyển hàng không và đường biển kèm theo dõi đến tận cửa"
+        }
+      ],
+      "cta": "Xem Tất Cả Sản Phẩm"
+    },
+    "carouselFeatured": {
+      "title": "Sản Phẩm Nổi Bật",
+      "subtitle": "Tuyển chọn riêng cho bạn mùa này"
+    },
+    "carouselBestSellers": {
+      "title": "Sản Phẩm Bán Chạy",
+      "subtitle": "Sản phẩm được yêu thích nhất, được bạn lựa chọn"
+    },
+    "collections": {
+      "eyebrow": "Nhà & Bếp",
+      "title": "Đồ Dùng Thiết Yếu Hằng Ngày",
+      "tagline": "Hàng thực dụng, bền bỉ cho gia đình, khách sạn và khách mua sỉ",
+      "items": [
+        {
+          "title": "Dụng Cụ Nhà Bếp",
+          "description": "Nồi chảo, bộ bát đĩa và dụng cụ quầy bar"
+        },
+        {
+          "title": "Đồ Lưu Trữ",
+          "description": "Hộp đựng và hộp tổ chức cho mọi không gian"
+        },
+        {
+          "title": "Bộ Bát Đĩa",
+          "description": "Bộ bát đĩa cho gia đình và ngành khách sạn"
+        },
+        {
+          "title": "Trang Trí Nhà",
+          "description": "Đồ trang trí tiện dụng được nhà bán lại ưa chuộng"
+        }
+      ],
+      "cta": "Khám Phá Nhà & Bếp"
+    },
+    "testimonials": {
+      "eyebrow": "Đánh Giá Người Mua",
+      "heading": "Được Các Nhà Nhập Khẩu Toàn Cầu Tin Cậy",
+      "verifiedBuyerOf": "Người mua đã xác minh của {product}",
+      "testimonialLabel": "Đánh giá {index}",
+      "items": [
+        {
+          "name": "Marcus L.",
+          "location": "Hamburg, Đức",
+          "text": "Chúng tôi bán lại đèn LED cảm biến chuyển động và sạc dự phòng tại các cửa hàng bán lẻ. Chất lượng ổn định, giao hàng đúng hạn và giá cả để lại biên lợi nhuận thực sự. Họ đã trở thành nhà cung cấp chính của chúng tôi.",
+          "product": "Đèn LED Cảm Biến Chuyển Động"
+        },
+        {
+          "name": "Aline B.",
+          "location": "Lyon, Pháp",
+          "text": "Bộ bát đĩa gốm sứ luôn bán hết mỗi mùa. Ảnh kiểm tra trước giao hàng và chứng nhận mang lại cho chúng tôi sự tin cậy tuyệt đối, và MOQ đủ linh hoạt để chúng tôi bắt đầu với quy mô nhỏ.",
+          "product": "Bộ Bát Đĩa Gốm Sứ"
+        },
+        {
+          "name": "Dong-mei H.",
+          "location": "Singapore",
+          "text": "Cuối cùng đã có một đối tác nguồn hàng lo trọn việc kiểm soát chất lượng và vận chuyển từ đầu đến cuối. Đơn hàng tai nghe TWS đầu tiên của chúng tôi đến đúng hẹn và không lỗi. Rất khuyến khích cho khách B2B.",
+          "product": "Tai Nghe Không Dây TWS Pro"
+        }
+      ]
+    },
+    "instagram": {
+      "eyebrow": "Theo Dõi Chúng Tôi",
+      "follow": "Theo dõi trên Instagram",
+      "tagline": "Gắn thẻ @commoditychina để có cơ hội được giới thiệu"
+    },
+    "newsletter": {
+      "eyebrow": "Kết Nối",
+      "heading": "Tham Gia Cộng Đồng Của Chúng Tôi",
+      "body": "Là người đầu tiên khám phá hàng mới về và bộ sưu tập độc quyền, đồng thời nhận ưu đãi 10% cho đơn hàng đầu tiên.",
+      "placeholder": "Nhập email của bạn",
+      "subscribing": "Đang gửi...",
+      "subscribe": "Đăng Ký",
+      "success": "Chào mừng bạn tham gia! Kiểm tra hộp thư để nhận mã giảm 10%.",
+      "error": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "disclaimer": "Không bao giờ gửi thư rác. Hủy đăng ký bất cứ lúc nào. Khi đăng ký, bạn đồng ý với Chính sách bảo mật của chúng tôi."
+    },
+    "seo": {
+      "heading": "Khám Phá Bộ Sưu Tập Của Chúng Tôi"
+    },
+    "seoParagraph": "Khám phá bộ sưu tập {siteName}: điện tử đạt chứng nhận, đèn LED, dụng cụ nhà bếp và đồ gia dụng hằng ngày. Dành cho cả khách mua lẻ lẫn khách mua sỉ B2B — mua trực tuyến, đặt hàng số lượng lớn hoặc liên hệ đội ngũ của chúng tôi để nhận giá thương mại và trao đổi hợp tác.",
+    "links": {
+      "allProducts": "Tất Cả Sản Phẩm",
+      "faq": "FAQ",
+      "aboutUs": "Giới Thiệu Về Chúng Tôi",
+      "importingGuide": "Hướng Dẫn Nhập Khẩu"
+    }
+  },
+  "product": {
+    "image": "Hình ảnh",
+    "addToWishlist": "Thêm vào danh sách yêu thích",
+    "new": "Mới",
+    "best": "Bán chạy",
+    "soldOut": "Hết hàng",
+    "inStock": "Còn {count} hàng",
+    "savePercent": "Tiết kiệm {percent}%",
+    "decreaseQuantity": "Giảm số lượng",
+    "increaseQuantity": "Tăng số lượng",
+    "addToCart": "Thêm vào Giỏ Hàng",
+    "freeShipping": "Miễn phí vận chuyển cho đơn hàng trên $100",
+    "easyReturns": "Trả hàng dễ dàng trong 30 ngày",
+    "secureCheckout": "Thanh toán an toàn với Stripe & PayPal",
+    "sku": "SKU: {sku}",
+    "description": "Mô tả",
+    "productDetails": "Chi Tiết Sản Phẩm",
+    "video": "Video",
+    "reviews": {
+      "title": "Đánh Giá Khách Hàng",
+      "reviewCount": "{count} đánh giá",
+      "sortNewest": "Mới nhất",
+      "sortHighest": "Đánh giá cao nhất",
+      "sortLowest": "Đánh giá thấp nhất",
+      "noReviews": "Chưa có đánh giá. Hãy là người đầu tiên đánh giá!",
+      "verifiedPurchase": "Đã mua hàng (xác minh)",
+      "anonymous": "Ẩn danh",
+      "leaveReview": "Viết Đánh Giá"
+    },
+    "frequentlyBought": {
+      "title": "Thường Mua Cùng Nhau",
+      "bundlePrice": "Giá combo:",
+      "youSave": "Bạn tiết kiệm:",
+      "addAll": "Thêm Tất Cả Vào Giỏ",
+      "addedAll": "Đã thêm tất cả sản phẩm vào giỏ!"
+    },
+    "socialShare": {
+      "share": "Chia sẻ",
+      "copyLink": "Sao chép liên kết",
+      "shareOn": "Chia sẻ trên {name}",
+      "copied": "Đã sao chép liên kết!"
+    },
+    "related": {
+      "title": "Hoàn Thiện Giao Dịch Của Bạn",
+      "subtitle": "Thường mua cùng nhau"
+    },
+    "faq": {
+      "title": "Câu Hỏi Thường Gặp"
+    },
+    "carousel": {
+      "scrollLeft": "Cuộn sang trái",
+      "scrollRight": "Cuộn sang phải"
+    }
+  },
+  "products": {
+    "title": "Tất Cả Sản Phẩm",
+    "description": "Khám phá bộ sưu tập đầy đủ của chúng tôi gồm điện tử, đèn LED và đồ gia dụng.",
+    "metaDescription": "Khám phá bộ sưu tập đầy đủ của chúng tôi gồm điện tử, đèn LED, dụng cụ nhà bếp và đồ gia dụng. Chất lượng trực tiếp từ nhà máy cho khách bán lẻ và mua sỉ B2B.",
+    "filters": {
+      "sortBy": "Sắp Xếp Theo",
+      "newest": "Mới nhất",
+      "priceLowHigh": "Giá: Thấp đến Cao",
+      "priceHighLow": "Giá: Cao đến Thấp",
+      "bestSellers": "Sản Phẩm Bán Chạy",
+      "priceRange": "Khoảng Giá",
+      "under": "Dưới {amount}",
+      "range": "{min} - {max}",
+      "over": "Trên {amount}"
+    }
+  },
+  "category": {
+    "noProducts": "Chưa có sản phẩm trong danh mục này."
+  },
+  "blog": {
+    "title": "Tạp Chí",
+    "metaDescription": "Hướng dẫn nhập khẩu, bí quyết tìm nguồn hàng và hiểu biết thị trường từ tạp chí Commodities From China.",
+    "eyebrow": "Hướng Dẫn & Hiểu Biết",
+    "heading": "Tạp Chí",
+    "subtitle": "Kiến thức thực tiễn về nhập khẩu, tìm nguồn hàng và logistics — từ đội ngũ và đối tác của chúng tôi.",
+    "all": "Tất cả",
+    "by": "Bởi {author}",
+    "noPosts": "Chưa có bài viết."
+  },
+  "faq": {
+    "metaDescription": "Các câu hỏi thường gặp về sản phẩm {siteName}, vận chuyển, trả hàng và hơn thế nữa.",
+    "eyebrow": "Hỗ Trợ",
+    "title": "Câu Hỏi Thường Gặp",
+    "noFaqs": "Chưa có câu hỏi thường gặp nào.",
+    "freeShippingNote": "Miễn phí vận chuyển tiêu chuẩn cho đơn hàng trên {amount}."
+  },
+  "search": {
+    "title": "Kết Quả Tìm Kiếm",
+    "description": "Tìm kiếm trong bộ sưu tập của chúng tôi: điện tử, đèn LED, dụng cụ nhà bếp và đồ gia dụng.",
+    "resultsFor": "Kết quả cho \"{query}\"",
+    "showingResults": "Hiển thị {count} kết quả cho \"{query}\"",
+    "enterTerm": "Nhập từ khóa tìm kiếm để tìm sản phẩm"
+  },
+  "cart": {
+    "metaDescription": "Xem lại các sản phẩm của bạn và tiến hành thanh toán.",
+    "emptyTitle": "Giỏ hàng của bạn đang trống",
+    "emptyMessage": "Có vẻ bạn chưa thêm sản phẩm nào.",
+    "orderSummary": "Tóm Tắt Đơn Hàng",
+    "subtotal": "Tạm tính",
+    "discount": "Giảm giá",
+    "shipping": "Vận chuyển",
+    "free": "Miễn phí",
+    "freeShippingNote": "Miễn phí vận chuyển cho đơn hàng trên $100",
+    "total": "Tổng cộng",
+    "proceedToCheckout": "Tiến Hành Thanh Toán",
+    "removeItem": "Xóa sản phẩm",
+    "qty": "SL: {qty}",
+    "secureCheckout": "Thanh toán an toàn qua Stripe & PayPal",
+    "continueShopping": "Tiếp Tục Mua Sắm",
+    "decreaseQuantity": "Giảm số lượng",
+    "increaseQuantity": "Tăng số lượng",
+    "title": "Giỏ Hàng"
+  },
+  "checkout": {
+    "metaDescription": "Hoàn tất đơn hàng của bạn một cách an toàn.",
+    "contact": "Liên hệ",
+    "shippingAddress": "Địa Chỉ Giao Hàng",
+    "payment": "Thanh toán",
+    "creditCard": "Thẻ tín dụng",
+    "cardHint": "Visa, Mastercard, Amex",
+    "paypal": "PayPal",
+    "paypalTagline": "Thanh toán bằng tài khoản của bạn",
+    "securedByStripe": "Được bảo mật bởi Stripe",
+    "orderSummary": "Tóm Tắt Đơn Hàng",
+    "qty": "SL: {qty}",
+    "subtotal": "Tạm tính",
+    "shipping": "Vận chuyển",
+    "free": "Miễn phí",
+    "tax": "Thuế ({rate}%)",
+    "total": "Tổng cộng",
+    "secureCheckoutNote": "Thanh toán an toàn qua Stripe & PayPal",
+    "encryptedNote": "Thông tin thanh toán của bạn được mã hóa",
+    "continueToPayment": "Tiếp Tục Thanh Toán",
+    "editShipping": "Chỉnh Sửa Vận Chuyển",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Điện thoại (tùy chọn)",
+    "firstNamePlaceholder": "Tên",
+    "lastNamePlaceholder": "Họ",
+    "addressPlaceholder": "Địa chỉ",
+    "apartmentPlaceholder": "Căn hộ, phòng, v.v. (tùy chọn)",
+    "cityPlaceholder": "Thành phố",
+    "statePlaceholder": "Tỉnh/Thành",
+    "zipPlaceholder": "Mã bưu chính",
+    "orderCreatedFailed": "Tạo đơn hàng thất bại",
+    "orderPlaced": "Đặt hàng thành công!",
+    "failedToCreate": "Không thể tạo đơn hàng",
+    "cartEmpty": "Giỏ hàng của bạn đang trống",
+    "configError": "Đã xảy ra lỗi",
+    "pay": "Thanh toán {amount}",
+    "initializingPayment": "Đang khởi tạo thanh toán...",
+    "paymentFailed": "Thanh toán thất bại",
+    "paymentSuccessful": "Thanh toán thành công!",
+    "initFailed": "Không thể khởi tạo thanh toán",
+    "cardUnavailable": "Thanh toán bằng thẻ tín dụng hiện không khả dụng.",
+    "paypalNotConfigured": "PayPal chưa được cấu hình. Vui lòng đặt NEXT_PUBLIC_PAYPAL_CLIENT_ID trong môi trường của bạn.",
+    "securedByPaypal": "Được bảo mật bởi PayPal",
+    "paypalInitFailed": "Không thể khởi tạo PayPal",
+    "paypalCaptureFailed": "Không thể ghi nhận thanh toán",
+    "paypalSuccess": "Thanh toán thành công qua PayPal!",
+    "paypalNotCompleted": "Thanh toán chưa hoàn tất",
+    "paypalCancelled": "Đã hủy thanh toán",
+    "orderConfirmed": "Đơn Hàng Đã Xác Nhận",
+    "thankYou": "Cảm ơn bạn đã mua hàng. Chúng tôi sẽ sớm gửi email xác nhận.",
+    "viewOrder": "Xem Đơn Hàng",
+    "shopNow": "Mua Sắm Ngay",
+    "title": "Thanh Toán"
+  },
+  "auth": {
+    "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+    "welcomeBack": "Chào Mừng Trở Lại",
+    "signInSubtitle": "Đăng nhập vào tài khoản của bạn",
+    "orContinueWith": "Hoặc tiếp tục với",
+    "google": "Google",
+    "noAccount": "Chưa có tài khoản?",
+    "createOne": "Tạo tài khoản",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Mật khẩu",
+    "signIn": "Đăng Nhập",
+    "forgotPassword": "Quên mật khẩu?",
+    "createAccount": "Tạo Tài Khoản",
+    "createAccountSubtitle": "Tham gia cộng đồng {siteName}",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "signInLink": "Đăng nhập",
+    "firstNamePlaceholder": "Tên",
+    "lastNamePlaceholder": "Họ",
+    "registrationFailed": "Đăng ký thất bại",
+    "checkYourEmail": "Kiểm Tra Email Của Bạn",
+    "checkYourEmailBody": "Nếu tồn tại tài khoản với email đó, chúng tôi đã gửi liên kết đặt lại mật khẩu. Liên kết hết hạn sau 1 giờ.",
+    "backToSignIn": "Quay lại đăng nhập",
+    "forgotTitle": "Quên Mật Khẩu",
+    "forgotSubtitle": "Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại.",
+    "sendResetLink": "Gửi Liên Kết Đặt Lại",
+    "sending": "Đang gửi...",
+    "rememberPassword": "Nhớ mật khẩu của bạn?",
+    "invalidResetLink": "Liên kết đặt lại không hợp lệ. Vui lòng yêu cầu liên kết mới.",
+    "passwordsDontMatch": "Mật khẩu không khớp",
+    "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+    "resetting": "Đang đặt lại...",
+    "resetSuccessTitle": "Đặt Lại Mật Khẩu",
+    "resetSuccessBody": "Mật khẩu của bạn đã được đặt lại thành công.",
+    "setNewPassword": "Đặt Mật Khẩu Mới",
+    "setNewPasswordSubtitle": "Chọn mật khẩu mới cho tài khoản của bạn.",
+    "newPasswordPlaceholder": "Mật khẩu mới",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
+    "resetPassword": "Đặt Lại Mật Khẩu",
+    "somethingWentWrong": "Đã xảy ra lỗi"
+  },
+  "account": {
+    "myAccount": "Tài Khoản Của Tôi",
+    "sidebar": {
+      "overview": "Tổng quan",
+      "orders": "Đơn hàng",
+      "addresses": "Địa chỉ",
+      "wishlist": "Yêu thích",
+      "reviews": "Đánh giá",
+      "affiliate": "Tiếp thị liên kết",
+      "settings": "Cài đặt"
+    },
+    "welcome": "Chào Mừng",
+    "signOut": "Đăng Xuất",
+    "overview": {
+      "orders": "Đơn hàng",
+      "wishlist": "Yêu thích",
+      "points": "Điểm",
+      "recentOrders": "Đơn Hàng Gần Đây",
+      "noOrders": "Chưa có đơn hàng",
+      "startShopping": "Bắt Đầu Mua Sắm"
+    },
+    "settings": {
+      "title": "Cài Đặt Tài Khoản",
+      "profile": "Hồ sơ",
+      "email": "Email",
+      "saveChanges": "Lưu Thay Đổi",
+      "changePassword": "Đổi Mật Khẩu",
+      "updatePassword": "Cập Nhật Mật Khẩu",
+      "firstNamePlaceholder": "Tên",
+      "lastNamePlaceholder": "Họ",
+      "currentPasswordPlaceholder": "Mật khẩu hiện tại",
+      "newPasswordPlaceholder": "Mật khẩu mới",
+      "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
+      "profileUpdated": "Hồ sơ đã được cập nhật",
+      "updateFailed": "Cập nhật thất bại",
+      "passwordUpdated": "Mật khẩu đã được cập nhật"
+    },
+    "reviewsPage": {
+      "title": "Đánh Giá Của Tôi",
+      "noReviews": "Chưa có đánh giá",
+      "noReviewsBody": "Đánh giá sẽ xuất hiện tại đây sau khi bạn mua hàng và đánh giá sản phẩm."
+    },
+    "ordersPage": {
+      "title": "Đơn Hàng Của Tôi"
+    },
+    "orders": {
+      "noOrders": "Chưa có đơn hàng",
+      "items": "{count} sản phẩm",
+      "browseProducts": "Xem Sản Phẩm",
+      "orderDetails": "Chi Tiết Đơn Hàng"
+    },
+    "addresses": {
+      "title": "Địa Chỉ",
+      "count": "{count} địa chỉ",
+      "addAddress": "Thêm Địa Chỉ",
+      "setDefault": "Đặt làm mặc định",
+      "save": "Lưu",
+      "update": "Cập nhật",
+      "cancel": "Hủy",
+      "noAddresses": "Chưa có địa chỉ",
+      "defaultBadge": "Mặc định",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "firstNamePlaceholder": "Tên",
+      "lastNamePlaceholder": "Họ",
+      "addressPlaceholder": "Địa chỉ",
+      "apartmentPlaceholder": "Căn hộ (tùy chọn)",
+      "cityPlaceholder": "Thành phố",
+      "statePlaceholder": "Tỉnh/Thành",
+      "zipPlaceholder": "Mã bưu chính",
+      "phonePlaceholder": "Điện thoại",
+      "updated": "Địa chỉ đã được cập nhật",
+      "added": "Địa chỉ đã được thêm",
+      "saveFailed": "Không thể lưu địa chỉ",
+      "deleteConfirm": "Xóa địa chỉ này?",
+      "deleted": "Địa chỉ đã được xóa",
+      "deleteFailed": "Xóa thất bại"
+    },
+    "ordersDetail": {
+      "metaTitle": "Chi Tiết Đơn Hàng",
+      "metaDescription": "Xem chi tiết đơn hàng và thông tin theo dõi của bạn.",
+      "title": "Chi Tiết Đơn Hàng"
+    }
+  },
+  "orders": {
+    "notFound": "Không tìm thấy đơn hàng",
+    "backToOrders": "Quay Lại Đơn Hàng",
+    "orderNumber": "Mã Đơn Hàng",
+    "date": "Ngày",
+    "payment": "Thanh toán",
+    "total": "Tổng cộng",
+    "shipping": "Vận chuyển",
+    "standard": "Tiêu chuẩn",
+    "items": "Sản phẩm",
+    "qty": "SL: {qty}",
+    "tracking": "Theo dõi",
+    "trackingNumber": "Mã Vận Đơn",
+    "carrier": "Đơn vị vận chuyển",
+    "trackingHistory": "Lịch Sử Theo Dõi",
+    "leaveReview": "Viết Đánh Giá",
+    "itemCount": "{count} sản phẩm",
+    "noOrders": "Chưa có đơn hàng",
+    "browseProducts": "Xem Sản Phẩm"
+  },
+  "affiliate": {
+    "metaTitle": "Chương Trình Tiếp Thị Liên Kết",
+    "metaDescription": "Tham gia chương trình tiếp thị liên kết của chúng tôi và kiếm hoa hồng bằng cách chia sẻ sản phẩm bạn yêu thích.",
+    "notJoined": "Bạn chưa tham gia chương trình tiếp thị liên kết.",
+    "applyNow": "Đăng Ký Ngay",
+    "underReview": "Đơn đăng ký của bạn đang được xem xét.",
+    "reviewNote": "Chúng tôi thường phản hồi trong 2-3 ngày làm việc.",
+    "title": "Bảng Điều Khiển Tiếp Thị Liên Kết",
+    "totalEarned": "Tổng Thu Nhập",
+    "referrals": "Số lượt giới thiệu",
+    "conversions": "Chuyển đổi",
+    "commissionRate": "Tỷ Lệ Hoa Hồng",
+    "yourLink": "Liên Kết Giới Thiệu Của Bạn",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
+    "recentReferrals": "Lượt Giới Thiệu Gần Đây",
+    "tableDate": "Ngày",
+    "tableOrder": "Đơn hàng",
+    "tableCommission": "Hoa hồng",
+    "tableStatus": "Trạng thái",
+    "shareText": "Xem {siteName}: ",
+    "ourStore": "cửa hàng của chúng tôi",
+    "shareOnTwitter": "Chia sẻ trên Twitter",
+    "pinOnPinterest": "Ghim trên Pinterest",
+    "partnerEyebrow": "Hợp Tác Với Chúng Tôi",
+    "partnerSubtitle": "Chia sẻ sản phẩm chất lượng trực tiếp từ nhà máy Trung Quốc đến khán giả của bạn. Nhận hoa hồng hấp dẫn khi giới thiệu những sản phẩm bạn tin tưởng.",
+    "joinTitle": "Đăng Ký Ngay",
+    "joinSubtitle": "Tham gia chương trình tiếp thị liên kết của chúng tôi và bắt đầu kiếm tiền ngay hôm nay.",
+    "emailPlaceholder": "Địa chỉ email của bạn",
+    "reviewTimeline": "Chúng tôi xem xét mọi đơn đăng ký trong 2-3 ngày làm việc.",
+    "appSubmitted": "Đã gửi đơn đăng ký! Chúng tôi sẽ xem xét và phản hồi bạn.",
+    "appFailed": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "benefits": [
+      {
+        "title": "Nhận Hoa Hồng 5-15%",
+        "description": "Hoa hồng hấp dẫn cho mỗi đơn hàng qua liên kết giới thiệu của bạn"
+      },
+      {
+        "title": "Liên Kết Giới Thiệu Riêng",
+        "description": "Liên kết theo dõi được tạo tự động cho nội dung của bạn"
+      },
+      {
+        "title": "Hỗ Trợ Tận Tâm",
+        "description": "Quản lý tiếp thị liên kết riêng và nguồn tài nguyên độc quyền"
+      },
+      {
+        "title": "Phân Tích Thời Gian Thực",
+        "description": "Theo dõi lượt nhấp, chuyển đổi và hoa hồng theo thời gian thực"
+      }
+    ],
+    "dashboardLabel": "Bảng điều khiển"
+  },
+  "coupon": {
+    "applied": "Đã áp dụng mã ưu đãi! Bạn tiết kiệm {amount}",
+    "invalid": "Mã ưu đãi không hợp lệ",
+    "failed": "Không thể xác nhận mã ưu đãi",
+    "remove": "Xóa",
+    "apply": "Áp dụng",
+    "placeholder": "Mã ưu đãi",
+    "discount": "-{value}"
+  },
+  "chat": {
+    "welcome": "Xin chào! Tôi là trợ lý mua sắm cá nhân của bạn tại {siteName}. Tôi có thể giúp bạn tìm sản phẩm, so sánh lựa chọn, kiểm tra vận chuyển hoặc tìm hiểu về chúng tôi. Hôm nay tôi có thể giúp gì cho bạn?",
+    "quickQuestions": "Câu Hỏi Nhanh",
+    "title": "Trợ Lý Bán Hàng AI",
+    "openChat": "Mở trò chuyện",
+    "newConversation": "Bắt đầu cuộc trò chuyện mới",
+    "placeholder": "Hỏi tôi bất cứ điều gì...",
+    "failed": "Yêu cầu trò chuyện thất bại",
+    "fallback": "Tôi rất tiếc vì không thể hoàn tất yêu cầu đó{optional}. Vui lòng thử lại hoặc liên hệ đội ngũ hỗ trợ của chúng tôi.",
+    "poweredBy": "Vận hành bởi OpenAI — Nội dung do AI tạo.",
+    "popularProducts": "Sản Phẩm Phổ Biến",
+    "add": "Thêm",
+    "addedToCart": "{name} đã được thêm vào giỏ hàng!",
+    "suggested": [
+      "Tùy chọn giao hàng nhanh nhất là gì?",
+      "Bạn có bán sỉ hoặc giá theo lô không?",
+      "Chính sách trả hàng của bạn thế nào?",
+      "Cho tôi xem sản phẩm bán chạy",
+      "Bạn có giao hàng quốc tế không?",
+      "Làm sao để theo dõi đơn hàng của tôi?"
+    ]
+  },
+  "wishlist": {
+    "title": "Danh Sách Yêu Thích",
+    "empty": "Danh sách yêu thích của bạn đang trống",
+    "metaDescription": "Lưu các sản phẩm yêu thích và mua sắm bất cứ lúc nào."
+  }
+}

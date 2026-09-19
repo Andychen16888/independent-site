@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Cormorant_Garamond } from "next/font/google"
 import { NextIntlClientProvider } from "next-intl"
-import { getLocale, getMessages } from "next-intl/server"
+import { getLocale } from "next-intl/server"
 import { Providers } from "@/components/layout/Providers"
 import { FacebookPixel, GoogleAnalytics, GoogleAds } from "@/components/marketing/AdScripts"
 import {
@@ -106,10 +106,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [seo, locale, messages] = await Promise.all([
+  const [seo, locale] = await Promise.all([
     getSiteSeo(),
     getLocale(),
-    getMessages(),
   ])
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const dir = rtlLocales.has(locale) ? "rtl" : "ltr"
@@ -166,7 +165,7 @@ export default async function RootLayout({
       <GoogleAnalytics />
       <GoogleAds />
       <body className="min-h-screen bg-ivory text-charcoal antialiased">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>

@@ -10,7 +10,7 @@
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "prisma db seed",
+    "db:seed": "prisma generate && prisma db seed",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio"
   },

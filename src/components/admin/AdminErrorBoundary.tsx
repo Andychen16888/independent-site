@@ -1,6 +1,7 @@
 "use client"
 
 import { Component, type ErrorInfo, type ReactNode } from "react"
+import { bi } from "@/components/admin/bilingual"
 
 interface Props {
   children: ReactNode
@@ -29,7 +30,7 @@ export class AdminErrorBoundary extends Component<Props, State> {
     if (this.state.error) {
       return (
         <div className="p-8 bg-red-50 border border-red-200 m-4">
-          <h2 className="text-lg font-bold text-red-800 mb-2">Admin Render Error</h2>
+          <h2 className="text-lg font-bold text-red-800 mb-2">{bi("Admin Render Error", "管理后台渲染错误")}</h2>
           <p className="text-sm text-red-700 mb-2">{this.state.error.message}</p>
           <pre className="text-xs text-red-600 overflow-auto max-h-96 whitespace-pre-wrap">{this.state.error.stack}</pre>
         </div>

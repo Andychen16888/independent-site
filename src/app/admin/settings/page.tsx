@@ -4,18 +4,19 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { SETTING_KEYS, SETTING_GROUP_ORDER, type SettingGroup } from "@/lib/settings/keys"
 import ImageUploader from "@/components/admin/ImageUploader"
+import { bi } from "@/components/admin/bilingual"
 import StructuredContentEditor, {
   type StructuredSchema,
 } from "@/components/admin/StructuredContentEditor"
 
 const GROUP_TITLES: Record<SettingGroup, string> = {
-  site: "Site",
-  content: "Homepage Content",
-  contact: "Company & Contact",
-  social: "Social Media",
-  seo: "SEO",
-  shipping: "Shipping",
-  analytics: "Analytics",
+  site: bi("Site", "站点"),
+  content: bi("Homepage Content", "首页内容"),
+  contact: bi("Company & Contact", "公司与联系信息"),
+  social: bi("Social Media", "社交媒体"),
+  seo: bi("SEO", "搜索引擎优化"),
+  shipping: bi("Shipping", "配送"),
+  analytics: bi("Analytics", "统计分析"),
 }
 
 const STRUCTURED_FIELDS: Record<string, StructuredSchema> = {
@@ -130,7 +131,7 @@ export default function AdminSettingsPage() {
       .then((data) => {
         if (data.settings) setSettings(data.settings)
       })
-      .catch(() => toast.error("Failed to load settings"))
+      .catch(() => toast.error(bi("Failed to load settings", "加载设置失败")))
       .finally(() => setLoading(false))
   }, [])
 
@@ -148,11 +149,11 @@ export default function AdminSettingsPage() {
         body: JSON.stringify({ settings }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Save failed")
+      if (!res.ok) throw new Error(data.error || bi("Save failed", "保存失败"))
       if (data.settings) setSettings(data.settings)
-      toast.success("Settings saved")
+      toast.success(bi("Settings saved", "设置已保存"))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Save failed")
+      toast.error(e instanceof Error ? e.message : bi("Save failed", "保存失败"))
     } finally {
       setSaving(false)
     }
@@ -162,13 +163,13 @@ export default function AdminSettingsPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="heading-md">Settings</h1>
-          <p className="text-body text-sm mt-1">Configure store identity, contact, SEO, and shipping. Saved to the database and rendered on the storefront automatically.</p>
+          <h1 className="heading-md">{bi("Settings", "设置")}</h1>
+          <p className="text-body text-sm mt-1">{bi("Configure store identity, contact, SEO, and shipping.", "配置店铺品牌、联系信息、SEO 和配送设置。")} {bi("Saved to the database and rendered on the storefront automatically.", "保存后会写入数据库并自动显示在前台。")}</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-sm text-stone">Loading settings...</div>
+        <div className="text-sm text-stone">{bi("Loading settings...", "正在加载设置...")}</div>
       ) : (
         <form onSubmit={handleSave} className="max-w-3xl space-y-8">
           {SETTING_GROUP_ORDER.map((group) => {
@@ -188,8 +189,8 @@ export default function AdminSettingsPage() {
                             schema={schema}
                             value={currentValue}
                             onChange={(json) => update(meta.key, json)}
-                            description="Edit in plain text — no JSON needed. Changes show on the homepage after you click Save Settings."
-                          />
+                             description={bi("Edit in plain text — no JSON needed. Changes show on the homepage after you click Save Settings.", "可直接按字段编辑，无需 JSON。点击“保存设置”后会显示在首页。")}
+                           />
                         </div>
                       ) : isImageKey(meta.key) ? (
                         <ImageUploader value={currentValue} onChange={(url) => update(meta.key, url)} />
@@ -206,8 +207,8 @@ export default function AdminSettingsPage() {
                           onChange={(e) => update(meta.key, e.target.value)}
                           className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
                         >
-                          <option value="en">English</option>
-                          <option value="zh">中文</option>
+                           <option value="en">{bi("English", "英语")}</option>
+                           <option value="zh">{bi("Chinese", "中文")}</option>
                           <option value="es">Español</option>
                           <option value="fr">Français</option>
                           <option value="de">Deutsch</option>
@@ -245,7 +246,7 @@ export default function AdminSettingsPage() {
               disabled={saving}
               className="inline-flex items-center justify-center px-8 py-3 bg-charcoal text-white text-sm tracking-widest uppercase font-light transition-all duration-300 hover:bg-charcoal/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? "Saving..." : "Save Settings"}
+               {saving ? bi("Saving...", "保存中...") : bi("Save Settings", "保存设置")}
             </button>
           </div>
         </form>

@@ -8,6 +8,7 @@ import { TextStyle } from "@tiptap/extension-text-style"
 import { FontFamily } from "@tiptap/extension-font-family"
 import Placeholder from "@tiptap/extension-placeholder"
 import { FontSize } from "./FontSizeExtension"
+import { bi } from "@/components/admin/bilingual"
 
 const FONT_SIZES = ["12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px"]
 
@@ -47,7 +48,7 @@ function MenuBar({ editor }: { editor: Editor | null }) {
         }}
         className="text-xs border border-mist bg-white px-1 py-1 outline-none focus:border-charcoal"
       >
-        <option value="">Size</option>
+        <option value="">{bi("Size", "字号")}</option>
         {FONT_SIZES.map((size) => (
           <option key={size} value={size}>
             {size}
@@ -63,7 +64,7 @@ function MenuBar({ editor }: { editor: Editor | null }) {
         }}
         className="text-xs border border-mist bg-white px-1 py-1 outline-none focus:border-charcoal"
       >
-        <option value="">Font</option>
+        <option value="">{bi("Font", "字体")}</option>
         {FONT_FAMILIES.map((f) => (
           <option key={f.value} value={f.value}>
             {f.label}
@@ -126,7 +127,7 @@ function MenuBar({ editor }: { editor: Editor | null }) {
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={`px-1.5 py-0.5 text-xs rounded ${editor.isActive("bulletList") ? "bg-charcoal text-white" : "text-charcoal hover:bg-mist/50"}`}
       >
-        List
+        {bi("List", "列表")}
       </button>
       <button
         type="button"

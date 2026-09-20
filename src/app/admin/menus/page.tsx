@@ -1,7 +1,7 @@
 import MenuManager from "@/components/admin/MenuManager"
 
 export const metadata = {
-  title: "Menus",
+  title: "Menus / 菜单",
 }
 
 export default function AdminMenusPage() {

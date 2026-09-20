@@ -1,7 +1,7 @@
 import ProductManager from "@/components/admin/ProductManager"
 
 export const metadata = {
-  title: "Products",
+  title: "Products / 产品",
 }
 
 export default function AdminProductsPage() {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
@@ -26,7 +27,7 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
     fetch(`/api/admin/blog/${postId}`, { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error("Failed to load post")
+        if (!res.ok) throw new Error(bi("Failed to load post", "加载文章失败"))
         const data = await res.json()
         const p = data.post
         setForm({
@@ -70,8 +71,8 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
         body: JSON.stringify({ ...form, coverImage: form.coverImage || null, translations }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to save post")
-      toast.success(mode === "edit" ? "Post updated" : "Post created")
+      if (!res.ok) throw new Error(data.error || bi("Failed to save post", "保存文章失败"))
+      toast.success(mode === "edit" ? bi("Post updated", "文章已更新") : bi("Post created", "文章已创建"))
       router.push("/admin/blog")
       router.refresh()
     } catch (err: any) {
@@ -81,8 +82,8 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
     }
   }
 
-  if (loading) return <div className="text-sm text-stone p-8">Loading post...</div>
-  if (notFound) return <div className="text-sm text-rosegold p-8">Post not found.</div>
+  if (loading) return <div className="text-sm text-stone p-8">{bi("Loading post...", "正在加载文章...")}</div>
+  if (notFound) return <div className="text-sm text-rosegold p-8">{bi("Post not found.", "未找到文章。")}</div>
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
@@ -93,7 +94,7 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Title *</label>
+          <label className={label}>{bi("Title *", "标题 *")}</label>
           <input value={form.title} onChange={handleTitle} required className={input} />
         </div>
         <div>
@@ -104,33 +105,33 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Author</label>
+          <label className={label}>{bi("Author", "作者")}</label>
           <input value={form.author} onChange={(e) => update({ author: e.target.value })} className={input} />
         </div>
         <div>
-          <label className={label}>Tags (comma separated)</label>
+          <label className={label}>{bi("Tags (comma separated)", "标签（逗号分隔）")}</label>
           <input value={form.tags} onChange={(e) => update({ tags: e.target.value })} className={input} />
         </div>
       </div>
 
       <div>
-        <label className={label}>Excerpt</label>
+          <label className={label}>{bi("Excerpt", "摘要")}</label>
         <textarea value={form.excerpt} onChange={(e) => update({ excerpt: e.target.value })} rows={2} className={input} />
       </div>
 
       <div>
-        <label className={label}>Content *</label>
-        <RichEditor value={form.content} onChange={(html) => update({ content: html })} placeholder="Write your post..." minHeight={320} />
+          <label className={label}>{bi("Content *", "内容 *")}</label>
+          <RichEditor value={form.content} onChange={(html) => update({ content: html })} placeholder={bi("Write your post...", "输入文章内容...")} minHeight={320} />
       </div>
 
       <div>
-        <label className={label}>Cover Image</label>
+          <label className={label}>{bi("Cover Image", "封面图片")}</label>
         <ImageUploader value={form.coverImage} onChange={(url) => update({ coverImage: url })} />
       </div>
 
       <label className="flex items-center gap-2 text-sm cursor-pointer">
         <input type="checkbox" checked={form.isPublished} onChange={(e) => update({ isPublished: e.target.checked })} className="w-4 h-4" />
-        Published (visible on the storefront)
+        {bi("Published (visible on the storefront)", "发布（前台可见）")}
       </label>
 
       <div className="border-t border-mist pt-6 space-y-4">
@@ -150,15 +151,15 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
       </div>
 
       <div className="border-t border-mist pt-6 space-y-4">
-        <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">Translations</label>
+        <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">{bi("Translations", "多语言翻译")}</label>
         <TranslationsEditor value={translations} onChange={setTranslations} includeContent />
       </div>
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? "Saving..." : mode === "edit" ? "Save Post" : "Create Post"}
+          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Post", "保存文章") : bi("Create Post", "创建文章")}
         </button>
-        <button type="button" onClick={() => router.push("/admin/blog")} className="text-xs text-stone hover:text-charcoal transition-colors">Cancel</button>
+        <button type="button" onClick={() => router.push("/admin/blog")} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
       </div>
     </form>
   )

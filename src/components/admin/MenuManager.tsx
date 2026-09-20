@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 
 interface MenuRow {
   id: string
@@ -24,7 +25,7 @@ export default function MenuManager() {
     setError("")
     try {
       const res = await fetch("/api/admin/menus", { cache: "no-store" })
-      if (!res.ok) throw new Error("Failed to load menus")
+      if (!res.ok) throw new Error(bi("Failed to load menus", "加载菜单失败"))
       const data = await res.json()
       setRows(data.menus || [])
     } catch (e: any) {
@@ -50,29 +51,29 @@ export default function MenuManager() {
       <td className="px-4 py-3 text-xs text-stone">{m.sortOrder}</td>
       <td className="px-4 py-3">
         {m.isActive ? (
-          <span className="bg-sage/10 text-sage px-2 py-1 text-[10px] uppercase tracking-wider">Active</span>
+          <span className="bg-sage/10 text-sage px-2 py-1 text-[10px] uppercase tracking-wider">{bi("Active", "启用")}</span>
         ) : (
-          <span className="bg-rosegold/10 text-rosegold px-2 py-1 text-[10px] uppercase tracking-wider">Inactive</span>
+          <span className="bg-rosegold/10 text-rosegold px-2 py-1 text-[10px] uppercase tracking-wider">{bi("Inactive", "停用")}</span>
         )}
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2 text-[10px]">
-          <Link href={`/admin/menus/${m.id}`} className="btn-outline px-2 py-1.5 inline-flex items-center gap-1">Edit</Link>
+          <Link href={`/admin/menus/${m.id}`} className="btn-outline px-2 py-1.5 inline-flex items-center gap-1">{bi("Edit", "编辑")}</Link>
           <button
             onClick={async () => {
-              if (!confirm(`Delete menu item "${m.label}"?`)) return
+              if (!confirm(`${bi("Delete menu item", "删除菜单项")} "${m.label}"?`)) return
               const res = await fetch(`/api/admin/menus/${m.id}`, { method: "DELETE" })
               const data = await res.json()
               if (!res.ok) {
-                toast.error(data.error || "Delete failed")
+                toast.error(data.error || bi("Delete failed", "删除失败"))
                 return
               }
-              toast.success("Item deleted")
+              toast.success(bi("Item deleted", "菜单项已删除"))
               load()
             }}
             className="text-rosegold hover:underline"
           >
-            Delete
+            {bi("Delete", "删除")}
           </button>
         </div>
       </td>
@@ -86,29 +87,29 @@ export default function MenuManager() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="heading-md">Navigation Menu</h1>
-          <p className="text-body text-sm mt-1">{rows.length} menu items — ordered by sort order in the storefront header.</p>
+          <h1 className="heading-md">{bi("Navigation Menu", "导航菜单")}</h1>
+          <p className="text-body text-sm mt-1">{rows.length} {bi("menu items — ordered by sort order in the storefront header.", "个菜单项，按排序值显示在前台头部。")}</p>
         </div>
-        <Link href="/admin/menus/new" className="btn-primary text-xs">Add Menu Item</Link>
+        <Link href="/admin/menus/new" className="btn-primary text-xs">{bi("Add Menu Item", "添加菜单项")}</Link>
       </div>
 
       {error && <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3 mb-6">{error}</div>}
 
       {loading ? (
-        <div className="text-sm text-stone py-12 text-center">Loading menu...</div>
+        <div className="text-sm text-stone py-12 text-center">{bi("Loading menu...", "正在加载菜单...")}</div>
       ) : rows.length === 0 ? (
         <div className="bg-white border border-mist p-12 text-center text-sm text-stone">
-          No menu items yet. Click &ldquo;Add Menu Item&rdquo; to build the navigation.
+          {bi("No menu items yet. Click", "暂无菜单项，点击")} &ldquo;{bi("Add Menu Item", "添加菜单项")}&rdquo; {bi("to build the navigation.", "开始构建导航。")}
         </div>
       ) : (
         <div className="bg-white border border-mist">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mist text-left">
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Item</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Order</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Item", "菜单项")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Order", "排序")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Actions", "操作")}</th>
               </tr>
             </thead>
             <tbody>{topLevel.map((m) => renderRow(m, 0))}</tbody>

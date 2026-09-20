@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
 import ImageUploader from "@/components/admin/ImageUploader"
 
@@ -34,7 +35,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
     fetch(`/api/admin/categories/${categoryId}`, { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error("Failed to load category")
+        if (!res.ok) throw new Error(bi("Failed to load category", "加载分类失败"))
         const data = await res.json()
         const c = data.category
         setForm({
@@ -73,8 +74,8 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to save category")
-      toast.success(mode === "edit" ? "Category updated" : "Category created")
+      if (!res.ok) throw new Error(data.error || bi("Failed to save category", "保存分类失败"))
+      toast.success(mode === "edit" ? bi("Category updated", "分类已更新") : bi("Category created", "分类已创建"))
       router.push("/admin/categories")
       router.refresh()
     } catch (err: any) {
@@ -84,8 +85,8 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
     }
   }
 
-  if (loading) return <div className="text-sm text-stone p-8">Loading category...</div>
-  if (notFound) return <div className="text-sm text-rosegold p-8">Category not found.</div>
+  if (loading) return <div className="text-sm text-stone p-8">{bi("Loading category...", "正在加载分类...")}</div>
+  if (notFound) return <div className="text-sm text-rosegold p-8">{bi("Category not found.", "未找到分类。")}</div>
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
@@ -96,7 +97,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Name *</label>
+          <label className={label}>{bi("Name *", "名称 *")}</label>
           <input value={form.name} onChange={handleName} required className={input} />
         </div>
         <div>
@@ -107,14 +108,14 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Parent Category</label>
+          <label className={label}>{bi("Parent Category", "父级分类")}</label>
           <select value={form.parentId} onChange={(e) => update({ parentId: e.target.value })} className={input}>
-            <option value="">None (top-level)</option>
+            <option value="">{bi("None (top-level)", "无（顶级）")}</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
         <div>
-          <label className={label}>Type</label>
+          <label className={label}>{bi("Type", "类型")}</label>
           <select value={form.type} onChange={(e) => update({ type: e.target.value })} className={input}>
             <option value="GENERAL">General</option>
             <option value="ELECTRONICS">Electronics</option>
@@ -126,52 +127,52 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Display Sort Order</label>
+          <label className={label}>{bi("Display Sort Order", "显示排序")}</label>
           <input type="number" value={form.sortOrder} onChange={(e) => update({ sortOrder: e.target.value })} className={input} />
         </div>
         <div className="flex items-end gap-6 pb-2">
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" checked={form.isActive} onChange={(e) => update({ isActive: e.target.checked })} className="w-4 h-4" />
-            Active
+            {bi("Active", "启用")}
           </label>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" checked={form.isFeatured} onChange={(e) => update({ isFeatured: e.target.checked })} className="w-4 h-4" />
-            Featured
+            {bi("Featured", "推荐")}
           </label>
         </div>
       </div>
 
       <div>
-        <label className={label}>Description</label>
+          <label className={label}>{bi("Description", "描述")}</label>
         <textarea value={form.description} onChange={(e) => update({ description: e.target.value })} rows={3} className={input} />
       </div>
 
       <div>
-        <label className={label}>Listing Image</label>
+          <label className={label}>{bi("Listing Image", "列表图片")}</label>
         <ImageUploader value={form.image} onChange={(url) => update({ image: url })} />
       </div>
 
       <div className="border-t border-mist pt-6 space-y-4">
         <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">SEO</label>
         <div>
-          <label className={label}>SEO Title</label>
+          <label className={label}>{bi("SEO Title", "SEO 标题")}</label>
           <input value={form.seoTitle} onChange={(e) => update({ seoTitle: e.target.value })} className={input} />
         </div>
         <div>
-          <label className={label}>SEO Description</label>
+          <label className={label}>{bi("SEO Description", "SEO 描述")}</label>
           <textarea value={form.seoDescription} onChange={(e) => update({ seoDescription: e.target.value })} rows={2} className={input} />
         </div>
         <div>
-          <label className={label}>SEO Keywords</label>
+          <label className={label}>{bi("SEO Keywords", "SEO 关键词")}</label>
           <input value={form.seoKeywords} onChange={(e) => update({ seoKeywords: e.target.value })} className={input} />
         </div>
       </div>
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? "Saving..." : mode === "edit" ? "Save Category" : "Create Category"}
+          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Category", "保存分类") : bi("Create Category", "创建分类")}
         </button>
-        <button type="button" onClick={() => router.push("/admin/categories")} className="text-xs text-stone hover:text-charcoal transition-colors">Cancel</button>
+        <button type="button" onClick={() => router.push("/admin/categories")} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
       </div>
     </form>
   )

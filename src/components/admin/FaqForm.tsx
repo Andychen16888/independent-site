@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { localeNames } from "@/i18n/routing"
+import { bi } from "@/components/admin/bilingual"
 
 const LOCALES: string[] = ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
 
@@ -35,7 +36,7 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
     fetch(`/api/admin/faqs/${faqId}`, { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error("Failed to load FAQ")
+        if (!res.ok) throw new Error(bi("Failed to load FAQ", "加载 FAQ 失败"))
         const data = await res.json()
         const f = data.faq
         setSortOrder(f.sortOrder ?? 0)
@@ -64,7 +65,7 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
     e.preventDefault()
     const en = translations.en
     if (!en.question.trim() && !en.answer.trim()) {
-      setError("The English question is required.")
+      setError(bi("The English question is required.", "英文问题为必填项。"))
       return
     }
     setSaving(true)
@@ -80,8 +81,8 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
         body: JSON.stringify({ sortOrder, isActive, translations: payload }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to save FAQ")
-      toast.success(mode === "edit" ? "FAQ updated" : "FAQ created")
+      if (!res.ok) throw new Error(data.error || bi("Failed to save FAQ", "保存 FAQ 失败"))
+      toast.success(mode === "edit" ? bi("FAQ updated", "FAQ 已更新") : bi("FAQ created", "FAQ 已创建"))
       router.push("/admin/faq")
       router.refresh()
     } catch (err: any) {
@@ -91,8 +92,8 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
     }
   }
 
-  if (loading) return <div className="text-sm text-stone p-8">Loading FAQ...</div>
-  if (notFound) return <div className="text-sm text-rosegold p-8">FAQ not found.</div>
+  if (loading) return <div className="text-sm text-stone p-8">{bi("Loading FAQ...", "正在加载 FAQ...")}</div>
+  if (notFound) return <div className="text-sm text-rosegold p-8">{bi("FAQ not found.", "未找到 FAQ。")}</div>
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
@@ -103,18 +104,18 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Sort Order</label>
+          <label className={label}>{bi("Sort Order", "排序")}</label>
           <input type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} className={input} />
         </div>
         <label className="flex items-end gap-2 text-sm cursor-pointer pb-2">
           <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="w-4 h-4" />
-          Active (visible on the FAQ page)
+          {bi("Active (visible on the FAQ page)", "启用（在 FAQ 页面可见）")}
         </label>
       </div>
 
       <div>
         <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-2">
-          Question &amp; Answer
+          {bi("Question & Answer", "问题与答案")}
         </label>
         <div className="flex flex-wrap gap-1.5 mb-4">
           {LOCALES.map((l) => {
@@ -132,7 +133,7 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
               >
                 {localeNames[l]}
                 <span className={`ml-1.5 ${hasContent ? "text-sage" : "text-stone"}`}>
-                  {hasContent ? "fill" : "empty"}
+                  {hasContent ? bi("fill", "已填写") : bi("empty", "未填写")}
                 </span>
               </button>
             )
@@ -142,7 +143,7 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
         <div className="space-y-4 border border-mist bg-white p-4">
           <div className="text-[10px] uppercase tracking-wider text-stone font-medium">{localeNames[activeLocale]}</div>
           <div>
-            <label className={label}>Question</label>
+            <label className={label}>{bi("Question", "问题")}</label>
             <textarea
               value={translations[activeLocale]?.question || ""}
               onChange={(e) => updateLocale(activeLocale, { question: e.target.value })}
@@ -152,7 +153,7 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
             />
           </div>
           <div>
-            <label className={label}>Answer</label>
+            <label className={label}>{bi("Answer", "答案")}</label>
             <textarea
               value={translations[activeLocale]?.answer || ""}
               onChange={(e) => updateLocale(activeLocale, { answer: e.target.value })}
@@ -165,9 +166,9 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? "Saving..." : mode === "edit" ? "Save FAQ" : "Create FAQ"}
+          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save FAQ", "保存 FAQ") : bi("Create FAQ", "创建 FAQ")}
         </button>
-        <button type="button" onClick={() => router.push("/admin/faq")} className="text-xs text-stone hover:text-charcoal transition-colors">Cancel</button>
+        <button type="button" onClick={() => router.push("/admin/faq")} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
       </div>
     </form>
   )

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 
 interface BannerRow {
   id: string
@@ -25,7 +26,7 @@ export default function BannerManager() {
     setError("")
     try {
       const res = await fetch("/api/admin/banners", { cache: "no-store" })
-      if (!res.ok) throw new Error("Failed to load banners")
+      if (!res.ok) throw new Error(bi("Failed to load banners", "加载横幅失败"))
       const data = await res.json()
       setRows(data.banners || [])
     } catch (e: any) {
@@ -43,19 +44,19 @@ export default function BannerManager() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="heading-md">Banners</h1>
-          <p className="text-body text-sm mt-1">{rows.length} banners — ordered by sort order on the homepage.</p>
+          <h1 className="heading-md">{bi("Banners", "横幅")}</h1>
+          <p className="text-body text-sm mt-1">{rows.length} {bi("banners — ordered by sort order on the homepage.", "个横幅，按排序值显示在首页。")}</p>
         </div>
-        <Link href="/admin/banners/new" className="btn-primary text-xs">Add Banner</Link>
+        <Link href="/admin/banners/new" className="btn-primary text-xs">{bi("Add Banner", "添加横幅")}</Link>
       </div>
 
       {error && <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3 mb-6">{error}</div>}
 
       {loading ? (
-        <div className="text-sm text-stone py-12 text-center">Loading banners...</div>
+        <div className="text-sm text-stone py-12 text-center">{bi("Loading banners...", "正在加载横幅...")}</div>
       ) : rows.length === 0 ? (
         <div className="bg-white border border-mist p-12 text-center text-sm text-stone">
-          No banners yet. Click &ldquo;Add Banner&rdquo; to get started.
+          {bi("No banners yet. Click", "暂无横幅，点击")} &ldquo;{bi("Add Banner", "添加横幅")}&rdquo; {bi("to get started.", "开始创建。")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -65,25 +66,25 @@ export default function BannerManager() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{b.title}</p>
-                  {!b.isActive && <span className="bg-rosegold/10 text-rosegold px-2 py-0.5 text-[10px] uppercase tracking-wider">Inactive</span>}
+                  {!b.isActive && <span className="bg-rosegold/10 text-rosegold px-2 py-0.5 text-[10px] uppercase tracking-wider">{bi("Inactive", "停用")}</span>}
                   {b.eyebrow && <span className="text-xs text-stone">{b.eyebrow}</span>}
                 </div>
                 {b.subtitle && <p className="text-xs text-stone truncate">{b.subtitle}</p>}
-                <p className="text-xs text-mist mt-1">Order {b.sortOrder}{b.link ? ` · ${b.link}` : ""}</p>
+                <p className="text-xs text-mist mt-1">{bi("Order", "排序")} {b.sortOrder}{b.link ? ` · ${b.link}` : ""}</p>
               </div>
               <div className="flex items-center gap-3 text-[10px] shrink-0">
-                <Link href={`/admin/banners/${b.id}`} className="btn-outline px-3 py-1.5 inline-flex items-center gap-1">Edit</Link>
+                <Link href={`/admin/banners/${b.id}`} className="btn-outline px-3 py-1.5 inline-flex items-center gap-1">{bi("Edit", "编辑")}</Link>
                 <button
                   onClick={async () => {
-                    if (!confirm(`Delete banner "${b.title}"?`)) return
+                    if (!confirm(`${bi("Delete banner", "删除横幅")} "${b.title}"?`)) return
                     const res = await fetch(`/api/admin/banners/${b.id}`, { method: "DELETE" })
-                    if (!res.ok) { toast.error("Delete failed"); return }
-                    toast.success("Banner deleted")
+                    if (!res.ok) { toast.error(bi("Delete failed", "删除失败")); return }
+                    toast.success(bi("Banner deleted", "横幅已删除"))
                     load()
                   }}
                   className="text-rosegold hover:underline"
                 >
-                  Delete
+                  {bi("Delete", "删除")}
                 </button>
               </div>
             </div>

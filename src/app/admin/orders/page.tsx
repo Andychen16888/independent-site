@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { formatPrice, formatDateShort } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 
 export const dynamic = "force-dynamic"
 
@@ -32,23 +33,23 @@ export default async function AdminOrdersPage() {
     <div>
       <div className="mb-8">
         <h1 className="heading-md">Orders</h1>
-        <p className="text-body text-sm mt-1">View and manage customer orders. ({orders.length} total)</p>
+        <p className="text-body text-sm mt-1">{bi("View and manage customer orders.", "查看并管理客户订单。")} ({orders.length} {bi("total", "总计")})</p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">No orders yet.</div>
+        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">{bi("No orders yet.", "暂无订单。")}</div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mist text-left">
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Order</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Customer</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Items</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Total</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Payment</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Date</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Order", "订单")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Customer", "客户")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Items", "商品数")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Total", "总额")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Payment", "支付")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Date", "日期")}</th>
               </tr>
             </thead>
             <tbody>

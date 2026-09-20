@@ -1,7 +1,7 @@
 import BannerManager from "@/components/admin/BannerManager"
 
 export const metadata = {
-  title: "Banners",
+  title: "Banners / 横幅",
 }
 
 export default function AdminBannersPage() {

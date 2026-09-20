@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
@@ -74,7 +75,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     fetch(`/api/admin/products/${productId}`, { signal: controller.signal })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error("Failed to load product")
+        if (!res.ok) throw new Error(bi("Failed to load product", "加载产品失败"))
         const data = await res.json()
         const p = data.product
         setForm({
@@ -94,7 +95,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         }
       })
       .catch((err: any) => {
-        if (err.name === "AbortError") setError("Request timed out.")
+        if (err.name === "AbortError") setError(bi("Request timed out.", "请求超时。"))
         else setError(err.message)
       })
       .finally(() => { clearTimeout(timeout); setLoading(false) })
@@ -118,15 +119,15 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   // --- Images ---
   async function handleFile(file: File | undefined | null) {
     if (!file) return
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) { setError("Invalid image type"); return }
-    if (file.size > MAX_IMAGE_SIZE) { setError("File too large (max 5MB)"); return }
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) { setError(bi("Invalid image type", "图片类型无效")); return }
+    if (file.size > MAX_IMAGE_SIZE) { setError(bi("File too large (max 5MB)", "文件过大（最大 5MB）")); return }
     setUploading(true)
     try {
       const fd = new FormData()
       fd.append("file", file)
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Upload failed")
+      if (!res.ok) throw new Error(data.error || bi("Upload failed", "上传失败"))
       setImages((prev) => [...prev, { url: data.url, alt: "", isPrimary: prev.length === 0 }])
     } catch (e: any) {
       setError(e.message)
@@ -204,8 +205,8 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         body: JSON.stringify(payload),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to save product")
-      toastSuccess(mode === "edit" ? "Product updated" : "Product created")
+      if (!res.ok) throw new Error(data.error || bi("Failed to save product", "保存产品失败"))
+      toastSuccess(mode === "edit" ? bi("Product updated", "产品已更新") : bi("Product created", "产品已创建"))
       router.push("/admin/products")
       router.refresh()
     } catch (err: any) {
@@ -219,8 +220,8 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     toast.success(msg)
   }
 
-  if (loading) return <div className="text-sm text-stone p-8">Loading product...</div>
-  if (notFound) return <div className="text-sm text-rosegold p-8">Product not found.</div>
+  if (loading) return <div className="text-sm text-stone p-8">{bi("Loading product...", "正在加载产品...")}</div>
+  if (notFound) return <div className="text-sm text-rosegold p-8">{bi("Product not found.", "未找到产品。")}</div>
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
@@ -231,29 +232,29 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Name *</label>
+          <label className={label}>{bi("Name *", "名称 *")}</label>
           <input name="name" value={form.name} onChange={handleChange} required className={input} />
         </div>
         <div>
-          <label className={label}>Brand</label>
-          <input name="brand" value={form.brand} onChange={handleChange} placeholder="e.g. Sony, Philips" className={input} />
+          <label className={label}>{bi("Brand", "品牌")}</label>
+          <input name="brand" value={form.brand} onChange={handleChange} placeholder={bi("e.g. Sony, Philips", "例如：Sony、Philips")} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Model</label>
-          <input name="model" value={form.model} onChange={handleChange} placeholder="e.g. Xperia 1 VII" className={input} />
+          <label className={label}>{bi("Model", "型号")}</label>
+          <input name="model" value={form.model} onChange={handleChange} placeholder={bi("e.g. Xperia 1 VII", "例如：Xperia 1 VII")} className={input} />
         </div>
         <div>
-          <label className={label}>Tags (comma separated)</label>
-          <input name="tags" value={form.tags} onChange={handleChange} placeholder="e.g. new, hot, wireless" className={input} />
+          <label className={label}>{bi("Tags (comma separated)", "标签（逗号分隔）")}</label>
+          <input name="tags" value={form.tags} onChange={handleChange} placeholder={bi("e.g. new, hot, wireless", "例如：new, hot, wireless")} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className={label}>Slug</label>
+          <label className={label}>{bi("Slug", "短链接")}</label>
           <input name="slug" value={form.slug} onChange={handleChange} className={input} />
         </div>
         <div>
@@ -261,19 +262,19 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
           <input name="sku" value={form.sku} onChange={handleChange} className={input} />
         </div>
         <div>
-          <label className={label}>Stock</label>
+          <label className={label}>{bi("Stock", "库存")}</label>
           <input name="stock" type="number" min="0" value={form.stock} onChange={handleChange} className={input} />
         </div>
       </div>
 
       <div>
-        <label className={label}>Description *</label>
-        <RichEditor value={form.description} onChange={(html) => updateForm({ description: html })} placeholder="Enter product description..." minHeight={200} />
+          <label className={label}>{bi("Description *", "描述 *")}</label>
+          <RichEditor value={form.description} onChange={(html) => updateForm({ description: html })} placeholder={bi("Enter product description...", "请输入产品描述...")} minHeight={200} />
       </div>
 
       <div>
-        <label className={label}>Short Description</label>
-        <RichEditor value={form.shortDescription} onChange={(html) => updateForm({ shortDescription: html })} placeholder="Brief summary for listings..." minHeight={100} />
+          <label className={label}>{bi("Short Description", "简短描述")}</label>
+          <RichEditor value={form.shortDescription} onChange={(html) => updateForm({ shortDescription: html })} placeholder={bi("Brief summary for listings...", "用于列表展示的简短摘要...")} minHeight={100} />
       </div>
 
       <div className="grid grid-cols-4 gap-4">
@@ -297,26 +298,26 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={label}>Status</label>
+          <label className={label}>{bi("Status", "状态")}</label>
           <select name="status" value={form.status} onChange={handleChange} className={input}>
-            <option value="ACTIVE">Active</option>
-            <option value="DRAFT">Draft</option>
-            <option value="INACTIVE">Inactive</option>
-            <option value="ARCHIVED">Archived</option>
+            <option value="ACTIVE">{bi("Active", "在售")}</option>
+            <option value="DRAFT">{bi("Draft", "草稿")}</option>
+            <option value="INACTIVE">{bi("Inactive", "下架")}</option>
+            <option value="ARCHIVED">{bi("Archived", "归档")}</option>
           </select>
         </div>
         <div>
-          <label className={label}>Display Sort Order</label>
+          <label className={label}>{bi("Display Sort Order", "显示排序")}</label>
           <input name="sortOrder" type="number" value={form.sortOrder} onChange={handleChange} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {([
-          ["isFeatured", "Featured"],
-          ["isBestSeller", "Best Seller"],
-          ["isNew", "New"],
-          ["isHomeFeatured", "Show on Homepage"],
+          ["isFeatured", bi("Featured", "推荐")],
+          ["isBestSeller", bi("Best Seller", "热销")],
+          ["isNew", bi("New", "新品")],
+          ["isHomeFeatured", bi("Show on Homepage", "首页展示")],
         ] as [keyof ProductFormData, string][]).map(([key, labelText]) => (
           <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" checked={Boolean(form[key])} onChange={() => toggleFlag(key)} className="w-4 h-4" />
@@ -423,10 +424,10 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? "Saving..." : mode === "edit" ? "Save Product" : "Create Product"}
+          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Product", "保存产品") : bi("Create Product", "创建产品")}
         </button>
         <button type="button" onClick={() => router.push("/admin/products")} className="text-xs text-stone hover:text-charcoal transition-colors">
-          Cancel
+          {bi("Cancel", "取消")}
         </button>
       </div>
     </form>

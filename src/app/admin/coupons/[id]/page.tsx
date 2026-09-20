@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { bi } from "@/components/admin/bilingual"
 
 interface Coupon {
   id: string
@@ -48,7 +49,7 @@ export default function EditCouponPage() {
           setNotFound(true)
           return
         }
-        if (!res.ok) throw new Error("Failed to load coupon")
+        if (!res.ok) throw new Error(bi("Failed to load coupon", "加载优惠券失败"))
         const data = await res.json()
         const c: Coupon = data.coupon
         setForm({
@@ -93,7 +94,7 @@ export default function EditCouponPage() {
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || "Failed to update coupon")
+        throw new Error(data.error || bi("Failed to update coupon", "更新优惠券失败"))
       }
 
       router.push("/admin/coupons")
@@ -106,19 +107,19 @@ export default function EditCouponPage() {
   }
 
   if (loading) {
-    return <div className="text-sm text-stone py-8">Loading...</div>
+    return <div className="text-sm text-stone py-8">{bi("Loading...", "加载中...")}</div>
   }
 
   if (notFound) {
-    return <div className="text-sm text-rosegold py-8">Coupon not found.</div>
+    return <div className="text-sm text-rosegold py-8">{bi("Coupon not found.", "未找到优惠券。")}</div>
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="heading-md">Edit Coupon</h1>
-          <p className="text-body text-sm mt-1">Update coupon details.</p>
+          <h1 className="heading-md">{bi("Edit Coupon", "编辑优惠券")}</h1>
+          <p className="text-body text-sm mt-1">{bi("Update coupon details.", "更新优惠券详情。")}</p>
         </div>
       </div>
 
@@ -128,7 +129,7 @@ export default function EditCouponPage() {
         )}
 
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Coupon Code *</label>
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Coupon Code *", "优惠码 *")}</label>
           <input
             name="code"
             value={form.code}
@@ -140,31 +141,31 @@ export default function EditCouponPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Coupon Type</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Coupon Type", "优惠券类型")}</label>
             <select
               name="type"
               value={form.type}
               onChange={handleChange}
               className="w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
             >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-              <option value="WELCOME">Welcome</option>
-              <option value="REFERRAL">Referral</option>
-              <option value="ABANDONED_CART">Abandoned Cart</option>
+              <option value="PUBLIC">{bi("Public", "公开")}</option>
+              <option value="PRIVATE">{bi("Private", "私有")}</option>
+              <option value="WELCOME">{bi("Welcome", "欢迎")}</option>
+              <option value="REFERRAL">{bi("Referral", "推荐")}</option>
+              <option value="ABANDONED_CART">{bi("Abandoned Cart", "弃单挽回")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Discount Type</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Discount Type", "折扣类型")}</label>
             <select
               name="discountType"
               value={form.discountType}
               onChange={handleChange}
               className="w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
             >
-              <option value="PERCENTAGE">Percentage</option>
-              <option value="FIXED_AMOUNT">Fixed Amount</option>
-              <option value="FREE_SHIPPING">Free Shipping</option>
+              <option value="PERCENTAGE">{bi("Percentage", "百分比")}</option>
+              <option value="FIXED_AMOUNT">{bi("Fixed Amount", "固定金额")}</option>
+              <option value="FREE_SHIPPING">{bi("Free Shipping", "包邮")}</option>
             </select>
           </div>
         </div>
@@ -172,7 +173,7 @@ export default function EditCouponPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">
-              {form.discountType === "PERCENTAGE" ? "Discount (%) *" : form.discountType === "FIXED_AMOUNT" ? "Discount ($) *" : "Discount Value"}
+              {form.discountType === "PERCENTAGE" ? bi("Discount (%) *", "折扣 (%) *") : form.discountType === "FIXED_AMOUNT" ? bi("Discount ($) *", "折扣金额 ($) *") : bi("Discount Value", "折扣值")}
             </label>
             <input
               name="discountValue"
@@ -187,7 +188,7 @@ export default function EditCouponPage() {
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Min. Order Amount</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Min. Order Amount", "最低订单金额")}</label>
             <input
               name="minOrderAmount"
               type="number"
@@ -202,7 +203,7 @@ export default function EditCouponPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Max Discount ($)</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Max Discount ($)", "最大折扣 ($)")}</label>
             <input
               name="maxDiscount"
               type="number"
@@ -214,7 +215,7 @@ export default function EditCouponPage() {
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Max Uses</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Max Uses", "最大使用次数")}</label>
             <input
               name="maxUses"
               type="number"
@@ -227,7 +228,7 @@ export default function EditCouponPage() {
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Max Uses Per User</label>
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Max Uses Per User", "每位用户最大使用次数")}</label>
           <input
             name="maxUsesPerUser"
             type="number"
@@ -240,7 +241,7 @@ export default function EditCouponPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Start Date</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Start Date", "开始时间")}</label>
             <input
               name="startsAt"
               type="datetime-local"
@@ -250,7 +251,7 @@ export default function EditCouponPage() {
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Expiry Date</label>
+            <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Expiry Date", "结束时间")}</label>
             <input
               name="expiresAt"
               type="datetime-local"
@@ -269,15 +270,15 @@ export default function EditCouponPage() {
             onChange={handleChange}
             className="w-4 h-4 border-mist"
           />
-          <label className="text-sm text-stone">Active</label>
+          <label className="text-sm text-stone">{bi("Active", "启用")}</label>
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-mist">
           <button type="submit" disabled={saving} className="btn-primary text-xs">
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? bi("Saving...", "保存中...") : bi("Save Changes", "保存更改")}
           </button>
           <button type="button" onClick={() => router.push("/admin/coupons")} className="text-xs text-stone hover:text-charcoal transition-colors">
-            Cancel
+            {bi("Cancel", "取消")}
           </button>
         </div>
       </form>

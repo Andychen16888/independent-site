@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort, truncate } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 import DeleteBlogButton from "@/components/admin/DeleteBlogButton"
 
 export const dynamic = "force-dynamic"
@@ -24,25 +25,25 @@ export default async function AdminBlogPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="heading-md">Blog Posts</h1>
-          <p className="text-body text-sm mt-1">Manage your journal content. ({posts.length} total)</p>
+          <h1 className="heading-md">{bi("Blog Posts", "博客文章")}</h1>
+          <p className="text-body text-sm mt-1">{bi("Manage your journal content.", "管理博客内容。")} ({posts.length} {bi("total", "总计")})</p>
         </div>
-        <Link href="/admin/blog/new" className="btn-primary text-xs">New Post</Link>
+        <Link href="/admin/blog/new" className="btn-primary text-xs">{bi("New Post", "新建文章")}</Link>
       </div>
 
       {posts.length === 0 ? (
-        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">No posts yet.</div>
+        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">{bi("No posts yet.", "暂无文章。")}</div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mist text-left">
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Title</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Author</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Comments</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Published</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Title", "标题")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Author", "作者")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Comments", "评论")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Published", "发布时间")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Actions", "操作")}</th>
               </tr>
             </thead>
             <tbody>
@@ -58,7 +59,7 @@ export default async function AdminBlogPage() {
                     <span className={`text-[10px] uppercase tracking-wider px-2 py-1 ${
                       post.isPublished ? "bg-sage/10 text-sage" : "bg-stone/10 text-stone"
                     }`}>
-                      {post.isPublished ? "Published" : "Draft"}
+                      {post.isPublished ? bi("Published", "已发布") : bi("Draft", "草稿")}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-xs text-stone">
@@ -66,7 +67,7 @@ export default async function AdminBlogPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 text-[10px]">
-                      <Link href={`/admin/blog/${post.id}`} className="btn-outline px-2 py-1.5 inline-flex items-center gap-1">Edit</Link>
+                      <Link href={`/admin/blog/${post.id}`} className="btn-outline px-2 py-1.5 inline-flex items-center gap-1">{bi("Edit", "编辑")}</Link>
                       <DeleteBlogButton id={post.id} title={post.title} />
                     </div>
                   </td>

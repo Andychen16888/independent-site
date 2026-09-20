@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { formatDateShort, formatPrice } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 
 interface Referral {
   id: string
@@ -46,7 +47,7 @@ export default function EditAffiliatePage() {
           setNotFound(true)
           return
         }
-        if (!res.ok) throw new Error("Failed to load affiliate")
+        if (!res.ok) throw new Error(bi("Failed to load affiliate", "加载联盟成员失败"))
         const data = await res.json()
         const a: Affiliate = data.affiliate
         setAffiliate(a)
@@ -76,7 +77,7 @@ export default function EditAffiliatePage() {
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || "Failed to update affiliate")
+        throw new Error(data.error || bi("Failed to update affiliate", "更新联盟成员失败"))
       }
 
       router.refresh()
@@ -89,20 +90,20 @@ export default function EditAffiliatePage() {
   }
 
   if (loading) {
-    return <div className="text-sm text-stone py-8">Loading...</div>
+    return <div className="text-sm text-stone py-8">{bi("Loading...", "加载中...")}</div>
   }
 
   if (notFound) {
-    return <div className="text-sm text-rosegold py-8">Affiliate not found.</div>
+    return <div className="text-sm text-rosegold py-8">{bi("Affiliate not found.", "未找到联盟成员。")}</div>
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="heading-md">Affiliate Details</h1>
+          <h1 className="heading-md">{bi("Affiliate Details", "联盟成员详情")}</h1>
           <p className="text-body text-sm mt-1">
-            {[affiliate?.user.firstName, affiliate?.user.lastName].filter(Boolean).join(" ") || affiliate?.user.email} &middot; Code: {affiliate?.code}
+             {[affiliate?.user.firstName, affiliate?.user.lastName].filter(Boolean).join(" ") || affiliate?.user.email} &middot; {bi("Code", "代码")}: {affiliate?.code}
           </p>
         </div>
         <button
@@ -110,7 +111,7 @@ export default function EditAffiliatePage() {
           onClick={() => router.push("/admin/affiliates")}
           className="text-xs text-stone hover:text-charcoal transition-colors"
         >
-          &larr; Back
+          &larr; {bi("Back", "返回")}
         </button>
       </div>
 
@@ -120,42 +121,42 @@ export default function EditAffiliatePage() {
 
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
         <div className="bg-white border border-mist p-6">
-          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">Total Earned</p>
+          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">{bi("Total Earned", "累计收入")}</p>
           <p className="text-xl font-serif">
             {affiliate ? formatPrice(Number(affiliate.totalEarned)) : "$0.00"}
           </p>
         </div>
         <div className="bg-white border border-mist p-6">
-          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">Withdrawn</p>
+          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">{bi("Withdrawn", "已提现")}</p>
           <p className="text-xl font-serif">
             {affiliate ? formatPrice(Number(affiliate.totalWithdrawn)) : "$0.00"}
           </p>
         </div>
         <div className="bg-white border border-mist p-6">
-          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">Referrals</p>
+          <p className="text-[10px] uppercase tracking-wider text-stone font-medium mb-1">{bi("Referrals", "推荐数")}</p>
           <p className="text-xl font-serif">{affiliate?.referrals.length || 0}</p>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white border border-mist p-6">
-          <h3 className="font-serif text-base mb-4">Edit Affiliate</h3>
+          <h3 className="font-serif text-base mb-4">{bi("Edit Affiliate", "编辑联盟成员")}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Status</label>
+              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Status", "状态")}</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
               >
-                <option value="PENDING">Pending</option>
-                <option value="APPROVED">Approved</option>
-                <option value="REJECTED">Rejected</option>
-                <option value="SUSPENDED">Suspended</option>
+                <option value="PENDING">{bi("Pending", "待审核")}</option>
+                <option value="APPROVED">{bi("Approved", "已批准")}</option>
+                <option value="REJECTED">{bi("Rejected", "已拒绝")}</option>
+                <option value="SUSPENDED">{bi("Suspended", "已暂停")}</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">Commission Rate (%)</label>
+              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("Commission Rate (%)", "佣金比例 (%)")}</label>
               <input
                 type="number"
                 step="0.01"
@@ -167,7 +168,7 @@ export default function EditAffiliatePage() {
               />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">PayPal Email</label>
+              <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1.5">{bi("PayPal Email", "PayPal 邮箱")}</label>
               <input
                 type="email"
                 value={paypalEmail}
@@ -176,37 +177,37 @@ export default function EditAffiliatePage() {
               />
             </div>
             <button type="submit" disabled={saving} className="btn-primary text-xs">
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? bi("Saving...", "保存中...") : bi("Save Changes", "保存更改")}
             </button>
           </form>
         </div>
 
         <div className="bg-white border border-mist p-6">
-          <h3 className="font-serif text-base mb-4">Referrals</h3>
+          <h3 className="font-serif text-base mb-4">{bi("Referrals", "推荐记录")}</h3>
           {affiliate && affiliate.referrals.length === 0 ? (
-            <p className="text-sm text-stone py-4 text-center">No referrals yet.</p>
+            <p className="text-sm text-stone py-4 text-center">{bi("No referrals yet.", "暂无推荐记录。")}</p>
           ) : (
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
               {affiliate?.referrals.map((ref) => (
                 <div key={ref.id} className="border border-mist p-3 text-sm">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-xs">
-                      {[ref.referredUser?.firstName, ref.referredUser?.lastName].filter(Boolean).join(" ") || ref.referredUser?.email || "Guest"}
+                      {[ref.referredUser?.firstName, ref.referredUser?.lastName].filter(Boolean).join(" ") || ref.referredUser?.email || bi("Guest", "访客")}
                     </span>
                     <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 ${
                       ref.status === "CONVERTED" ? "bg-sage/10 text-sage" : "bg-stone/10 text-stone"
                     }`}>
-                      {ref.status}
+                      {ref.status === "CONVERTED" ? bi("Converted", "已转化") : ref.status === "PENDING" ? bi("Pending", "待处理") : ref.status}
                     </span>
                   </div>
                   {ref.order && (
                     <p className="text-[10px] text-stone">
-                      Order {ref.order.orderNumber} &middot; {formatPrice(Number(ref.order.total))}
+                      {bi("Order", "订单")} {ref.order.orderNumber} &middot; {formatPrice(Number(ref.order.total))}
                     </p>
                   )}
                   {ref.commission && (
                     <p className="text-[10px] text-stone">
-                      Commission: {formatPrice(Number(ref.commission))}
+                      {bi("Commission", "佣金")}: {formatPrice(Number(ref.commission))}
                     </p>
                   )}
                   <p className="text-[10px] text-stone mt-1">{formatDateShort(ref.createdAt)}</p>

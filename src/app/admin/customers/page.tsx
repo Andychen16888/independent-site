@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 
 export const dynamic = "force-dynamic"
 
@@ -21,23 +22,23 @@ export default async function AdminCustomersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="heading-md">Customers</h1>
-        <p className="text-body text-sm mt-1">View and manage customers. ({customers.length} total)</p>
+        <h1 className="heading-md">{bi("Customers", "客户")}</h1>
+        <p className="text-body text-sm mt-1">{bi("View and manage customers.", "查看并管理客户。")} ({customers.length} {bi("total", "总计")})</p>
       </div>
 
       {customers.length === 0 ? (
-        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">No customers yet.</div>
+        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">{bi("No customers yet.", "暂无客户。")}</div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mist text-left">
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Name</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Email</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Role</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Orders</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Reviews</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Joined</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Name", "姓名")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Email", "邮箱")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Role", "角色")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Orders", "订单")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Reviews", "评价")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Joined", "加入时间")}</th>
               </tr>
             </thead>
             <tbody>
@@ -46,7 +47,7 @@ export default async function AdminCustomersPage() {
                   <td className="px-4 py-3">
                     {user.firstName || user.lastName
                       ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
-                      : <span className="text-stone italic">No name</span>}
+                      : <span className="text-stone italic">{bi("No name", "无姓名")}</span>}
                   </td>
                   <td className="px-4 py-3 text-xs">{user.email}</td>
                   <td className="px-4 py-3">

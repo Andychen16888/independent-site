@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { bi } from "@/components/admin/bilingual"
 
 type HealthStatus = "ok" | "warning" | "critical"
 
@@ -77,11 +78,11 @@ export function SystemStatusWidget() {
     <Link
       href="/admin/monitoring"
       className="block px-2 py-3 rounded transition-colors hover:bg-white/5"
-      title="Open system monitoring"
+      title={bi("Open system monitoring", "打开系统监控")}
     >
       <span className="flex items-center justify-between text-xs">
         <span className="text-[10px] tracking-widest uppercase text-stone">
-          System <span className="opacity-60">系统状态</span>
+          {bi("System", "系统状态")}
         </span>
         <span className={`flex items-center gap-1.5 text-[10px] font-medium ${TEXT_COLOR[status]}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${DOT_COLOR[status]} ${status === "ok" ? "animate-pulse" : ""}`} />

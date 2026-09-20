@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import ImageUploader from "@/components/admin/ImageUploader"
+import { bi } from "@/components/admin/bilingual"
 
 export interface FieldDef {
   key: string
@@ -82,7 +83,7 @@ function StringListField({
             onClick={() => remove(i)}
             className="text-[11px] uppercase tracking-wider text-rosegold hover:underline shrink-0 mt-3"
           >
-            Remove
+            {bi("Remove", "移除")}
           </button>
         </div>
       ))}
@@ -91,7 +92,7 @@ function StringListField({
         onClick={add}
         className="text-[11px] uppercase tracking-wider text-charcoal hover:underline"
       >
-        + Add {field.itemLabel || "item"}
+        + {bi("Add", "添加")} {field.itemLabel || bi("item", "项")}
       </button>
     </div>
   )
@@ -129,7 +130,7 @@ function ObjectListField({
               onClick={() => remove(i)}
               className="text-[11px] uppercase tracking-wider text-rosegold hover:underline"
             >
-              Remove
+              {bi("Remove", "移除")}
             </button>
           </div>
           {fields.map((f) => (
@@ -142,7 +143,7 @@ function ObjectListField({
         onClick={add}
         className="text-[11px] uppercase tracking-wider text-charcoal hover:underline"
       >
-        + Add {itemLabel}
+        + {bi("Add", "添加")} {itemLabel}
       </button>
     </div>
   )
@@ -274,7 +275,7 @@ export default function StructuredContentEditor({
       {description && <p className="text-xs text-stone">{description}</p>}
       {warned && (
         <p className="text-xs text-rosegold">
-          Existing data could not be read and will be replaced when you save.
+          {bi("Existing data could not be read and will be replaced when you save.", "现有数据无法读取，保存时将被覆盖。")}
         </p>
       )}
       {schema.kind === "object" ? (

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { localeNames } from "@/i18n/routing"
+import { bi } from "@/components/admin/bilingual"
 
 export interface TranslationFields {
   locale: string
@@ -62,7 +63,7 @@ export default function TranslationsEditor({ value, onChange, includeContent = t
               }`}
             >
               {localeNames[l]}
-              <span className={`ml-1.5 ${hasContent(t) ? "text-sage" : "text-stone"}`}>{hasContent(t) ? "fill" : "empty"}</span>
+              <span className={`ml-1.5 ${hasContent(t) ? "text-sage" : "text-stone"}`}>{hasContent(t) ? bi("fill", "已填写") : bi("empty", "未填写")}</span>
             </button>
           )
         })}
@@ -71,39 +72,39 @@ export default function TranslationsEditor({ value, onChange, includeContent = t
       <div className="space-y-4 border border-mist bg-white p-4">
         <div className="flex items-center justify-between">
           <span className="text-[10px] uppercase tracking-wider text-stone font-medium">
-            {localeNames[active]} <span className="normal-case">(optional — falls back to English)</span>
-          </span>
+             {localeNames[active]} <span className="normal-case">({bi("optional — falls back to English", "可选，留空将回退英文")})</span>
+           </span>
           {indexOf(active) !== -1 && (
             <button type="button" onClick={() => remove(active)} className="text-[10px] text-rosegold hover:underline">
-              Remove this translation
+              {bi("Remove this translation", "移除此翻译")}
             </button>
           )}
         </div>
         <div>
-          <label className={label}>{includeContent ? "Localized Title" : "Title"}</label>
+          <label className={label}>{includeContent ? bi("Localized Title", "本地化标题") : bi("Title", "标题")}</label>
           <input value={(value.find((t) => t.locale === active)?.title) || ""} onChange={(e) => update(active, { title: e.target.value })} className={input} />
         </div>
         <div>
-          <label className={label}>Excerpt</label>
+          <label className={label}>{bi("Excerpt", "摘要")}</label>
           <textarea value={(value.find((t) => t.locale === active)?.excerpt) || ""} onChange={(e) => update(active, { excerpt: e.target.value })} rows={2} className={input} />
         </div>
         {includeContent && (
           <div>
-            <label className={label}>Content (HTML) — leave empty to keep the English body.</label>
+            <label className={label}>{bi("Content (HTML) — leave empty to keep the English body.", "内容（HTML）— 留空则使用英文正文。")}</label>
             <textarea value={(value.find((t) => t.locale === active)?.content) || ""} onChange={(e) => update(active, { content: e.target.value })} rows={8} className={input} />
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-mist">
           <div>
-            <label className={label}>SEO Title</label>
+            <label className={label}>{bi("SEO Title", "SEO 标题")}</label>
             <input value={(value.find((t) => t.locale === active)?.seoTitle) || ""} onChange={(e) => update(active, { seoTitle: e.target.value })} className={input} />
           </div>
           <div>
-            <label className={label}>SEO Description</label>
+            <label className={label}>{bi("SEO Description", "SEO 描述")}</label>
             <textarea value={(value.find((t) => t.locale === active)?.seoDescription) || ""} onChange={(e) => update(active, { seoDescription: e.target.value })} rows={2} className={input} />
           </div>
           <div>
-            <label className={label}>SEO Keywords</label>
+            <label className={label}>{bi("SEO Keywords", "SEO 关键词")}</label>
             <input value={(value.find((t) => t.locale === active)?.seoKeywords) || ""} onChange={(e) => update(active, { seoKeywords: e.target.value })} className={input} />
           </div>
         </div>

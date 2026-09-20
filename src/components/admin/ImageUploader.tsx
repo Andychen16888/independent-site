@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
+import { bi } from "@/components/admin/bilingual"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
 const MAX_SIZE = 5 * 1024 * 1024
@@ -22,7 +23,7 @@ interface ImageInfo {
 export default function ImageUploader({
   value,
   onChange,
-  label = "Upload Image",
+  label = bi("Upload Image", "上传图片"),
 }: {
   value: string
   onChange: (url: string) => void
@@ -62,11 +63,11 @@ export default function ImageUploader({
   async function handleFile(file: File | undefined | null) {
     if (!file) return
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error("Invalid image type")
+      toast.error(bi("Invalid image type", "图片类型无效"))
       return
     }
     if (file.size > MAX_SIZE) {
-      toast.error("File too large (max 5MB)")
+      toast.error(bi("File too large (max 5MB)", "文件过大（最大 5MB）"))
       return
     }
     setUploading(true)
@@ -80,12 +81,12 @@ export default function ImageUploader({
         body: formData,
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Upload failed")
+      if (!res.ok) throw new Error(data.error || bi("Upload failed", "上传失败"))
       onChange(data.url)
       loadInfo(data.url)
-      toast.success("Image uploaded")
+      toast.success(bi("Image uploaded", "图片上传成功"))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed")
+      toast.error(e instanceof Error ? e.message : bi("Upload failed", "上传失败"))
     } finally {
       setUploading(false)
     }
@@ -101,7 +102,7 @@ export default function ImageUploader({
   return (
     <div className="flex flex-wrap items-start gap-3">
       <label className="inline-flex items-center justify-center px-4 py-2 border border-mist text-xs uppercase tracking-wider cursor-pointer hover:border-charcoal transition-colors">
-        {uploading ? "Uploading..." : label}
+        {uploading ? bi("Uploading...", "上传中...") : label}
         <input
           type="file"
           accept="image/*"
@@ -124,13 +125,13 @@ export default function ImageUploader({
                 onClick={() => onChange("")}
                 className="text-[10px] uppercase tracking-wider text-rosegold hover:underline"
               >
-                Remove
+                {bi("Remove", "移除")}
               </button>
             )}
           </div>
           {uploading && originalBytes && (
             <div className="text-[11px] text-stone">
-              Uploading {formatBytes(originalBytes)}…
+              {bi("Uploading", "上传中")} {formatBytes(originalBytes)}…
             </div>
           )}
           {displayInfo && <div className="text-[11px] text-stone">{displayInfo}</div>}

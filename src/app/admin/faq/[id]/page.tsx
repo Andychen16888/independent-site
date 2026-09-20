@@ -1,7 +1,7 @@
 import FaqForm from "@/components/admin/FaqForm"
 
 export const metadata = {
-  title: "Edit FAQ",
+  title: "Edit FAQ / 编辑常见问题",
 }
 
 export default async function AdminFaqEditPage({ params }: { params: Promise<{ id: string }> }) {

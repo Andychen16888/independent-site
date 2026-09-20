@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort, formatPrice } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 import ApproveButton from "./ApproveButton"
 import DeleteAffiliateButton from "./DeleteAffiliateButton"
 
@@ -30,7 +31,15 @@ function StatusBadge({ status }: { status: string }) {
   }
   return (
     <span className={`text-[10px] uppercase tracking-wider px-2 py-1 ${styles[status] || "bg-stone/10 text-stone"}`}>
-      {status}
+      {status === "PENDING"
+        ? bi("Pending", "待审核")
+        : status === "APPROVED"
+          ? bi("Approved", "已批准")
+          : status === "REJECTED"
+            ? bi("Rejected", "已拒绝")
+            : status === "SUSPENDED"
+              ? bi("Suspended", "已暂停")
+              : status}
     </span>
   )
 }
@@ -42,26 +51,26 @@ export default async function AdminAffiliatesPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="heading-md">Affiliates</h1>
-          <p className="text-body text-sm mt-1">Manage affiliate partners and commissions. ({affiliates.length} total)</p>
+          <h1 className="heading-md">{bi("Affiliates", "联盟推广")}</h1>
+          <p className="text-body text-sm mt-1">{bi("Manage affiliate partners and commissions.", "管理联盟伙伴与佣金。")} ({affiliates.length} {bi("total", "总计")})</p>
         </div>
       </div>
 
       {affiliates.length === 0 ? (
-        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">No affiliates yet.</div>
+        <div className="bg-white border border-mist p-12 text-center text-sm text-stone">{bi("No affiliates yet.", "暂无联盟成员。")}</div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-mist text-left">
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Affiliate</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Code</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Commission</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Earned</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Referrals</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Joined</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Affiliate", "成员")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Code", "代码")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Commission", "佣金")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Earned", "已赚取")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Referrals", "推荐")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Joined", "加入")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Actions", "操作")}</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +100,7 @@ export default async function AdminAffiliatesPage() {
                       href={`/admin/affiliates/${aff.id}`}
                       className="text-[10px] text-stone hover:text-charcoal underline mr-2"
                     >
-                      View
+                      {bi("View", "查看")}
                     </Link>
                     <DeleteAffiliateButton affiliateId={aff.id} name={[aff.user.firstName, aff.user.lastName].filter(Boolean).join(" ") || aff.user.email} />
                   </td>

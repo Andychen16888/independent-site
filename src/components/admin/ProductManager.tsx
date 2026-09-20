@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { formatPrice } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 
 interface ProductRow {
   id: string
@@ -57,7 +58,7 @@ export default function ProductManager() {
       if (featured === "home") params.set("isHomeFeatured", "true")
       if (includeDeleted) params.set("includeDeleted", "true")
       const res = await fetch(`/api/admin/products?${params}`, { cache: "no-store" })
-      if (!res.ok) throw new Error("Failed to load products")
+      if (!res.ok) throw new Error(bi("Failed to load products", "加载产品失败"))
       const data = await res.json()
       setRows(data.products || [])
       setTotal(data.pagination?.total ?? 0)
@@ -98,7 +99,7 @@ export default function ProductManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: selected, action }),
       })
-      if (!res.ok) throw new Error("Batch operation failed")
+      if (!res.ok) throw new Error(bi("Batch operation failed", "批量操作失败"))
       setSelected([])
       load()
     } catch (e: any) {
@@ -117,7 +118,7 @@ export default function ProductManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, action }),
       })
-      if (!res.ok) throw new Error("Operation failed")
+      if (!res.ok) throw new Error(bi("Operation failed", "操作失败"))
       load()
     } catch (e: any) {
       setError(e.message)
@@ -137,7 +138,17 @@ export default function ProductManager() {
   }
 
   const statusBadge = (status: string, deleted: boolean) => {
-    const text = deleted ? "DELETED" : status
+    const text = deleted
+      ? bi("Deleted", "已删除")
+      : status === "ACTIVE"
+        ? bi("Active", "在售")
+        : status === "DRAFT"
+          ? bi("Draft", "草稿")
+          : status === "INACTIVE"
+            ? bi("Inactive", "下架")
+            : status === "ARCHIVED"
+              ? bi("Archived", "归档")
+              : status
     const cls =
       status === "ACTIVE" ? "bg-sage/10 text-sage"
         : status === "DRAFT" ? "bg-stone/10 text-stone"
@@ -152,10 +163,10 @@ export default function ProductManager() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="heading-md">Products</h1>
-          <p className="text-body text-sm mt-1">{total} match current filters.</p>
+          <h1 className="heading-md">{bi("Products", "产品")}</h1>
+          <p className="text-body text-sm mt-1">{total} {bi("match current filters.", "条符合当前筛选。")}</p>
         </div>
-        <Link href="/admin/products/new" className="btn-primary text-xs">Add Product</Link>
+        <Link href="/admin/products/new" className="btn-primary text-xs">{bi("Add Product", "添加产品")}</Link>
       </div>
 
       {/* Filters */}
@@ -164,44 +175,44 @@ export default function ProductManager() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") setPage(1) }}
-          placeholder="Search name / SKU / brand / model / tags..."
+          placeholder={bi("Search name / SKU / brand / model / tags...", "搜索名称 / SKU / 品牌 / 型号 / 标签...")}
           className={inputCls}
         />
         <button
           onClick={() => setPage(1)}
           className="px-3 py-2 bg-charcoal text-white text-xs tracking-wider uppercase disabled:opacity-50"
         >
-          Search
+          {bi("Search", "搜索")}
         </button>
         <select value={categoryId} onChange={(e) => { setCategoryId(e.target.value); setPage(1) }} className={selectCls}>
-          <option value="">All Categories</option>
+          <option value="">{bi("All Categories", "全部分类")}</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }} className={selectCls}>
-          <option value="">All Statuses</option>
-          <option value="ACTIVE">Active</option>
-          <option value="DRAFT">Draft</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="ARCHIVED">Archived</option>
+          <option value="">{bi("All Statuses", "全部状态")}</option>
+          <option value="ACTIVE">{bi("Active", "在售")}</option>
+          <option value="DRAFT">{bi("Draft", "草稿")}</option>
+          <option value="INACTIVE">{bi("Inactive", "下架")}</option>
+          <option value="ARCHIVED">{bi("Archived", "归档")}</option>
         </select>
         <select value={featured} onChange={(e) => { setFeatured(e.target.value); setPage(1) }} className={selectCls}>
-          <option value="">Featured: All</option>
-          <option value="featured">Featured only</option>
-          <option value="home">Homepage picks only</option>
+          <option value="">{bi("Featured: All", "推荐：全部")}</option>
+          <option value="featured">{bi("Featured only", "仅推荐")}</option>
+          <option value="home">{bi("Homepage picks only", "仅首页精选")}</option>
         </select>
         <select value={sort} onChange={(e) => { setSort(e.target.value); setPage(1) }} className={selectCls}>
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
-          <option value="price-asc">Price: Low–High</option>
-          <option value="price-desc">Price: High–Low</option>
-          <option value="stock">Stock low first</option>
-          <option value="updated">Recently updated</option>
+          <option value="newest">{bi("Newest", "最新")}</option>
+          <option value="oldest">{bi("Oldest", "最早")}</option>
+          <option value="price-asc">{bi("Price: Low–High", "价格：低到高")}</option>
+          <option value="price-desc">{bi("Price: High–Low", "价格：高到低")}</option>
+          <option value="stock">{bi("Stock low first", "库存低优先")}</option>
+          <option value="updated">{bi("Recently updated", "最近更新")}</option>
         </select>
         <label className="flex items-center gap-2 text-xs cursor-pointer ml-auto">
           <input type="checkbox" checked={includeDeleted} onChange={(e) => { setIncludeDeleted(e.target.checked); setPage(1) }} className="w-4 h-4" />
-          Include deleted
+          {bi("Include deleted", "包含已删除")}
         </label>
-        <button onClick={resetFilters} className="text-xs text-stone hover:text-charcoal">Reset</button>
+        <button onClick={resetFilters} className="text-xs text-stone hover:text-charcoal">{bi("Reset", "重置")}</button>
       </div>
 
       {error && <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3 mb-6">{error}</div>}
@@ -209,25 +220,25 @@ export default function ProductManager() {
       {/* Batch toolbar */}
       {selected.length > 0 && (
         <div className="bg-charcoal text-white text-xs px-4 py-3 mb-4 flex flex-wrap items-center gap-3">
-          <span>{selected.length} selected</span>
-          <button onClick={() => runBatch("activate")} className="hover:underline disabled:opacity-50" disabled={busy}>Activate</button>
-          <button onClick={() => runBatch("deactivate")} className="hover:underline disabled:opacity-50" disabled={busy}>Deactivate</button>
-          <button onClick={() => runBatch("feature")} className="hover:underline disabled:opacity-50" disabled={busy}>Feature</button>
-          <button onClick={() => runBatch("unfeature")} className="hover:underline disabled:opacity-50" disabled={busy}>Unfeature</button>
+          <span>{selected.length} {bi("selected", "已选")}</span>
+          <button onClick={() => runBatch("activate")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Activate", "启用")}</button>
+          <button onClick={() => runBatch("deactivate")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Deactivate", "停用")}</button>
+          <button onClick={() => runBatch("feature")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Feature", "推荐")}</button>
+          <button onClick={() => runBatch("unfeature")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Unfeature", "取消推荐")}</button>
           {includeDeleted ? (
-            <button onClick={() => runBatch("restore")} className="hover:underline disabled:opacity-50" disabled={busy}>Restore</button>
-          ) : (
-            <button onClick={() => runBatch("delete", `Delete ${selected.length} product(s)? This hides them from the storefront and order history stays intact.`)} className="hover:underline text-rosegold disabled:opacity-50" disabled={busy}>Delete</button>
-          )}
-          <button onClick={() => setSelected([])} className="ml-auto hover:underline">Clear</button>
+              <button onClick={() => runBatch("restore")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Restore", "恢复")}</button>
+            ) : (
+              <button onClick={() => runBatch("delete", `${bi("Delete", "删除")} ${selected.length} ${bi("product(s)?", "个产品？")} ${bi("This hides them from the storefront and order history stays intact.", "删除后前台将隐藏，订单历史保持不变。")}`)} className="hover:underline text-rosegold disabled:opacity-50" disabled={busy}>{bi("Delete", "删除")}</button>
+            )}
+          <button onClick={() => setSelected([])} className="ml-auto hover:underline">{bi("Clear", "清空")}</button>
         </div>
       )}
 
       {loading ? (
-        <div className="text-sm text-stone py-12 text-center">Loading products...</div>
+        <div className="text-sm text-stone py-12 text-center">{bi("Loading products...", "正在加载产品...")}</div>
       ) : rows.length === 0 ? (
         <div className="bg-white border border-mist p-12 text-center text-sm text-stone">
-          No products found. {includeDeleted ? "Move the &ldquo;Include deleted&rdquo; toggle to hide deleted items, or" : "Try changing filters or click"} &ldquo;Add Product&rdquo; to create one.
+          {bi("No products found.", "未找到产品。")} {includeDeleted ? bi("Turn off Include deleted to hide deleted items, or", "关闭“包含已删除”可隐藏删除项，或") : bi("Try changing filters or click", "请调整筛选条件或点击")} &ldquo;{bi("Add Product", "添加产品")}&rdquo; {bi("to create one.", "来创建。")}
         </div>
       ) : (
         <div className="bg-white border border-mist overflow-x-auto">
@@ -237,14 +248,14 @@ export default function ProductManager() {
                 <th className="px-4 py-3 w-8">
                   <input type="checkbox" checked={selected.length === rows.length && rows.length > 0} onChange={toggleAll} className="w-4 h-4" />
                 </th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Product</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Product", "产品")}</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">SKU</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Categories</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Price</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Stock</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Flags</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Status</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">Actions</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Categories", "分类")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Price", "价格")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Stock", "库存")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Flags", "标记")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>
+                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Actions", "操作")}</th>
               </tr>
             </thead>
             <tbody>
@@ -279,24 +290,24 @@ export default function ProductManager() {
                   </td>
                   <td className="px-4 py-3 text-xs">
                     <span className="flex gap-1">
-                      {p.isFeatured && <span className="text-rosegold">Featured</span>}
-                      {p.isHomeFeatured && <span className="text-sage">Home</span>}
+                      {p.isFeatured && <span className="text-rosegold">{bi("Featured", "推荐")}</span>}
+                      {p.isHomeFeatured && <span className="text-sage">{bi("Home", "首页")}</span>}
                       {!p.isFeatured && !p.isHomeFeatured && <span className="text-mist">—</span>}
                     </span>
                   </td>
                   <td className="px-4 py-3">{statusBadge(p.status, Boolean(p.deletedAt))}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 text-[10px]">
-                      <Link href={`/admin/products/${p.id}`} className="btn-outline flex-1 px-2 py-1.5 inline-flex items-center justify-center gap-1">Edit</Link>
+                      <Link href={`/admin/products/${p.id}`} className="btn-outline flex-1 px-2 py-1.5 inline-flex items-center justify-center gap-1">{bi("Edit", "编辑")}</Link>
                       {p.deletedAt ? (
-                        <button onClick={() => singleAction([p.id], "restore")} className="text-sage hover:underline" disabled={busy}>Restore</button>
+                        <button onClick={() => singleAction([p.id], "restore")} className="text-sage hover:underline" disabled={busy}>{bi("Restore", "恢复")}</button>
                       ) : (
                         <button
-                          onClick={() => singleAction([p.id], "delete", `Delete "${p.name}"? It will be hidden from the storefront (order history stays intact).`)}
+                          onClick={() => singleAction([p.id], "delete", `${bi("Delete", "删除")} "${p.name}"? ${bi("It will be hidden from the storefront (order history stays intact).", "删除后前台将隐藏（订单历史保持不变）。")}`)}
                           className="text-rosegold hover:underline"
                           disabled={busy}
                         >
-                          Delete
+                          {bi("Delete", "删除")}
                         </button>
                       )}
                     </div>
@@ -316,15 +327,15 @@ export default function ProductManager() {
             disabled={page <= 1}
             className="px-3 py-2 border border-mist hover:border-charcoal disabled:opacity-40 disabled:cursor-not-allowed text-xs"
           >
-            Prev
+            {bi("Prev", "上一页")}
           </button>
-          <span className="text-stone text-xs">Page {page} of {totalPages} ({total} items)</span>
+          <span className="text-stone text-xs">{bi("Page", "第")} {page} {bi("of", "页，共")} {totalPages} ({total} {bi("items", "项")})</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
             className="px-3 py-2 border border-mist hover:border-charcoal disabled:opacity-40 disabled:cursor-not-allowed text-xs"
           >
-            Next
+            {bi("Next", "下一页")}
           </button>
         </div>
       )}

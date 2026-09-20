@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
-import { formatPrice, formatDateShort, truncate } from "@/lib/utils/format"
+import { formatPrice, truncate } from "@/lib/utils/format"
+import { bi } from "@/components/admin/bilingual"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
@@ -54,19 +55,19 @@ export default async function AdminDashboard() {
   const stats = await getStats()
 
   const cards = [
-    { label: "Total Revenue", value: formatPrice(Number(stats.totalRevenue)), change: "+0%", isPositive: true },
-    { label: "Orders", value: stats.totalOrders.toString(), change: `+${stats.prevOrders}`, isPositive: true },
-    { label: "Products", value: stats.totalProducts.toString(), change: "Active", isPositive: true },
-    { label: "Customers", value: stats.totalCustomers.toString(), change: "All time", isPositive: true },
-    { label: "Affiliates", value: stats.totalAffiliates.toString(), change: "Approved", isPositive: true },
-    { label: "Conversion", value: "0%", change: "N/A", isPositive: true },
+    { label: bi("Total Revenue", "总营收"), value: formatPrice(Number(stats.totalRevenue)), change: "+0%", isPositive: true },
+    { label: bi("Orders", "订单"), value: stats.totalOrders.toString(), change: `+${stats.prevOrders}`, isPositive: true },
+    { label: bi("Products", "产品"), value: stats.totalProducts.toString(), change: bi("Active", "在售"), isPositive: true },
+    { label: bi("Customers", "客户"), value: stats.totalCustomers.toString(), change: bi("All time", "累计"), isPositive: true },
+    { label: bi("Affiliates", "联盟"), value: stats.totalAffiliates.toString(), change: bi("Approved", "已批准"), isPositive: true },
+    { label: bi("Conversion", "转化率"), value: "0%", change: bi("N/A", "暂无"), isPositive: true },
   ]
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="heading-md">Dashboard</h1>
-        <p className="text-body text-sm mt-1">Store overview and key metrics.</p>
+        <h1 className="heading-md">{bi("Dashboard", "仪表盘")}</h1>
+        <p className="text-body text-sm mt-1">{bi("Store overview and key metrics.", "店铺概览与关键指标。")}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
@@ -84,11 +85,11 @@ export default async function AdminDashboard() {
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="bg-white border border-mist p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-serif text-base">Recent Orders</h3>
-            <Link href="/admin/orders" className="text-xs text-sage hover:underline">View all</Link>
+            <h3 className="font-serif text-base">{bi("Recent Orders", "最近订单")}</h3>
+            <Link href="/admin/orders" className="text-xs text-sage hover:underline">{bi("View all", "查看全部")}</Link>
           </div>
           {stats.recentOrders.length === 0 ? (
-            <div className="text-center py-8 text-sm text-stone">No orders yet</div>
+            <div className="text-center py-8 text-sm text-stone">{bi("No orders yet", "暂无订单")}</div>
           ) : (
             <div className="space-y-3">
               {stats.recentOrders.map((order) => (
@@ -109,11 +110,11 @@ export default async function AdminDashboard() {
 
         <div className="bg-white border border-mist p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-serif text-base">Top Products</h3>
-            <Link href="/admin/products" className="text-xs text-sage hover:underline">View all</Link>
+            <h3 className="font-serif text-base">{bi("Top Products", "热门产品")}</h3>
+            <Link href="/admin/products" className="text-xs text-sage hover:underline">{bi("View all", "查看全部")}</Link>
           </div>
           {stats.topProducts.length === 0 ? (
-            <div className="text-center py-8 text-sm text-stone">No products yet</div>
+            <div className="text-center py-8 text-sm text-stone">{bi("No products yet", "暂无产品")}</div>
           ) : (
             <div className="space-y-3">
               {stats.topProducts.map((item, i) => (
@@ -123,7 +124,7 @@ export default async function AdminDashboard() {
                     <p className="text-sm truncate">{truncate(item.productName, 30)}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm">{item._sum.quantity} sold</p>
+                    <p className="text-sm">{item._sum.quantity} {bi("sold", "已售")}</p>
                     <p className="text-[10px] text-stone">{formatPrice(Number(item._sum.totalPrice))}</p>
                   </div>
                 </div>

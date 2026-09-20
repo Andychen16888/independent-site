@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "质检入门：确保中国供应商的产品质量",
+    excerpt: "验货清单、工厂审核与实用技巧——确保每一批货都符合标准，保护您的品牌。",
+    seoTitle: "质检入门：确保中国供应商的产品质量",
+    seoDescription: "进口实用质检技巧：出货前检验、工厂审核、清单及瑕疵处理。",
+    seoKeywords: "质量控制, 质检清单, 工厂审核, 产品检验中国",
+  },
+  es: {
+    title: "Control de Calidad 101: Cómo Garantizar la Calidad de los Proveedores Chinos",
+    excerpt: "Listas de inspección, auditorías de fábrica y consejos rápidos: cómo proteger su marca asegurando que cada lote cumpla sus estándares.",
+    seoTitle: "Control de Calidad 101: Cómo Garantizar la Calidad de los Proveedores Chinos",
+    seoDescription: "Consejos prácticos de control de calidad para importar: inspecciones previas al envío, auditorías de fábrica y manejo de defectos.",
+    seoKeywords: "control de calidad, lista qc, auditoría de fábrica, inspección de productos",
+  },
+  pt: {
+    title: "Controle de Qualidade 101: Garantindo a Qualidade dos Fornecedores Chineses",
+    excerpt: "Checklists de inspeção, auditorias de fábrica e dicas práticas: proteja sua marca garantindo que cada lote atenda aos seus padrões.",
+    seoTitle: "Controle de Qualidade 101: Garantindo a Qualidade dos Fornecedores Chineses",
+    seoDescription: "Dicas práticas de controle de qualidade para importar: inspeções pré-embarque, auditorias de fábrica e como lidar com defeitos.",
+    seoKeywords: "controle de qualidade, checklist qc, auditoria de fábrica",
+  },
+  fr: {
+    title: "Contrôle Qualité 101 : Garantir la Qualité des Fournisseurs Chinois",
+    excerpt: "Checklists d'inspection, audits d'usine et conseils faciles : protégez votre marque en vous assurant que chaque lot respecte vos standards.",
+    seoTitle: "Contrôle Qualité 101 : Garantir la Qualité des Fournisseurs Chinois",
+    seoDescription: "Conseils pratiques de contrôle qualité pour l'import : inspections avant expédition, audits d'usine et gestion des défauts.",
+    seoKeywords: "contrôle qualité, checklist cq, audit d'usine, inspection produit",
+  },
+  de: {
+    title: "Qualitätskontrolle 101: Produktqualität bei chinesischen Lieferanten sichern",
+    excerpt: "Inspektions-Checklisten, Werksaudits und schnelle Erfolge — so schützen Sie Ihre Marke, indem jede Charge Ihre Standards erfüllt.",
+    seoTitle: "Qualitätskontrolle 101: Produktqualität bei chinesischen Lieferanten sichern",
+    seoDescription: "Praktische Tipps zur Qualitätskontrolle bei Importen: Vorschiffinspektionen, Werksaudits und der Umgang mit Fehlern.",
+    seoKeywords: "qualitätskontrolle, qc-checkliste, werksaudit, produktinspektion china",
+  },
+  ru: {
+    title: "Контроль качества 101: обеспечение качества от китайских поставщиков",
+    excerpt: "Чек-листы проверки, аудит фабрик и простые советы: как защитить бренд, гарантируя соответствие каждой партии вашим стандартам.",
+    seoTitle: "Контроль качества 101: обеспечение качества от китайских поставщиков",
+    seoDescription: "Практические советы по контролю качества при импорте: проверка перед отгрузкой, аудит фабрик и работа с браком.",
+    seoKeywords: "контроль качества, чек-лист qc, аудит фабрики, проверка товара китай",
+  },
+  ar: {
+    title: "مراقبة الجودة 101: ضمان جودة المنتجات من الموردين الصينيين",
+    excerpt: "قوائم الفحص، ومراجعات المصانع، ونصائح عملية — احمِ علامتك التجارية بضمان أن كل دفعة تلتزم بمعاييرك.",
+    seoTitle: "مراقبة الجودة 101: ضمان جودة المنتجات من الموردين الصينيين",
+    seoDescription: "نصائح عملية لمراقبة الجودة عند الاستيراد: الفحص قبل الشحن، مراجعة المصانع، والتعامل مع العيوب.",
+    seoKeywords: "مراقبة الجودة, قائمة فحص, مراجعة مصنع, فحص المنتجات الصين",
+  },
+  id: {
+    title: "Kontrol Kualitas 101: Memastikan Kualitas Produk dari Pemasok China",
+    excerpt: "Checklist inspeksi, audit pabrik, dan tips mudah — lindungi merek Anda dengan memastikan setiap batch memenuhi standar.",
+    seoTitle: "Kontrol Kualitas 101: Memastikan Kualitas Produk dari Pemasok China",
+    seoDescription: "Tips kontrol kualitas praktis untuk impor: inspeksi pra-pengiriman, audit pabrik, dan cara menangani cacat.",
+    seoKeywords: "kontrol kualitas, checklist qc, audit pabrik, inspeksi produk china",
+  },
+  vi: {
+    title: "Kiểm soát chất lượng 101: Đảm bảo chất lượng từ nhà cung cấp Trung Quốc",
+    excerpt: "Danh sách kiểm tra, đánh giá nhà máy và mẹo thực tế — bảo vệ thương hiệu của bạn bằng cách đảm bảo mỗi lô hàng đạt tiêu chuẩn.",
+    seoTitle: "Kiểm soát chất lượng 101: Đảm bảo chất lượng từ nhà cung cấp Trung Quốc",
+    seoDescription: "Mẹo kiểm soát chất lượng thực tế khi nhập khẩu: kiểm tra trước khi gửi hàng, đánh giá nhà máy và xử lý lỗi.",
+    seoKeywords: "kiểm soát chất lượng, danh sách qc, đánh giá nhà máy",
+  },
+  th: {
+    title: "การควบคุมคุณภาพ 101: การรับประกันคุณภาพสินค้าจากซัพพลายเออร์จีน",
+    excerpt: "รายการตรวจสอบ การตรวจโรงงาน และเคล็ดลับง่ายๆ — ปกป้องแบรนด์ของคุณด้วยการมั่นใจว่าทุกล็อตได้มาตรฐาน",
+    seoTitle: "การควบคุมคุณภาพ 101: การรับประกันคุณภาพสินค้าจากซัพพลายเออร์จีน",
+    seoDescription: "เคล็ดลับการควบคุมคุณภาพเชิงปฏิบัติสำหรับการนำเข้า: การตรวจสอบก่อนส่งสินค้า การตรวจโรงงาน และวิธีจัดการกับสินค้าบกพร่อง",
+    seoKeywords: "การควบคุมคุณภาพ, รายการตรวจสอบ qc, การตรวจโรงงาน",
+  },
+  ms: {
+    title: "Kawalan Kualiti 101: Memastikan Kualiti Produk daripada Pembekal China",
+    excerpt: "Senarai semak pemeriksaan, audit kilang dan tip praktikal — lindungi jenama anda dengan memastikan setiap kelompok memenuhi piawaian anda.",
+    seoTitle: "Kawalan Kualiti 101: Memastikan Kualiti Produk daripada Pembekal China",
+    seoDescription: "Tip kawalan kualiti praktikal untuk import: pemeriksaan sebelum penghantaran, audit kilang dan cara mengendalikan kecacatan.",
+    seoKeywords: "kawalan kualiti, senarai semak qc, audit kilang, pemeriksaan produk",
+  },
+}

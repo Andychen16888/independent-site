@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const moqTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "起订量与谈判：获得更优批发交易",
+    excerpt: "起订量（MOQ）的真正含义、如何设定，以及与供应商谈判更好价格与最低量的实用技巧。",
+    seoTitle: "起订量与谈判：获得更优批发交易",
+    seoDescription: "了解最低起订量（MOQ），学习实用谈判技巧，从中国获得更优惠的批发价格。",
+    seoKeywords: "起订量, 最低订购量, 谈判, 中国批发采购",
+  },
+  es: {
+    title: "MOQ y Negociación: Logrando Mejores Acuerdos al Por Mayor",
+    excerpt: "Qué significa realmente el MOQ, cómo se fija y tácticas prácticas para negociar mejores precios y mínimos con proveedores chinos.",
+    seoTitle: "MOQ y Negociación: Logrando Mejores Acuerdos al Por Mayor",
+    seoDescription: "Comprenda la cantidad mínima de pedido (MOQ) y aprenda tácticas de negociación prácticas para obtener mejores precios al por mayor.",
+    seoKeywords: "moq, cantidad mínima de pedido, negociación, compra al por mayor china",
+  },
+  pt: {
+    title: "MOQ e Negociação: Como Fechar Melhores Acordos no Atacado",
+    excerpt: "O que o MOQ realmente significa, como é definido e táticas práticas para negociar melhores preços e mínimos com fornecedores chineses.",
+    seoTitle: "MOQ e Negociação: Como Fechar Melhores Acordos no Atacado",
+    seoDescription: "Entenda a quantidade mínima de pedido (MOQ) e aprenda táticas práticas de negociação para obter melhores preços de atacado.",
+    seoKeywords: "moq, quantidade mínima de pedido, negociação, compras no atacado china",
+  },
+  fr: {
+    title: "MOQ et Négociation : Décrocher de Meilleurs Accords de Gros",
+    excerpt: "Ce que le MOQ signifie vraiment, comment il est fixé et des tactiques concrètes pour négocier de meilleurs prix et minimas avec les fournisseurs chinois.",
+    seoTitle: "MOQ et Négociation : Décrocher de Meilleurs Accords de Gros",
+    seoDescription: "Comprenez la quantité minimale de commande (MOQ) et apprenez des tactiques de négociation pratiques pour obtenir de meilleurs prix de gros.",
+    seoKeywords: "moq, quantité minimale de commande, négociation, achat en gros chine",
+  },
+  de: {
+    title: "MOQ & Verhandlung: Bessere Großhandelsabschlüsse erzielen",
+    excerpt: "Was MOQ wirklich bedeutet, wie es festgelegt wird und praktische Taktiken, um bessere Preise und Mindestmengen mit chinesischen Lieferanten auszuhandeln.",
+    seoTitle: "MOQ & Verhandlung: Bessere Großhandelsabschlüsse erzielen",
+    seoDescription: "Verstehen Sie Mindestbestellmengen (MOQ) und lernen Sie praktische Verhandlungstaktiken für bessere Großhandelspreise aus China.",
+    seoKeywords: "moq, mindestbestellmenge, verhandlung, großhandelseinkauf china",
+  },
+  ru: {
+    title: "МОК и переговоры: как заключить более выгодные оптовые сделки",
+    excerpt: "Что на самом деле означает МОК, как он устанавливается и практические тактики переговоров о более выгодных ценах и минимальных партиях.",
+    seoTitle: "МОК и переговоры: как заключить более выгодные оптовые сделки",
+    seoDescription: "Разберитесь в минимальном объёме заказа (МОК) и изучите практические тактики переговоров для получения лучших оптовых цен.",
+    seoKeywords: "мок, минимальный заказ, переговоры, оптовые закупки китай",
+  },
+  ar: {
+    title: "الحد الأدنى للطلب والتفاوض: للحصول على صفقات جملة أفضل",
+    excerpt: "ما معنى الحد الأدنى للطلب (MOQ)، وكيف يُحدد، وتكتيكات عملية للتفاوض على أسعار وحدود أدنى أفضل مع الموردين الصينيين.",
+    seoTitle: "الحد الأدنى للطلب والتفاوض: للحصول على صفقات جملة أفضل",
+    seoDescription: "افهم الحد الأدنى لكمية الطلب (MOQ) وتعلّم تكتيكات تفاوض عملية للحصول على أسعار جملة أفضل من الصين.",
+    seoKeywords: "الحد الأدنى للطلب, كمية الطلب الدنيا, تفاوض, شراء جملة من الصين",
+  },
+  id: {
+    title: "MOQ & Negosiasi: Membuka Kesepakatan Grosir yang Lebih Baik",
+    excerpt: "Apa arti MOQ sebenarnya, bagaimana ditetapkan, dan taktik praktis untuk menegosiasikan harga dan minimum yang lebih baik dengan pemasok China.",
+    seoTitle: "MOQ & Negosiasi: Membuka Kesepakatan Grosir yang Lebih Baik",
+    seoDescription: "Pahami jumlah pesanan minimum (MOQ) dan pelajari taktik negosiasi praktis untuk mendapatkan harga grosir yang lebih baik.",
+    seoKeywords: "moq, jumlah pesanan minimum, negosiasi, pembelian grosir china",
+  },
+  vi: {
+    title: "MOQ & Đàm phán: Mở khóa những giao dịch bán buôn tốt hơn",
+    excerpt: "MOQ thực sự nghĩa là gì, được đặt ra thế nào, và các chiến thuật thực tế để đàm phán giá và mức tối thiểu tốt hơn với nhà cung cấp Trung Quốc.",
+    seoTitle: "MOQ & Đàm phán: Mở khóa những giao dịch bán buôn tốt hơn",
+    seoDescription: "Hiểu số lượng đặt hàng tối thiểu (MOQ) và học các chiến thuật đàm phán thực tế để có giá bán buôn tốt hơn.",
+    seoKeywords: "moq, số lượng đặt hàng tối thiểu, đàm phán, mua buôn trung quốc",
+  },
+  th: {
+    title: "MOQ และการเจรจา: ปลดล็อกข้อตกลงขายส่งที่ดีกว่า",
+    excerpt: "MOQ แปลว่าอะไรจริง ๆ กำหนดอย่างไร และกลยุทธ์เชิงปฏิบัติเพื่อเจรจาราคาและขั้นต่ำที่ดีกว่ากับซัพพลายเออร์จีน",
+    seoTitle: "MOQ และการเจรจา: ปลดล็อกข้อตกลงขายส่งที่ดีกว่า",
+    seoDescription: "ทำความเข้าใจปริมาณการสั่งซื้อขั้นต่ำ (MOQ) และเรียนรู้กลยุทธ์การเจรจาเพื่อให้ได้ราคาขายส่งที่ดีกว่า",
+    seoKeywords: "moq, ปริมาณการสั่งซื้อขั้นต่ำ, การเจรจา, ซื้อส่งจีน",
+  },
+  ms: {
+    title: "MOQ & Rundingan: Membuka Kunci Tawaran Borong yang Lebih Baik",
+    excerpt: "Apa maksud sebenar MOQ, bagaimana ditetapkan, dan taktik praktikal untuk berunding harga dan minimum yang lebih baik dengan pembekal China.",
+    seoTitle: "MOQ & Rundingan: Membuka Kunci Tawaran Borong yang Lebih Baik",
+    seoDescription: "Fahami kuantiti pesanan minimum (MOQ) dan pelajari taktik rundingan praktikal untuk harga borong yang lebih baik.",
+    seoKeywords: "moq, kuantiti pesanan minimum, rundingan, pembelian borong china",
+  },
+}

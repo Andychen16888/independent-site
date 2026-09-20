@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const customsTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "关税解析：进口商指南（2026年）",
+    excerpt: "解码HS编码、懂关税、并规划顺利完成您的首次海上进口清关。",
+    seoTitle: "关税解析：进口商指南",
+    seoDescription: "了解HS编码、关税与清关流程，为进口商提供2026年实用指南。",
+    seoKeywords: "关税, hs编码, 清关, 进口税",
+  },
+  es: {
+    title: "Aranceles y Aduanas: La Guía del Importador",
+    excerpt: "Descifre los códigos arancelarios, comprenda los aranceles y planifique un despacho aduanero fluido para su primera importación marítima.",
+    seoTitle: "Aranceles y Aduanas: La Guía del Importador",
+    seoDescription: "Comprenda los códigos HS, los aranceles y el proceso de despacho con consejos prácticos para importadores en 2026.",
+    seoKeywords: "aranceles, códigos hs, despacho aduanero, impuestos de importación",
+  },
+  pt: {
+    title: "Tarifas Aduaneiras: O Guia do Importador",
+    excerpt: "Decifre códigos HS, entenda as tarifas e planeje um desembaraço aduaneiro tranquilo para sua primeira importação marítima.",
+    seoTitle: "Tarifas Aduaneiras: O Guia do Importador",
+    seoDescription: "Entenda os códigos HS, as tarifas e o processo de desembaraço com dicas práticas para importadores em 2026.",
+    seoKeywords: "tarifas, códigos hs, desembaraço aduaneiro, impostos de importação",
+  },
+  fr: {
+    title: "Droits de Douane : Guide de l'Importateur",
+    excerpt: "Déchiffrez les codes SH, comprenez les droits et planifiez un dédouanement sans accroc pour votre première importation maritime.",
+    seoTitle: "Droits de Douane : Guide de l'Importateur",
+    seoDescription: "Comprenez les codes SH, les droits et le processus de dédouanement avec des conseils pratiques pour 2026.",
+    seoKeywords: "droits de douane, codes sh, dédouanement, taxes d'importation",
+  },
+  de: {
+    title: "Zölle im Griff: Leitfaden für Importeure",
+    excerpt: "Entschlüsseln Sie HS-Codes, verstehen Sie Zölle und planen Sie die reibungslose Zollabfertigung Ihrer ersten Seefracht-Importe.",
+    seoTitle: "Zölle im Griff: Leitfaden für Importeure",
+    seoDescription: "Verstehen Sie HS-Codes, Zölle und den Zollabfertigungsprozess mit praktischen Tipps für 2026.",
+    seoKeywords: "zölle, hs-code, zollabfertigung, importsteuern",
+  },
+  ru: {
+    title: "Таможенные пошлины: руководство импортёра",
+    excerpt: "Расшифруйте коды ТН ВЭД, разберитесь в пошлинах и спланируйте простое таможенное оформление вашей первой морской поставки.",
+    seoTitle: "Таможенные пошлины: руководство импортёра",
+    seoDescription: "Разберитесь в кодах ТН ВЭД, пошлинах и процессе оформления с практическими советами для импортёров в 2026 году.",
+    seoKeywords: "пошлины, коды тн вэд, таможенное оформление, импортные налоги",
+  },
+  ar: {
+    title: "الرسوم الجمركية: دليل المستورد",
+    excerpt: "فكّ رموز التعريفة المنسقة، وافهم الرسوم، وخطط لتخليص جمركي سلس لأول شحنة بحرية لك.",
+    seoTitle: "الرسوم الجمركية: دليل المستورد",
+    seoDescription: "افهم الرموز المنسقة والرسوم وعملية التخليص مع نصائح عملية للمستوردين في 2026.",
+    seoKeywords: "رسوم جمركية, رموز منسقة, تخليص جمركي, ضرائب استيراد",
+  },
+  id: {
+    title: "Bea Cukai: Panduan Importir",
+    excerpt: "Pahami kode HS, pelajari tarif, dan rencanakan bea cukai yang lancar untuk pengiriman laut pertama Anda.",
+    seoTitle: "Bea Cukai: Panduan Importir",
+    seoDescription: "Pahami kode HS, tarif, dan proses bea cukai dengan kiat praktis untuk importir di 2026.",
+    seoKeywords: "bea cukai, kode hs, bea masuk, pajak impor",
+  },
+  vi: {
+    title: "Thuế hải quan: Cẩm nang cho nhà nhập khẩu",
+    excerpt: "Giải mã mã HS, hiểu về thuế nhập khẩu và lên kế hoạch thông quan suôn sẻ cho lô hàng đường biển đầu tiên của bạn.",
+    seoTitle: "Thuế hải quan: Cẩm nang cho nhà nhập khẩu",
+    seoDescription: "Hiểu về mã HS, thuế nhập khẩu và quy trình thông quan với mẹo thực tế cho nhà nhập khẩu trong năm 2026.",
+    seoKeywords: "thuế nhập khẩu, mã hs, thông quan, thuế hải quan",
+  },
+  th: {
+    title: "อากรศุลกากร: คู่มือผู้ประกอบการนำเข้า",
+    excerpt: "ถอดรหัสรหัส HS ทำความเข้าใจอากร และวางแผนพิธีการศุลกากรอย่างราบรื่นสำหรับการนำเข้าทางทะเลครั้งแรกของคุณ",
+    seoTitle: "อากรศุลกากร: คู่มือผู้ประกอบการนำเข้า",
+    seoDescription: "ทำความเข้าใจรหัส HS อากร และกระบวนการพิธีการศุลกากรพร้อมคำแนะนำเชิงปฏิบัติสำหรับผู้นำเข้าในปี 2026",
+    seoKeywords: "อากรศุลกากร, รหัส hs, พิธีการศุลกากร, ภาษีนำเข้า",
+  },
+  ms: {
+    title: "Duti Kastam: Panduan Pengimport",
+    excerpt: "Fahami kod HS, pelajari duti, dan rancang proses kastam yang lancar untuk penghantaran laut pertama anda.",
+    seoTitle: "Duti Kastam: Panduan Pengimport",
+    seoDescription: "Fahami kod HS, duti dan proses kastam dengan tip praktikal untuk pengimport pada 2026.",
+    seoKeywords: "duti kastam, kod hs, pelepasan kastam, cukai import",
+  },
+}

@@ -315,7 +315,30 @@
     "subtitle": "Des connaissances pratiques sur l'importation, le sourcing et la logistique — de notre équipe et de nos partenaires.",
     "all": "Tout",
     "by": "Par {author}",
-    "noPosts": "Aucun article pour le moment."
+    "noPosts": "Aucun article pour le moment.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "Chine",
+      "customs": "Douanes",
+      "electronics": "Électronique",
+      "energy": "Énergie",
+      "freight": "Fret",
+      "importing": "Importation",
+      "inspection": "Inspection",
+      "international-trade": "Commerce international",
+      "led": "LED",
+      "lighting": "Éclairage",
+      "logistics": "Logistique",
+      "manufacturing": "Fabrication",
+      "moq": "Quantité minimale",
+      "negotiation": "Négociation",
+      "quality-control": "Contrôle qualité",
+      "shipping": "Expédition",
+      "sourcing": "Approvisionnement",
+      "suppliers": "Fournisseurs",
+      "tariffs": "Droits de douane",
+      "wholesale": "Gros"
+    }
   },
   "faq": {
     "metaDescription": "Questions fréquentes sur les produits, les livraisons et les retours de {siteName}.",

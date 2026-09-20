@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { BlogContent } from "@/components/blog/BlogContent"
+import { fetchBlogPostTranslations, applyBlogPostLocalization } from "@/lib/i18n/content"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
 import { breadcrumbSchema, blogPostingSchema, articleSchema, personSchema } from "@/lib/seo/structured-data"
@@ -24,10 +25,15 @@ export default async function BlogPostPage({ params }: Props) {
   })
   if (!post || !post.publishedAt) notFound()
 
+  const [translations] = await Promise.all([
+    fetchBlogPostTranslations([post.id], locale),
+  ])
+  const postL = applyBlogPostLocalization(post, translations)
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const postUrl = `${baseUrl}/${locale}/blog/${slug}`
   const datePublished = post.publishedAt.toISOString()
-  const tags = (post.tags || "").split(",").map((t) => t.trim()).filter(Boolean)
+  const tags = (postL.tags || "").split(",").map((t) => t.trim()).filter(Boolean)
   const seo = await getSiteSeo()
   const t = await getTranslations("blog")
   const tc = await getTranslations("common")
@@ -36,11 +42,11 @@ export default async function BlogPostPage({ params }: Props) {
     breadcrumbSchema([
       { name: tc("home"), url: baseUrl },
       { name: t("title"), url: `${baseUrl}/${locale}/blog` },
-      { name: post.title, url: postUrl },
+      { name: postL.title, url: postUrl },
     ]),
     blogPostingSchema({
-      headline: post.title,
-      description: post.excerpt || post.seoDescription || "",
+      headline: postL.title,
+      description: postL.excerpt || postL.seoDescription || "",
       author: post.author,
       datePublished,
       dateModified: (post.updatedAt || post.publishedAt).toISOString(),
@@ -49,8 +55,8 @@ export default async function BlogPostPage({ params }: Props) {
     }),
     // GEO: Enhanced Article schema with Speakable spec — LLMs use this to identify quotable sections
     articleSchema({
-      headline: post.title,
-      description: post.excerpt || post.seoDescription || "",
+      headline: postL.title,
+      description: postL.excerpt || postL.seoDescription || "",
       author: { name: post.author, url: `${baseUrl}/${locale}/about` },
       datePublished,
       dateModified: (post.updatedAt || post.publishedAt).toISOString(),
@@ -85,15 +91,15 @@ export default async function BlogPostPage({ params }: Props) {
             items={[
               { label: tc("home"), href: "/" },
               { label: t("title"), href: "/blog" },
-              { label: post.title },
+              { label: postL.title },
             ]}
             className="mb-8"
           />
         </Container>
         <BlogContent
           post={{
-            title: post.title,
-            content: post.content,
+            title: postL.title,
+            content: postL.content || post.content,
             author: post.author,
             publishedAt: post.publishedAt,
             tags: post.tags,
@@ -115,11 +121,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   })
   if (!post) return {}
+  const [translations] = await Promise.all([
+    fetchBlogPostTranslations([post.id], locale),
+  ])
+  const postL = applyBlogPostLocalization(post, translations)
   const seo = await getSiteSeo()
   return genMeta({
-    title: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt || "",
-    keywords: post.seoKeywords || post.tags || undefined,
+    title: postL.seoTitle || postL.title,
+    description: postL.seoDescription || postL.excerpt || "",
+    keywords: postL.seoKeywords || post.tags || undefined,
     ogImage: post.coverImage || undefined,
     ogType: "article",
     siteName: seo.siteName,

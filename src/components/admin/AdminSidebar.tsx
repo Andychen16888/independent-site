@@ -9,6 +9,7 @@ import {
   HiOutlinePhoto, HiOutlineMegaphone, HiOutlineChartBar,
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
   HiOutlineDocument, HiOutlineBars3, HiOutlineServerStack,
+  HiOutlineQuestionMarkCircle,
 } from "react-icons/hi2"
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { name: "Marketing", href: "/admin/marketing", icon: HiOutlineMegaphone },
   { name: "Affiliates", href: "/admin/affiliates", icon: HiOutlineCurrencyDollar },
   { name: "Blog", href: "/admin/blog", icon: HiOutlineDocumentText },
+  { name: "FAQ", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },
   { name: "Pages", href: "/admin/pages", icon: HiOutlineDocument },
   { name: "Menus", href: "/admin/menus", icon: HiOutlineBars3 },
   { name: "Banners", href: "/admin/banners", icon: HiOutlinePhoto },

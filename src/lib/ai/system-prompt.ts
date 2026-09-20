@@ -66,8 +66,26 @@ export async function buildSystemPrompt(): Promise<string> {
 
   let faqLines = ""
   try {
-    const faqs = JSON.parse(settings["content.faq"] || "[]") as { q: string; a: string }[]
-    if (Array.isArray(faqs) && faqs.length > 0) {
+    const faqRows = await prisma.siteFaq.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      include: { translations: true },
+    })
+    const faqs = faqRows
+      .map((row) => {
+        const en = row.translations.find((t) => t.locale === "en")
+        const any = row.translations[0]
+        return { q: en?.question || any?.question || "", a: en?.answer || any?.answer || "" }
+      })
+      .filter((f) => f.q)
+    if (faqs.length === 0) {
+      const legacy = JSON.parse(settings["content.faq"] || "[]") as { q: string; a: string }[]
+      if (Array.isArray(legacy)) {
+        faqs.length = 0
+        faqs.push(...legacy)
+      }
+    }
+    if (faqs.length > 0) {
       faqLines = faqs
         .slice(0, 5)
         .map((f) => `Q: ${f.q}\nA: ${f.a}`)

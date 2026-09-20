@@ -315,7 +315,30 @@
     "subtitle": "Conocimientos prácticos sobre importación, abastecimiento y logística, de nuestro equipo y colaboradores.",
     "all": "Todo",
     "by": "Por {author}",
-    "noPosts": "Aún no hay artículos."
+    "noPosts": "Aún no hay artículos.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "China",
+      "customs": "Aduanas",
+      "electronics": "Electrónica",
+      "energy": "Energía",
+      "freight": "Flete",
+      "importing": "Importación",
+      "inspection": "Inspección",
+      "international-trade": "Comercio internacional",
+      "led": "LED",
+      "lighting": "Iluminación",
+      "logistics": "Logística",
+      "manufacturing": "Fabricación",
+      "moq": "Cantidad mínima",
+      "negotiation": "Negociación",
+      "quality-control": "Control de calidad",
+      "shipping": "Envío",
+      "sourcing": "Abastecimiento",
+      "suppliers": "Proveedores",
+      "tariffs": "Aranceles",
+      "wholesale": "Mayoreo"
+    }
   },
   "faq": {
     "metaDescription": "Preguntas frecuentes sobre los productos, los envíos y las devoluciones de {siteName}.",

@@ -315,7 +315,30 @@
     "subtitle": "معرفة عملية حول الاستيراد والتوريد واللوجستيات — من فريقنا وشركائنا.",
     "all": "الكل",
     "by": "بقلم {author}",
-    "noPosts": "لا توجد مقالات بعد."
+    "noPosts": "لا توجد مقالات بعد.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "الصين",
+      "customs": "الجمارك",
+      "electronics": "الإلكترونيات",
+      "energy": "الطاقة",
+      "freight": "الشحن البحري",
+      "importing": "الاستيراد",
+      "inspection": "الفحص",
+      "international-trade": "التجارة الدولية",
+      "led": "LED",
+      "lighting": "الإضاءة",
+      "logistics": "اللوجستيات",
+      "manufacturing": "التصنيع",
+      "moq": "الحد الأدنى للطلب",
+      "negotiation": "التفاوض",
+      "quality-control": "مراقبة الجودة",
+      "shipping": "الشحن",
+      "sourcing": "المصادر",
+      "suppliers": "الموردون",
+      "tariffs": "الرسوم الجمركية",
+      "wholesale": "الجملة"
+    }
   },
   "faq": {
     "metaDescription": "الأسئلة الشائعة حول منتجات {siteName} والشحن والإرجاع.",

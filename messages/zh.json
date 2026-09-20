@@ -315,7 +315,30 @@
     "subtitle": "来自我们团队与合作伙伴的实用进口、采购与物流知识。",
     "all": "全部",
     "by": "作者：{author}",
-    "noPosts": "暂无文章。"
+    "noPosts": "暂无文章。",
+    "tags": {
+      "b2b": "B2B",
+      "china": "中国",
+      "customs": "海关",
+      "electronics": "电子产品",
+      "energy": "能源",
+      "freight": "货运",
+      "importing": "进口",
+      "inspection": "检验",
+      "international-trade": "国际贸易",
+      "led": "LED",
+      "lighting": "照明",
+      "logistics": "物流",
+      "manufacturing": "制造",
+      "moq": "最小起订量",
+      "negotiation": "谈判",
+      "quality-control": "质量控制",
+      "shipping": "运输",
+      "sourcing": "采购",
+      "suppliers": "供应商",
+      "tariffs": "关税",
+      "wholesale": "批发"
+    }
   },
   "faq": {
     "metaDescription": "关于 {siteName} 产品、物流、退换货的常见问题解答。",

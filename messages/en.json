@@ -315,7 +315,30 @@
     "subtitle": "Practical importing, sourcing, and logistics knowledge — from our team and partners.",
     "all": "All",
     "by": "By {author}",
-    "noPosts": "No posts yet."
+    "noPosts": "No posts yet.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "China",
+      "customs": "Customs",
+      "electronics": "Electronics",
+      "energy": "Energy",
+      "freight": "Freight",
+      "importing": "Importing",
+      "inspection": "Inspection",
+      "international-trade": "International Trade",
+      "led": "LED",
+      "lighting": "Lighting",
+      "logistics": "Logistics",
+      "manufacturing": "Manufacturing",
+      "moq": "MOQ",
+      "negotiation": "Negotiation",
+      "quality-control": "Quality Control",
+      "shipping": "Shipping",
+      "sourcing": "Sourcing",
+      "suppliers": "Suppliers",
+      "tariffs": "Tariffs",
+      "wholesale": "Wholesale"
+    }
   },
   "faq": {
     "metaDescription": "Frequently asked questions about {siteName} products, shipping, returns, and more.",

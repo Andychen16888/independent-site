@@ -315,7 +315,30 @@
     "subtitle": "Практические знания об импорте, закупках и логистике — от нашей команды и партнёров.",
     "all": "Все",
     "by": "Автор: {author}",
-    "noPosts": "Статей пока нет."
+    "noPosts": "Статей пока нет.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "Китай",
+      "customs": "Таможня",
+      "electronics": "Электроника",
+      "energy": "Энергия",
+      "freight": "Грузоперевозки",
+      "importing": "Импорт",
+      "inspection": "Инспекция",
+      "international-trade": "Международная торговля",
+      "led": "LED",
+      "lighting": "Освещение",
+      "logistics": "Логистика",
+      "manufacturing": "Производство",
+      "moq": "MOQ",
+      "negotiation": "Переговоры",
+      "quality-control": "Контроль качества",
+      "shipping": "Доставка",
+      "sourcing": "Поиск поставщиков",
+      "suppliers": "Поставщики",
+      "tariffs": "Пошлины",
+      "wholesale": "Опт"
+    }
   },
   "faq": {
     "metaDescription": "Частые вопросы о товарах, доставке и возвратах {siteName}.",

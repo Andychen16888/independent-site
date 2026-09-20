@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server"
 import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
+import { fetchPageTranslations } from "@/lib/i18n/content"
+import type { PageTranslation } from "@prisma/client"
 import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/hi2"
 
 const DEFAULT_SHOP_LINKS = [
@@ -85,6 +87,22 @@ export async function Footer({
   const t = await getTranslations("footer")
   const tnav = await getTranslations("navigation")
 
+  const pageTranslations = useDbContent
+    ? new Map<string, PageTranslation>()
+    : await fetchPageTranslations(pages.map((p) => p.id), locale)
+  const pageTitle = (p: { id: string; slug: string; title: string }): string => {
+    const key = navKeyForHref(`/pages/${p.slug}`)
+    if (key) {
+      try {
+        return tnav.has(key) ? tnav(key) : p.title
+      } catch {
+        // fall through to DB translation
+      }
+    }
+    const tr = pageTranslations.get(p.id)
+    return tr?.title || p.title
+  }
+
   const safeAbout = useDbContent ? about || t("about") : t("about")
   const safeHours = useDbContent ? hours || t("hours") : t("hours")
 
@@ -99,7 +117,7 @@ export async function Footer({
     : DEFAULT_SHOP_LINKS
 
   const supportLinks = pages.length
-    ? pages.map((p) => ({ name: p.title, href: `/pages/${p.slug}` }))
+    ? pages.map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
     : DEFAULT_SUPPORT_LINKS
 
   const socialLinks = [
@@ -113,7 +131,7 @@ export async function Footer({
 
   const aboutLinks = pages
     .filter((p) => ["about", "contact"].includes(p.slug))
-    .map((p) => ({ name: p.title, href: `/pages/${p.slug}` }))
+    .map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
 
   return (
     <footer className="bg-charcoal text-ivory">

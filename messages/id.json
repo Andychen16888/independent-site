@@ -315,7 +315,30 @@
     "subtitle": "Pengetahuan praktis seputar impor, pengadaan, dan logistik — dari tim dan mitra kami.",
     "all": "Semua",
     "by": "Oleh {author}",
-    "noPosts": "Belum ada tulisan."
+    "noPosts": "Belum ada tulisan.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "Tiongkok",
+      "customs": "Bea cukai",
+      "electronics": "Elektronik",
+      "energy": "Energi",
+      "freight": "Angkutan",
+      "importing": "Impor",
+      "inspection": "Inspeksi",
+      "international-trade": "Perdagangan internasional",
+      "led": "LED",
+      "lighting": "Pencahayaan",
+      "logistics": "Logistik",
+      "manufacturing": "Manufaktur",
+      "moq": "Kuantitas minimum",
+      "negotiation": "Negosiasi",
+      "quality-control": "Kontrol kualitas",
+      "shipping": "Pengiriman",
+      "sourcing": "Pengadaan",
+      "suppliers": "Pemasok",
+      "tariffs": "Tarif",
+      "wholesale": "Grosir"
+    }
   },
   "faq": {
     "metaDescription": "Pertanyaan yang sering diajukan tentang produk {siteName}, pengiriman, pengembalian, dan lainnya.",

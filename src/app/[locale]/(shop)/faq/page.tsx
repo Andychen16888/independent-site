@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo, getSetting } from "@/lib/settings/settings"
+import { fetchLocalizedFaqs } from "@/lib/i18n/content"
 import { breadcrumbSchema, faqPageSchema, qaPageSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
@@ -34,12 +35,17 @@ export default async function FAQPage({ params }: Props) {
   const { locale } = await params
   const seo = await getSiteSeo()
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
-  const raw = await getSetting("content.faq", "[]")
-  let faqs: FaqItem[] = []
-  try {
-    faqs = JSON.parse(raw)
-    if (!Array.isArray(faqs)) faqs = []
-  } catch {}
+
+  // FAQ content is now stored per-locale via SiteFaq + SiteFaqTranslation tables.
+  // Fall back to the legacy "content.faq" setting (English JSON) until the table is seeded.
+  let faqs: FaqItem[] = (await fetchLocalizedFaqs(locale)).map((f) => ({ q: f.question, a: f.answer }))
+  if (faqs.length === 0) {
+    const raw = await getSetting("content.faq", "[]")
+    try {
+      const legacy = JSON.parse(raw)
+      if (Array.isArray(legacy)) faqs = legacy
+    } catch {}
+  }
 
   const freeThreshold = (await getSetting("shipping.freeThreshold", "")) || undefined
   const t = await getTranslations("faq")

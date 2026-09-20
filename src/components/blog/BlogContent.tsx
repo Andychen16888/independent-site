@@ -25,6 +25,11 @@ export function BlogContent({ post }: BlogContentProps) {
     looksLikeHtml ? post.content : (marked.parse(post.content, { breaks: true }) as string)
   )
 
+  const tagLabel = (raw: string) => {
+    const key = `tags.${raw.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`
+    return t.has(key) ? t(key) : raw
+  }
+
   return (
     <Container>
       <article className="max-w-3xl mx-auto pb-16">
@@ -41,7 +46,7 @@ export function BlogContent({ post }: BlogContentProps) {
                   key={tag}
                   className="text-[10px] tracking-wider uppercase text-stone bg-mist px-2 py-1"
                 >
-                  {tag.trim()}
+                  {tagLabel(tag.trim())}
                 </span>
               ))}
             </div>

@@ -608,12 +608,33 @@ model BlogPost {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  comments BlogComment[]
+  comments    BlogComment[]
+  translations BlogPostTranslation[]
 
   @@index([slug])
   @@index([isPublished])
   @@index([publishedAt])
   @@map("blog_posts")
+}
+
+model BlogPostTranslation {
+  id              String   @id @default(cuid())
+  blogPostId      String
+  locale          String
+  title           String
+  excerpt         String?  @db.Text
+  content         String?  @db.Text
+  seoTitle        String?
+  seoDescription  String?
+  seoKeywords     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  blogPost BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+
+  @@unique([blogPostId, locale])
+  @@index([locale])
+  @@map("blog_post_translations")
 }
 
 model BlogComment {
@@ -687,9 +708,31 @@ model Page {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  translations PageTranslation[]
+
   @@index([slug])
   @@index([isPublished])
   @@map("pages")
+}
+
+model PageTranslation {
+  id             String   @id @default(cuid())
+  pageId         String
+  locale         String
+  title          String
+  excerpt        String?  @db.Text
+  content        String?  @db.Text
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, locale])
+  @@index([locale])
+  @@map("page_translations")
 }
 
 model SiteSetting {
@@ -698,6 +741,34 @@ model SiteSetting {
   value String @db.Text
 
   @@map("site_settings")
+}
+
+model SiteFaq {
+  id        String   @id @default(cuid())
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations SiteFaqTranslation[]
+
+  @@map("site_faqs")
+}
+
+model SiteFaqTranslation {
+  id        String   @id @default(cuid())
+  siteFaqId String
+  locale    String
+  question  String   @db.Text
+  answer    String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  siteFaq SiteFaq @relation(fields: [siteFaqId], references: [id], onDelete: Cascade)
+
+  @@unique([siteFaqId, locale])
+  @@index([locale])
+  @@map("site_faq_translations")
 }
 
 model PageView {

@@ -315,7 +315,30 @@
     "subtitle": "Praktisches Wissen über Import, Sourcing und Logistik — von unserem Team und Partnern.",
     "all": "Alle",
     "by": "Von {author}",
-    "noPosts": "Noch keine Artikel vorhanden."
+    "noPosts": "Noch keine Artikel vorhanden.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "China",
+      "customs": "Zoll",
+      "electronics": "Elektronik",
+      "energy": "Energie",
+      "freight": "Fracht",
+      "importing": "Import",
+      "inspection": "Inspektion",
+      "international-trade": "Internationaler Handel",
+      "led": "LED",
+      "lighting": "Beleuchtung",
+      "logistics": "Logistik",
+      "manufacturing": "Fertigung",
+      "moq": "Mindestbestellmenge",
+      "negotiation": "Verhandlung",
+      "quality-control": "Qualitätskontrolle",
+      "shipping": "Versand",
+      "sourcing": "Beschaffung",
+      "suppliers": "Lieferanten",
+      "tariffs": "Zölle",
+      "wholesale": "Großhandel"
+    }
   },
   "faq": {
     "metaDescription": "Häufige Fragen zu Produkten, Versand und Rücksendungen von {siteName}.",

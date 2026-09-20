@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const freightTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "空运与海运：如何为进口选择正确的运输方式",
+    excerpt: "速度、成本与两者之间的临界点——实用对比，帮您为每笔订单明智选择运输方式。",
+    seoTitle: "空运与海运：选择正确的运输方式",
+    seoDescription: "对比从中国进口的空运与海运：运输时间、成本及各自适用场景。",
+    seoKeywords: "空运, 海运, 运输方式, 中国进口物流",
+  },
+  es: {
+    title: "Flete Aéreo vs Flete Marítimo: Elegir el Transporte Correcto para sus Importaciones",
+    excerpt: "Velocidad, costo y el punto de equilibrio entre ambos: una comparación práctica para elegir el transporte adecuado en cada pedido.",
+    seoTitle: "Flete Aéreo vs Flete Marítimo: Cómo Elegir el Transporte",
+    seoDescription: "Compare el flete aéreo y el marítimo para importar desde China: tiempos de tránsito, costos y cuándo usar cada uno.",
+    seoKeywords: "flete aéreo, flete marítimo, modos de transporte, logística de importación",
+  },
+  pt: {
+    title: "Frete Aéreo vs Frete Marítimo: Escolhendo o Transporte Certo para suas Importações",
+    excerpt: "Velocidade, custo e o ponto de equilíbrio entre os dois — uma comparação prática para escolher o transporte certo em cada pedido.",
+    seoTitle: "Frete Aéreo vs Frete Marítimo: Como Escolher o Transporte",
+    seoDescription: "Compare frete aéreo e marítimo para importar da China: tempos de trânsito, custos e quando usar cada modal.",
+    seoKeywords: "frete aéreo, frete marítimo, modais de transporte, logística de importação",
+  },
+  fr: {
+    title: "Fret Aérien ou Fret Maritime : Choisir le Bon Mode d'Expédition",
+    excerpt: "Vitesse, coût et le point d'équilibre entre les deux : une comparaison pratique pour bien choisir l'expédition de chaque commande.",
+    seoTitle: "Fret Aérien ou Fret Maritime : Choisir le Bon Mode d'Expédition",
+    seoDescription: "Comparez fret aérien et maritime pour importer de Chine : temps de transit, coûts et quand utiliser chacun.",
+    seoKeywords: "fret aérien, fret maritime, modes d'expédition, logistique d'import",
+  },
+  de: {
+    title: "Luftfracht oder Seefracht: Die richtige Transportart für Importe wählen",
+    excerpt: "Geschwindigkeit, Kosten und der Kipppunkt zwischen beiden — ein praktischer Vergleich für die richtige Wahl bei jeder Bestellung.",
+    seoTitle: "Luftfracht oder Seefracht: Die richtige Transportart wählen",
+    seoDescription: "Vergleich von Luft- und Seefracht für Importe aus China: Transitzeiten, Kosten und wann welche Methode sinnvoll ist.",
+    seoKeywords: "luftfracht, seefracht, transportarten, importlogistik china",
+  },
+  ru: {
+    title: "Авиаперевозка или морская перевозка: выбор правильного способа доставки",
+    excerpt: "Скорость, стоимость и точка равновесия между ними: практическое сравнение для разумного выбора доставки каждого заказа.",
+    seoTitle: "Авиаперевозка или морская перевозка: как выбрать доставку",
+    seoDescription: "Сравнение авиа- и морских перевозок для импорта из Китая: сроки, стоимость и когда использовать каждый из способов.",
+    seoKeywords: "авиаперевозка, морская перевозка, способы доставки, логистика импорта",
+  },
+  ar: {
+    title: "الشحن الجوي مقابل الشحن البحري: اختيار أسلوب الشحن الصحيح للاستيراد",
+    excerpt: "السرعة والتكلفة ونقطة التوازن بينهما — مقارنة عملية لاختيار الشحن بحكمة لكل طلبية.",
+    seoTitle: "الشحن الجوي مقابل الشحن البحري: اختيار أسلوب الشحن الصحيح",
+    seoDescription: "قارن الشحن الجوي والبحري للاستيراد من الصين: أوقات العبور والتكاليف ومتى تستخدم كل منهما.",
+    seoKeywords: "شحن جوي, شحن بحري, أساليب الشحن, لوجستيات الاستيراد من الصين",
+  },
+  id: {
+    title: "Angkutan Udara vs Angkutan Laut: Memilih Moda Pengiriman yang Tepat untuk Impor",
+    excerpt: "Kecepatan, biaya, dan titik keseimbangan keduanya — perbandingan praktis untuk memilih pengiriman yang bijak untuk setiap pesanan.",
+    seoTitle: "Angkutan Udara vs Angkutan Laut: Memilih Moda Pengiriman",
+    seoDescription: "Bandingkan angkutan udara dan laut untuk impor dari China: waktu transit, biaya, dan kapan memakai masing-masing.",
+    seoKeywords: "angkutan udara, angkutan laut, moda pengiriman, logistik impor china",
+  },
+  vi: {
+    title: "Vận chuyển hàng không vs Đường biển: Chọn phương thức vận chuyển phù hợp để nhập khẩu",
+    excerpt: "Tốc độ, chi phí và điểm cân bằng giữa hai phương thức — so sánh thực tế để chọn vận chuyển khôn ngoan cho mỗi đơn hàng.",
+    seoTitle: "Vận chuyển hàng không vs Đường biển: Chọn phương thức phù hợp",
+    seoDescription: "So sánh vận chuyển hàng không và đường biển khi nhập khẩu từ Trung Quốc: thời gian, chi phí và khi nào nên dùng mỗi loại.",
+    seoKeywords: "vận chuyển hàng không, đường biển, phương thức vận chuyển",
+  },
+  th: {
+    title: "การขนส่งทางอากาศกับทางทะเล: การเลือกวิธีขนส่งที่เหมาะสมสำหรับการนำเข้า",
+    excerpt: "ความเร็ว ต้นทุน และจุดคุ้มค่าระหว่างสองแบบ — การเปรียบเทียบเชิงปฏิบัติเพื่อเลือกการขนส่งอย่างชาญฉลาดสำหรับทุกคำสั่งซื้อ",
+    seoTitle: "การขนส่งทางอากาศกับทางทะเล: การเลือกวิธีขนส่งที่เหมาะสม",
+    seoDescription: "เปรียบเทียบการขนส่งทางอากาศและทางทะเลสำหรับการนำเข้าจากจีน: ระยะเวลา ต้นทุน และเมื่อใดควรใช้แต่ละแบบ",
+    seoKeywords: "ขนส่งทางอากาศ, ขนส่งทางทะเล, วิธีขนส่ง, โลจิสติกส์นำเข้าจีน",
+  },
+  ms: {
+    title: "Freight Udara vs Freight Laut: Memilih Mod Pengangkutan yang Tepat untuk Import",
+    excerpt: "Kelajuan, kos dan titik keseimbangan antara kedua-duanya — perbandingan praktikal untuk memilih penghantaran yang bijak bagi setiap pesanan.",
+    seoTitle: "Freight Udara vs Freight Laut: Memilih Mod Pengangkutan",
+    seoDescription: "Bandingkan freight udara dan laut untuk import dari China: masa transit, kos dan bila menggunakan setiap mod.",
+    seoKeywords: "freight udara, freight laut, mod pengangkutan, logistik import china",
+  },
+}

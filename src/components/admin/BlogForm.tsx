@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast"
 import { slugify } from "@/lib/utils/format"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
+import TranslationsEditor, { type TranslationFields } from "@/components/admin/TranslationsEditor"
 
 export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postId?: string }) {
   const router = useRouter()
@@ -18,6 +19,7 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
     author: "Admin", tags: "", isPublished: false,
     seoTitle: "", seoDescription: "", seoKeywords: "",
   })
+  const [translations, setTranslations] = useState<TranslationFields[]>([])
 
   useEffect(() => {
     if (mode !== "edit" || !postId) return
@@ -33,6 +35,17 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
           isPublished: p.isPublished === true,
           seoTitle: p.seoTitle || "", seoDescription: p.seoDescription || "", seoKeywords: p.seoKeywords || "",
         })
+        setTranslations(
+          (p.translations || []).map((t: any) => ({
+            locale: t.locale,
+            title: t.title || "",
+            excerpt: t.excerpt || "",
+            content: t.content || "",
+            seoTitle: t.seoTitle || "",
+            seoDescription: t.seoDescription || "",
+            seoKeywords: t.seoKeywords || "",
+          }))
+        )
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
@@ -54,7 +67,7 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
       const res = await fetch(url, {
         method: mode === "edit" ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, coverImage: form.coverImage || null }),
+        body: JSON.stringify({ ...form, coverImage: form.coverImage || null, translations }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to save post")
@@ -134,6 +147,11 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
           <label className={label}>SEO Keywords</label>
           <input value={form.seoKeywords} onChange={(e) => update({ seoKeywords: e.target.value })} className={input} />
         </div>
+      </div>
+
+      <div className="border-t border-mist pt-6 space-y-4">
+        <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">Translations</label>
+        <TranslationsEditor value={translations} onChange={setTranslations} includeContent />
       </div>
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">

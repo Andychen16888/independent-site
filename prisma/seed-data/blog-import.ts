@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "如何从中国进口：完整入门指南",
+    excerpt: "刚接触进口？从寻找供应商到清关，了解必备步骤——让您自信地从中国采购。",
+    seoTitle: "如何从中国进口：完整入门指南",
+    seoDescription: "从中国进口的分步指南，涵盖供应商调研、采购、谈判、质检与清关。",
+    seoKeywords: "从中国进口, 中国采购, 进口指南, 入门进口商",
+  },
+  es: {
+    title: "Cómo Importar desde China: Guía Completa para Principiantes",
+    excerpt: "¿Nuevo en la importación? Aprenda los pasos esenciales, desde encontrar proveedores hasta el despacho aduanero — todo lo que necesita para empezar a abastecerse en China.",
+    seoTitle: "Cómo Importar desde China: Guía Completa para Principiantes",
+    seoDescription: "Una guía paso a paso para importar desde China, que cubre investigación de proveedores, abastecimiento, negociación, control de calidad y aduanas.",
+    seoKeywords: "importar desde china, abastecimiento en china, guía de importación",
+  },
+  pt: {
+    title: "Como Importar da China: Guia Completo para Iniciantes",
+    excerpt: "Novo em importação? Aprenda os passos essenciais — de encontrar fornecedores a desembaraço aduaneiro. Tudo o que você precisa para começar a importar da China.",
+    seoTitle: "Como Importar da China: Guia Completo para Iniciantes",
+    seoDescription: "Um guia passo a passo para importar da China, cobrindo pesquisa de fornecedores, compras, negociação, controle de qualidade e alfândega.",
+    seoKeywords: "importar da china, compras na china, guia de importação",
+  },
+  fr: {
+    title: "Comment Importer de Chine : Guide Complet pour Débutants",
+    excerpt: "Débutant en import ? Découvrez les étapes essentielles, de la recherche de fournisseurs au dédouanement — tout ce qu'il faut pour vous approvisionner en Chine.",
+    seoTitle: "Comment Importer de Chine : Guide Complet pour Débutants",
+    seoDescription: "Un guide étape par étape pour importer de Chine, couvrant la recherche de fournisseurs, l'approvisionnement, la négociation, le contrôle qualité et les douanes.",
+    seoKeywords: "importer de chine, approvisionnement chine, guide d'importation",
+  },
+  de: {
+    title: "Import aus China: Der komplette Leitfaden für Einsteiger",
+    excerpt: "Neu im Importgeschäft? Lernen Sie die wichtigsten Schritte von der Lieferantensuche bis zur Zollabfertigung — alles, um sicher in China einzukaufen.",
+    seoTitle: "Import aus China: Der komplette Leitfaden für Einsteiger",
+    seoDescription: "Eine Schritt-für-Schritt-Anleitung für Importe aus China: Lieferantenrecherche, Beschaffung, Verhandlung, Qualitätskontrolle und Zollabfertigung.",
+    seoKeywords: "import aus china, beschaffung china, import-anleitung",
+  },
+  ru: {
+    title: "Как импортировать из Китая: полное руководство для начинающих",
+    excerpt: "Только начинаете импортировать? Узнайте ключевые шаги — от поиска поставщиков до таможенного оформления. Всё, что нужно для уверенных закупок в Китае.",
+    seoTitle: "Как импортировать из Китая: полное руководство для начинающих",
+    seoDescription: "Пошаговое руководство по импорту из Китая: поиск поставщиков, закупки, переговоры, контроль качества и таможня.",
+    seoKeywords: "импорт из китая, закупки в китае, руководство по импорту",
+  },
+  ar: {
+    title: "كيف تستورد من الصين: دليل شامل للمبتدئين",
+    excerpt: "هل أنت جديد في الاستيراد؟ تعرّف على الخطوات الأساسية من البحث عن الموردين إلى التخليص الجمركي — كل ما تحتاجه لبدء الاستيراد من الصين بثقة.",
+    seoTitle: "كيف تستورد من الصين: دليل شامل للمبتدئين",
+    seoDescription: "دليل خطوة بخطوة للاستيراد من الصين، يغطي البحث عن الموردين والتوريد والتفاوض ومراقبة الجودة والتخليص الجمركي.",
+    seoKeywords: "الاستيراد من الصين, التوريد من الصين, دليل الاستيراد",
+  },
+  id: {
+    title: "Cara Impor dari China: Panduan Lengkap untuk Pemula",
+    excerpt: "Baru dalam impor? Pelajari langkah-langkah penting dari mencari pemasok hingga bea cukai — semua yang Anda butuhkan untuk mulai mencari barang dari China.",
+    seoTitle: "Cara Impor dari China: Panduan Lengkap untuk Pemula",
+    seoDescription: "Panduan langkah demi langkah untuk impor dari China, mencakup riset pemasok, pengadaan, negosiasi, kontrol kualitas, dan bea cukai.",
+    seoKeywords: "impor dari china, pengadaan china, panduan impor",
+  },
+  vi: {
+    title: "Cách nhập hàng từ Trung Quốc: Hướng dẫn đầy đủ cho người mới",
+    excerpt: "Mới bắt đầu nhập khẩu? Tìm hiểu các bước cần thiết từ tìm nhà cung cấp đến thông quan — mọi thứ bạn cần để tự tin tìm nguồn hàng từ Trung Quốc.",
+    seoTitle: "Cách nhập hàng từ Trung Quốc: Hướng dẫn đầy đủ cho người mới",
+    seoDescription: "Hướng dẫn từng bước để nhập khẩu từ Trung Quốc, bao gồm nghiên cứu nhà cung cấp, tìm nguồn hàng, đàm phán, kiểm soát chất lượng và hải quan.",
+    seoKeywords: "nhập khẩu từ trung quốc, tìm nguồn hàng trung quốc, hướng dẫn nhập khẩu",
+  },
+  th: {
+    title: "วิธีนำเข้าจากจีน: คู่มือฉบับสมบูรณ์สำหรับผู้เริ่มต้น",
+    excerpt: "เพิ่งเริ่มนำเข้า? เรียนรู้ขั้นตอนสำคัญตั้งแต่การหาซัพพลายเออร์ไปจนถึงพิธีการศุลกากร — ทุกสิ่งที่คุณต้องมีเพื่อเริ่มจัดหาสินค้าจากจีนอย่างมั่นใจ",
+    seoTitle: "วิธีนำเข้าจากจีน: คู่มือฉบับสมบูรณ์สำหรับผู้เริ่มต้น",
+    seoDescription: "คู่มือทีละขั้นตอนสำหรับการนำเข้าจากจีน ครอบคลุมการค้นคว้าซัพพลายเออร์ การจัดหา การเจรจา การควบคุมคุณภาพ และพิธีการศุลกากร",
+    seoKeywords: "นำเข้าจากจีน, การจัดหาจากจีน, คู่มือการนำเข้า",
+  },
+  ms: {
+    title: "Cara Mengimport dari China: Panduan Lengkap untuk Pemula",
+    excerpt: "Baru dalam import? Pelajari langkah penting daripada mencari pembekal hingga kastam — semua yang anda perlukan untuk mula mendapatkan sumber dari China.",
+    seoTitle: "Cara Mengimport dari China: Panduan Lengkap untuk Pemula",
+    seoDescription: "Panduan langkah demi langkah untuk mengimport dari China, merangkumi penyelidikan pembekal, sumber, rundingan, kawalan kualiti dan kastam.",
+    seoKeywords: "mengimport dari china, sumber dari china, panduan import",
+  },
+}

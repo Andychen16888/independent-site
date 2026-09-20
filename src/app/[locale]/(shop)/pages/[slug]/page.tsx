@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
+import { fetchPageTranslations, applyPageLocalization } from "@/lib/i18n/content"
 import {
   breadcrumbSchema,
   articleSchema,
@@ -25,11 +26,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
   const page = await getPage(slug)
   if (!page || !page.isPublished) return {}
+  const [translations] = await Promise.all([
+    fetchPageTranslations([page.id], locale),
+  ])
+  const pageL = applyPageLocalization(page, translations)
   const seo = await getSiteSeo()
   return genMeta({
-    title: page.seoTitle || page.title,
-    description: page.seoDescription || page.excerpt || "",
-    keywords: page.seoKeywords || undefined,
+    title: pageL.seoTitle || pageL.title,
+    description: pageL.seoDescription || pageL.excerpt || "",
+    keywords: pageL.seoKeywords || undefined,
     ogImage: page.coverImage || undefined,
     siteName: seo.siteName,
     siteDescription: seo.siteDescription,
@@ -42,6 +47,10 @@ export default async function PageView({ params }: Props) {
   const { slug, locale } = await params
   const page = await getPage(slug)
   if (!page || !page.isPublished) notFound()
+  const [translations] = await Promise.all([
+    fetchPageTranslations([page.id], locale),
+  ])
+  const pageL = applyPageLocalization(page, translations)
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const pageUrl = `${baseUrl}/${locale}/pages/${slug}`
@@ -50,17 +59,17 @@ export default async function PageView({ params }: Props) {
   const schemas = [
     breadcrumbSchema([
       { name: tc("home"), url: baseUrl },
-      { name: page.title, url: pageUrl },
+      { name: pageL.title, url: pageUrl },
     ]),
     slug === "about"
-      ? aboutPageSchema({ name: page.title, description: page.excerpt || "" })
+      ? aboutPageSchema({ name: pageL.title, description: pageL.excerpt || "" })
       : slug === "contact"
-        ? contactPageSchema({ name: page.title, description: page.excerpt || "" })
+        ? contactPageSchema({ name: pageL.title, description: pageL.excerpt || "" })
         : articleSchema({
-            headline: page.title,
-            description: page.excerpt || "",
+            headline: pageL.title,
+            description: pageL.excerpt || "",
             image: page.coverImage,
-            author: { name: page.title },
+            author: { name: pageL.title },
             datePublished: page.createdAt.toISOString(),
             dateModified: (page.updatedAt || page.createdAt).toISOString(),
             url: pageUrl,
@@ -78,12 +87,12 @@ export default async function PageView({ params }: Props) {
           <Breadcrumb
             items={[
               { label: tc("home"), href: "/" },
-              { label: page.title },
+              { label: pageL.title },
             ]}
             className="mb-6"
           />
-          <h1 className="heading-xl">{page.title}</h1>
-          {page.excerpt && <p className="text-body mt-4 max-w-2xl">{page.excerpt}</p>}
+          <h1 className="heading-xl">{pageL.title}</h1>
+          {pageL.excerpt && <p className="text-body mt-4 max-w-2xl">{pageL.excerpt}</p>}
         </Container>
       </div>
 
@@ -94,7 +103,7 @@ export default async function PageView({ params }: Props) {
         )}
         <div
           className="page-prose max-w-3xl"
-          dangerouslySetInnerHTML={{ __html: page.content }}
+          dangerouslySetInnerHTML={{ __html: pageL.content || page.content }}
         />
       </Container>
     </div>

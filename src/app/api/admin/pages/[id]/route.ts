@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { upsertPageTranslations } from "@/lib/i18n/content"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
   if (authError) return authError
 
   const { id } = await params
-  const page = await prisma.page.findUnique({ where: { id } })
+  const page = await prisma.page.findUnique({ where: { id }, include: { translations: true } })
   if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 })
   return NextResponse.json({ page })
 }
@@ -19,7 +20,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { title, slug, excerpt, content, coverImage, isPublished, seoTitle, seoDescription, seoKeywords } = body
+    const { title, slug, excerpt, content, coverImage, isPublished, seoTitle, seoDescription, seoKeywords, translations } = body
 
     const data: any = {
       ...(title !== undefined ? { title } : {}),
@@ -34,6 +35,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const page = await prisma.page.update({ where: { id }, data })
+
+    if (Array.isArray(translations)) {
+      await upsertPageTranslations(id, translations)
+    }
+
     return NextResponse.json({ page })
   } catch (error) {
     console.error("Admin page update error:", error)

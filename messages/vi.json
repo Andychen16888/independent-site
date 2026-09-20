@@ -315,7 +315,30 @@
     "subtitle": "Kiến thức thực tiễn về nhập khẩu, tìm nguồn hàng và logistics — từ đội ngũ và đối tác của chúng tôi.",
     "all": "Tất cả",
     "by": "Bởi {author}",
-    "noPosts": "Chưa có bài viết."
+    "noPosts": "Chưa có bài viết.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "Trung Quốc",
+      "customs": "Hải quan",
+      "electronics": "Điện tử",
+      "energy": "Năng lượng",
+      "freight": "Cước vận chuyển",
+      "importing": "Nhập khẩu",
+      "inspection": "Kiểm tra",
+      "international-trade": "Thương mại quốc tế",
+      "led": "LED",
+      "lighting": "Chiếu sáng",
+      "logistics": "Hậu cần",
+      "manufacturing": "Sản xuất",
+      "moq": "Số lượng tối thiểu",
+      "negotiation": "Đàm phán",
+      "quality-control": "Kiểm soát chất lượng",
+      "shipping": "Vận chuyển",
+      "sourcing": "Tìm nguồn cung",
+      "suppliers": "Nhà cung cấp",
+      "tariffs": "Thuế quan",
+      "wholesale": "Bán buôn"
+    }
   },
   "faq": {
     "metaDescription": "Các câu hỏi thường gặp về sản phẩm {siteName}, vận chuyển, trả hàng và hơn thế nữa.",

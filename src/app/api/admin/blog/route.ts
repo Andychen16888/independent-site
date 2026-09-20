@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { upsertBlogPostTranslations } from "@/lib/i18n/content"
 
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { title, slug, excerpt, content, coverImage, author, tags, isPublished, seoTitle, seoDescription, seoKeywords } = body
+    const { title, slug, excerpt, content, coverImage, author, tags, isPublished, seoTitle, seoDescription, seoKeywords, translations } = body
 
     if (!title || !content) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 })
@@ -54,6 +55,10 @@ export async function POST(req: NextRequest) {
         seoKeywords: seoKeywords || null,
       },
     })
+
+    if (Array.isArray(translations)) {
+      await upsertBlogPostTranslations(post.id, translations)
+    }
 
     return NextResponse.json({ post }, { status: 201 })
   } catch (error) {

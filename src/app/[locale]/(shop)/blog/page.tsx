@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { BlogList } from "@/components/blog/BlogList"
+import { fetchBlogPostTranslations, applyBlogPostLocalizations } from "@/lib/i18n/content"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
@@ -11,6 +12,10 @@ import type { Metadata } from "next"
 interface Props {
   params: Promise<{ slug: string; locale: string }>
   searchParams: Promise<{ tag?: string }>
+}
+
+function slugifyTag(raw: string): string {
+  return raw.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -39,10 +44,15 @@ export default async function BlogPage({ params, searchParams }: Props) {
     take: 60,
   })
 
+  const [translations] = await Promise.all([
+    fetchBlogPostTranslations(posts.map((p) => p.id), locale),
+  ])
+  const localizedPosts = applyBlogPostLocalizations(posts, translations)
+
   const filteredPosts =
     activeTag === "all"
-      ? posts
-      : posts.filter((p) => (p.tags || "").split(",").map((t) => t.trim().toLowerCase()).includes(activeTag))
+      ? localizedPosts
+      : localizedPosts.filter((p) => (p.tags || "").split(",").map((t) => t.trim().toLowerCase()).includes(activeTag))
 
   // Distinct tags from the posts for the filter bar.
   const tagCounts = new Map<string, number>()
@@ -53,7 +63,16 @@ export default async function BlogPage({ params, searchParams }: Props) {
   }
   const allTags = Array.from(tagCounts.entries())
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([t]) => ({ slug: t.toLowerCase(), name: t }))
+    .map(([t]) => ({ slug: t.toLowerCase(), raw: t }))
+
+  const tagLabel = (raw: string) => {
+    const key = `tags.${slugifyTag(raw)}`
+    try {
+      return t.has(key) ? t(key) : raw
+    } catch {
+      return raw
+    }
+  }
 
   const schemas = [
     breadcrumbSchema([
@@ -102,7 +121,7 @@ export default async function BlogPage({ params, searchParams }: Props) {
                     activeTag === t.slug ? "bg-charcoal text-ivory" : "bg-mist text-stone hover:bg-charcoal/10 hover:text-charcoal"
                   }`}
                 >
-                  {t.name}
+                  {tagLabel(t.raw)}
                 </Link>
               ))}
             </div>
@@ -118,7 +137,13 @@ export default async function BlogPage({ params, searchParams }: Props) {
               excerpt: p.excerpt || "",
               coverImage: p.coverImage,
               author: p.author,
-              tags: p.tags || "",
+              tags: (p.tags || "")
+                .split(",")
+                .map((x) => x.trim())
+                .filter(Boolean)
+                .slice(0, 3)
+                .map(tagLabel)
+                .join(", "),
               publishedAt: p.publishedAt as Date,
             }))}
           />

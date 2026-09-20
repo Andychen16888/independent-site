@@ -1,0 +1,81 @@
+import type { BlogTranslationSeed } from "./types"
+
+export const ledTranslations: Record<string, BlogTranslationSeed> = {
+  zh: {
+    title: "为什么LED照明正在改变批发市场",
+    excerpt: "节能、长寿命与智能控制正推动批发市场快速普及。以下是我们建议买家在2026年备货的方向。",
+    seoTitle: "为什么LED照明正在改变批发市场",
+    seoDescription: "能效、耐用性与智能功能如何重塑LED照明批发，以及明年该备哪些货。",
+    seoKeywords: "led照明, led批发, 节能照明, 智能照明",
+  },
+  es: {
+    title: "Por Qué la Iluminación LED Está Transformando los Mercados Mayoristas",
+    excerpt: "El ahorro de energía, la mayor vida útil y los controles inteligentes impulsan una adopción masiva. Esto es lo que los compradores deberían tener en stock en 2026.",
+    seoTitle: "Por Qué la Iluminación LED Está Transformando los Mercados Mayoristas",
+    seoDescription: "Cómo la eficiencia energética, la durabilidad y las funciones inteligentes están transformando el sector mayorista de iluminación LED.",
+    seoKeywords: "iluminación led, venta mayorista led, iluminación eficiente, iluminación inteligente",
+  },
+  pt: {
+    title: "Por Que a Iluminação LED Está Transformando os Mercados Atacadistas",
+    excerpt: "Economia de energia, maior vida útil e controles inteligentes impulsionam a adoção em massa. Veja o que os compradores devem estocar em 2026.",
+    seoTitle: "Por Que a Iluminação LED Está Transformando os Mercados Atacadistas",
+    seoDescription: "Como eficiência energética, durabilidade e recursos inteligentes estão remodelando o atacado de iluminação LED.",
+    seoKeywords: "iluminação led, atacado led, iluminação eficiente, iluminação inteligente",
+  },
+  fr: {
+    title: "Pourquoi l'Éclairage LED Transforme les Marchés de Gros",
+    excerpt: "Économies d'énergie, durée de vie accrue et commandes intelligentes accélèrent l'adoption en gros. Ce que les acheteurs devraient stocker en 2026.",
+    seoTitle: "Pourquoi l'Éclairage LED Transforme les Marchés de Gros",
+    seoDescription: "Comment l'efficacité énergétique, la longévité et les fonctions intelligentes transforment le marché de gros de l'éclairage LED.",
+    seoKeywords: "éclairage led, gros led, éclairage économe, éclairage intelligent",
+  },
+  de: {
+    title: "Warum LED-Beleuchtung den Großhandel verändert",
+    excerpt: "Energieeinsparungen, längere Lebensdauer und smarte Steuerung treiben die Großhandelseinführung voran. Das sollten Käufer 2026 einlagern.",
+    seoTitle: "Warum LED-Beleuchtung den Großhandel verändert",
+    seoDescription: "Wie Energieeffizienz, Langlebigkeit und intelligente Funktionen den LED-Beleuchtungsgroßhandel neu gestalten.",
+    seoKeywords: "led-beleuchtung, led großhandel, energieeffiziente beleuchtung, smarte beleuchtung",
+  },
+  ru: {
+    title: "Почему светодиодное освещение меняет оптовые рынки",
+    excerpt: "Экономия энергии, долгий срок службы и умное управление ускоряют распространение в опте. Вот что стоит закупить в 2026 году.",
+    seoTitle: "Почему светодиодное освещение меняет оптовые рынки",
+    seoDescription: "Как энергоэффективность, долговечность и интеллектуальные функции меняют оптовый рынок светодиодного освещения.",
+    seoKeywords: "светодиодное освещение, светодиоды оптом, энергоэффективное освещение, умное освещение",
+  },
+  ar: {
+    title: "لماذا تُحدث الإضاءة LED تحولًا في أسواق الجملة",
+    excerpt: "توفير الطاقة والعمر الأطول والتحكم الذكي يقودون اعتمادًا واسعًا في الجملة. إليك ما يجب أن يخزنه المشترون في 2026.",
+    seoTitle: "لماذا تُحدث الإضاءة LED تحولًا في أسواق الجملة",
+    seoDescription: "كيف تعيد كفاءة الطاقة والمتانة والوظائف الذكية تشكيل تجارة الجملة لإضاءة LED.",
+    seoKeywords: "إضاءة led, جملة led, إضاءة موفرة للطاقة, إضاءة ذكية",
+  },
+  id: {
+    title: "Mengapa Pencahayaan LED Mengubah Pasar Grosir",
+    excerpt: "Hemat energi, umur panjang, dan kontrol pintar mendorong adopsi grosir yang pesat. Inilah yang harus distok pembeli di 2026.",
+    seoTitle: "Mengapa Pencahayaan LED Mengubah Pasar Grosir",
+    seoDescription: "Bagaimana efisiensi energi, daya tahan, dan fitur pintar mengubah grosir pencahayaan LED.",
+    seoKeywords: "pencahayaan led, grosir led, pencahayaan hemat energi, pencahayaan pintar",
+  },
+  vi: {
+    title: "Vì sao đèn LED đang làm thay đổi thị trường bán buôn",
+    excerpt: "Tiết kiệm năng lượng, tuổi thọ dài hơn và điều khiển thông minh đang thúc đẩy việc áp dụng rộng rãi. Đây là những gì người mua nên dự trữ trong 2026.",
+    seoTitle: "Vì sao đèn LED đang làm thay đổi thị trường bán buôn",
+    seoDescription: "Cách hiệu quả năng lượng, độ bền và tính năng thông minh đang định hình lại thị trường bán buôn đèn LED.",
+    seoKeywords: "đèn led, bán buôn led, đèn tiết kiệm năng lượng, đèn thông minh",
+  },
+  th: {
+    title: "ทำไมไฟ LED กำลังเปลี่ยนตลาดค้าส่ง",
+    excerpt: "การประหยัดพลังงาน อายุการใช้งานที่ยาวนานขึ้น และการควบคุมอัจฉริยะกำลังผลักดันการนำไปใช้ในตลาดค้าส่ง นี่คือสิ่งที่ผู้ซื้อควรสต็อกในปี 2026",
+    seoTitle: "ทำไมไฟ LED กำลังเปลี่ยนตลาดค้าส่ง",
+    seoDescription: "วิธีที่ประสิทธิภาพพลังงาน ความทนทาน และคุณสมบัติอัจฉริยะกำลังปรับโฉมตลาดค้าส่งไฟ LED",
+    seoKeywords: "ไฟ led, ค้าส่ง led, ไฟประหยัดพลังงาน, ไฟอัจฉริยะ",
+  },
+  ms: {
+    title: "Mengapa Pencahayaan LED Mengubah Pasaran Borong",
+    excerpt: "Penjimatan tenaga, jangka hayat lebih panjang dan kawalan pintar memacu penerimaan borong dengan pantas. Inilah yang harus distok pembeli pada 2026.",
+    seoTitle: "Mengapa Pencahayaan LED Mengubah Pasaran Borong",
+    seoDescription: "Bagaimana kecekapan tenaga, ketahanan dan ciri pintar membentuk semula borong pencahayaan LED.",
+    seoKeywords: "pencahayaan led, borong led, pencahayaan cekap tenaga, pencahayaan pintar",
+  },
+}

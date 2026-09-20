@@ -1,7 +1,12 @@
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
+import { pageTranslationsSeed } from "./seed-data/pages"
+import { blogTranslationsSeed } from "./seed-data/blog"
+import { faqTranslationsSeed } from "./seed-data/faq"
 
 const prisma = new PrismaClient()
+
+const CONTENT_LOCALES = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
 
 async function main() {
   console.log("Seeding database...")
@@ -216,7 +221,10 @@ async function main() {
   }
 
   await seedDefaultPages()
+  await seedPageTranslations()
   await seedDefaultBlogPosts()
+  await seedBlogPostTranslations()
+  await seedSiteFaqs()
 
   console.log("Seeding complete.")
 }
@@ -627,6 +635,76 @@ async function seedDefaultBlogPosts() {
     })
     console.log(`Blog post created: ${post.slug}`)
   }
+}
+
+async function seedPageTranslations() {
+  for (const [slug, perLocale] of Object.entries(pageTranslationsSeed)) {
+    const page = await prisma.page.findUnique({
+      where: { slug },
+      select: { id: true },
+    })
+    if (!page) continue
+
+    for (const locale of CONTENT_LOCALES) {
+      const data = perLocale[locale]
+      if (!data) continue
+      await prisma.pageTranslation.upsert({
+        where: { pageId_locale: { pageId: page.id, locale } },
+        update: {},
+        create: { pageId: page.id, locale, ...data },
+      })
+    }
+  }
+  console.log("Page translations seeded.")
+}
+
+async function seedBlogPostTranslations() {
+  for (const [slug, perLocale] of Object.entries(blogTranslationsSeed)) {
+    const post = await prisma.blogPost.findUnique({
+      where: { slug },
+      select: { id: true },
+    })
+    if (!post) continue
+
+    for (const locale of CONTENT_LOCALES) {
+      const data = perLocale[locale]
+      if (!data) continue
+      await prisma.blogPostTranslation.upsert({
+        where: { blogPostId_locale: { blogPostId: post.id, locale } },
+        update: {},
+        create: { blogPostId: post.id, locale, ...data },
+      })
+    }
+  }
+  console.log("Blog post translations seeded.")
+}
+
+async function seedSiteFaqs() {
+  const existing = await prisma.siteFaq.findFirst()
+  if (existing) {
+    console.log("Site FAQs already exist, skipping translations seed.")
+    return
+  }
+
+  for (let i = 0; i < faqTranslationsSeed.length; i++) {
+    const perLocale = faqTranslationsSeed[i]
+    const english = perLocale.en
+    if (!english) continue
+
+    const faq = await prisma.siteFaq.create({
+      data: {
+        sortOrder: i,
+        isActive: true,
+      },
+    })
+
+    for (const [locale, data] of Object.entries(perLocale)) {
+      await prisma.siteFaqTranslation.create({
+        data: { siteFaqId: faq.id, locale, question: data.q, answer: data.a },
+      })
+    }
+  }
+  console.log("Site FAQs seeded.")
 }
 
 interface ProductTranslationData {

@@ -315,7 +315,30 @@
     "subtitle": "Pengetahuan praktikal tentang pengimportan, pembelian sumber, dan logistik — daripada pasukan dan rakan kongsi kami.",
     "all": "Semua",
     "by": "Oleh {author}",
-    "noPosts": "Tiada siaran lagi."
+    "noPosts": "Tiada siaran lagi.",
+    "tags": {
+      "b2b": "B2B",
+      "china": "China",
+      "customs": "Kastam",
+      "electronics": "Elektronik",
+      "energy": "Tenaga",
+      "freight": "Pengangkutan",
+      "importing": "Pengimportan",
+      "inspection": "Pemeriksaan",
+      "international-trade": "Perdagangan antarabangsa",
+      "led": "LED",
+      "lighting": "Pencahayaan",
+      "logistics": "Logistik",
+      "manufacturing": "Pembuatan",
+      "moq": "Kuantiti minimum",
+      "negotiation": "Rundingan",
+      "quality-control": "Kawalan kualiti",
+      "shipping": "Penghantaran",
+      "sourcing": "Pemerolehan",
+      "suppliers": "Pembekal",
+      "tariffs": "Duti",
+      "wholesale": "Borong"
+    }
   },
   "faq": {
     "metaDescription": "Soalan lazim tentang produk {siteName}, penghantaran, pemulangan, dan banyak lagi.",

@@ -136,7 +136,13 @@ export default async function HomePage({
   }))
 
   const featuredCategories: FeaturedCategory[] =
-    useDbContent && featured.length > 0 ? featured : featuredFallback
+    featured.length > 0 ? featured : featuredFallback
+
+  const featuredEyebrow =
+    settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow")
+  const featuredHeading =
+    settings["content.featuredHeading"] || t("featuredCategories.heading")
+  const featuredTagline = settings["content.featuredTagline"] || undefined
 
   const promo1 = useDbContent ? parseJson<PromoContent | null>(settings["content.promo1"], null) : null
   const promo2 = useDbContent ? parseJson<CollectionContent | null>(settings["content.promo2"], null) : null
@@ -201,7 +207,7 @@ export default async function HomePage({
       ].filter(Boolean)
     : [t("seoParagraph", { siteName: getSiteSeoResult.siteName })].filter(Boolean)
 
-  const seoCategoryLinks: SEOLink[] = useDbContent
+  const seoCategoryLinks: SEOLink[] = featuredCats.length > 0
     ? featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` }))
     : featuredFallback.map((f) => ({ label: f.title, href: f.href }))
 
@@ -211,7 +217,7 @@ export default async function HomePage({
     { label: tl("faq"), href: "/faq" },
     { label: tl("aboutUs"), href: "/pages/about" },
   ]
-  const hasElectronics = useDbContent
+  const hasElectronics = featuredCats.length > 0
     ? featuredCats.some((c) => c.slug === "electronics")
     : featuredFallback.some((f) => f.href.includes("electronics"))
 
@@ -225,9 +231,9 @@ export default async function HomePage({
       <HeroBanner slides={heroSlides} images={siteImages.hero} />
       <FeaturedCategories
         categories={featuredCategories}
-        eyebrow={useDbContent ? settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow") : t("featuredCategories.eyebrow")}
-        heading={useDbContent ? settings["content.featuredHeading"] || t("featuredCategories.heading") : t("featuredCategories.heading")}
-        tagline={useDbContent ? settings["content.featuredTagline"] || undefined : undefined}
+        eyebrow={featuredEyebrow}
+        heading={featuredHeading}
+        tagline={featuredTagline}
       />
       <SupplyChain content={site.supplyChain} images={siteImages.supplyChain} />
       {homeFeatured.length > 0 && (

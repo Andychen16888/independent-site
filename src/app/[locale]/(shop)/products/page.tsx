@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { ProductFilters } from "@/components/product/ProductFilters"
@@ -11,7 +12,7 @@ import type { Metadata } from "next"
 
 interface Props {
   params: Promise<{ slug: string; locale: string }>
-  searchParams: Promise<{ sort?: string; price?: string; q?: string }>
+  searchParams: Promise<{ sort?: string; price?: string; q?: string; category?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductsPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { sort, price, q } = await searchParams
+  const { sort, price, q, category } = await searchParams
   const t = await getTranslations("products")
   const tc = await getTranslations("common")
 
@@ -38,6 +39,20 @@ export default async function ProductsPage({ params, searchParams }: Props) {
       { name: { contains: q, mode: "insensitive" } },
       { description: { contains: q, mode: "insensitive" } },
     ]
+  }
+
+  const categories = await prisma.category.findMany({
+    where: { isActive: true, parentId: null },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true, name: true, slug: true },
+  })
+
+  const activeCategory = category
+    ? categories.find((c) => c.slug === category)
+    : null
+
+  if (activeCategory) {
+    where.categories = { some: { categoryId: activeCategory.id } }
   }
 
   if (price) {
@@ -80,6 +95,16 @@ export default async function ProductsPage({ params, searchParams }: Props) {
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
+  const buildProductsHref = (categorySlug?: string) => {
+    const qs = new URLSearchParams()
+    if (sort) qs.set("sort", sort)
+    if (price) qs.set("price", price)
+    if (q) qs.set("q", q)
+    if (categorySlug) qs.set("category", categorySlug)
+    const suffix = qs.toString()
+    return suffix ? `/products?${suffix}` : "/products"
+  }
+
   const schemas = [
     breadcrumbSchema([
       { name: tc("home"), url: baseUrl },
@@ -103,6 +128,37 @@ export default async function ProductsPage({ params, searchParams }: Props) {
           <p className="text-body mb-12 max-w-2xl">
             {t("description")}
           </p>
+
+          <div className="mb-8 border-b border-mist pb-4">
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={buildProductsHref()}
+                className={`px-4 py-2 text-xs md:text-sm border rounded-full transition-colors ${
+                  !activeCategory
+                    ? "bg-charcoal text-white border-charcoal"
+                    : "bg-white text-stone border-mist hover:border-charcoal hover:text-charcoal"
+                }`}
+              >
+                {tc("allProducts")}
+              </Link>
+              {categories.map((cat) => {
+                const active = activeCategory?.slug === cat.slug
+                return (
+                  <Link
+                    key={cat.id}
+                    href={buildProductsHref(cat.slug)}
+                    className={`px-4 py-2 text-xs md:text-sm border rounded-full transition-colors ${
+                      active
+                        ? "bg-charcoal text-white border-charcoal"
+                        : "bg-white text-stone border-mist hover:border-charcoal hover:text-charcoal"
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-[220px_1fr] gap-8 lg:gap-12">
             <aside className="hidden md:block">

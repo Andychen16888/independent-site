@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { fetchPageTranslations } from "@/lib/i18n/content"
+import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { PageTranslation } from "@prisma/client"
 import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/hi2"
 
@@ -113,7 +114,10 @@ export async function Footer({
   }
 
   const shopLinks = categories.length
-    ? categories.map((c) => ({ name: c.name, href: `/categories/${c.slug}` }))
+    ? categories.map((c) => ({
+        name: localizeCategoryName(locale, c.slug, c.name),
+        href: `/categories/${c.slug}`,
+      }))
     : DEFAULT_SHOP_LINKS
 
   const supportLinks = pages.length

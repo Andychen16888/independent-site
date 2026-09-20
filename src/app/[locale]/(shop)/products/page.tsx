@@ -8,6 +8,7 @@ import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema } from "@/lib/seo/structured-data"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
+import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { Metadata } from "next"
 
 interface Props {
@@ -41,11 +42,16 @@ export default async function ProductsPage({ params, searchParams }: Props) {
     ]
   }
 
-  const categories = await prisma.category.findMany({
+  const categoriesRaw = await prisma.category.findMany({
     where: { isActive: true, parentId: null },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     select: { id: true, name: true, slug: true },
   })
+
+  const categories = categoriesRaw.map((cat) => ({
+    ...cat,
+    displayName: localizeCategoryName(locale, cat.slug, cat.name),
+  }))
 
   const activeCategory = category
     ? categories.find((c) => c.slug === category)
@@ -153,7 +159,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
                         : "bg-white text-stone border-mist hover:border-charcoal hover:text-charcoal"
                     }`}
                   >
-                    {cat.name}
+                    {cat.displayName}
                   </Link>
                 )
               })}

@@ -19,6 +19,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { getSiteContent } from "@/config/site-content"
+import { localizeCategoryName, localizeCategoryType } from "@/lib/i18n/category-labels"
 import {
   DEFAULT_FEATURED_CATEGORIES,
   DEFAULT_COLLECTIONS,
@@ -123,8 +124,8 @@ export default async function HomePage({
     : defaultSlides
 
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({
-    title: c.name,
-    subtitle: c.type,
+    title: localizeCategoryName(locale, c.slug, c.name),
+    subtitle: localizeCategoryType(locale, c.type, c.type),
     description: c.description || undefined,
     href: `/categories/${c.slug}`,
     image: c.image || undefined,
@@ -138,11 +139,15 @@ export default async function HomePage({
   const featuredCategories: FeaturedCategory[] =
     featured.length > 0 ? featured : featuredFallback
 
-  const featuredEyebrow =
-    settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow")
-  const featuredHeading =
-    settings["content.featuredHeading"] || t("featuredCategories.heading")
-  const featuredTagline = settings["content.featuredTagline"] || undefined
+  const featuredEyebrow = useDbContent
+    ? settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow")
+    : t("featuredCategories.eyebrow")
+  const featuredHeading = useDbContent
+    ? settings["content.featuredHeading"] || t("featuredCategories.heading")
+    : t("featuredCategories.heading")
+  const featuredTagline = useDbContent
+    ? settings["content.featuredTagline"] || undefined
+    : undefined
 
   const promo1 = useDbContent ? parseJson<PromoContent | null>(settings["content.promo1"], null) : null
   const promo2 = useDbContent ? parseJson<CollectionContent | null>(settings["content.promo2"], null) : null

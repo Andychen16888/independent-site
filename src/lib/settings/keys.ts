@@ -54,4 +54,7 @@ export const SETTING_KEYS: SettingMeta[] = [
 
 export const SETTING_GROUP_ORDER: SettingGroup[] = ["site", "content", "contact", "social", "seo", "shipping"]
 
-export const ALL_SETTING_KEYS = SETTING_KEYS.map((s) => s.key)
+/** JSON map of storefront image slot key -> uploaded URL (managed at /admin/images). */
+export const IMAGE_SETTING_KEY = "images.site"
+
+export const ALL_SETTING_KEYS = [...SETTING_KEYS.map((s) => s.key), IMAGE_SETTING_KEY]

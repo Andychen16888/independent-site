@@ -6,11 +6,17 @@ import { useLocale, useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { heroImages } from "@/config/images"
+import { heroImages, type ImageAsset } from "@/config/images"
 import { getSiteContent } from "@/config/site-content"
 import { DEFAULT_HERO_SLIDES, type HeroSlide } from "@/lib/home-content"
 
-export function HeroBanner({ slides = DEFAULT_HERO_SLIDES }: { slides?: HeroSlide[] }) {
+export function HeroBanner({
+  slides = DEFAULT_HERO_SLIDES,
+  images,
+}: {
+  slides?: HeroSlide[]
+  images?: ImageAsset[]
+}) {
   const [current, setCurrent] = useState(0)
   const t = useTranslations("home.hero")
   const locale = useLocale()
@@ -32,7 +38,8 @@ export function HeroBanner({ slides = DEFAULT_HERO_SLIDES }: { slides?: HeroSlid
   if (safeSlides.length === 0) return null
 
   const slide = safeSlides[current]
-  const asset = heroImages[current % heroImages.length]
+  const assets = images && images.length > 0 ? images : heroImages
+  const asset = assets[current % assets.length]
 
   return (
     <section className="relative h-[560px] sm:h-[600px] lg:h-[680px] max-h-[760px] min-h-[520px] overflow-hidden bg-navy">

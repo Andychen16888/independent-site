@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
+import { getGroupedSiteImages } from "@/lib/settings/site-images"
 import { getTranslations } from "next-intl/server"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
 import { HeroBanner } from "@/components/home/HeroBanner"
@@ -55,6 +56,7 @@ export default async function HomePage({
   const t = await getTranslations("home")
   const tl = await getTranslations("home.links")
   const site = getSiteContent(locale)
+  const siteImages = await getGroupedSiteImages()
 
   const [banners, featuredCats, bestSellers, homeFeatured] = await Promise.all([
     prisma.banner.findMany({
@@ -220,14 +222,14 @@ export default async function HomePage({
 
   return (
     <>
-      <HeroBanner slides={heroSlides} />
+      <HeroBanner slides={heroSlides} images={siteImages.hero} />
       <FeaturedCategories
         categories={featuredCategories}
         eyebrow={useDbContent ? settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow") : t("featuredCategories.eyebrow")}
         heading={useDbContent ? settings["content.featuredHeading"] || t("featuredCategories.heading") : t("featuredCategories.heading")}
         tagline={useDbContent ? settings["content.featuredTagline"] || undefined : undefined}
       />
-      <SupplyChain content={site.supplyChain} />
+      <SupplyChain content={site.supplyChain} images={siteImages.supplyChain} />
       {homeFeatured.length > 0 && (
         <ProductCarousel
           title={t("carouselFeatured.title")}
@@ -236,16 +238,16 @@ export default async function HomePage({
         />
       )}
       <ProcessFlow content={site.process} />
-      <BrandStory content={brandStory || brandStoryFallback} />
-      <PortBanner content={site.port} ctaLabel={site.cta.requestQuote} />
+      <BrandStory content={brandStory || brandStoryFallback} image={siteImages.about[0]} />
+      <PortBanner content={site.port} ctaLabel={site.cta.requestQuote} image={siteImages.port} />
       <ProductCarousel
         title={t("carouselBestSellers.title")}
         subtitle={t("carouselBestSellers.subtitle")}
         products={localizedBestSellers.length ? localizedBestSellers : localizedHomeFeatured}
       />
       <TrustQuality content={site.trust} />
-      <GlobalNetwork content={site.global} />
-      <PromoFeatureSection promo={promo1 || promoFallback} />
+      <GlobalNetwork content={site.global} image={siteImages.global} />
+      <PromoFeatureSection promo={promo1 || promoFallback} image={siteImages.about[3]} />
       <CollectionGallerySection content={promo2 || collectionsFallback} />
       <Testimonials
         items={testimonials || testimonialsFallback}

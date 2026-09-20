@@ -3,10 +3,16 @@
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { supplyChainImages } from "@/config/images"
+import { supplyChainImages, type ImageAsset } from "@/config/images"
 import type { SiteContent } from "@/config/site-content"
 
-export function SupplyChain({ content }: { content: SiteContent["supplyChain"] }) {
+export function SupplyChain({
+  content,
+  images,
+}: {
+  content: SiteContent["supplyChain"]
+  images?: ImageAsset[]
+}) {
   return (
     <section className="section-padding bg-cream">
       <Container>
@@ -23,7 +29,7 @@ export function SupplyChain({ content }: { content: SiteContent["supplyChain"] }
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {content.items.map((item, index) => {
-            const image = supplyChainImages[index]
+            const image = (images && images[index]) || supplyChainImages[index]
             return (
               <motion.div
                 key={item.title}

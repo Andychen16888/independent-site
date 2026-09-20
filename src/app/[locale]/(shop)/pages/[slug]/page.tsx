@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { SmartImage } from "@/components/ui/SmartImage"
 import { SupplyChain } from "@/components/home/SupplyChain"
-import { aboutImages } from "@/config/images"
+import { getGroupedSiteImages } from "@/lib/settings/site-images"
 import { getSiteContent } from "@/config/site-content"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
@@ -60,10 +60,11 @@ export default async function PageView({ params }: Props) {
   const pageUrl = `${baseUrl}/${locale}/pages/${slug}`
   const tc = await getTranslations("common")
   const site = getSiteContent(locale)
+  const siteImages = await getGroupedSiteImages()
 
   const isAbout = slug === "about"
   const isContact = slug === "contact"
-  const heroAsset = isAbout ? aboutImages[2] : isContact ? aboutImages[3] : null
+  const heroAsset = isAbout ? siteImages.about[2] : isContact ? siteImages.about[3] : null
 
   const schemas = [
     breadcrumbSchema([
@@ -143,7 +144,7 @@ export default async function PageView({ params }: Props) {
         />
       </Container>
 
-      {isAbout && <SupplyChain content={site.supplyChain} />}
+      {isAbout && <SupplyChain content={site.supplyChain} images={siteImages.supplyChain} />}
     </div>
   )
 }

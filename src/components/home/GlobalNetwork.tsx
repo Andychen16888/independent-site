@@ -3,10 +3,18 @@
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { globalImage } from "@/config/images"
+import { globalImage, type ImageAsset } from "@/config/images"
 import type { SiteContent } from "@/config/site-content"
 
-export function GlobalNetwork({ content }: { content: SiteContent["global"] }) {
+export function GlobalNetwork({
+  content,
+  image,
+}: {
+  content: SiteContent["global"]
+  image?: ImageAsset
+}) {
+  const asset = image || globalImage
+
   return (
     <section className="section-padding bg-ivory">
       <Container>
@@ -32,9 +40,9 @@ export function GlobalNetwork({ content }: { content: SiteContent["global"] }) {
             className="relative aspect-[4/3] rounded-lg overflow-hidden border border-mist"
           >
             <SmartImage
-              src={globalImage.src}
-              alt={globalImage.alt}
-              tone={globalImage.tone}
+              src={asset.src}
+              alt={asset.alt}
+              tone={asset.tone}
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </motion.div>

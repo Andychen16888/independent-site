@@ -4,13 +4,19 @@ import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { aboutImages } from "@/config/images"
+import { aboutImages, type ImageAsset } from "@/config/images"
 import { DEFAULT_PROMO, type PromoContent } from "@/lib/home-content"
 
-export function PromoFeatureSection({ promo = DEFAULT_PROMO }: { promo?: PromoContent }) {
+export function PromoFeatureSection({
+  promo = DEFAULT_PROMO,
+  image,
+}: {
+  promo?: PromoContent
+  image?: ImageAsset
+}) {
   const safe = promo.title ? promo : DEFAULT_PROMO
   const features = safe.features || []
-  const asset = aboutImages[3]
+  const asset = image || aboutImages[3]
 
   return (
     <section className="section-padding bg-cloud">

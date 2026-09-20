@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { SETTING_KEYS } from "@/lib/settings/keys"
@@ -26,6 +27,9 @@ export async function PUT(req: NextRequest) {
   }
 
   await updateSiteSettings(settings)
+
+  // Regenerate the storefront (all locales) so content changes appear on next request.
+  revalidatePath("/", "layout")
 
   const rows = await prisma.siteSetting.findMany()
   const updated: Record<string, string> = {}

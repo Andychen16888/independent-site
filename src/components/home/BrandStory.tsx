@@ -4,13 +4,19 @@ import { motion } from "framer-motion"
 import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { aboutImages } from "@/config/images"
+import { aboutImages, type ImageAsset } from "@/config/images"
 import { DEFAULT_BRAND_STORY, type BrandStoryContent } from "@/lib/home-content"
 
-export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandStoryContent }) {
+export function BrandStory({
+  content = DEFAULT_BRAND_STORY,
+  image,
+}: {
+  content?: BrandStoryContent
+  image?: ImageAsset
+}) {
   const safe = content.title ? content : DEFAULT_BRAND_STORY
   const paragraphs = safe.paragraphs || []
-  const asset = aboutImages[0]
+  const asset = image || aboutImages[0]
 
   return (
     <section className="section-padding bg-ivory">

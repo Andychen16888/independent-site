@@ -4,24 +4,28 @@ import { motion } from "framer-motion"
 import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { portImage } from "@/config/images"
+import { portImage, type ImageAsset } from "@/config/images"
 import type { SiteContent } from "@/config/site-content"
 
 export function PortBanner({
   content,
   ctaLabel,
   ctaHref = "/pages/contact",
+  image,
 }: {
   content: SiteContent["port"]
   ctaLabel: string
   ctaHref?: string
+  image?: ImageAsset
 }) {
+  const asset = image || portImage
+
   return (
     <section className="relative min-h-[420px] md:min-h-[520px] flex items-center overflow-hidden">
       <SmartImage
-        src={portImage.src}
-        alt={portImage.alt}
-        tone={portImage.tone}
+        src={asset.src}
+        alt={asset.alt}
+        tone={asset.tone}
         sizes="100vw"
         overlay
       />

@@ -10,7 +10,7 @@ import {
   HiOutlinePhoto, HiOutlineMegaphone, HiOutlineChartBar,
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
   HiOutlineDocument, HiOutlineBars3,
-  HiOutlineQuestionMarkCircle,
+  HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt,
 } from "react-icons/hi2"
 
 const navItems = [
@@ -26,6 +26,7 @@ const navItems = [
   { name: "Pages", nameZh: "页面", href: "/admin/pages", icon: HiOutlineDocument },
   { name: "Menus", nameZh: "菜单", href: "/admin/menus", icon: HiOutlineBars3 },
   { name: "Banners", nameZh: "横幅广告", href: "/admin/banners", icon: HiOutlinePhoto },
+  { name: "Site Images", nameZh: "站点图片", href: "/admin/images", icon: HiOutlineGlobeAlt },
   { name: "Analytics", nameZh: "数据分析", href: "/admin/analytics", icon: HiOutlineChartBar },
   { name: "Settings", nameZh: "设置", href: "/admin/settings", icon: HiOutlineCog6Tooth },
 ]

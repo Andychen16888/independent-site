@@ -46,7 +46,7 @@ export function ProductCard({ product, priority }: ProductCardProps) {
           {product.images?.[0]?.url ? (
             <img
               src={product.images[0].url}
-              alt={product.images[0].alt || product.name}
+              alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               loading={priority ? "eager" : "lazy"}
             />

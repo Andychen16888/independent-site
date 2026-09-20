@@ -135,14 +135,20 @@ export default async function HomePage({
   const testimonials = useDbContent ? parseJson<Testimonial[] | null>(settings["content.testimonials"], null) : null
   const instagram = useDbContent ? parseJson<InstagramConfig | null>(settings["content.instagram"], null) : null
 
+  const promoRaw = t.raw("promo") as Record<string, unknown>
   const promoFallback: PromoContent = {
     ...DEFAULT_PROMO,
-    ...(t.raw("promo") as object),
+    ...(promoRaw as object),
+    ctaLabel: (promoRaw.cta as string) || DEFAULT_PROMO.ctaLabel,
+    ctaHref: DEFAULT_PROMO.ctaHref,
   }
 
+  const brandStoryRaw = t.raw("brandStory") as Record<string, unknown>
   const brandStoryFallback: BrandStoryContent = {
     ...DEFAULT_BRAND_STORY,
-    ...(t.raw("brandStory") as object),
+    ...(brandStoryRaw as object),
+    ctaLabel: (brandStoryRaw.cta as string) || DEFAULT_BRAND_STORY.ctaLabel,
+    ctaHref: DEFAULT_BRAND_STORY.ctaHref,
   }
 
   const coll = t.raw("collections") as Record<string, unknown> & {
@@ -186,17 +192,23 @@ export default async function HomePage({
       ].filter(Boolean)
     : [t("seoParagraph", { siteName: getSiteSeoResult.siteName })].filter(Boolean)
 
+  const seoCategoryLinks: SEOLink[] = useDbContent
+    ? featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` }))
+    : featuredFallback.map((f) => ({ label: f.title, href: f.href }))
+
   const featuredLinks: SEOLink[] = [
-    ...featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` })),
+    ...seoCategoryLinks,
     { label: tl("allProducts"), href: "/products" },
     { label: tl("faq"), href: "/faq" },
     { label: tl("aboutUs"), href: "/pages/about" },
   ]
+  const hasElectronics = useDbContent
+    ? featuredCats.some((c) => c.slug === "electronics")
+    : featuredFallback.some((f) => f.href.includes("electronics"))
+
   const seoLinks: SEOLink[] = [
     ...featuredLinks,
-    ...(featuredCats.some((c) => c.slug === "electronics")
-      ? [{ label: tl("importingGuide"), href: "/blog" }]
-      : []),
+    ...(hasElectronics ? [{ label: tl("importingGuide"), href: "/blog" }] : []),
   ]
 
   return (

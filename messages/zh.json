@@ -58,7 +58,9 @@
     "myAccount": "我的账户",
     "language": "选择语言",
     "currency": "货币",
-    "openChat": "打开聊天"
+    "openChat": "打开聊天",
+    "promoBar": "新客户立减 10%",
+    "slogan": "源自中国，全球送达"
   },
   "footer": {
     "shop": "商店",
@@ -70,7 +72,9 @@
     "allProducts": "全部产品",
     "newArrivals": "新品上架",
     "bestSellers": "热销榜单",
-    "shippingReturns": "配送与退货"
+    "shippingReturns": "配送与退货",
+    "about": "商品直接源自中国。为您提供优质电子产品、厨房用品及日常热销商品，适用于零售与批发 B2B 采购。",
+    "hours": "周一至周五 上午9:00-下午6:00（北京时间）"
   },
   "home": {
     "hero": {

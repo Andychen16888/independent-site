@@ -58,7 +58,9 @@
     "myAccount": "Mein Konto",
     "language": "Sprache wählen",
     "currency": "Währung",
-    "openChat": "Chat öffnen"
+    "openChat": "Chat öffnen",
+    "promoBar": "Neue Kunden sparen 10 %",
+    "slogan": "Direkt aus China, weltweit geliefert"
   },
   "footer": {
     "shop": "Shop",
@@ -70,7 +72,9 @@
     "allProducts": "Alle Produkte",
     "newArrivals": "Neuheiten",
     "bestSellers": "Bestseller",
-    "shippingReturns": "Versand & Rückgabe"
+    "shippingReturns": "Versand & Rückgabe",
+    "about": "Direktbezug aus China. Qualitätselektronik, Küchenutensilien und Alltagsartikel für Einzel- und Großhandels-B2B-Käufer weltweit.",
+    "hours": "Mo–Fr, 9–18 Uhr (CST)"
   },
   "home": {
     "hero": {

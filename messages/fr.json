@@ -58,7 +58,9 @@
     "myAccount": "Mon compte",
     "language": "Choisir la langue",
     "currency": "Devise",
-    "openChat": "Ouvrir le chat"
+    "openChat": "Ouvrir le chat",
+    "promoBar": "Nouveaux clients : -10 %",
+    "slogan": "Origine Chine, livraison dans le monde entier"
   },
   "footer": {
     "shop": "Boutique",
@@ -70,7 +72,9 @@
     "allProducts": "Tous les produits",
     "newArrivals": "Nouveautés",
     "bestSellers": "Meilleures ventes",
-    "shippingReturns": "Expédition & retours"
+    "shippingReturns": "Expédition & retours",
+    "about": "Approvisionnement direct depuis la Chine. Électronique, ustensiles de cuisine et articles du quotidien de qualité pour les acheteurs de détail et de gros B2B dans le monde entier.",
+    "hours": "Lun–Ven, 9h–18h (CST)"
   },
   "home": {
     "hero": {

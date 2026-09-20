@@ -58,7 +58,9 @@
     "myAccount": "Minha conta",
     "language": "Selecionar idioma",
     "currency": "Moeda",
-    "openChat": "Abrir chat"
+    "openChat": "Abrir chat",
+    "promoBar": "Novos clientes economizam 10%",
+    "slogan": "Originário da China, entregue no mundo todo"
   },
   "footer": {
     "shop": "Loja",
@@ -70,7 +72,9 @@
     "allProducts": "Todos os produtos",
     "newArrivals": "Novidades",
     "bestSellers": "Mais vendidos",
-    "shippingReturns": "Envio e devolución"
+    "shippingReturns": "Envio e devolución",
+    "about": "Fornecimento direto da China. Eletrônicos, utensílios de cozinha e produtos do dia a dia de qualidade para compradores de varejo e atacado B2B em todo o mundo.",
+    "hours": "Seg–Sex, 9h–18h (CST)"
   },
   "home": {
     "hero": {

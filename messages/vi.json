@@ -58,7 +58,9 @@
     "myAccount": "Tài khoản của tôi",
     "language": "Chọn ngôn ngữ",
     "currency": "Tiền tệ",
-    "openChat": "Mở trò chuyện"
+    "openChat": "Mở trò chuyện",
+    "promoBar": "Khách hàng mới tiết kiệm 10%",
+    "slogan": "Nguồn gốc từ Trung Quốc, giao hàng toàn cầu"
   },
   "footer": {
     "shop": "Cửa hàng",
@@ -70,7 +72,9 @@
     "allProducts": "Tất cả sản phẩm",
     "newArrivals": "Hàng mới về",
     "bestSellers": "Sản phẩm bán chạy",
-    "shippingReturns": "Vận chuyển & Trả hàng"
+    "shippingReturns": "Vận chuyển & Trả hàng",
+    "about": "Nhập hàng trực tiếp từ Trung Quốc. Điện tử, dụng cụ nhà bếp và hàng tiêu dùng chất lượng cho khách bán lẻ và bán buôn B2B trên toàn thế giới.",
+    "hours": "Th2–Th6, 9:00–18:00 (CST)"
   },
   "home": {
     "hero": {

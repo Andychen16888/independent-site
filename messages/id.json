@@ -58,7 +58,9 @@
     "myAccount": "Akun Saya",
     "language": "Pilih bahasa",
     "currency": "Mata Uang",
-    "openChat": "Buka obrolan"
+    "openChat": "Buka obrolan",
+    "promoBar": "Pelanggan baru hemat 10%",
+    "slogan": "Berasal dari China, dikirim ke seluruh dunia"
   },
   "footer": {
     "shop": "Belanja",
@@ -70,7 +72,9 @@
     "allProducts": "Semua Produk",
     "newArrivals": "Produk Baru",
     "bestSellers": "Produk Terlaris",
-    "shippingReturns": "Pengiriman & Pengembalian"
+    "shippingReturns": "Pengiriman & Pengembalian",
+    "about": "Sumber langsung dari China. Elektronik, peralatan dapur, dan kebutuhan sehari-hari berkualitas untuk pembeli ritel dan grosir B2B di seluruh dunia.",
+    "hours": "Sen–Jum, 09.00–18.00 (CST)"
   },
   "home": {
     "hero": {

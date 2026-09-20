@@ -13,7 +13,9 @@ interface ShopLayoutProps {
 
 export default async function ShopLayout({ children, params }: ShopLayoutProps) {
   const { locale } = await params
+  const useDbContent = locale === "en"
   const t = await getTranslations("product")
+  const th = await getTranslations("header")
   const [menus, settings, chatProducts] = await Promise.all([
     prisma.menu.findMany({
       where: { isActive: true, parentId: null },
@@ -29,7 +31,8 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
   ])
 
   const siteName = settings["site.name"] || "Commodities From China"
-  const siteSlogan = settings["site.slogan"] || ""
+  const siteSlogan = useDbContent ? settings["site.slogan"] || th("slogan") : th("slogan")
+  const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
 
   const navItems = menus.map((m) => ({ name: m.label, href: m.url }))
 
@@ -48,7 +51,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         siteName={siteName}
         siteSlogan={siteSlogan}
         logo={settings["site.logo"]}
-        promoBar={settings["site.promoBar"] || ""}
+        promoBar={promoBar}
       />
       <div className="h-[92px] md:h-[141px]" />
       <main className="min-h-screen">{children}</main>

@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation"
 import { getTranslations } from "next-intl/server"
+import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/hi2"
@@ -79,8 +80,13 @@ export async function Footer({
     }),
   ])
 
+  const locale = await getLocale()
+  const useDbContent = locale === "en"
   const t = await getTranslations("footer")
   const tnav = await getTranslations("navigation")
+
+  const safeAbout = useDbContent ? about || t("about") : t("about")
+  const safeHours = useDbContent ? hours || t("hours") : t("hours")
 
   const getLabel = (href: string, fallback: string) => {
     const key = navKeyForHref(href)
@@ -131,7 +137,7 @@ export async function Footer({
                 </>
               )}
             </Link>
-            {about && <p className="text-sm text-stone leading-relaxed mb-6 max-w-xs">{about}</p>}
+            {safeAbout && <p className="text-sm text-stone leading-relaxed mb-6 max-w-xs">{safeAbout}</p>}
             <div className="space-y-3 text-sm text-stone">
               {contactEmail && (
                 <div className="flex items-center gap-3">
@@ -145,10 +151,10 @@ export async function Footer({
                   <span>{address}</span>
                 </div>
               )}
-              {hours && (
+              {safeHours && (
                 <div className="flex items-center gap-3">
                   <HiOutlineClock className="w-4 h-4" />
-                  <span>{hours}</span>
+                  <span>{safeHours}</span>
                 </div>
               )}
               {contactPhone && <span className="pt-1 inline-block">{contactPhone}</span>}

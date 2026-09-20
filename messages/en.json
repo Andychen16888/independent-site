@@ -58,7 +58,9 @@
     "myAccount": "My Account",
     "language": "Select language",
     "currency": "Currency",
-    "openChat": "Open chat"
+    "openChat": "Open chat",
+    "promoBar": "New customers save 10%",
+    "slogan": "Sourced from China, delivered worldwide"
   },
   "footer": {
     "shop": "Shop",
@@ -70,7 +72,9 @@
     "allProducts": "All Products",
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
-    "shippingReturns": "Shipping & Returns"
+    "shippingReturns": "Shipping & Returns",
+    "about": "Sourced directly from China. Quality electronics, kitchenware, and everyday commodities for retail and wholesale B2B buyers worldwide.",
+    "hours": "Mon–Fri, 9am–6pm CST"
   },
   "home": {
     "hero": {

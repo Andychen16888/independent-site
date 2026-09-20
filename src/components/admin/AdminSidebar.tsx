@@ -13,20 +13,20 @@ import {
 } from "react-icons/hi2"
 
 const navItems = [
-  { name: "Dashboard", href: "/admin", icon: HiOutlineSquares2X2 },
-  { name: "Products", href: "/admin/products", icon: HiOutlineCube },
-  { name: "Categories", href: "/admin/categories", icon: HiOutlineFolder },
-  { name: "Orders", href: "/admin/orders", icon: HiOutlineShoppingBag },
-  { name: "Customers", href: "/admin/customers", icon: HiOutlineUsers },
-  { name: "Marketing", href: "/admin/marketing", icon: HiOutlineMegaphone },
-  { name: "Affiliates", href: "/admin/affiliates", icon: HiOutlineCurrencyDollar },
-  { name: "Blog", href: "/admin/blog", icon: HiOutlineDocumentText },
-  { name: "FAQ", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },
-  { name: "Pages", href: "/admin/pages", icon: HiOutlineDocument },
-  { name: "Menus", href: "/admin/menus", icon: HiOutlineBars3 },
-  { name: "Banners", href: "/admin/banners", icon: HiOutlinePhoto },
-  { name: "Analytics", href: "/admin/analytics", icon: HiOutlineChartBar },
-  { name: "Settings", href: "/admin/settings", icon: HiOutlineCog6Tooth },
+  { name: "Dashboard", nameZh: "仪表盘", href: "/admin", icon: HiOutlineSquares2X2 },
+  { name: "Products", nameZh: "产品", href: "/admin/products", icon: HiOutlineCube },
+  { name: "Categories", nameZh: "分类", href: "/admin/categories", icon: HiOutlineFolder },
+  { name: "Orders", nameZh: "订单", href: "/admin/orders", icon: HiOutlineShoppingBag },
+  { name: "Customers", nameZh: "客户", href: "/admin/customers", icon: HiOutlineUsers },
+  { name: "Marketing", nameZh: "营销", href: "/admin/marketing", icon: HiOutlineMegaphone },
+  { name: "Affiliates", nameZh: "联盟推广", href: "/admin/affiliates", icon: HiOutlineCurrencyDollar },
+  { name: "Blog", nameZh: "博客", href: "/admin/blog", icon: HiOutlineDocumentText },
+  { name: "FAQ", nameZh: "常见问题", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },
+  { name: "Pages", nameZh: "页面", href: "/admin/pages", icon: HiOutlineDocument },
+  { name: "Menus", nameZh: "菜单", href: "/admin/menus", icon: HiOutlineBars3 },
+  { name: "Banners", nameZh: "横幅广告", href: "/admin/banners", icon: HiOutlinePhoto },
+  { name: "Analytics", nameZh: "数据分析", href: "/admin/analytics", icon: HiOutlineChartBar },
+  { name: "Settings", nameZh: "设置", href: "/admin/settings", icon: HiOutlineCog6Tooth },
 ]
 
 export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
@@ -37,7 +37,7 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
       <div className="p-6 border-b border-white/10">
         <Link href="/admin" className="block">
           <span className="font-serif text-lg tracking-[0.3em]">{siteName}</span>
-          <span className="block text-[8px] tracking-[0.5em] text-stone">ADMIN</span>
+          <span className="block text-[8px] tracking-[0.5em] text-stone">ADMIN 管理后台</span>
         </Link>
       </div>
 
@@ -53,8 +53,11 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
                 : "text-stone hover:text-ivory hover:bg-white/5"
             )}
           >
-            <item.icon className="w-4 h-4" />
-            {item.name}
+            <item.icon className="w-4 h-4 shrink-0" />
+            <span className="flex flex-col leading-tight">
+              <span>{item.name}</span>
+              <span className="text-[10px] opacity-60">{item.nameZh}</span>
+            </span>
           </Link>
         ))}
       </nav>
@@ -69,15 +72,21 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
               : "text-stone hover:text-ivory hover:bg-white/5"
           )}
         >
-          <HiOutlineServerStack className="w-4 h-4" />
-          System Monitoring
+          <HiOutlineServerStack className="w-4 h-4 shrink-0" />
+          <span className="flex flex-col leading-tight">
+            <span>System Monitoring</span>
+            <span className="text-[10px] opacity-60">系统监控</span>
+          </span>
         </Link>
         <Link
           href="/"
           className="flex items-center gap-3 px-2 py-2 text-sm text-stone hover:text-ivory transition-colors rounded"
         >
-          <HiOutlineArrowLeftOnRectangle className="w-4 h-4" />
-          Back to Store
+          <HiOutlineArrowLeftOnRectangle className="w-4 h-4 shrink-0" />
+          <span className="flex flex-col leading-tight">
+            <span>Back to Store</span>
+            <span className="text-[10px] opacity-60">返回商城</span>
+          </span>
         </Link>
       </div>
     </aside>

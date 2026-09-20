@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Link, usePathname } from "@/i18n/navigation"
 import { useSession, signOut } from "next-auth/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { cn } from "@/lib/utils/cn"
@@ -13,6 +13,7 @@ import { HiXMark, HiOutlineGift } from "react-icons/hi2"
 import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyingGlass, HiOutlineBars3, HiOutlineXMark } from "react-icons/hi2"
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
 import { LanguageSelector } from "@/components/ui/LanguageSelector"
+import { getSiteContent } from "@/config/site-content"
 
 const DEFAULT_NAV = [
   { name: "Electronics", href: "/categories/electronics" },
@@ -124,6 +125,8 @@ export function Header({
   const wishlistCount = useWishlistStore((s) => s.items.length)
   const t = useTranslations("header")
   const tnav = useTranslations("navigation")
+  const locale = useLocale()
+  const { cta } = getSiteContent(locale)
   const safeNav = navItems && navItems.length > 0 ? navItems : DEFAULT_NAV
 
   const getNavLabel = (item: { name: string; href: string }) => {
@@ -148,10 +151,8 @@ export function Header({
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-        isScrolled
-          ? "bg-ivory/95 backdrop-blur-md shadow-sm"
-          : "bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-ivory/95 backdrop-blur-md",
+        isScrolled ? "shadow-sm border-b border-mist" : "border-b border-transparent"
       )}
     >
       <PromoBar text={promoBar} />
@@ -173,7 +174,7 @@ export function Header({
               <img src={logo} alt={siteName} className="max-h-10 md:max-h-12 w-auto" />
             ) : (
               <>
-                <span className="block font-serif text-lg md:text-2xl tracking-[0.12em] text-charcoal text-center whitespace-nowrap">
+                <span className="block font-sans font-semibold text-lg md:text-xl tracking-[0.02em] text-navy text-center whitespace-nowrap">
                   {siteName}
                 </span>
                 {siteSlogan && (
@@ -186,6 +187,12 @@ export function Header({
           </Link>
 
           <div className="flex items-center justify-end space-x-4 md:space-x-6 shrink-0">
+            <Link
+              href="/pages/contact"
+              className="hidden lg:inline-flex btn-primary px-5 py-2.5 text-[11px]"
+            >
+              {cta.requestQuote}
+            </Link>
             <div className="hidden md:flex items-center gap-4 md:gap-6">
               <LanguageSelector />
               <CurrencyToggle />
@@ -261,6 +268,9 @@ export function Header({
                   {getNavLabel(item)}
                 </Link>
               ))}
+              <Link href="/pages/contact" className="btn-primary w-full">
+                {cta.requestQuote}
+              </Link>
               <div className="flex items-center gap-6 pt-2">
                 <LanguageSelector />
                 <CurrencyToggle />

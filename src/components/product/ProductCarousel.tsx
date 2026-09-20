@@ -49,14 +49,14 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => scroll("left")}
-              className="p-2 border border-charcoal/20 hover:bg-charcoal hover:text-white transition-colors"
+              className="p-2 rounded-md border border-charcoal/20 hover:bg-charcoal hover:text-white transition-colors"
               aria-label={t("scrollLeft")}
             >
               <HiOutlineArrowLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scroll("right")}
-              className="p-2 border border-charcoal/20 hover:bg-charcoal hover:text-white transition-colors"
+              className="p-2 rounded-md border border-charcoal/20 hover:bg-charcoal hover:text-white transition-colors"
               aria-label={t("scrollRight")}
             >
               <HiOutlineArrowRight className="w-4 h-4" />

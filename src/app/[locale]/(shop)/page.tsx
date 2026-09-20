@@ -5,6 +5,11 @@ import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/
 import { HeroBanner } from "@/components/home/HeroBanner"
 import { BrandStory } from "@/components/home/BrandStory"
 import { FeaturedCategories } from "@/components/home/FeaturedCategories"
+import { SupplyChain } from "@/components/home/SupplyChain"
+import { ProcessFlow } from "@/components/home/ProcessFlow"
+import { PortBanner } from "@/components/home/PortBanner"
+import { TrustQuality } from "@/components/home/TrustQuality"
+import { GlobalNetwork } from "@/components/home/GlobalNetwork"
 import { PromoFeatureSection } from "@/components/home/FactoryDirect"
 import { CollectionGallerySection } from "@/components/home/EssentialsGallery"
 import { Testimonials } from "@/components/home/Testimonials"
@@ -12,6 +17,7 @@ import { InstagramFeed } from "@/components/home/InstagramFeed"
 import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
+import { getSiteContent } from "@/config/site-content"
 import {
   DEFAULT_FEATURED_CATEGORIES,
   DEFAULT_COLLECTIONS,
@@ -48,6 +54,7 @@ export default async function HomePage({
   const settings = await getSiteSettings()
   const t = await getTranslations("home")
   const tl = await getTranslations("home.links")
+  const site = getSiteContent(locale)
 
   const [banners, featuredCats, bestSellers, homeFeatured] = await Promise.all([
     prisma.banner.findMany({
@@ -214,14 +221,13 @@ export default async function HomePage({
   return (
     <>
       <HeroBanner slides={heroSlides} />
-      <BrandStory content={brandStory || brandStoryFallback} />
       <FeaturedCategories
         categories={featuredCategories}
         eyebrow={useDbContent ? settings["content.featuredEyebrow"] || t("featuredCategories.eyebrow") : t("featuredCategories.eyebrow")}
         heading={useDbContent ? settings["content.featuredHeading"] || t("featuredCategories.heading") : t("featuredCategories.heading")}
         tagline={useDbContent ? settings["content.featuredTagline"] || undefined : undefined}
       />
-      <PromoFeatureSection promo={promo1 || promoFallback} />
+      <SupplyChain content={site.supplyChain} />
       {homeFeatured.length > 0 && (
         <ProductCarousel
           title={t("carouselFeatured.title")}
@@ -229,11 +235,17 @@ export default async function HomePage({
           products={localizedHomeFeatured}
         />
       )}
+      <ProcessFlow content={site.process} />
+      <BrandStory content={brandStory || brandStoryFallback} />
+      <PortBanner content={site.port} ctaLabel={site.cta.requestQuote} />
       <ProductCarousel
         title={t("carouselBestSellers.title")}
         subtitle={t("carouselBestSellers.subtitle")}
         products={localizedBestSellers.length ? localizedBestSellers : localizedHomeFeatured}
       />
+      <TrustQuality content={site.trust} />
+      <GlobalNetwork content={site.global} />
+      <PromoFeatureSection promo={promo1 || promoFallback} />
       <CollectionGallerySection content={promo2 || collectionsFallback} />
       <Testimonials
         items={testimonials || testimonialsFallback}

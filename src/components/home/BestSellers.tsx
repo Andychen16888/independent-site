@@ -46,7 +46,7 @@ export function BestSellers() {
                     </span>
                   )}
                 </div>
-                <h3 className="font-serif text-base group-hover:text-stone transition-colors">
+                <h3 className="font-sans font-semibold text-base group-hover:text-navy transition-colors">
                   {product.name}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">

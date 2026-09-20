@@ -134,7 +134,7 @@ export async function Footer({
     .map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
 
   return (
-    <footer className="bg-charcoal text-ivory">
+    <footer className="bg-navy-dark text-ivory">
       <Container className="py-16 md:py-24">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-12">
           <div className="col-span-2 md:col-span-1 lg:col-span-2">
@@ -144,19 +144,19 @@ export async function Footer({
                 <img src={logo} alt={siteName} className="max-h-16 w-auto" />
               ) : (
                 <>
-                  <span className="font-serif text-2xl tracking-[0.3em] text-ivory">
+                  <span className="font-sans font-semibold text-xl tracking-[0.02em] text-ivory">
                     {siteName}
                   </span>
                   {siteSlogan && (
-                    <span className="block text-[10px] tracking-[0.5em] text-stone">
+                    <span className="block text-[10px] tracking-[0.5em] text-ivory/65">
                       {siteSlogan}
                     </span>
                   )}
                 </>
               )}
             </Link>
-            {safeAbout && <p className="text-sm text-stone leading-relaxed mb-6 max-w-xs">{safeAbout}</p>}
-            <div className="space-y-3 text-sm text-stone">
+            {safeAbout && <p className="text-sm text-ivory/65 leading-relaxed mb-6 max-w-xs">{safeAbout}</p>}
+            <div className="space-y-3 text-sm text-ivory/65">
               {contactEmail && (
                 <div className="flex items-center gap-3">
                   <HiOutlineEnvelope className="w-4 h-4" />
@@ -184,7 +184,7 @@ export async function Footer({
             <ul className="space-y-3">
               {shopLinks.map((link) => (
                 <li key={link.href + link.name}>
-                  <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
+                  <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
                     {getLabel(link.href, link.name)}
                   </Link>
                 </li>
@@ -197,14 +197,14 @@ export async function Footer({
             <ul className="space-y-3">
               {supportLinks.map((link) => (
                 <li key={link.href + link.name}>
-                  <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
+                  <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
                     {getLabel(link.href, link.name)}
                   </Link>
                 </li>
               ))}
               {aboutLinks.length > 0 && aboutLinks.map((link) => (
                 <li key={link.href + link.name}>
-                  <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
+                  <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
                     {getLabel(link.href, link.name)}
                   </Link>
                 </li>
@@ -217,7 +217,7 @@ export async function Footer({
             <ul className="space-y-3">
               {connectLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-sm text-stone hover:text-ivory transition-colors duration-300">
+                  <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
                     {link.name}
                   </Link>
                 </li>
@@ -227,10 +227,10 @@ export async function Footer({
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-stone">
+          <p className="text-xs text-ivory/65">
             {t("rightsReserved", { year: new Date().getFullYear(), name: copyrightSuffix })}
           </p>
-          <div className="flex items-center gap-6 text-xs text-stone">
+          <div className="flex items-center gap-6 text-xs text-ivory/65">
             {pages.some((p) => p.slug === "privacy") && <Link href="/pages/privacy" className="hover:text-ivory transition-colors">{t("privacy")}</Link>}
             {pages.some((p) => p.slug === "terms") && <Link href="/pages/terms" className="hover:text-ivory transition-colors">{t("terms")}</Link>}
           </div>

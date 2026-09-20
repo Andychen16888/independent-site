@@ -42,7 +42,7 @@ export function ProductCard({ product, priority }: ProductCardProps) {
       className="group"
     >
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] bg-mist mb-4 overflow-hidden">
+        <div className="relative aspect-[3/4] bg-mist rounded-lg mb-4 overflow-hidden">
           {product.images?.[0]?.url ? (
             <img
               src={product.images[0].url}
@@ -91,7 +91,7 @@ export function ProductCard({ product, priority }: ProductCardProps) {
       </Link>
 
       <Link href={`/products/${product.slug}`} className="block">
-        <h3 className="font-serif text-sm md:text-base leading-tight group-hover:text-stone transition-colors">
+        <h3 className="font-sans font-semibold text-sm md:text-base leading-snug group-hover:text-navy transition-colors">
           {product.name}
         </h3>
         <div className="flex items-center gap-2 mt-1.5">

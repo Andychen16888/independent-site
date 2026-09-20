@@ -37,8 +37,8 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-charcoal text-ivory flex flex-col z-50">
       <div className="p-6 border-b border-white/10">
         <Link href="/admin" className="block">
-          <span className="font-serif text-lg tracking-[0.3em]">{siteName}</span>
-          <span className="block text-[8px] tracking-[0.5em] text-stone">ADMIN 管理后台</span>
+          <span className="font-sans font-semibold text-lg tracking-[0.05em]">{siteName}</span>
+          <span className="block text-[8px] tracking-[0.5em] text-ivory/50">ADMIN 管理后台</span>
         </Link>
       </div>
 
@@ -51,7 +51,7 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
               "flex items-center gap-3 px-6 py-3 text-sm transition-colors",
               pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))
                 ? "bg-white/10 text-ivory"
-                : "text-stone hover:text-ivory hover:bg-white/5"
+                : "text-ivory/70 hover:text-ivory hover:bg-white/5"
             )}
           >
             <item.icon className="w-4 h-4 shrink-0" />
@@ -67,7 +67,7 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
         <SystemStatusWidget />
         <Link
           href="/"
-          className="flex items-center gap-3 px-2 py-2 text-sm text-stone hover:text-ivory transition-colors rounded"
+          className="flex items-center gap-3 px-2 py-2 text-sm text-ivory/70 hover:text-ivory transition-colors rounded"
         >
           <HiOutlineArrowLeftOnRectangle className="w-4 h-4 shrink-0" />
           <span className="flex flex-col leading-tight">

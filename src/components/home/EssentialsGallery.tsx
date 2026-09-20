@@ -38,7 +38,7 @@ export function CollectionGallerySection({ content = DEFAULT_COLLECTIONS }: { co
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 flex flex-col justify-end p-6">
-                  <h3 className="font-serif text-lg text-ivory translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                  <h3 className="font-sans font-semibold text-lg text-ivory translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {item.title}
                   </h3>
                   {item.description && (

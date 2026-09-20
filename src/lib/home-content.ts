@@ -11,34 +11,31 @@ export interface HeroSlide {
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
-    title: "Factory-Direct B2B Sourcing",
-    subtitle: "Sourced from China, delivered worldwide",
-    description: "Quality electronics, LED lighting, and daily commodities at wholesale prices",
-    cta: "Browse Products",
+    title: "Sourced in China, Delivered Worldwide",
+    subtitle: "Bulk Commodities & Wholesale Supply",
+    description: "A single sourcing partner for bulk goods — factory access, quality control and freight coordinated end to end.",
+    cta: "View Products",
     href: "/products",
-    bg: "bg-gradient-to-br from-sage/20 to-ivory",
-    image: "/images/hero-electronics.jpg",
+    bg: "bg-navy",
     align: "left",
   },
   {
-    title: "Wholesale Pricing",
-    subtitle: "Built for retailers and distributors",
-    description: "Tiered bulk pricing, private label options, and reliable supply schedules",
-    cta: "Explore Categories",
-    href: "/categories/electronics",
-    bg: "bg-gradient-to-bl from-blush/20 to-ivory",
-    image: "/images/hero-wholesale.jpg",
-    align: "right",
+    title: "One Connected Supply Chain",
+    subtitle: "Factory to Port to Buyer",
+    description: "From manufacturing and inspection to warehousing and shipping, every stage is coordinated for predictable delivery.",
+    cta: "Explore Commodities",
+    href: "/products",
+    bg: "bg-navy",
+    align: "left",
   },
   {
-    title: "Quality You Can Trust",
-    subtitle: "Certified goods, inspected every batch",
-    description: "CE, FCC, and RoHS certified products with pre-shipment inspection",
-    cta: "Our Story",
+    title: "Built for International Buyers",
+    subtitle: "Wholesale & Distribution",
+    description: "Support for importers, distributors and retailers sourcing from China at scale.",
+    cta: "How It Works",
     href: "/pages/about",
-    bg: "bg-gradient-to-tr from-gold/10 to-ivory",
-    image: "/images/hero-lifestyle.jpg",
-    align: "center",
+    bg: "bg-navy",
+    align: "left",
   },
 ]
 
@@ -56,7 +53,7 @@ export const DEFAULT_BRAND_STORY: BrandStoryContent = {
   title: "Quality Goods, Direct from the Source",
   paragraphs: [
     "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-    "We build long-term partnerships with certified manufacturers across China — from electronics factories in Shenzhen to kitchenware producers in Guangzhou — and inspect every batch before it ships.",
+    "We build long-term partnerships with manufacturing partners across China and inspect goods before they ship, so buyers can source with confidence.",
   ],
   ctaLabel: "Read Our Story",
   ctaHref: "/pages/about",
@@ -78,7 +75,6 @@ export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
     description: "Certified electronics and LED lighting at wholesale prices",
     href: "/categories/electronics",
     icon: "sparkles",
-    image: "/images/category-electronics.jpg",
   },
   {
     title: "Home & Kitchen",
@@ -86,7 +82,6 @@ export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
     description: "Practical, durable goods sourced from certified factories",
     href: "/categories/home-kitchen",
     icon: "swatch",
-    image: "/images/category-living.jpg",
   },
 ]
 

@@ -3,11 +3,14 @@
 import { motion } from "framer-motion"
 import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
+import { SmartImage } from "@/components/ui/SmartImage"
+import { aboutImages } from "@/config/images"
 import { DEFAULT_BRAND_STORY, type BrandStoryContent } from "@/lib/home-content"
 
 export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandStoryContent }) {
   const safe = content.title ? content : DEFAULT_BRAND_STORY
   const paragraphs = safe.paragraphs || []
+  const asset = aboutImages[0]
 
   return (
     <section className="section-padding bg-ivory">
@@ -17,9 +20,9 @@ export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandS
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.7 }}
           >
-            {safe.eyebrow && <span className="text-caption mb-4 block">{safe.eyebrow}</span>}
+            {safe.eyebrow && <span className="eyebrow mb-4 block">{safe.eyebrow}</span>}
             <h2 className="heading-lg mb-6">{safe.title}</h2>
             {paragraphs.map((p, i) => (
               <p key={i} className="text-body mb-6">{p}</p>
@@ -35,13 +38,15 @@ export function BrandStory({ content = DEFAULT_BRAND_STORY }: { content?: BrandS
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative aspect-[4/5] bg-mist"
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="relative aspect-[4/5] overflow-hidden rounded-lg border border-mist"
           >
-            {safe.image && <img src={safe.image} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-            <div className="absolute inset-0 bg-gradient-to-tr from-charcoal/5 to-transparent" />
-            <div className="absolute -bottom-4 -left-4 w-24 h-24 border border-sage/30" />
-            <div className="absolute -top-4 -right-4 w-32 h-32 border border-blush/30" />
+            <SmartImage
+              src={safe.image || asset.src}
+              alt={asset.alt}
+              tone={asset.tone}
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </motion.div>
         </div>
       </Container>

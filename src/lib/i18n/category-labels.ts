@@ -92,6 +92,20 @@ const CATEGORY_NAME_MAP: Record<string, Record<string, string>> = {
   },
 }
 
+const CATEGORY_NAME_ALIASES: Record<string, string> = {
+  chemicals: "chemical-products",
+  chemical: "chemical-products",
+  "chemical-product": "chemical-products",
+  metals: "metal-products",
+  metal: "metal-products",
+  "metal-product": "metal-products",
+  agriculture: "agricultural-commodities",
+  agricultural: "agricultural-commodities",
+  "agricultural-commodity": "agricultural-commodities",
+  mineral: "minerals",
+  electronic: "electronics",
+}
+
 const CATEGORY_TYPE_MAP: Record<string, Record<string, string>> = {
   HOME: {
     zh: "家居",
@@ -134,9 +148,15 @@ const CATEGORY_TYPE_MAP: Record<string, Record<string, string>> = {
   },
 }
 
+function normalizeCategorySlug(slug: string): string {
+  return slug.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-")
+}
+
 export function localizeCategoryName(locale: string, slug: string, fallback: string): string {
   if (locale === "en") return fallback
-  return CATEGORY_NAME_MAP[slug]?.[locale] || fallback
+  const normalized = normalizeCategorySlug(slug)
+  const key = CATEGORY_NAME_ALIASES[normalized] || normalized
+  return CATEGORY_NAME_MAP[key]?.[locale] || fallback
 }
 
 export function localizeCategoryType(locale: string, type: string, fallback?: string): string {

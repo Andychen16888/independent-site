@@ -30,6 +30,17 @@ interface ProductDetailProps {
     images?: { url: string; alt?: string | null; isPrimary?: boolean }[]
     videos?: { url: string; title?: string | null }[]
     parameters?: { name: string; value: string }[]
+    reviews?: {
+      id: string
+      rating: number
+      title: string | null
+      content: string
+      isVerified: boolean
+      user: { firstName: string | null; lastName: string | null }
+      images?: { url: string }[]
+      createdAt: Date | string
+    }[]
+    reviewStats?: { average: number; total: number; distribution: Record<number, number> }
   }
 }
 
@@ -266,30 +277,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="mb-16">
           <ProductReviews
-            reviews={[
-              {
-                id: "r1", rating: 5, title: "Absolutely love it",
-                content: "Wholesale buyers keep reordering these. Consistent quality and reliable freight. Highly recommended.",
-                isVerified: true,
-                user: { firstName: "Marcus" },
-                createdAt: new Date("2026-04-20"),
-              },
-              {
-                id: "r2", rating: 4, title: "Great value",
-                content: "Really high quality and the inspection photos gave us full confidence before shipment.",
-                isVerified: true,
-                user: { firstName: "Aline" },
-                createdAt: new Date("2026-04-15"),
-              },
-              {
-                id: "r3", rating: 5, title: "Worth every penny",
-                content: "I've ordered from many suppliers and this is by far the most reliable. On-time delivery and zero defects.",
-                isVerified: false,
-                user: { firstName: "Dong-mei" },
-                createdAt: new Date("2026-04-10"),
-              },
-            ]}
-            stats={{ average: 4.7, total: 3, distribution: { 5: 2, 4: 1, 3: 0, 2: 0, 1: 0 } }}
+            reviews={product.reviews ?? []}
+            stats={product.reviewStats ?? { average: 0, total: 0, distribution: {} }}
           />
         </div>
       </div>

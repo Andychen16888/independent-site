@@ -1,12 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
+import ProductTranslationsEditor, { type ProductTranslationFields } from "@/components/admin/ProductTranslationsEditor"
 
 interface ImageItem { url: string; alt: string; isPrimary: boolean }
 interface Parameter { name: string; value: string }
@@ -52,6 +54,10 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
   const [images, setImages] = useState<ImageItem[]>([])
   const [parameters, setParameters] = useState<Parameter[]>([])
+  const [translations, setTranslations] = useState<ProductTranslationFields[]>([])
+  const [autoTranslate, setAutoTranslate] = useState(true)
+  const [overwriteTranslations, setOverwriteTranslations] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [form, setForm] = useState<ProductFormData>({
     name: "", slug: "", sku: "", brand: "", model: "", tags: "",
     description: "", shortDescription: "",
@@ -93,6 +99,16 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         if (p.categories) setSelectedCategoryIds(p.categories.map((pc: any) => pc.category.id))
         if (p.parameters) {
           setParameters(p.parameters.map((par: any) => ({ name: par.name, value: par.value })))
+        }
+        if (p.translations) {
+          setTranslations(p.translations.map((t: any) => ({
+            locale: t.locale,
+            name: t.name || "",
+            shortDescription: t.shortDescription || "",
+            description: t.description || "",
+            seoTitle: t.seoTitle || "",
+            seoDescription: t.seoDescription || "",
+          })))
         }
       })
       .catch((err: any) => {
@@ -197,6 +213,9 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       images: validImages,
       categoryIds: selectedCategoryIds,
       parameters: validParams,
+      translations: translations.filter((t) => t.name.trim() !== "" || t.description.trim() !== ""),
+      autoTranslate,
+      overwriteTranslations: autoTranslate && overwriteTranslations,
     }
 
     try {
@@ -208,8 +227,38 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || bi("Failed to save product", "保存产品失败"))
-      toastSuccess(mode === "edit" ? bi("Product updated", "产品已更新") : bi("Product created", "产品已创建"))
-      router.push("/admin/products")
+
+      if (Array.isArray(data.translations)) {
+        setTranslations(data.translations.map((t: any) => ({
+          locale: t.locale,
+          name: t.name || "",
+          shortDescription: t.shortDescription || "",
+          description: t.description || "",
+          seoTitle: t.seoTitle || "",
+          seoDescription: t.seoDescription || "",
+        })))
+      }
+
+      if (data.translationError) {
+        toast.error(bi(
+          `Saved, but auto-translation failed: ${data.translationError}`,
+          `已保存，但自动翻译失败：${data.translationError}`
+        ))
+      } else if (data.translation && data.translation.translated.length > 0) {
+        const count = data.translation.translated.length
+        const failed = data.translation.failed?.length || 0
+        toast.success(bi(
+          `Saved. Auto-translated into ${count} language(s).`,
+          `已保存，并自动翻译为 ${count} 种语言。`
+        ))
+        if (failed > 0) toast.error(bi(`${failed} language(s) failed to translate.`, `${failed} 种语言翻译失败。`))
+      } else {
+        toastSuccess(mode === "edit" ? bi("Product updated", "产品已更新") : bi("Product created", "产品已创建"))
+      }
+
+      if (mode === "new" && data.product?.id) {
+        router.push(`/admin/products/${data.product.id}`)
+      }
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -424,9 +473,67 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         </div>
       </div>
 
+      {/* Localized content */}
+      <div className="border-t border-mist pt-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <label className="block text-xs uppercase tracking-wider text-stone font-medium">{bi("Translations", "多语言翻译")}</label>
+          <button
+            type="button"
+            onClick={() => setShowHelp((v) => !v)}
+            className="text-[11px] text-stone hover:text-charcoal underline underline-offset-2"
+          >
+            {showHelp ? bi("Hide instructions", "隐藏操作说明") : bi("How does this work?", "查看操作说明")}
+          </button>
+        </div>
+
+        {showHelp && (
+          <div className="border border-mist bg-ivory/60 p-4 text-xs leading-relaxed space-y-2">
+            <p className="font-medium text-charcoal">{bi("How product translation works", "产品多语言翻译使用说明")}</p>
+            <ol className="list-decimal list-inside space-y-1 text-stone">
+              <li>{bi('Fill in the English "Name" and "Description" first — they are the translation source.', "先填写英文的“名称”和“描述”，它们是翻译的源内容。")}</li>
+              <li>{bi('Keep "Auto-translate on save" checked (default). The system sends the English text to OpenAI and writes the result into every language tab.', "保持勾选“保存时自动翻译”（默认开启）。系统会把英文内容发送给 OpenAI，并自动写入每个语言页签。")}</li>
+              <li>{bi('Click Save. Translation runs in the background of the request and usually takes ~10–40 seconds. Wait for the success message.', "点击保存。翻译会在此请求中执行，通常耗时约 10–40 秒，请等待成功提示。")}</li>
+              <li>{bi("After saving you will see the filled language tabs below / on the edit page. Empty languages fall back to English on the storefront.", "保存后，下面的语言页签会显示已填入的内容；未填写的语言在前台回退英文。")}</li>
+              <li>{bi('Manually edit any language tab to fine-tune. Those edits are kept and NOT overwritten the next time you save.', "你可以手动修改任意语言页签进行润色。已手动修改的内容在下次保存时不会被覆盖。")}</li>
+              <li>{bi('Changed the English source? Tick "Re-translate and overwrite existing translations" before saving to refresh all languages.', "如果修改了英文原文，请勾选“重新翻译并覆盖已有翻译”，保存后即可刷新所有语言。")}</li>
+              <li>{bi("Requires an OPENAI_API_KEY on the server. If it is missing, saving still works but translation is skipped.", "服务器需配置 OPENAI_API_KEY。若未配置，产品仍可保存，只是跳过自动翻译。")}</li>
+            </ol>
+            <Link href="/admin/help/translations" className="inline-block mt-1 text-charcoal underline underline-offset-2">
+              {bi("Open the full guide", "查看完整操作说明")} →
+            </Link>
+          </div>
+        )}
+
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" checked={autoTranslate} onChange={(e) => setAutoTranslate(e.target.checked)} className="w-4 h-4" />
+          {bi("Auto-translate into all languages on save", "保存时自动翻译成所有语言")}
+        </label>
+        <label className={`flex items-center gap-2 text-sm ${autoTranslate ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}>
+          <input
+            type="checkbox"
+            checked={overwriteTranslations}
+            disabled={!autoTranslate}
+            onChange={(e) => setOverwriteTranslations(e.target.checked)}
+            className="w-4 h-4"
+          />
+          {bi(
+            "Re-translate and overwrite existing translations (use after editing the English text)",
+            "重新翻译并覆盖已有翻译（修改英文原文后使用）"
+          )}
+        </label>
+
+        <ProductTranslationsEditor value={translations} onChange={setTranslations} />
+      </div>
+
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Product", "保存产品") : bi("Create Product", "创建产品")}
+          {saving
+            ? autoTranslate
+              ? bi("Saving & translating...", "保存并翻译中...")
+              : bi("Saving...", "保存中...")
+            : mode === "edit"
+            ? bi("Save Product", "保存产品")
+            : bi("Create Product", "创建产品")}
         </button>
         <button type="button" onClick={() => router.push("/admin/products")} className="text-xs text-stone hover:text-charcoal transition-colors">
           {bi("Cancel", "取消")}

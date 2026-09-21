@@ -54,3 +54,50 @@ export function applyProductLocalizations<T extends { id: string } & Partial<Loc
 ): T[] {
   return products.map((p) => applyProductLocalization(p, translations))
 }
+
+/* ------------------------------------------------------------------ */
+/* Admin persistence (upsert translations from the admin product form) */
+/* ------------------------------------------------------------------ */
+
+export interface ProductTranslationInput {
+  locale: string
+  name?: string
+  shortDescription?: string | null
+  description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+}
+
+function isFilled(values: (string | null | undefined)[]): boolean {
+  return values.some((v) => typeof v === "string" && v.trim() !== "")
+}
+
+export async function upsertProductTranslations(
+  productId: string,
+  inputs: ProductTranslationInput[]
+) {
+  const received = new Set<string>()
+  for (const input of inputs) {
+    if (!input?.locale) continue
+    received.add(input.locale)
+    const data = {
+      name: input.name ?? "",
+      shortDescription: input.shortDescription ?? null,
+      description: input.description ?? null,
+      seoTitle: input.seoTitle ?? null,
+      seoDescription: input.seoDescription ?? null,
+    }
+    if (!isFilled([data.name, data.shortDescription, data.description])) {
+      await prisma.productTranslation.deleteMany({ where: { productId, locale: input.locale } })
+      continue
+    }
+    await prisma.productTranslation.upsert({
+      where: { productId_locale: { productId, locale: input.locale } },
+      update: data,
+      create: { productId, locale: input.locale, ...data },
+    })
+  }
+  await prisma.productTranslation.deleteMany({
+    where: { productId, locale: { notIn: [...received] } },
+  })
+}

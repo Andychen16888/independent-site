@@ -10,12 +10,13 @@ import {
   HiOutlinePhoto, HiOutlineMegaphone, HiOutlineChartBar,
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
   HiOutlineDocument, HiOutlineBars3,
-  HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt,
+  HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt, HiOutlineLanguage,
 } from "react-icons/hi2"
 
 const navItems = [
   { name: "Dashboard", nameZh: "仪表盘", href: "/admin", icon: HiOutlineSquares2X2 },
   { name: "Products", nameZh: "产品", href: "/admin/products", icon: HiOutlineCube },
+  { name: "Translation Guide", nameZh: "产品翻译说明", href: "/admin/help/translations", icon: HiOutlineLanguage },
   { name: "Categories", nameZh: "分类", href: "/admin/categories", icon: HiOutlineFolder },
   { name: "Orders", nameZh: "订单", href: "/admin/orders", icon: HiOutlineShoppingBag },
   { name: "Customers", nameZh: "客户", href: "/admin/customers", icon: HiOutlineUsers },

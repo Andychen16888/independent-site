@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: Props) {
       parameters: true,
       faqs: { orderBy: { sortOrder: "asc" } },
       reviews: {
-        include: { user: { select: { firstName: true } } },
+        include: { user: { select: { firstName: true, lastName: true } }, images: true },
         orderBy: { createdAt: "desc" },
       },
     },
@@ -63,10 +63,32 @@ export default async function ProductPage({ params }: Props) {
   const translationMap = await fetchProductTranslations([product.id], locale)
   const localizedProduct = applyProductLocalization(product, translationMap)
 
+  const reviewList = product.reviews.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    title: r.title,
+    content: r.content,
+    isVerified: r.isVerified,
+    user: { firstName: r.user.firstName, lastName: r.user.lastName },
+    images: r.images.map((img) => ({ url: img.url })),
+    createdAt: r.createdAt,
+  }))
+  const reviewTotal = reviewList.length
+  const reviewStats = {
+    average: reviewTotal ? reviewList.reduce((sum, r) => sum + r.rating, 0) / reviewTotal : 0,
+    total: reviewTotal,
+    distribution: reviewList.reduce((acc, r) => {
+      acc[r.rating] = (acc[r.rating] || 0) + 1
+      return acc
+    }, {} as Record<number, number>),
+  }
+
   const serializedProduct = {
     ...localizedProduct,
     unitPrice: product.unitPrice != null ? Number(product.unitPrice) : null,
     originalPrice: product.originalPrice ? Number(product.originalPrice) : null,
+    reviews: reviewList,
+    reviewStats,
   }
 
   const relatedProducts = (await prisma.product.findMany({

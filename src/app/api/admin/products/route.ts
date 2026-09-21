@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { upsertProductTranslations } from "@/lib/i18n/product"
+import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
+
+export const runtime = "nodejs"
+export const maxDuration = 300
 
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
@@ -99,7 +104,8 @@ export async function POST(req: NextRequest) {
       unitPrice, originalPrice, costPrice, stock, status,
       sku, slug, brand, model, tags,
       isFeatured, isBestSeller, isNew, isHomeFeatured, sortOrder,
-      images, categoryIds, parameters,
+      images, categoryIds, parameters, translations,
+      autoTranslate, overwriteTranslations,
     } = body
 
     if (!name || !description) {
@@ -174,7 +180,44 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json({ product }, { status: 201 })
+    if (Array.isArray(translations)) {
+      await upsertProductTranslations(product.id, translations)
+    }
+
+    let translation = null
+    let translationError: string | null = null
+    if (autoTranslate !== false) {
+      if (isAutoTranslateConfigured()) {
+        try {
+          translation = await autoTranslateProduct(
+            product.id,
+            {
+              name: product.name,
+              shortDescription: product.shortDescription,
+              description: product.description,
+              seoTitle: product.seoTitle,
+              seoDescription: product.seoDescription,
+            },
+            { overwrite: overwriteTranslations === true }
+          )
+        } catch (err) {
+          translationError = (err as Error).message
+          console.error("Auto-translate (create) failed:", err)
+        }
+      } else {
+        translationError = "OPENAI_API_KEY is not configured"
+      }
+    }
+
+    const savedTranslations = await prisma.productTranslation.findMany({
+      where: { productId: product.id },
+      orderBy: { locale: "asc" },
+    })
+
+    return NextResponse.json(
+      { product, translations: savedTranslations, translation, translationError },
+      { status: 201 }
+    )
   } catch (error) {
     console.error("Admin product create error:", error)
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 })

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { upsertProductTranslations } from "@/lib/i18n/product"
+import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
+
+export const runtime = "nodejs"
+export const maxDuration = 300
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
@@ -16,6 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         faqs: { orderBy: { sortOrder: "asc" } },
         videos: { orderBy: { sortOrder: "asc" } },
         categories: { include: { category: true } },
+        translations: true,
       },
     })
 
@@ -43,7 +49,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       unitPrice, originalPrice, costPrice, stock, status,
       isFeatured, isBestSeller, isNew, isHomeFeatured, sortOrder,
       seoTitle, seoDescription, seoKeywords,
-      images, categoryIds, parameters,
+      images, categoryIds, parameters, translations,
+      autoTranslate, overwriteTranslations,
     } = body
 
     const parseOptionalPrice = (value: unknown): number | null => {
@@ -113,7 +120,41 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
 
-    return NextResponse.json({ product })
+    if (Array.isArray(translations)) {
+      await upsertProductTranslations(id, translations)
+    }
+
+    let translation = null
+    let translationError: string | null = null
+    if (autoTranslate !== false) {
+      if (isAutoTranslateConfigured()) {
+        try {
+          translation = await autoTranslateProduct(
+            id,
+            {
+              name: product.name,
+              shortDescription: product.shortDescription,
+              description: product.description,
+              seoTitle: product.seoTitle,
+              seoDescription: product.seoDescription,
+            },
+            { overwrite: overwriteTranslations === true }
+          )
+        } catch (err) {
+          translationError = (err as Error).message
+          console.error("Auto-translate (update) failed:", err)
+        }
+      } else {
+        translationError = "OPENAI_API_KEY is not configured"
+      }
+    }
+
+    const savedTranslations = await prisma.productTranslation.findMany({
+      where: { productId: id },
+      orderBy: { locale: "asc" },
+    })
+
+    return NextResponse.json({ product, translations: savedTranslations, translation, translationError })
   } catch (error) {
     console.error("Admin product update error:", error)
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 })

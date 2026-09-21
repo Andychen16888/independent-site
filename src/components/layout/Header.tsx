@@ -193,8 +193,7 @@ export function Header({
             >
               {cta.requestQuote}
             </Link>
-            <div className="hidden md:flex items-center gap-4 md:gap-6">
-              <LanguageSelector />
+            <div className="hidden md:block">
               <CurrencyToggle />
             </div>
             <button
@@ -226,6 +225,8 @@ export function Header({
                 </span>
               )}
             </Link>
+
+            <LanguageSelector />
           </div>
         </div>
 

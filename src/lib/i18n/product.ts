@@ -97,6 +97,8 @@ export async function upsertProductTranslations(
       create: { productId, locale: input.locale, ...data },
     })
   }
+  // Never wipe existing translations when no locales were provided.
+  if (received.size === 0) return
   await prisma.productTranslation.deleteMany({
     where: { productId, locale: { notIn: [...received] } },
   })

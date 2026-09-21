@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { toast } from "react-hot-toast"
 import { formatPrice } from "@/lib/utils/format"
 import { bi } from "@/components/admin/bilingual"
 
@@ -127,6 +128,32 @@ export default function ProductManager() {
     }
   }
 
+  const translateSelected = async () => {
+    if (selected.length === 0) return
+    setBusy(true)
+    setError("")
+    try {
+      const res = await fetch("/api/admin/products/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selected, action: "translate" }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || bi("Batch translation failed", "批量翻译失败"))
+      setSelected([])
+      toast.success(bi(
+        `Translated ${data.translatedCount} missing language(s) across ${data.count} product(s).`,
+        `已为 ${data.count} 个产品翻译 ${data.translatedCount} 种缺失语言。`
+      ))
+      if (data.failedCount > 0) toast.error(bi(`${data.failedCount} product(s) had failures.`, `${data.failedCount} 个产品翻译出错。`))
+      load()
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const resetFilters = () => {
     setSearchInput("")
     setCategoryId("")
@@ -225,6 +252,7 @@ export default function ProductManager() {
           <button onClick={() => runBatch("deactivate")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Deactivate", "停用")}</button>
           <button onClick={() => runBatch("feature")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Feature", "推荐")}</button>
           <button onClick={() => runBatch("unfeature")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Unfeature", "取消推荐")}</button>
+          <button onClick={translateSelected} className="hover:underline text-sage disabled:opacity-50" disabled={busy}>{bi("Translate missing", "翻译缺失语言")}</button>
           {includeDeleted ? (
               <button onClick={() => runBatch("restore")} className="hover:underline disabled:opacity-50" disabled={busy}>{bi("Restore", "恢复")}</button>
             ) : (

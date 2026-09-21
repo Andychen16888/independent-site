@@ -119,8 +119,20 @@ export default function TranslationHelpPage() {
           </h2>
           <ul className="list-disc list-inside space-y-2">
             <Row
-              en="Products created before this feature have no translations. Run the batch script on the server, or open each product and save it once."
-              zh="在此功能之前创建的产品没有翻译。请在服务器上运行批量脚本，或逐个打开产品保存一次。"
+              en="Products created before this feature have no translations. Translate them any of three ways:"
+              zh="在此功能之前创建的产品没有翻译。可以用以下任意一种方式翻译："
+            />
+            <Row
+              en="Option A — Admin: open the product, click “Translate missing languages now” next to the Translations section. No other field changes are needed."
+              zh="方式 A — 后台：打开产品，点击“多语言翻译”区域旁的“立即翻译缺失语言”按钮，无需改动其他字段。"
+            />
+            <Row
+              en="Option B — Admin: in the product list, select products and click the “Translate missing” bulk button in the batch toolbar."
+              zh="方式 B — 后台：在产品列表勾选产品，点击批量工具栏中的“翻译缺失语言”按钮。"
+            />
+            <Row
+              en="Option C — Server CLI: run the batch script below (also supports a single slug)."
+              zh="方式 C — 服务器命令行：运行下面的批量脚本（也支持按 slug 翻译单个产品）。"
             />
           </ul>
           <div className="mt-3 bg-ivory/70 border border-mist p-3 font-mono text-xs leading-relaxed">

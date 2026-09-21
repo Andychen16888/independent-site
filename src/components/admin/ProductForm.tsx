@@ -43,6 +43,17 @@ export interface ProductFormData {
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
+function translationsFromData(list: any[]): ProductTranslationFields[] {
+  return (list || []).map((t) => ({
+    locale: t.locale,
+    name: t.name || "",
+    shortDescription: t.shortDescription || "",
+    description: t.description || "",
+    seoTitle: t.seoTitle || "",
+    seoDescription: t.seoDescription || "",
+  }))
+}
+
 export default function ProductForm({ mode, productId }: { mode: "new" | "edit"; productId?: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(mode === "edit")
@@ -58,6 +69,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   const [autoTranslate, setAutoTranslate] = useState(true)
   const [overwriteTranslations, setOverwriteTranslations] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [translating, setTranslating] = useState(false)
   const [form, setForm] = useState<ProductFormData>({
     name: "", slug: "", sku: "", brand: "", model: "", tags: "",
     description: "", shortDescription: "",
@@ -101,14 +113,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
           setParameters(p.parameters.map((par: any) => ({ name: par.name, value: par.value })))
         }
         if (p.translations) {
-          setTranslations(p.translations.map((t: any) => ({
-            locale: t.locale,
-            name: t.name || "",
-            shortDescription: t.shortDescription || "",
-            description: t.description || "",
-            seoTitle: t.seoTitle || "",
-            seoDescription: t.seoDescription || "",
-          })))
+          setTranslations(translationsFromData(p.translations))
         }
       })
       .catch((err: any) => {
@@ -229,14 +234,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       if (!res.ok) throw new Error(data.error || bi("Failed to save product", "保存产品失败"))
 
       if (Array.isArray(data.translations)) {
-        setTranslations(data.translations.map((t: any) => ({
-          locale: t.locale,
-          name: t.name || "",
-          shortDescription: t.shortDescription || "",
-          description: t.description || "",
-          seoTitle: t.seoTitle || "",
-          seoDescription: t.seoDescription || "",
-        })))
+        setTranslations(translationsFromData(data.translations))
       }
 
       if (data.translationError) {
@@ -264,6 +262,38 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       setError(err.message)
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleTranslateNow() {
+    if (!productId) return
+    setTranslating(true)
+    setError("")
+    try {
+      const res = await fetch(`/api/admin/products/${productId}/translate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ overwrite: overwriteTranslations }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || bi("Failed to translate", "翻译失败"))
+
+      if (Array.isArray(data.translations)) {
+        setTranslations(translationsFromData(data.translations))
+      }
+
+      const translated = data.translation?.translated?.length || 0
+      const failed = data.translation?.failed?.length || 0
+      if (translated > 0) {
+        toast.success(bi(`Translated into ${translated} language(s).`, `已翻译 ${translated} 种语言。`))
+      } else if (failed === 0) {
+        toast(bi("All languages are already translated.", "所有语言均已翻译。"))
+      }
+      if (failed > 0) toast.error(bi(`${failed} language(s) failed to translate.`, `${failed} 种语言翻译失败。`))
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setTranslating(false)
     }
   }
 
@@ -475,15 +505,27 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
       {/* Localized content */}
       <div className="border-t border-mist pt-6 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <label className="block text-xs uppercase tracking-wider text-stone font-medium">{bi("Translations", "多语言翻译")}</label>
-          <button
-            type="button"
-            onClick={() => setShowHelp((v) => !v)}
-            className="text-[11px] text-stone hover:text-charcoal underline underline-offset-2"
-          >
-            {showHelp ? bi("Hide instructions", "隐藏操作说明") : bi("How does this work?", "查看操作说明")}
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={handleTranslateNow}
+              disabled={translating || mode === "new"}
+              className="text-[11px] text-charcoal border border-mist px-3 py-1.5 hover:border-charcoal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {translating
+                ? bi("Translating...", "翻译中...")
+                : bi("Translate missing languages now", "立即翻译缺失语言")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowHelp((v) => !v)}
+              className="text-[11px] text-stone hover:text-charcoal underline underline-offset-2"
+            >
+              {showHelp ? bi("Hide instructions", "隐藏操作说明") : bi("How does this work?", "查看操作说明")}
+            </button>
+          </div>
         </div>
 
         {showHelp && (

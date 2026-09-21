@@ -19,6 +19,7 @@ const DEFAULT_NAV = [
   { name: "Electronics", href: "/categories/electronics" },
   { name: "Home & Kitchen", href: "/categories/home-kitchen" },
   { name: "Journal", href: "/blog" },
+  { name: "FAQ", href: "/faq" },
   { name: "About", href: "/pages/about" },
 ]
 
@@ -35,6 +36,8 @@ function getNavKey(href: string): string | null {
       return "homeKitchen"
     case "/blog":
       return "journal"
+    case "/faq":
+      return "faq"
     case "/pages/about":
       return "about"
     case "/pages/contact":

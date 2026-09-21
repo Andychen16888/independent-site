@@ -16,6 +16,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
   const useDbContent = locale === "en"
   const t = await getTranslations("product")
   const th = await getTranslations("header")
+  const tnav = await getTranslations("navigation")
   const [menus, settings, chatProducts] = await Promise.all([
     prisma.menu.findMany({
       where: { isActive: true, parentId: null },
@@ -35,6 +36,9 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
   const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
 
   const navItems = menus.map((m) => ({ name: m.label, href: m.url }))
+  if (!navItems.some((item) => item.href === "/faq")) {
+    navItems.push({ name: tnav("faq"), href: "/faq" })
+  }
 
   const productsWithPrice = chatProducts.map((p) => ({
     ...p,

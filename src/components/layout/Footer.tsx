@@ -120,9 +120,12 @@ export async function Footer({
       }))
     : DEFAULT_SHOP_LINKS
 
-  const supportLinks = pages.length
-    ? pages.map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
-    : DEFAULT_SUPPORT_LINKS
+  const supportLinks = [
+    { name: tnav("faq"), href: "/faq" },
+    ...(pages.length
+      ? pages.filter((p) => p.slug !== "faq").map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
+      : DEFAULT_SUPPORT_LINKS),
+  ]
 
   const socialLinks = [
     { name: "Instagram", href: instagram || "" },
@@ -256,6 +259,8 @@ function navKeyForHref(href: string): string | null {
       return "newArrivals"
     case "/products?sort=bestseller":
       return "bestSellers"
+    case "/faq":
+      return "faq"
     case "/pages/contact":
       return "contact"
     case "/pages/about":

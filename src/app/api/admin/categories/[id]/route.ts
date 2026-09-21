@@ -30,7 +30,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { name, slug, description, image, parentId, type, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords } = body
+    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords } = body
 
     if (name !== undefined && !name.trim()) {
       return NextResponse.json({ error: "Name cannot be empty" }, { status: 400 })
@@ -47,7 +47,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(description !== undefined ? { description } : {}),
       ...(image !== undefined ? { image } : {}),
       ...(parentId !== undefined ? { parentId: parentId || null } : {}),
-      ...(type !== undefined ? { type } : {}),
       ...(sortOrder !== undefined ? { sortOrder: parseInt(sortOrder, 10) } : {}),
       ...(isActive !== undefined ? { isActive } : {}),
       ...(isFeatured !== undefined ? { isFeatured } : {}),

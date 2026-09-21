@@ -41,8 +41,8 @@ async function main() {
   }
 
   const categoryData = [
-    { name: "Electronics", slug: "electronics", description: "LED lighting, power banks, audio gear, and everyday electronics", type: "ELECTRONICS", sortOrder: 1, isFeatured: true, seoTitle: "Electronics", seoDescription: "Wholesale electronics and LED products", seoKeywords: "electronics, led, wholesale" },
-    { name: "Home & Kitchen", slug: "home-kitchen", description: "Daily-use kitchenware and household essentials", type: "HOME", sortOrder: 2, isFeatured: true, seoTitle: "Home & Kitchen", seoDescription: "Kitchenware and household essentials", seoKeywords: "kitchenware, home goods, household" },
+    { name: "Electronics", slug: "electronics", description: "LED lighting, power banks, audio gear, and everyday electronics", sortOrder: 1, isFeatured: true, seoTitle: "Electronics", seoDescription: "Wholesale electronics and LED products", seoKeywords: "electronics, led, wholesale" },
+    { name: "Home & Kitchen", slug: "home-kitchen", description: "Daily-use kitchenware and household essentials", sortOrder: 2, isFeatured: true, seoTitle: "Home & Kitchen", seoDescription: "Kitchenware and household essentials", seoKeywords: "kitchenware, home goods, household" },
   ]
 
   const categoryIds: Record<string, string> = {}

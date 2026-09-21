@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { name, slug, description, image, parentId, type, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords } = body
+    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords } = body
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
         description: description || null,
         image: image || null,
         parentId: parentId || null,
-        type: type || "GENERAL",
         sortOrder: sortOrder !== undefined && sortOrder !== "" ? parseInt(sortOrder, 10) : 0,
         isActive: isActive !== undefined ? isActive : true,
         isFeatured: isFeatured !== undefined ? isFeatured : false,

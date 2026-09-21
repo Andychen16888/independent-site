@@ -120,7 +120,6 @@ export default async function CategoryPage({ params }: Props) {
               ]}
               className="mb-6"
             />
-            {category.type && <span className="text-caption mb-4 block">{category.type}</span>}
             <h1 className="heading-xl mb-6">{category.name}</h1>
             {category.description && (
               <p className="text-body max-w-2xl">{category.description}</p>

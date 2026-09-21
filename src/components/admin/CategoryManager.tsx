@@ -9,7 +9,6 @@ interface CategoryRow {
   id: string
   name: string
   slug: string
-  type: string
   parentId: string | null
   parent?: { name: string } | null
   image: string | null
@@ -59,7 +58,6 @@ export default function CategoryManager() {
             </div>
           </div>
         </td>
-        <td className="px-4 py-3 text-xs">{c.type}</td>
         <td className="px-4 py-3 text-xs text-stone">{c._count.children} sub / {c._count.products} products</td>
         <td className="px-4 py-3 text-xs">
           <span className="flex gap-1">
@@ -124,7 +122,6 @@ export default function CategoryManager() {
             <thead>
               <tr className="border-b border-mist text-left">
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Category", "分类")}</th>
-                <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Type", "类型")}</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Contents", "内容")}</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Flags", "标记")}</th>
                 <th className="px-4 py-3 text-[10px] uppercase tracking-wider text-stone font-medium">{bi("Status", "状态")}</th>

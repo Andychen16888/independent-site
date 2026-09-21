@@ -17,7 +17,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
   const [notFound, setNotFound] = useState(false)
   const [categories, setCategories] = useState<CatOption[]>([])
   const [form, setForm] = useState({
-    name: "", slug: "", parentId: "", type: "GENERAL", sortOrder: "0",
+    name: "", slug: "", parentId: "", sortOrder: "0",
     isActive: true, isFeatured: false,
     image: "", description: "",
     seoTitle: "", seoDescription: "", seoKeywords: "",
@@ -40,7 +40,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
         const c = data.category
         setForm({
           name: c.name, slug: c.slug, parentId: c.parentId || "",
-          type: c.type || "GENERAL", sortOrder: String(c.sortOrder ?? 0),
+          sortOrder: String(c.sortOrder ?? 0),
           isActive: c.isActive !== false, isFeatured: c.isFeatured || false,
           image: c.image || "", description: c.description || "",
           seoTitle: c.seoTitle || "", seoDescription: c.seoDescription || "", seoKeywords: c.seoKeywords || "",
@@ -115,31 +115,20 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
           </select>
         </div>
         <div>
-          <label className={label}>{bi("Type", "类型")}</label>
-          <select value={form.type} onChange={(e) => update({ type: e.target.value })} className={input}>
-            <option value="GENERAL">General</option>
-            <option value="ELECTRONICS">Electronics</option>
-            <option value="FASHION">Fashion</option>
-            <option value="HOME">Home</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
           <label className={label}>{bi("Display Sort Order", "显示排序")}</label>
           <input type="number" value={form.sortOrder} onChange={(e) => update({ sortOrder: e.target.value })} className={input} />
         </div>
-        <div className="flex items-end gap-6 pb-2">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="checkbox" checked={form.isActive} onChange={(e) => update({ isActive: e.target.checked })} className="w-4 h-4" />
-            {bi("Active", "启用")}
-          </label>
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="checkbox" checked={form.isFeatured} onChange={(e) => update({ isFeatured: e.target.checked })} className="w-4 h-4" />
-            {bi("Featured", "推荐")}
-          </label>
-        </div>
+      </div>
+
+      <div className="flex items-end gap-6 pb-2">
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" checked={form.isActive} onChange={(e) => update({ isActive: e.target.checked })} className="w-4 h-4" />
+          {bi("Active", "启用")}
+        </label>
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" checked={form.isFeatured} onChange={(e) => update({ isFeatured: e.target.checked })} className="w-4 h-4" />
+          {bi("Featured", "推荐")}
+        </label>
       </div>
 
       <div>

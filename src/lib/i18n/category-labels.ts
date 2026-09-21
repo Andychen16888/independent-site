@@ -106,48 +106,6 @@ const CATEGORY_NAME_ALIASES: Record<string, string> = {
   electronic: "electronics",
 }
 
-const CATEGORY_TYPE_MAP: Record<string, Record<string, string>> = {
-  HOME: {
-    zh: "家居",
-    es: "Hogar",
-    pt: "Casa",
-    fr: "Maison",
-    de: "Haushalt",
-    ru: "Дом",
-    ar: "المنزل",
-    id: "Rumah",
-    vi: "Gia dụng",
-    th: "บ้าน",
-    ms: "Rumah",
-  },
-  ELECTRONICS: {
-    zh: "电子",
-    es: "Electrónica",
-    pt: "Eletrônicos",
-    fr: "Électronique",
-    de: "Elektronik",
-    ru: "Электроника",
-    ar: "إلكترونيات",
-    id: "Elektronik",
-    vi: "Điện tử",
-    th: "อิเล็กทรอนิกส์",
-    ms: "Elektronik",
-  },
-  GENERAL: {
-    zh: "综合",
-    es: "General",
-    pt: "Geral",
-    fr: "Général",
-    de: "Allgemein",
-    ru: "Общее",
-    ar: "عام",
-    id: "Umum",
-    vi: "Tổng hợp",
-    th: "ทั่วไป",
-    ms: "Umum",
-  },
-}
-
 function normalizeCategorySlug(slug: string): string {
   return slug.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-")
 }
@@ -157,10 +115,4 @@ export function localizeCategoryName(locale: string, slug: string, fallback: str
   const normalized = normalizeCategorySlug(slug)
   const key = CATEGORY_NAME_ALIASES[normalized] || normalized
   return CATEGORY_NAME_MAP[key]?.[locale] || fallback
-}
-
-export function localizeCategoryType(locale: string, type: string, fallback?: string): string {
-  if (locale === "en") return fallback || type
-  const key = (type || "").toUpperCase()
-  return CATEGORY_TYPE_MAP[key]?.[locale] || fallback || type
 }

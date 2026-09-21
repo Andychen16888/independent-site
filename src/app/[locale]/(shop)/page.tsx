@@ -19,7 +19,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { getSiteContent } from "@/config/site-content"
-import { localizeCategoryName, localizeCategoryType } from "@/lib/i18n/category-labels"
+import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import {
   DEFAULT_FEATURED_CATEGORIES,
   DEFAULT_COLLECTIONS,
@@ -125,7 +125,6 @@ export default async function HomePage({
 
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({
     title: localizeCategoryName(locale, c.slug, c.name),
-    subtitle: localizeCategoryType(locale, c.type, c.type),
     description: c.description || undefined,
     href: `/categories/${c.slug}`,
     image: c.image || undefined,

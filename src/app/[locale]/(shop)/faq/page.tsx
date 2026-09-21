@@ -79,7 +79,9 @@ export default async function FAQPage({ params }: Props) {
               className="mb-6"
             />
             <span className="text-caption mb-4 block">{t("eyebrow")}</span>
-            <h1 className="heading-xl mb-8">{t("title")}</h1>
+            <h1 className="mb-8 font-sans font-semibold tracking-tight text-charcoal leading-[1.05] whitespace-nowrap text-[clamp(1.375rem,4.5vw,3rem)]">
+              {t("title")}
+            </h1>
 
             {faqs.length === 0 ? (
               <p className="text-body">{t("noFaqs")}</p>

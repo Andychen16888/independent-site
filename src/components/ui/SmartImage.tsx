@@ -1,12 +1,17 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils/cn"
 
 interface SmartImageProps {
   src: string | null | undefined
   alt: string
+  /**
+   * Ordered fallback URLs tried in turn when `src` fails to load.
+   * Falls back to the `tone` gradient only after every candidate has failed.
+   */
+  fallbackSrcs?: (string | null | undefined)[]
   /** Tailwind gradient classes shown while loading / when no photo exists. */
   tone?: string
   /** Cover the parent element (parent must be `relative`). Defaults to true. */
@@ -33,6 +38,7 @@ interface SmartImageProps {
 export function SmartImage({
   src,
   alt,
+  fallbackSrcs,
   tone = "from-navy-light via-navy to-ink",
   fill = true,
   width,
@@ -46,19 +52,39 @@ export function SmartImage({
 }: SmartImageProps) {
   const [loaded, setLoaded] = useState(false)
   const [errored, setErrored] = useState(false)
+  const [tryIndex, setTryIndex] = useState(0)
 
-  const showImage = Boolean(src) && !errored
+  const sources = useMemo(
+    () => [src, ...(fallbackSrcs ?? [])].filter((s): s is string => Boolean(s)),
+    [src, fallbackSrcs],
+  )
+
+  useEffect(() => {
+    setTryIndex(0)
+    setErrored(false)
+  }, [src])
+
+  const activeSrc = tryIndex < sources.length ? sources[tryIndex] : null
+  const showImage = Boolean(activeSrc) && !errored
 
   const image = showImage ? (
     <Image
-      src={src as string}
+      key={activeSrc}
+      src={activeSrc as string}
       alt={alt}
       {...(fill ? { fill: true } : { width: width ?? 1200, height: height ?? 800 })}
       sizes={sizes}
       priority={priority}
       quality={quality}
       onLoad={() => setLoaded(true)}
-      onError={() => setErrored(true)}
+      onError={() => {
+        if (tryIndex + 1 < sources.length) {
+          setLoaded(false)
+          setTryIndex((i) => i + 1)
+        } else {
+          setErrored(true)
+        }
+      }}
       className={cn(
         "transition-opacity duration-700 ease-out",
         fill && "object-cover",

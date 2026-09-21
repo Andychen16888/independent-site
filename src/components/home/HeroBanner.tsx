@@ -59,6 +59,8 @@ export function HeroBanner({
             sizes="100vw"
             priority={current === 0}
             overlay
+            // Broken/expired slide image falls back to the hero slot image.
+            fallbackSrcs={slide.image ? [asset.src] : undefined}
           />
 
           <Container className="relative h-full">

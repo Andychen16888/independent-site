@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import LinkSelect from "@/components/admin/LinkSelect"
 
 interface MenuOption { id: string; label: string; parentId: string | null }
 
@@ -82,7 +83,7 @@ export default function MenuForm({ mode, menuId }: { mode: "new" | "edit"; menuI
         </div>
         <div>
           <label className={label}>{bi("URL *", "链接 *")}</label>
-          <input value={form.url} onChange={(e) => update({ url: e.target.value })} required className={input} placeholder="/products or /pages/about" />
+          <LinkSelect value={form.url} onChange={(url) => update({ url })} allowExternal />
         </div>
       </div>
 

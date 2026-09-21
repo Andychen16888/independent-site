@@ -2,12 +2,14 @@
 
 import { useState } from "react"
 import ImageUploader from "@/components/admin/ImageUploader"
+import LinkSelect from "@/components/admin/LinkSelect"
 import { bi } from "@/components/admin/bilingual"
 
 export interface FieldDef {
   key: string
-  type: "text" | "textarea" | "url" | "number" | "image" | "list" | "array"
+  type: "text" | "textarea" | "url" | "link" | "number" | "image" | "list" | "array"
   label: string
+  labelZh?: string
   placeholder?: string
   rows?: number
   itemLabel?: string
@@ -180,6 +182,9 @@ function FieldInput({
   if (field.type === "image") {
     return <ImageUploader value={(value as string) || ""} onChange={(url) => onChange(url)} />
   }
+  if (field.type === "link") {
+    return <LinkSelect value={(value as string) || ""} onChange={(v) => onChange(v)} />
+  }
   if (field.type === "number") {
     return (
       <input
@@ -225,7 +230,10 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm text-stone">{field.label}</label>
+      <label className="block text-sm text-stone">
+        {field.label}
+        {field.labelZh && <span className="text-stone/70"> / {field.labelZh}</span>}
+      </label>
       <FieldInput field={field} value={value} onChange={onChange} />
     </div>
   )

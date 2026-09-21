@@ -231,6 +231,12 @@ npm run db:seed
 
 > **顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
 >
+> **博客正文多语言翻译**：seed 只写入标题/摘要/SEO 的多语言，正文翻译需 AI 生成后写库（已在服务器配好 OPENAI_API_KEY 时执行）：
+> ```bash
+> # 为 6 篇文章 × 11 种语言生成正文翻译并写库（gpt-4o-mini，幂等：已有正文自动跳过，加 --force 强制重译）
+> npm run db:translate-blog
+> ```
+>
 > 项目迁移历史以 `20260917000000_init` 为唯一基线迁移（包含完整 schema 建表）。全新空库直接 `db:migrate` 即可，**无需先 `db push`**。
 >
 > 历史遗留排错：若首次迁移报 `relation "categories" does not exist`，说明是旧版依赖 `db push` 的迁移残留，重置空库后重跑：

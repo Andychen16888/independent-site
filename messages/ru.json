@@ -244,6 +244,7 @@
     "savePercent": "Скидка {percent}%",
     "decreaseQuantity": "Уменьшить количество",
     "increaseQuantity": "Увеличить количество",
+    "priceOnRequest": "Цена по запросу",
     "addToCart": "В корзину",
     "freeShipping": "Бесплатная доставка от $100",
     "easyReturns": "Простой возврат в течение 30 дней",

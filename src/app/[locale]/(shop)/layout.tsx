@@ -38,7 +38,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
 
   const productsWithPrice = chatProducts.map((p) => ({
     ...p,
-    unitPrice: Number(p.unitPrice),
+    unitPrice: p.unitPrice != null ? Number(p.unitPrice) : null,
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
   const translations = await fetchProductTranslations(productsWithPrice.map((p) => p.id), locale)
@@ -76,7 +76,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
           id: p.id,
           name: p.name,
           slug: p.slug,
-          price: Number(p.unitPrice),
+          price: p.unitPrice != null ? Number(p.unitPrice) : null,
           image: p.images?.[0]?.url || null,
           tag: p.isBestSeller ? t("best") : p.isNew ? t("new") : undefined,
         }))}

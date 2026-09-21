@@ -244,6 +244,7 @@
     "savePercent": "وفر {percent}%",
     "decreaseQuantity": "إنقاص الكمية",
     "increaseQuantity": "زيادة الكمية",
+    "priceOnRequest": "السعر عند الطلب",
     "addToCart": "أضف إلى السلة",
     "freeShipping": "شحن مجاني للطلبات فوق $100",
     "easyReturns": "إرجاع سهل خلال 30 يوماً",

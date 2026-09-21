@@ -46,6 +46,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       images, categoryIds, parameters,
     } = body
 
+    const parseOptionalPrice = (value: unknown): number | null => {
+      if (value === undefined || value === null || value === "") return null
+      const parsed = parseFloat(String(value))
+      return Number.isFinite(parsed) ? parsed : null
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: {
@@ -57,9 +63,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         ...(tags !== undefined && { tags: tags || null }),
         ...(description !== undefined && { description }),
         ...(shortDescription !== undefined && { shortDescription }),
-        ...(unitPrice !== undefined && { unitPrice: parseFloat(unitPrice) }),
-        ...(originalPrice !== undefined && { originalPrice: originalPrice ? parseFloat(originalPrice) : null }),
-        ...(costPrice !== undefined && { costPrice: costPrice ? parseFloat(costPrice) : null }),
+        ...(unitPrice !== undefined && { unitPrice: parseOptionalPrice(unitPrice) }),
+        ...(originalPrice !== undefined && { originalPrice: parseOptionalPrice(originalPrice) }),
+        ...(costPrice !== undefined && { costPrice: parseOptionalPrice(costPrice) }),
         ...(stock !== undefined && { stock: parseInt(stock, 10) }),
         ...(status !== undefined && { status }),
         ...(isFeatured !== undefined && { isFeatured }),

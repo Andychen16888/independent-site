@@ -74,7 +74,7 @@ export default async function CategoryPage({ params }: Props) {
     })
   ).map((p) => ({
     ...p,
-    unitPrice: Number(p.unitPrice),
+    unitPrice: p.unitPrice != null ? Number(p.unitPrice) : null,
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 
@@ -97,7 +97,7 @@ export default async function CategoryPage({ params }: Props) {
       products: localizedProducts.map((p) => ({
         name: p.name,
         url: `${baseUrl}/products/${p.slug}`,
-        price: Number(p.unitPrice),
+        price: p.unitPrice != null ? Number(p.unitPrice) : null,
         image: p.images?.[0]?.url,
         sku: p.slug,
       })),

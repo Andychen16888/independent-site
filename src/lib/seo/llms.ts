@@ -105,7 +105,9 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
 
   lines.push("## Products")
   for (const p of products.slice(0, includeDetails ? 200 : 100)) {
-    const price = `${p.currency || "USD"} ${fmtPrice(Number(p.unitPrice))}`
+    const price = p.unitPrice != null
+      ? `${p.currency || "USD"} ${fmtPrice(Number(p.unitPrice))}`
+      : "price on request"
     const detail = includeDetails
       ? ` ${stripHtml(p.shortDescription || p.description, 300)}`
       : ` ${stripHtml(p.shortDescription || p.description, 100)}`

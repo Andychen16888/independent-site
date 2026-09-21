@@ -244,6 +244,7 @@
     "savePercent": "ประหยัด {percent}%",
     "decreaseQuantity": "ลดจำนวน",
     "increaseQuantity": "เพิ่มจำนวน",
+    "priceOnRequest": "ราคาสอบถาม",
     "addToCart": "เพิ่มลงตะกร้า",
     "freeShipping": "จัดส่งฟรีสำหรับคำสั่งซื้อมากกว่า $100",
     "easyReturns": "คืนสินค้าได้ง่ายภายใน 30 วัน",

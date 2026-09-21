@@ -57,6 +57,12 @@ export async function POST(req: Request) {
       if (db.stock < item.quantity) {
         return NextResponse.json({ error: `Insufficient stock for ${db.name}` }, { status: 400 })
       }
+      if (db.unitPrice == null) {
+        return NextResponse.json(
+          { error: `Price unavailable for ${db.name}. Please request a quote.` },
+          { status: 400 }
+        )
+      }
       const price = Number(db.unitPrice)
       subtotal += price * item.quantity
       orderItems.push({

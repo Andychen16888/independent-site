@@ -187,7 +187,7 @@ model Product {
   tags            String?
   description     String        @db.Text
   shortDescription String?
-  unitPrice       Decimal       @db.Decimal(10, 2)
+  unitPrice       Decimal?      @db.Decimal(10, 2)
   originalPrice   Decimal?      @db.Decimal(10, 2)
   costPrice       Decimal?      @db.Decimal(10, 2)
   currency        Currency      @default(USD)

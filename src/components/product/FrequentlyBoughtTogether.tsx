@@ -16,7 +16,7 @@ interface BundleItem {
 }
 
 interface FrequentlyBoughtTogetherProps {
-  mainProduct: { id: string; name: string; slug: string; unitPrice: number; currency?: string }
+  mainProduct: { id: string; name: string; slug: string; unitPrice: number | null; currency?: string }
   bundleItems: BundleItem[]
 }
 
@@ -25,6 +25,9 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleItems }: Frequentl
   const t = useTranslations("product.frequentlyBought")
   const locale = useLocale()
   const currency = mainProduct.currency || "USD"
+
+  if (bundleItems.length === 0 || mainProduct.unitPrice == null) return null
+
   const allItems = [
     { ...mainProduct, price: Number(mainProduct.unitPrice), image: "" },
     ...bundleItems,
@@ -48,8 +51,6 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleItems }: Frequentl
     })
     toast.success(t("addedAll"))
   }
-
-  if (bundleItems.length === 0) return null
 
   return (
     <div className="bg-cream p-6 md:p-8">

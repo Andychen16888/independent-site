@@ -102,8 +102,14 @@ export async function POST(req: NextRequest) {
       images, categoryIds, parameters,
     } = body
 
-    if (!name || !description || unitPrice === undefined) {
-      return NextResponse.json({ error: "Name, description, and unitPrice are required" }, { status: 400 })
+    if (!name || !description) {
+      return NextResponse.json({ error: "Name and description are required" }, { status: 400 })
+    }
+
+    const parseOptionalPrice = (value: unknown): number | null => {
+      if (value === undefined || value === null || value === "") return null
+      const parsed = parseFloat(String(value))
+      return Number.isFinite(parsed) ? parsed : null
     }
 
     let slugValue = slug
@@ -124,9 +130,9 @@ export async function POST(req: NextRequest) {
         ...(model !== undefined && model !== null ? { model } : {}),
         ...(tags !== undefined && tags !== null ? { tags } : {}),
         ...(shortDescription !== undefined ? { shortDescription } : {}),
-        unitPrice: parseFloat(unitPrice),
-        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
-        costPrice: costPrice ? parseFloat(costPrice) : null,
+        unitPrice: parseOptionalPrice(unitPrice),
+        originalPrice: parseOptionalPrice(originalPrice),
+        costPrice: parseOptionalPrice(costPrice),
         stock: stock !== undefined && stock !== "" ? parseInt(stock, 10) : 0,
         status: status || "ACTIVE",
         ...(isFeatured !== undefined ? { isFeatured } : {}),

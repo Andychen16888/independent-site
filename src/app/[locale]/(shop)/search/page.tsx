@@ -43,7 +43,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
         include: { images: { take: 1 } },
       })).map((p) => ({
         ...p,
-        unitPrice: Number(p.unitPrice),
+        unitPrice: p.unitPrice != null ? Number(p.unitPrice) : null,
         originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
       }))
     : []

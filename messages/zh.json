@@ -244,6 +244,7 @@
     "savePercent": "省 {percent}%",
     "decreaseQuantity": "减少数量",
     "increaseQuantity": "增加数量",
+    "priceOnRequest": "价格面议",
     "addToCart": "加入购物车",
     "freeShipping": "订单满 $100 免运费",
     "easyReturns": "30 天无忧退换",

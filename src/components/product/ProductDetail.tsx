@@ -21,7 +21,7 @@ interface ProductDetailProps {
     slug: string
     sku: string
     brand?: string | null
-    unitPrice: number
+    unitPrice: number | null
     originalPrice?: number | null
     currency?: string
     stock: number
@@ -42,9 +42,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const t = useTranslations("product")
   const locale = useLocale()
 
-  const discount = product.originalPrice
-    ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
-    : 0
+  const hasPrice = product.unitPrice != null
+  const discount =
+    hasPrice && product.originalPrice
+      ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
+      : 0
 
   const allMedia = [
     ...(product.images?.map((img, i) => ({ type: "image" as const, url: img.url, alt: img.alt || product.name, index: i })) || []),
@@ -56,6 +58,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const isVideoActive = currentMedia?.type === "video"
 
   const handleAddToCart = () => {
+    if (product.unitPrice == null) return
     addItem({
       id: `${product.id}-${Date.now()}`,
       productId: product.id,
@@ -137,16 +140,22 @@ export function ProductDetail({ product }: ProductDetailProps) {
           )}
 
           <div className="flex items-baseline gap-3 mb-8">
-            <span className="text-2xl font-serif">
-              {formatPrice(Number(product.unitPrice), product.currency, locale)}
-            </span>
-            {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
+            {hasPrice ? (
               <>
-                <span className="text-lg text-stone line-through">
-                  {formatPrice(Number(product.originalPrice), product.currency, locale)}
+                <span className="text-2xl font-serif">
+                  {formatPrice(Number(product.unitPrice), product.currency, locale)}
                 </span>
-                <span className="text-sm text-rosegold">{t("savePercent", { percent: discount })}</span>
+                {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
+                  <>
+                    <span className="text-lg text-stone line-through">
+                      {formatPrice(Number(product.originalPrice), product.currency, locale)}
+                    </span>
+                    <span className="text-sm text-rosegold">{t("savePercent", { percent: discount })}</span>
+                  </>
+                )}
               </>
+            ) : (
+              <span className="text-2xl font-serif text-stone">{t("priceOnRequest")}</span>
             )}
           </div>
 
@@ -174,8 +183,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            <Button onClick={handleAddToCart} disabled={product.stock <= 0} size="lg" className="flex-1">
-              {product.stock <= 0 ? t("soldOut") : t("addToCart")}
+            <Button onClick={handleAddToCart} disabled={product.stock <= 0 || !hasPrice} size="lg" className="flex-1">
+              {!hasPrice ? t("priceOnRequest") : product.stock <= 0 ? t("soldOut") : t("addToCart")}
             </Button>
             <button
               onClick={() => toggleItem(product.id)}
@@ -248,7 +257,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               id: product.id,
               name: product.name,
               slug: product.slug,
-              unitPrice: Number(product.unitPrice),
+              unitPrice: hasPrice ? Number(product.unitPrice) : null,
               currency: product.currency,
             }}
             bundleItems={bundleItems}

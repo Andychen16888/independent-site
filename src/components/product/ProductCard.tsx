@@ -14,7 +14,7 @@ interface ProductCardProps {
     id: string
     name: string
     slug: string
-    unitPrice: number
+    unitPrice: number | null
     originalPrice?: number | null
     stock: number
     currency?: string
@@ -30,9 +30,11 @@ export function ProductCard({ product, priority }: ProductCardProps) {
   const t = useTranslations("product")
   const tc = useTranslations("common")
   const locale = useLocale()
-  const discount = product.originalPrice
-    ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
-    : 0
+  const hasPrice = product.unitPrice != null
+  const discount =
+    hasPrice && product.originalPrice
+      ? getDiscountPercentage(Number(product.originalPrice), Number(product.unitPrice))
+      : 0
 
   return (
     <motion.div
@@ -95,11 +97,17 @@ export function ProductCard({ product, priority }: ProductCardProps) {
           {product.name}
         </h3>
         <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-sm">{formatPrice(product.unitPrice, product.currency || "USD", locale)}</span>
-          {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
-            <span className="text-sm text-stone line-through">
-              {formatPrice(Number(product.originalPrice), product.currency || "USD", locale)}
-            </span>
+          {hasPrice ? (
+            <>
+              <span className="text-sm">{formatPrice(Number(product.unitPrice), product.currency || "USD", locale)}</span>
+              {product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice) && (
+                <span className="text-sm text-stone line-through">
+                  {formatPrice(Number(product.originalPrice), product.currency || "USD", locale)}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-sm text-stone">{t("priceOnRequest")}</span>
           )}
         </div>
       </Link>

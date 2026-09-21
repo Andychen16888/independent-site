@@ -244,6 +244,7 @@
     "savePercent": "Save {percent}%",
     "decreaseQuantity": "Decrease quantity",
     "increaseQuantity": "Increase quantity",
+    "priceOnRequest": "Price on request",
     "addToCart": "Add to Cart",
     "freeShipping": "Free shipping on orders over $100",
     "easyReturns": "30-day easy returns",

@@ -51,12 +51,12 @@ export async function buildSystemPrompt(): Promise<string> {
 
   const productLines = products
     .map((p) => {
-      const price = p.unitPrice.toFixed(2)
+      const price = p.unitPrice != null ? `${currency} ${p.unitPrice.toFixed(2)}` : "price on request"
       const original = p.originalPrice ? ` (was ${currency} ${p.originalPrice.toFixed(2)})` : ""
       const desc = p.shortDescription ? ` — ${p.shortDescription}` : ""
       const best = p.isBestSeller ? " [Best seller]" : ""
       const link = `${siteUrl}/products/${p.slug}`
-      return `- ${p.name} — ${currency} ${price}${original}${best}${desc} (${link})`
+      return `- ${p.name} — ${price}${original}${best}${desc} (${link})`
     })
     .join("\n")
 

@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
 
   const serializedProduct = {
     ...localizedProduct,
-    unitPrice: Number(product.unitPrice),
+    unitPrice: product.unitPrice != null ? Number(product.unitPrice) : null,
     originalPrice: product.originalPrice ? Number(product.originalPrice) : null,
   }
 
@@ -76,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
     include: { images: { take: 1 } },
   })).map((p) => ({
     ...p,
-    unitPrice: Number(p.unitPrice),
+    unitPrice: p.unitPrice != null ? Number(p.unitPrice) : null,
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   }))
 

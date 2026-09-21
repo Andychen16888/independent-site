@@ -12,7 +12,7 @@ interface ProductRow {
   sku: string | null
   brand: string | null
   model: string | null
-  unitPrice: number
+  unitPrice: number | null
   originalPrice: number | null
   stock: number
   status: string
@@ -278,7 +278,9 @@ export default function ProductManager() {
                     {p.categories.map((c) => c.category.name).slice(0, 2).join(", ")}
                   </td>
                   <td className="px-4 py-3">
-                    {p.originalPrice ? (
+                    {p.unitPrice == null ? (
+                      <span className="text-stone text-xs">{bi("On request", "面议")}</span>
+                    ) : p.originalPrice ? (
                       <span>
                         <span className="text-stone line-through mr-1 text-xs">{formatPrice(Number(p.originalPrice))}</span>
                         {formatPrice(Number(p.unitPrice))}

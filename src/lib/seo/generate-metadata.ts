@@ -120,12 +120,14 @@ export function generateProductSchema(product: any) {
       name: product.brand || siteName,
     },
     image: product.images?.map((i: any) => absoluteUrl(i.url)) || [],
-    offers: {
-      "@type": "Offer",
-      price: product.unitPrice.toString(),
-      priceCurrency: product.currency || "USD",
-      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    },
+    ...(product.unitPrice != null && {
+      offers: {
+        "@type": "Offer",
+        price: product.unitPrice.toString(),
+        priceCurrency: product.currency || "USD",
+        availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      },
+    }),
     ...(product.reviews?.length > 0 && {
       aggregateRating: {
         "@type": "AggregateRating",

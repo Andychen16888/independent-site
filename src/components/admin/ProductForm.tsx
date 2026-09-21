@@ -81,7 +81,8 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         setForm({
           name: p.name, slug: p.slug, sku: p.sku, brand: p.brand || "", model: p.model || "",
           tags: p.tags || "", description: p.description, shortDescription: p.shortDescription || "",
-          unitPrice: String(p.unitPrice), originalPrice: p.originalPrice ? String(p.originalPrice) : "",
+          unitPrice: p.unitPrice != null ? String(p.unitPrice) : "",
+          originalPrice: p.originalPrice ? String(p.originalPrice) : "",
           costPrice: p.costPrice ? String(p.costPrice) : "", stock: String(p.stock),
           status: p.status, weight: p.weight ? String(p.weight) : "",
           isFeatured: p.isFeatured, isBestSeller: p.isBestSeller, isNew: p.isNew,
@@ -187,6 +188,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
     const payload = {
       ...form,
+      unitPrice: form.unitPrice !== "" ? form.unitPrice : null,
       originalPrice: form.originalPrice || null,
       costPrice: form.costPrice || null,
       weight: form.weight || null,
@@ -279,16 +281,16 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
 
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className={label}>Price *</label>
-          <input name="unitPrice" type="number" step="0.01" min="0" value={form.unitPrice} onChange={handleChange} required className={input} />
+          <label className={label}>{bi("Price", "价格")}</label>
+          <input name="unitPrice" type="number" step="0.01" min="0" value={form.unitPrice} onChange={handleChange} placeholder={bi("Optional", "选填")} className={input} />
         </div>
         <div>
-          <label className={label}>Original Price</label>
-          <input name="originalPrice" type="number" step="0.01" min="0" value={form.originalPrice} onChange={handleChange} className={input} />
+          <label className={label}>{bi("Original Price", "原价")}</label>
+          <input name="originalPrice" type="number" step="0.01" min="0" value={form.originalPrice} onChange={handleChange} placeholder={bi("Optional", "选填")} className={input} />
         </div>
         <div>
-          <label className={label}>Cost Price</label>
-          <input name="costPrice" type="number" step="0.01" min="0" value={form.costPrice} onChange={handleChange} className={input} />
+          <label className={label}>{bi("Cost Price", "成本价")}</label>
+          <input name="costPrice" type="number" step="0.01" min="0" value={form.costPrice} onChange={handleChange} placeholder={bi("Optional", "选填")} className={input} />
         </div>
         <div>
           <label className={label}>Weight (kg)</label>

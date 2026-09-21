@@ -78,7 +78,7 @@ export function productSchema(product: {
   description: string
   sku: string
   brand?: string | null
-  unitPrice: number
+  unitPrice: number | null
   originalPrice?: number | null
   currency?: string
   stock: number
@@ -86,6 +86,7 @@ export function productSchema(product: {
   reviews?: { rating: number }[]
   url?: string
 }) {
+  const hasPrice = product.unitPrice != null
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -98,31 +99,33 @@ export function productSchema(product: {
       name: product.brand || siteName,
     },
     image: product.images?.map((i) => i.url.startsWith("http") ? i.url : `${siteUrl}${i.url}`) || [],
-    offers: {
-      "@type": "Offer",
-      url: product.url || siteUrl,
-      priceCurrency: product.currency || "USD",
-      price: product.unitPrice.toString(),
-      ...(product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice)
-        ? { highPrice: product.originalPrice.toString(), offerCount: "1" }
-        : {}),
-      availability: product.stock > 0
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      itemCondition: "https://schema.org/NewCondition",
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: "0",
-          currency: product.currency || "USD",
-        },
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "US",
+    ...(hasPrice && {
+      offers: {
+        "@type": "Offer",
+        url: product.url || siteUrl,
+        priceCurrency: product.currency || "USD",
+        price: product.unitPrice!.toString(),
+        ...(product.originalPrice && Number(product.originalPrice) > Number(product.unitPrice)
+          ? { highPrice: product.originalPrice.toString(), offerCount: "1" }
+          : {}),
+        availability: product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingRate: {
+            "@type": "MonetaryAmount",
+            value: "0",
+            currency: product.currency || "USD",
+          },
+          shippingDestination: {
+            "@type": "DefinedRegion",
+            addressCountry: "US",
+          },
         },
       },
-    },
+    }),
     ...(product.reviews && product.reviews.length > 0 && {
       aggregateRating: {
         "@type": "AggregateRating",
@@ -429,7 +432,7 @@ export function productGroupSchema(category: {
   products: {
     name: string
     url: string
-    price: number
+    price: number | null
     image?: string
     sku?: string
     rating?: number
@@ -450,12 +453,14 @@ export function productGroupSchema(category: {
       name: p.name,
       url: p.url,
       sku: p.sku || p.name.toLowerCase().replace(/\s+/g, "-"),
-      offers: {
-        "@type": "Offer",
-        price: p.price,
-        priceCurrency: "USD",
-        url: p.url,
-      },
+      ...(p.price != null && {
+        offers: {
+          "@type": "Offer",
+          price: p.price,
+          priceCurrency: "USD",
+          url: p.url,
+        },
+      }),
       ...(p.image && { image: p.image }),
       ...(p.rating && {
         aggregateRating: {

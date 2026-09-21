@@ -85,7 +85,7 @@ export default async function HomePage({
 
   const mapProduct = (p: any) => ({
     ...p,
-    unitPrice: Number(p.unitPrice),
+    unitPrice: p.unitPrice != null ? Number(p.unitPrice) : null,
     originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
   })
 

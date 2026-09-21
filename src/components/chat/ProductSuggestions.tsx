@@ -10,11 +10,13 @@ import type { ChatProduct } from "./types"
 export function ProductSuggestions({ products = [] }: { products?: ChatProduct[] }) {
   const addItem = useCartStore((s) => s.addItem)
   const t = useTranslations("chat")
+  const tp = useTranslations("product")
   const locale = useLocale()
 
   if (products.length === 0) return null
 
   const handleQuickAdd = (product: ChatProduct) => {
+    if (product.price == null) return
     addItem({
       id: product.id,
       productId: product.id,
@@ -44,18 +46,22 @@ export function ProductSuggestions({ products = [] }: { products?: ChatProduct[]
                 {product.name}
               </Link>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-stone">{formatPrice(product.price, undefined, locale)}</span>
+                <span className="text-xs text-stone">
+                  {product.price == null ? tp("priceOnRequest") : formatPrice(product.price, undefined, locale)}
+                </span>
                 {product.tag && (
                   <span className="text-[10px] text-sage tracking-wider uppercase">{product.tag}</span>
                 )}
               </div>
             </div>
-            <button
-              onClick={() => handleQuickAdd(product)}
-              className="text-[10px] tracking-wider uppercase px-2.5 py-1.5 bg-charcoal text-ivory hover:bg-charcoal/90 transition-colors whitespace-nowrap opacity-0 group-hover:opacity-100"
-            >
-              {t("add")}
-            </button>
+            {product.price != null && (
+              <button
+                onClick={() => handleQuickAdd(product)}
+                className="text-[10px] tracking-wider uppercase px-2.5 py-1.5 bg-charcoal text-ivory hover:bg-charcoal/90 transition-colors whitespace-nowrap opacity-0 group-hover:opacity-100"
+              >
+                {t("add")}
+              </button>
+            )}
           </div>
         ))}
       </div>

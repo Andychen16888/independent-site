@@ -14,7 +14,7 @@ interface ProductCarouselProps {
     id: string
     name: string
     slug: string
-    unitPrice: number
+    unitPrice: number | null
     originalPrice?: number | null
     stock: number
     isNew?: boolean

@@ -244,6 +244,7 @@
     "savePercent": "Ahorra {percent}%",
     "decreaseQuantity": "Reducir cantidad",
     "increaseQuantity": "Aumentar cantidad",
+    "priceOnRequest": "Precio a consultar",
     "addToCart": "Añadir al carrito",
     "freeShipping": "Envío gratis en pedidos superiores a $100",
     "easyReturns": "Devoluciones fáciles en 30 días",

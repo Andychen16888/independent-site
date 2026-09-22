@@ -260,7 +260,7 @@ test -f .next/standalone/server.js && echo "build ok, ready to start"
 # 启动（ecosystem.config.js 已配置 HOST=127.0.0.1，仅本地监听）
 pm2 start ecosystem.config.js
 
-# 保存进程列表 + 开机自启
+# 保存进程列表 + 设置开机自启（防止云服务器重启后网站打不开）
 pm2 save
 pm2 startup
 
@@ -268,6 +268,20 @@ pm2 startup
 pm2 status
 # 应显示 b2b-independent-site 为 online
 ```
+
+> **开机自启（启动 PM2 时反复执行过一次即可，建议每次部署后 `pm2 save`）**
+> - `pm2 startup` 会输出一行 systemd 命令（形如 `sudo env PATH=... pm2 startup systemd -u root --hp /root`），**把它复制执行一次**，才真正注册开机自启。已注册的话再次执行会提示 “already exist”。
+> - `pm2 save` 把**当前**进程列表固化；以后每次 `pm2 restart` / `pm2 start` / `pm2 stop` 后都要重新 `pm2 save`，否则重启机器后恢复的是旧列表。
+> - 用哪个用户启动 pm2，就用哪个用户执行 `pm2 startup`（本教程全程 root）。
+> - 验证是否已注册开机自启：
+>   ```bash
+>   systemctl is-enabled postgresql          # enabled
+>   systemctl is-enabled nginx               # enabled
+>   systemctl is-enabled redis-server        # enabled
+>   pm2 startup | grep -o "already exist" || pm2 startup
+>   systemctl list-unit-files | grep pm2     # pm2-root.service enabled
+>   ```
+> - 完成后可整机重启验证一次：`reboot`，重启完 `curl http://localhost:3000/api/health` 应直接返回 `{"status":"ok",...}`。
 
 > `ecosystem.config.js` 已指定 `script: ".next/standalone/server.js"`，无需手动传参。若直接启动：
 > ```bash
@@ -297,7 +311,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 > 若 `nginx -t` 报 `cannot load certificate ... fullchain.pem`，说明 SSL 证书还没申请——去第 9 节先申请证书再回来测试。模板中的 80 端口 server 块保留。
 >
-> 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理 60s 超时。
+> 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理超时 360s（AI 多语言翻译等长任务不报 504）。
 
 ---
 
@@ -360,7 +374,45 @@ npm run db:migrate
 npm run db:seed
 npm run build:server
 pm2 restart b2b-independent-site
+pm2 save
 ```
+
+> **⚠️ 若本次更新修改了 nginx 模板（如 `b2b-independent-site.nginx.conf`，本次即增加了代理超时与开机自启相关调整），需要重新部署模板并重载**（每次都执行一次也没成本）：
+>
+> ```bash
+> # 从仓库重新复制模板，并把域名替换成你的（示例：commoditychina.com）
+> sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
+> sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+> sudo nginx -t && sudo systemctl reload nginx
+> ```
+>
+> 不要直接在服务器上改动模板里的域名占位为新域名后保存——复制过来的文件会被下次 `git pull` 覆盖。
+
+### 11.1 开机自启（服务器重启后自动恢复网站，必须配置一次）
+
+Nginx、PostgreSQL 已在第 2 节用 `systemctl enable` 设成开机自启。还要把 **Node 应用（PM2）** 也注册成开机自启，否则云服务器一旦重启，Node 不会跟着起来，这时候 nginx 反代不到后端就会返回 **502 / 504**：
+
+```bash
+# 1. 确认三个系统服务开机自启（应输出 enabled）
+systemctl is-enabled postgresql nginx redis-server
+
+# 2. 注册 PM2 开机自启（把 pm2 startup 输出的那一行 systemd 命令复制执行一次）
+pm2 startup
+
+# 3. 固化当前 PM2 进程列表（每次 restart 后都要重新保存）
+pm2 save
+
+# 4. 确认已注册
+systemctl list-unit-files | grep pm2    # 应看到 pm2-root.service enabled
+
+# 5.（可选）整机重启验证一次
+reboot
+# 重启后：
+curl http://localhost:3000/api/health   # 应直接返回 {"status":"ok"...}
+curl -I https://commoditychina.com      # 应直接返回 HTTP/2 200
+```
+
+> 已能正常打开网页 ≠ 已配好开机自启。请务必执行上面步骤，否则下次服务器重启后又会出现 504/502。
 
 可打包成一键脚本：
 
@@ -376,6 +428,7 @@ npm run db:migrate
 npm run db:seed
 npm run build:server
 pm2 restart b2b-independent-site
+pm2 save
 echo "Deployment complete!"
 EOF
 chmod +x /usr/local/bin/deploy.sh
@@ -414,6 +467,8 @@ pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m
 | 迁移报 `table does not exist` | 迁移/种子顺序反了，或旧迁移残留，按第 6 节重置空库 |
 | `npm install` 报 ERESOLVE | 必须 `npm ci --legacy-peer-deps` |
 | 502 Bad Gateway | `curl http://localhost:3000/api/health`；`sudo nginx -t` |
+| 504 Gateway Time-out | nginx 代理超时：确认服务器已按**第 8 节/11 节**重新部署 nginx 模板（/api 已放宽到 360s）；若刚重启过机器，多因 Node 没起来，见第 11.1 节开机自启 |
+| 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
 

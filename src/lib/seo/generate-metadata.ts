@@ -97,7 +97,7 @@ export function generateMetadata(
       title,
       description,
       images: [absoluteUrl(data.ogImage || "/og-default.jpg")],
-      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@commoditychina",
+      site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "",
     },
     robots: {
       index: data.noindex !== true,

@@ -15,7 +15,7 @@ const DEFAULT_PAGES: Record<string, { title: string; excerpt: string; content: s
   contact: {
     title: "Contact Us",
     excerpt: "Get in touch — we respond within 24 hours.",
-    content: `<h1>Contact Us</h1><p>We'd love to hear from you — whether you're shopping retail or need a wholesale quote. Send us a message and we'll respond within 24 hours.</p><p>Email: info@commoditychina.com</p>`,
+    content: `<h1>Contact Us</h1><p>We'd love to hear from you — whether you're shopping retail or need a wholesale quote. Send us a message and we'll respond within 24 hours.</p>`,
     seoTitle: "Contact Us",
     seoDescription: "Contact our support team for orders, products, and general inquiries.",
     seoKeywords: "contact, support",

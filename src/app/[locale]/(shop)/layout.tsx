@@ -72,10 +72,14 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         siteSlogan={siteSlogan}
         logo={settings["site.logo"]}
         about={settings["footer.about"]}
+        companyName={settings["company.name"]}
+        companyBrief={settings["company.brief"]}
         contactEmail={settings["contact.email"]}
         contactPhone={settings["contact.phone"]}
+        whatsapp={settings["contact.whatsapp"]}
         address={settings["company.address"]}
         hours={settings["contact.hours"]}
+        copyrightText={settings["footer.copyright"]}
         copyrightSuffix={siteName}
         facebook={settings["social.facebook"]}
         instagram={settings["social.instagram"]}

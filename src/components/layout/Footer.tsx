@@ -44,10 +44,14 @@ export async function Footer({
   siteSlogan = "Sourced from China",
   logo = "",
   about = "Direct from China to the world. We supply quality electronics, LED lighting, kitchenware, and everyday household commodities for retail and wholesale B2B buyers.",
+  companyName = "",
+  companyBrief = "",
   contactEmail = "",
   contactPhone = "",
+  whatsapp = "",
   address = "",
   hours = "",
+  copyrightText = "",
   copyrightSuffix = "Commodities From China",
   facebook = "",
   instagram = "",
@@ -59,10 +63,14 @@ export async function Footer({
   siteSlogan?: string
   logo?: string
   about?: string
+  companyName?: string
+  companyBrief?: string
   contactEmail?: string
   contactPhone?: string
+  whatsapp?: string
   address?: string
   hours?: string
+  copyrightText?: string
   copyrightSuffix?: string
   facebook?: string
   instagram?: string
@@ -162,7 +170,9 @@ export async function Footer({
                 </>
               )}
             </Link>
-            {safeAbout && <p className="text-sm text-ivory/65 leading-relaxed mb-6 max-w-xs">{safeAbout}</p>}
+            {companyName && <p className="text-sm text-ivory/80 font-medium mb-1">{companyName}</p>}
+            {safeAbout && <p className="text-sm text-ivory/65 leading-relaxed mb-1 max-w-xs">{safeAbout}</p>}
+            {companyBrief && <p className="text-sm text-ivory/65 leading-relaxed mb-6 max-w-xs">{companyBrief}</p>}
             <div className="space-y-3 text-sm text-ivory/65">
               {contactEmail && (
                 <div className="flex items-center gap-3">
@@ -183,6 +193,7 @@ export async function Footer({
                 </div>
               )}
               {contactPhone && <span className="pt-1 inline-block">{contactPhone}</span>}
+              {whatsapp && <span className="pt-1 inline-block">{whatsapp}</span>}
             </div>
           </div>
 
@@ -235,7 +246,9 @@ export async function Footer({
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-ivory/65">
-            {t("rightsReserved", { year: new Date().getFullYear(), name: copyrightSuffix })}
+            {copyrightText
+              ? `© ${new Date().getFullYear()} ${copyrightSuffix}. ${copyrightText}`
+              : t("rightsReserved", { year: new Date().getFullYear(), name: copyrightSuffix })}
           </p>
           <div className="flex items-center gap-6 text-xs text-ivory/65">
             {pages.some((p) => p.slug === "privacy") && <Link href="/pages/privacy" className="hover:text-ivory transition-colors">{t("privacy")}</Link>}

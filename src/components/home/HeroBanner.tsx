@@ -40,6 +40,14 @@ export function HeroBanner({
   const slide = safeSlides[current]
   const assets = images && images.length > 0 ? images : heroImages
   const asset = assets[current % assets.length]
+  const defaultAsset = heroImages[current % heroImages.length]
+
+  // Fallback chain: banner image -> admin-override hero slot -> committed
+  // default hero photo in public/images/hero. A broken or expired override
+  // must still resolve to the default file instead of an empty gradient.
+  const srcList = [...new Set([slide.image, asset.src, defaultAsset.src].filter((s): s is string => Boolean(s)))]
+  const src = srcList[0]
+  const fallbackSrcs = srcList.slice(1)
 
   return (
     <section className="relative h-[560px] sm:h-[600px] lg:h-[680px] max-h-[760px] min-h-[520px] overflow-hidden bg-navy">
@@ -53,14 +61,13 @@ export function HeroBanner({
           className="absolute inset-0"
         >
           <SmartImage
-            src={slide.image || asset.src}
+            src={src}
             alt={asset.alt}
             tone={asset.tone}
             sizes="100vw"
             priority={current === 0}
             overlay
-            // Broken/expired slide image falls back to the hero slot image.
-            fallbackSrcs={slide.image ? [asset.src] : undefined}
+            fallbackSrcs={fallbackSrcs}
           />
 
           <Container className="relative h-full">

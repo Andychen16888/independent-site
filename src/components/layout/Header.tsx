@@ -20,7 +20,7 @@ const DEFAULT_NAV = [
   { name: "Home & Kitchen", href: "/categories/home-kitchen" },
   { name: "Journal", href: "/blog" },
   { name: "FAQ", href: "/faq" },
-  { name: "About", href: "/pages/about" },
+  { name: "About Us", href: "/pages/about" },
 ]
 
 function getNavKey(href: string): string | null {

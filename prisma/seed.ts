@@ -47,8 +47,8 @@ async function main() {
     { label: "Products", url: "/products", sortOrder: 2 },
     { label: "Journal", url: "/blog", sortOrder: 3 },
     { label: "FAQ", url: "/faq", sortOrder: 4 },
-    { label: "About", url: "/pages/about", sortOrder: 5 },
-    { label: "Contact", url: "/pages/contact", sortOrder: 6 },
+    { label: "About Us", url: "/pages/about", sortOrder: 5 },
+    { label: "Contact Us", url: "/pages/contact", sortOrder: 6 },
   ]
 
   for (const menu of defaultMenus) {

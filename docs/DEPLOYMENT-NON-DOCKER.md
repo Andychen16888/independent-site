@@ -225,7 +225,8 @@ cd /var/www/b2b-independent-site
 # 应用迁移（prisma migrate deploy，幂等，自动跳过已应用的部分）
 npm run db:migrate
 
-# 填充种子数据（管理员账号、分类、商品、页面、博客、站点设置）
+# 填充种子数据（管理员账号、页面、博客、站点设置、FAQ、导航菜单）
+# 注意：种子数据不含演示商品/分类，不会再向已上线的数据库重复写入商品和分类
 npm run db:seed
 ```
 

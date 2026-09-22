@@ -36,8 +36,14 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
   const siteDescription = useDbContent ? settings["site.description"] || th("description") : th("description")
   const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
 
-  const navItems = menus.map((m) => ({ name: m.label, href: m.url }))
-  if (!navItems.some((item) => item.href === "/faq")) {
+  const seenHrefs = new Set<string>()
+  const navItems: { name: string; href: string }[] = []
+  for (const m of menus) {
+    if (seenHrefs.has(m.url)) continue
+    seenHrefs.add(m.url)
+    navItems.push({ name: m.label, href: m.url })
+  }
+  if (!seenHrefs.has("/faq")) {
     navItems.push({ name: tnav("faq"), href: "/faq" })
   }
 

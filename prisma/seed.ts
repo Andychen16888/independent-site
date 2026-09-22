@@ -52,10 +52,18 @@ async function main() {
   ]
 
   for (const menu of defaultMenus) {
-    const existingMenu = await prisma.menu.findFirst({ where: { label: menu.label } })
-    if (existingMenu) continue
-    await prisma.menu.create({ data: menu })
-    console.log(`Menu created: ${menu.label}`)
+    const rows = await prisma.menu.findMany({
+      where: { url: menu.url },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    })
+    if (rows.length === 0) {
+      await prisma.menu.create({ data: menu })
+      console.log(`Menu created: ${menu.label}`)
+    } else if (rows.length > 1) {
+      const extraIds = rows.slice(1).map((r) => r.id)
+      await prisma.menu.deleteMany({ where: { id: { in: extraIds } } })
+      console.log(`Menu cleaned: removed ${extraIds.length} duplicate(s) for ${menu.url}`)
+    }
   }
 
   await seedDefaultPages()

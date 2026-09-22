@@ -9,7 +9,17 @@ import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import TranslationsEditor, { type TranslationFields } from "@/components/admin/TranslationsEditor"
 
-export default function PageForm({ mode, pageId }: { mode: "new" | "edit"; pageId?: string }) {
+export default function PageForm({
+  mode,
+  pageId,
+  redirectTo = "/admin/pages",
+  cancelTo = "/admin/pages",
+}: {
+  mode: "new" | "edit"
+  pageId?: string
+  redirectTo?: string
+  cancelTo?: string
+}) {
   const router = useRouter()
   const [loading, setLoading] = useState(mode === "edit")
   const [saving, setSaving] = useState(false)
@@ -71,7 +81,7 @@ export default function PageForm({ mode, pageId }: { mode: "new" | "edit"; pageI
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || bi("Failed to save page", "保存页面失败"))
       toast.success(mode === "edit" ? bi("Page updated", "页面已更新") : bi("Page created", "页面已创建"))
-      router.push("/admin/pages")
+      router.push(redirectTo)
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -146,7 +156,7 @@ export default function PageForm({ mode, pageId }: { mode: "new" | "edit"; pageI
         <button type="submit" disabled={saving} className="btn-primary text-xs">
           {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Page", "保存页面") : bi("Create Page", "创建页面")}
         </button>
-        <button type="button" onClick={() => router.push("/admin/pages")} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
+        <button type="button" onClick={() => router.push(cancelTo)} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
       </div>
     </form>
   )

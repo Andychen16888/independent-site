@@ -11,10 +11,12 @@ import {
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
   HiOutlineDocument, HiOutlineBars3,
   HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt, HiOutlineLanguage,
+  HiOutlineBuildingOffice2, HiOutlineChatBubbleOvalLeftEllipsis, HiOutlineHome,
 } from "react-icons/hi2"
 
 const navItems = [
   { name: "Dashboard", nameZh: "仪表盘", href: "/admin", icon: HiOutlineSquares2X2 },
+  { name: "Home", nameZh: "首页管理", href: "/admin/home", icon: HiOutlineHome },
   { name: "Products", nameZh: "产品", href: "/admin/products", icon: HiOutlineCube },
   { name: "Translation Guide", nameZh: "产品翻译说明", href: "/admin/help/translations", icon: HiOutlineLanguage },
   { name: "Categories", nameZh: "分类", href: "/admin/categories", icon: HiOutlineFolder },
@@ -25,6 +27,8 @@ const navItems = [
   { name: "Blog", nameZh: "博客", href: "/admin/blog", icon: HiOutlineDocumentText },
   { name: "FAQ", nameZh: "常见问题", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },
   { name: "Pages", nameZh: "页面", href: "/admin/pages", icon: HiOutlineDocument },
+  { name: "About Us", nameZh: "关于我们", href: "/admin/about", icon: HiOutlineBuildingOffice2 },
+  { name: "Contact Us", nameZh: "联系我们", href: "/admin/contact", icon: HiOutlineChatBubbleOvalLeftEllipsis },
   { name: "Menus", nameZh: "菜单", href: "/admin/menus", icon: HiOutlineBars3 },
   { name: "Banners", nameZh: "横幅广告", href: "/admin/banners", icon: HiOutlinePhoto },
   { name: "Site Images", nameZh: "站点图片", href: "/admin/images", icon: HiOutlineGlobeAlt },

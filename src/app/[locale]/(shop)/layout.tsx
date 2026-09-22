@@ -33,6 +33,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
 
   const siteName = settings["site.name"] || "Commodities From China"
   const siteSlogan = useDbContent ? settings["site.slogan"] || th("slogan") : th("slogan")
+  const siteDescription = useDbContent ? settings["site.description"] || th("description") : th("description")
   const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
 
   const navItems = menus.map((m) => ({ name: m.label, href: m.url }))
@@ -54,6 +55,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         navItems={navItems}
         siteName={siteName}
         siteSlogan={siteSlogan}
+        siteDescription={siteDescription}
         logo={settings["site.logo"]}
         promoBar={promoBar}
       />

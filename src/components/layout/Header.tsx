@@ -109,12 +109,14 @@ export function Header({
   navItems = DEFAULT_NAV,
   siteName = "Commodities From China",
   siteSlogan = "Sourced from China",
+  siteDescription = "",
   logo = "",
   promoBar = "Wholesale & retail pricing available worldwide",
 }: {
   navItems?: { name: string; href: string }[]
   siteName?: string
   siteSlogan?: string
+  siteDescription?: string
   logo?: string
   promoBar?: string
 }) {
@@ -122,6 +124,7 @@ export function Header({
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [logoFailed, setLogoFailed] = useState(false)
   const pathname = usePathname()
   const { data: session } = useSession()
   const cartCount = useCartStore((s) => s.getItemCount())
@@ -151,6 +154,12 @@ export function Header({
     setIsMobileOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [logo])
+
+  const showLogo = Boolean(logo) && !logoFailed
+
   return (
     <header
       className={cn(
@@ -160,7 +169,7 @@ export function Header({
     >
       <PromoBar text={promoBar} />
       <Container>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center h-14 md:h-16">
+        <div className="flex items-center justify-between gap-4 h-14 md:h-16">
           <div className="flex items-center min-w-0">
             <button
               className="md:hidden p-2 -ml-2 shrink-0"
@@ -169,25 +178,32 @@ export function Header({
             >
               {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
             </button>
-          </div>
 
-          <Link href="/" className="justify-self-center px-2 min-w-0 text-center">
-            {logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logo} alt={siteName} className="max-h-10 md:max-h-12 w-auto" />
-            ) : (
-              <>
-                <span className="block font-sans font-semibold text-lg md:text-xl tracking-[0.02em] text-navy text-center whitespace-nowrap">
-                  {siteName}
+            <Link href="/" className="flex items-center gap-2.5 md:gap-3 min-w-0 text-left">
+              {showLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={logo}
+                  alt={siteName}
+                  onError={() => setLogoFailed(true)}
+                  className="h-8 md:h-10 w-auto object-contain shrink-0"
+                />
+              ) : null}
+              <span className="font-sans font-semibold text-base md:text-xl tracking-[0.02em] text-navy whitespace-nowrap truncate max-w-[46vw] md:max-w-[280px] text-left">
+                {siteName}
+              </span>
+              {siteSlogan && (
+                <span className="hidden lg:inline text-[10px] md:text-xs tracking-[0.08em] text-stone truncate max-w-[280px]">
+                  {siteSlogan}
                 </span>
-                {siteSlogan && (
-                  <span className="hidden md:block text-[9px] md:text-[10px] tracking-[0.25em] text-stone text-center truncate max-w-[420px]">
-                    {siteSlogan}
-                  </span>
-                )}
-              </>
-            )}
-          </Link>
+              )}
+              {siteDescription && (
+                <span className="hidden 2xl:inline text-[11px] md:text-xs text-stone/90 truncate max-w-[440px]">
+                  {siteDescription}
+                </span>
+              )}
+            </Link>
+          </div>
 
           <div className="flex items-center justify-end space-x-4 md:space-x-6 shrink-0">
             <Link

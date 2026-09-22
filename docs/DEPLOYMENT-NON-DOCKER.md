@@ -469,6 +469,7 @@ pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m
 | `npm install` 报 ERESOLVE | 必须 `npm ci --legacy-peer-deps` |
 | 502 Bad Gateway | `curl http://localhost:3000/api/health`；`sudo nginx -t` |
 | 504 Gateway Time-out | nginx 代理超时：确认服务器已按**第 8 节/11 节**重新部署 nginx 模板（/api 已放宽到 360s）；若刚重启过机器，多因 Node 没起来，见第 11.1 节开机自启 |
+| `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
 | OOM 构建失败 | 加 swap（第 1.1 节） |

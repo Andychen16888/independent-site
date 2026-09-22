@@ -9,30 +9,78 @@ import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import TranslationsEditor, { type TranslationFields } from "@/components/admin/TranslationsEditor"
 
+export interface PageFormInitialData {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  coverImage: string | null
+  isPublished: boolean
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
+  translations: {
+    locale: string
+    title: string | null
+    excerpt: string | null
+    content: string | null
+    seoTitle: string | null
+    seoDescription: string | null
+    seoKeywords: string | null
+  }[]
+}
+
 export default function PageForm({
   mode,
   pageId,
+  initialData,
   redirectTo = "/admin/pages",
   cancelTo = "/admin/pages",
 }: {
   mode: "new" | "edit"
   pageId?: string
+  initialData?: PageFormInitialData
   redirectTo?: string
   cancelTo?: string
 }) {
   const router = useRouter()
-  const [loading, setLoading] = useState(mode === "edit")
+  const [loading, setLoading] = useState(mode === "edit" && !initialData)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
   const [notFound, setNotFound] = useState(false)
-  const [form, setForm] = useState({
-    title: "", slug: "", excerpt: "", content: "", coverImage: "",
-    isPublished: false, seoTitle: "", seoDescription: "", seoKeywords: "",
-  })
-  const [translations, setTranslations] = useState<TranslationFields[]>([])
+  const [form, setForm] = useState(() =>
+    initialData
+      ? {
+          title: initialData.title,
+          slug: initialData.slug,
+          excerpt: initialData.excerpt || "",
+          content: initialData.content || "",
+          coverImage: initialData.coverImage || "",
+          isPublished: initialData.isPublished === true,
+          seoTitle: initialData.seoTitle || "",
+          seoDescription: initialData.seoDescription || "",
+          seoKeywords: initialData.seoKeywords || "",
+        }
+      : {
+          title: "", slug: "", excerpt: "", content: "", coverImage: "",
+          isPublished: false, seoTitle: "", seoDescription: "", seoKeywords: "",
+        }
+  )
+  const [translations, setTranslations] = useState<TranslationFields[]>(() =>
+    (initialData?.translations || []).map((t) => ({
+      locale: t.locale,
+      title: t.title || "",
+      excerpt: t.excerpt || "",
+      content: t.content || "",
+      seoTitle: t.seoTitle || "",
+      seoDescription: t.seoDescription || "",
+      seoKeywords: t.seoKeywords || "",
+    }))
+  )
 
   useEffect(() => {
-    if (mode !== "edit" || !pageId) return
+    if (mode !== "edit" || !pageId || initialData) return
     fetch(`/api/admin/pages/${pageId}`, { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
@@ -58,7 +106,7 @@ export default function PageForm({
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
-  }, [mode, pageId])
+  }, [mode, pageId, initialData])
 
   const update = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }))
 

@@ -23,7 +23,10 @@ const DEFAULT_PAGES: Record<string, { title: string; excerpt: string; content: s
 }
 
 export default async function SlugPageEditor({ slug }: { slug: string }) {
-  let page = await prisma.page.findUnique({ where: { slug } })
+  let page = await prisma.page.findUnique({
+    where: { slug },
+    include: { translations: true },
+  })
 
   if (!page) {
     const defaults = DEFAULT_PAGES[slug]
@@ -55,6 +58,7 @@ export default async function SlugPageEditor({ slug }: { slug: string }) {
           seoDescription: defaults.seoDescription,
           seoKeywords: defaults.seoKeywords,
         },
+        include: { translations: true },
       })
     } catch (error) {
       console.error(`Failed to auto-create "/${slug}" page:`, error)
@@ -74,5 +78,35 @@ export default async function SlugPageEditor({ slug }: { slug: string }) {
     }
   }
 
-  return <PageForm mode="edit" pageId={page.id} redirectTo={`/admin/${slug}`} cancelTo="/admin/pages" />
+  const initialData = {
+    id: page.id,
+    title: page.title,
+    slug: page.slug,
+    excerpt: page.excerpt,
+    content: page.content,
+    coverImage: page.coverImage,
+    isPublished: page.isPublished,
+    seoTitle: page.seoTitle,
+    seoDescription: page.seoDescription,
+    seoKeywords: page.seoKeywords,
+    translations: page.translations.map((t) => ({
+      locale: t.locale,
+      title: t.title,
+      excerpt: t.excerpt,
+      content: t.content,
+      seoTitle: t.seoTitle,
+      seoDescription: t.seoDescription,
+      seoKeywords: t.seoKeywords,
+    })),
+  }
+
+  return (
+    <PageForm
+      mode="edit"
+      pageId={page.id}
+      initialData={initialData}
+      redirectTo={`/admin/${slug}`}
+      cancelTo="/admin/pages"
+    />
+  )
 }

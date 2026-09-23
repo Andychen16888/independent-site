@@ -60,9 +60,9 @@
     "language": "Sprache wählen",
     "currency": "Währung",
     "openChat": "Chat öffnen",
-    "promoBar": "Neue Kunden sparen 10 %",
-    "slogan": "Direkt aus China, weltweit geliefert",
-    "description": "Direkte Beschaffung von vertrauenswürdigen chinesischen Fabriken. Qualitätselektronik, Küchenwaren und Alltagsprodukte für Einzel- und Großhandels-B2B-Käufer weltweit."
+    "promoBar": "20 Jahre China-Exporterfahrung — fordern Sie jetzt ein Angebot an",
+    "slogan": "Chinesische Beschaffung, verbunden mit Ihrem Markt",
+    "description": "Ein chinesisches Handelshaus, das Staatsunternehmen, börsennotierte Unternehmen und große Konzerne mit Käufern im Ausland verbindet — seit 20 Jahren exportieren wir Massengüter, Metalle und Baumaterialien nach Südostasien, Afrika und in die Märkte der Neuen Seidenstraße."
   },
   "footer": {
     "shop": "Shop",
@@ -75,137 +75,147 @@
     "newArrivals": "Neuheiten",
     "bestSellers": "Bestseller",
     "shippingReturns": "Versand & Rückgabe",
-    "about": "Direktbezug aus China. Qualitätselektronik, Küchenutensilien und Alltagsartikel für Einzel- und Großhandels-B2B-Käufer weltweit.",
+    "about": "Ein chinesisches Handelshaus, das Staatsunternehmen, börsennotierte Unternehmen und große Konzerne seit 20 Jahren mit Käufern in Südostasien, Afrika und den Märkten der Neuen Seidenstraße verbindet.",
     "hours": "Mo–Fr, 9–18 Uhr (CST)"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "B2B-Beschaffung direkt ab Werk",
-          "subtitle": "Sourcing in China, Lieferung weltweit",
-          "description": "Elektronik, LED-Beleuchtung und Qualitätsprodukte für den Alltag zu Großhandelspreisen",
+          "title": "Massengüter aus China, geliefert in Ihren Markt",
+          "subtitle": "Spezialisten für den Handel auf der Neuen Seidenstraße",
+          "description": "Ruß, PVC, Metalle, Mineralien und Baumaterialien zu wettbewerbsfähigen Preisen an Käufer in Südostasien und Afrika versendet",
           "cta": "Produkte ansehen"
         },
         {
-          "title": "Großhandelspreise",
-          "subtitle": "Für Händler und Distributoren gemacht",
-          "description": "Gestaffelte Staffelpreise, Private-Label-Optionen und zuverlässige Beschaffung",
-          "cta": "Kategorien entdecken"
+          "title": "Ein Handelspartner, 20 Jahre Export",
+          "subtitle": "AAA-bewerteter Handelsservice",
+          "description": "Gestützt auf langjährige Zusammenarbeit mit chinesischen Staatsunternehmen, börsennotierten Unternehmen und großen Konzernen",
+          "cta": "Warum wir"
         },
         {
-          "title": "Qualität, der Sie vertrauen können",
-          "subtitle": "Zertifizierte Produkte, chargenweise geprüft",
-          "description": "CE-, FCC- und RoHS-zertifizierte Produkte mit Inspektion vor dem Versand",
-          "cta": "Unsere Geschichte"
+          "title": "Sie suchen eine Ware, die nicht gelistet ist?",
+          "subtitle": "Teilen Sie uns Ihre Anforderung mit",
+          "description": "Senden Sie uns Ihre Spezifikationen und Ihr Zielland — unser Team antwortet schnell mit qualitativ hochwertigem, kostengünstigem Angebot",
+          "cta": "Kontaktieren Sie uns"
         }
       ],
       "slideLabel": "Folie {index}"
     },
     "featuredCategories": {
-      "eyebrow": "Entdecken",
-      "heading": "Unsere Kollektionen",
+      "eyebrow": "Waren, die wir exportieren",
+      "heading": "Massengüter für wachsende Märkte",
       "cards": [
         {
-          "title": "Elektronik",
-          "subtitle": "LED und smarte Geräte",
-          "description": "Zertifizierte Elektronik und LED-Beleuchtung zu Großhandelspreisen"
+          "title": "Chemische Produkte",
+          "subtitle": "Industriechemikalien & Polymere",
+          "description": "Ruß, PVC, PP, PE, Titandioxid und Zinkoxid"
         },
         {
-          "title": "Haus & Küche",
-          "subtitle": "Alltags-Essentials",
-          "description": "Praktische und langlebige Produkte aus zertifizierten Fabriken"
+          "title": "Mineralien & Pulver",
+          "subtitle": "Industriemineralien & Füllstoffe",
+          "description": "Quarzsand, Baryt, Talk, Calciumcarbonat, Bariumsulfat und mehr"
+        },
+        {
+          "title": "Metalle",
+          "subtitle": "Kupfer, Aluminium & Stahl",
+          "description": "Knüppel, Barren und Profile für Industrie und Bauwesen"
+        },
+        {
+          "title": "Baumaterialien",
+          "subtitle": "Zement, Glas & Keramik",
+          "description": "Zementklinker, Floatglas und Baukeramik"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "Unsere Geschichte",
-      "title": "Qualitätsprodukte direkt von der Quelle",
+      "title": "Seit 20 Jahren verbindet die chinesische Industrie mit globalen Käufern",
       "paragraphs": [
-        "Commodities From China entstand aus einer einfachen Überzeugung: Qualitätsprodukte sollten direkt von chinesischen Herstellern zu Käufern weltweit gelangen — ohne Zwischenhändler und unnötige Aufschläge.",
-        "Wir pflegen langfristige Partnerschaften mit zertifizierten Herstellern in ganz China, von Elektronikfabriken in Shenzhen bis zu Küchenausstattern in Guangzhou, und prüfen jede Charge vor dem Versand."
+        "Wir sind ein chinesisches Handelshaus, das die führenden Unternehmen des Landes — Staatsgruppen, börsennotierte Gesellschaften und große Hersteller — mit Käufern in Südostasien, Afrika und anderen Märkten der Neuen Seidenstraße verbindet.",
+        "In zwei Jahrzehnten Export haben wir dauerhafte Geschäftsbeziehungen zu namhaften Unternehmen weltweit aufgebaut, ein AAA-Kreditrating erworben und unsere Dienstleistungsgebühren niedrig gehalten. Für Waren, die hier nicht gelistet sind, senden Sie uns einfach Ihre Anforderung — wir antworten schnell mit qualitativ hochwertigem, kostengünstigem Angebot."
       ],
       "cta": "Unsere Geschichte lesen"
     },
     "promo": {
-      "eyebrow": "Warum direkt kaufen",
-      "title": "Elektronik direkt ab Werk",
-      "body": "Wir arbeiten mit zertifizierten Herstellern aus ganz China zusammen, um Ihnen Qualitätselektronik zu Großhandelspreisen zu liefern — getestet, dokumentiert und weltweit versendet.",
+      "eyebrow": "Warum mit uns arbeiten",
+      "title": "Ihr kostengünstiger Beschaffungspartner",
+      "body": "Wir verbinden chinesische Staatsunternehmen, börsennotierte Gesellschaften und große Konzerne mit Käufern im Ausland — mit niedrigen Servicegebühren, schneller Reaktion und qualitativ hochwertigen Massengütern zu wettbewerbsfähigen Preisen.",
       "features": [
         {
-          "title": "Zertifizierte Qualität",
-          "description": "CE-, FCC- und RoHS-zertifizierte Produkte, vor dem Versand geprüft"
+          "title": "Günstige Servicegebühren",
+          "description": "Schlanke, transparente Gebühren — Sie zahlen für Ware und Fracht, nicht für aufgeblähte Margen"
         },
         {
-          "title": "Direkte Fabrikpreise",
-          "description": "Großhandelspreise ohne Zwischenhändler oder Handelsaufschläge"
+          "title": "Werkzugang in großem Maßstab",
+          "description": "Direkte Zusammenarbeit mit chinesischen Staatsunternehmen, börsennotierten und großen Betrieben"
         },
         {
-          "title": "Niedrige Mindestbestellmengen",
-          "description": "Starten Sie mit Standard-SKUs und skalieren Sie mit Ihrem Wachstum"
+          "title": "Schnelle Antwort auf jede Anfrage",
+          "description": "Ware nicht gelistet? Senden Sie Ihre Anforderung und wir antworten schnell"
         },
         {
-          "title": "Globale Logistik",
-          "description": "Luft- und Seefracht mit Sendungsverfolgung bis vor Ihre Haustür"
+          "title": "20 Jahre, AAA-Kreditwürdigkeit",
+          "description": "Zwei Jahrzehnte Export, Vertrauen namhafter Unternehmen weltweit"
         }
       ],
       "cta": "Alle Produkte ansehen"
     },
     "carouselFeatured": {
-      "title": "Empfohlen",
-      "subtitle": "Für Sie in dieser Saison ausgewählt"
+      "title": "Am stärksten exportierte Waren",
+      "subtitle": "Polymere, Erze und Chemikalien in Massengut — weltweit stark nachgefragt"
     },
     "carouselBestSellers": {
-      "title": "Bestseller",
-      "subtitle": "Unsere Favoriten, von Ihnen gewählt"
+      "title": "Am häufigsten gesucht",
+      "subtitle": "Massengüter mit hoher Nachfrage bei Käufern weltweit"
     },
     "collections": {
-      "eyebrow": "Haus & Küche",
-      "title": "Alltags-Essentials",
-      "tagline": "Praktische und langlebige Produkte für Haushalte, Hotels und Großhandelskäufer",
+      "eyebrow": "Waren, die wir exportieren",
+      "title": "Massengüter für wachsende Märkte",
+      "tagline": "Schnell wachsende Massengut-Linien für Importeure und Händler in Südostasien, Afrika und anderen Volkswirtschaften der Neuen Seidenstraße",
       "items": [
         {
-          "title": "Küchenutensilien",
-          "description": "Töpfe, Geschirr und Tischaccessoires"
+          "title": "Chemie & Polymere",
+          "description": "Ruß, PVC, PP, PE, Titandioxid und Zinkoxid"
         },
         {
-          "title": "Aufbewahrung",
-          "description": "Behälter und Organizer für jeden Raum"
+          "title": "Mineralien & Pulver",
+          "description": "Quarzsand, Baryt, Talk, Calciumcarbonat und mehr"
         },
         {
-          "title": "Geschirr",
-          "description": "Tischgedecke für Zuhause und Gastgewerbe"
+          "title": "Metalle",
+          "description": "Kupfer, Aluminium und Stahl für Industrie und Bauwesen"
         },
         {
-          "title": "Deko",
-          "description": "Funktionale Deko, beliebt bei Wiederverkäufern"
+          "title": "Baumaterialien",
+          "description": "Zementklinker, Floatglas und Baukeramik"
         }
       ],
       "cta": "Haus & Küche entdecken"
     },
     "testimonials": {
       "eyebrow": "Käuferstimmen",
-      "heading": "Von Importeuren weltweit geschätzt",
+      "heading": "Von Importeuren in Südostasien und Afrika geschätzt",
       "verifiedBuyerOf": "Verifizierter Käufer von {product}",
       "testimonialLabel": "Bewertung {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "Hamburg, Deutschland",
-          "text": "Wir verkaufen die LED-Nachtlichter und Powerbanks in unseren Filialen. Konstante Qualität, pünktliche Lieferungen und Preise, die eine echte Marge lassen. Sie sind unser Hauptlieferant geworden.",
-          "product": "LED-Nachtlicht mit Bewegungssensor"
+          "name": "Siti Rahayu",
+          "location": "Jakarta, Indonesien",
+          "text": "Wir importieren Ruß und PVC-Harz für unsere Kunststoff-Fertigungslinien. Konstante Qualität, faire Preise, und das Team antwortet auf jede Anfrage innerhalb weniger Stunden.",
+          "product": "Ruß & PVC-Harz"
         },
         {
-          "name": "Aline B.",
-          "location": "Lyon, Frankreich",
-          "text": "Das Keramik-Set ist jede Saison ausverkauft. Die Fotos der Vorab-Inspektion und die Zertifikate geben uns volles Vertrauen, und die Mindestbestellmenge war flexibel genug für einen kleinen Start.",
-          "product": "Keramik-Geschirrset"
+          "name": "Kevin Okafor",
+          "location": "Lagos, Nigeria",
+          "text": "Unsere Aluminium- und Stahlbestellung wurde schnell kalkuliert, die gesamte Exportdokumentation übernommen, und die Ware kam exakt nach Spezifikation an. Die 20 Jahre Erfahrung merkt man bei jeder Lieferung.",
+          "product": "Aluminium & Stahl"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "Singapur",
-          "text": "Endlich ein Partner, der Qualitätskontrolle und Fracht von A bis Z übernimmt. Unsere erste Bestellung TWS-Kopfhörer kam pünktlich und fehlerfrei an. Sehr zu empfehlen für B2B-Käufer.",
-          "product": "Kabellose TWS-Kopfhörer Pro"
+          "name": "Nguyen Thanh",
+          "location": "Ho-Chi-Minh-Stadt, Vietnam",
+          "text": "Ich habe eine Ware angefragt, die nicht auf ihrer Website stand — Zementklinker für unser Handelsgeschäft. Sie antworteten schnell und besorgten sie bei einem großen chinesischen Lieferanten.",
+          "product": "Zementklinker"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "In Kontakt bleiben",
-      "heading": "Treten Sie unserem Kreis bei",
-      "body": "Entdecken Sie Neuheiten und exklusive Kollektionen als Erste und sichern Sie sich 10 % Rabatt auf Ihre erste Bestellung.",
+      "heading": "Erhalten Sie Markt-Updates und Angebote",
+      "body": "Erhalten Sie Markt-Updates zu Massengütern, neue Preislisten und Lieferalarme für Ihren Beschaffungsbedarf.",
       "placeholder": "E-Mail eingeben",
       "subscribing": "Anmeldung...",
       "subscribe": "Abonnieren",
-      "success": "Willkommen im Kreis! Prüfen Sie Ihren Posteingang für Ihren 10 %-Rabattcode.",
+      "success": "Abonniert! Wir halten Sie über Märkte und Angebot auf dem Laufenden.",
       "error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
       "disclaimer": "Kein Spam, versprochen. Jederzeit abbestellbar. Mit dem Abonnieren stimmen Sie unserer Datenschutzrichtlinie zu."
     },
     "seo": {
-      "heading": "Entdecken Sie unsere Kollektionen"
+      "heading": "Entdecken Sie unsere Massengüter"
     },
-    "seoParagraph": "Entdecken Sie die Kollektion von {siteName}: zertifizierte Elektronik, LED-Beleuchtung, Küchenartikel und Haushaltswaren für den Alltag. Für Einzelhandelskunden und B2B-Großabnehmer — online bestellen, Mengen bestellen oder unser Team zu Importpreisen und Partnerschaften befragen.",
+    "seoParagraph": "Entdecken Sie das Massengutsortiment von {siteName}: Ruß, PVC, PP, PE, Titandioxid, Industriemineralien, Metalle und Baumaterialien. Konzipiert für Importeure und Händler in Südostasien, Afrika und den Märkten der Neuen Seidenstraße — bestellen Sie in großen Mengen oder senden Sie uns Ihre Anforderung für jede nicht gelistete Ware.",
     "links": {
       "allProducts": "Alle Produkte",
       "faq": "FAQ",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "Alle Produkte",
-    "description": "Entdecken Sie unsere komplette Kollektion an Elektronik, LED-Beleuchtung und Haushaltswaren.",
-    "metaDescription": "Stöbern Sie in unserer kompletten Kollektion an Elektronik, LED-Beleuchtung, Küchenartikeln und Haushaltswaren. Fabrikqualität für Einzelhandels- und B2B-Großhandelskäufer.",
+    "description": "Entdecken Sie unsere Massengüter: Ruß, PVC, PP, PE, Titandioxid, Industriemineralien, Metalle und Baumaterialien.",
+    "metaDescription": "Stöbern Sie in unserem Massengutsortiment, das aus China nach Südostasien und Afrika exportiert wird: Chemieprodukte, Polymere, Mineralien, Metalle und Baumaterialien. Wettbewerbsfähige Preise und schnelle Antwort auf Anfragen außerhalb der Liste.",
     "filters": {
       "sortBy": "Sortieren nach",
       "newest": "Neueste",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "Magazin",
-    "metaDescription": "Import-Guides, Sourcing-Tipps und Markteinblicke aus dem Commodities From China Magazin.",
+    "metaDescription": "Markteinblicke zu Massengütern, Beschaffungsleitfäden und Handels-Know-how aus dem Commodities From China Journal.",
     "eyebrow": "Guides & Einblicke",
     "heading": "Das Magazin",
-    "subtitle": "Praktisches Wissen über Import, Sourcing und Logistik — von unserem Team und Partnern.",
+    "subtitle": "Massengut-Markttrends, Beschaffungsleitfäden und Handelslogistik-Know-how für Importeure in Südostasien, Afrika und den Märkten der Neuen Seidenstraße.",
     "all": "Alle",
     "by": "Von {author}",
     "noPosts": "Noch keine Artikel vorhanden.",
@@ -340,7 +350,16 @@
       "sourcing": "Beschaffung",
       "suppliers": "Lieferanten",
       "tariffs": "Zölle",
-      "wholesale": "Großhandel"
+      "wholesale": "Großhandel",
+      "chemicals": "Chemikalien",
+      "polymers": "Polymere",
+      "plastics": "Kunststoffe",
+      "minerals": "Mineralien",
+      "metals": "Metalle",
+      "building-materials": "Baumaterialien",
+      "belt-road": "Neue Seidenstraße",
+      "steel": "Stahl",
+      "cement": "Zement"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "Suchergebnisse",
-    "description": "Durchsuchen Sie unser Sortiment an Elektronik, LED-Beleuchtung, Küchenartikeln und Haushaltswaren.",
+    "description": "Durchsuchen Sie unser Massengutsortiment: Ruß, PVC, Polymere, Mineralien, Metalle und Baumaterialien.",
     "resultsFor": "Ergebnisse für „{query}\"",
     "showingResults": "{count} Ergebnis(se) für „{query}\"",
     "enterTerm": "Geben Sie einen Begriff ein, um Produkte zu finden"

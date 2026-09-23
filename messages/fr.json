@@ -60,9 +60,9 @@
     "language": "Choisir la langue",
     "currency": "Devise",
     "openChat": "Ouvrir le chat",
-    "promoBar": "Nouveaux clients : -10 %",
-    "slogan": "Origine Chine, livraison dans le monde entier",
-    "description": "Un approvisionnement direct auprès d'usines chinoises de confiance. Électronique, articles de cuisine et produits du quotidien de qualité pour les acheteurs B2B de détail et de gros dans le monde entier."
+    "promoBar": "20 ans d'expérience d'exportation depuis la Chine — demandez un devis dès aujourd'hui",
+    "slogan": "Approvisionnement chinois, connecté à votre marché",
+    "description": "Une société de commerce chinoise qui met en relation des entreprises publiques, des sociétés cotées et de grandes entreprises avec des acheteurs à l'étranger — en exportant des matières premières en vrac, des métaux et des matériaux de construction vers l'Asie du Sud-Est, l'Afrique et les marchés des Nouvelles routes de la soie depuis 20 ans."
   },
   "footer": {
     "shop": "Boutique",
@@ -75,137 +75,147 @@
     "newArrivals": "Nouveautés",
     "bestSellers": "Meilleures ventes",
     "shippingReturns": "Expédition & retours",
-    "about": "Approvisionnement direct depuis la Chine. Électronique, ustensiles de cuisine et articles du quotidien de qualité pour les acheteurs de détail et de gros B2B dans le monde entier.",
+    "about": "Une société de commerce chinoise qui connecte des entreprises publiques, des sociétés cotées et de grandes entreprises à des acheteurs en Asie du Sud-Est, en Afrique et sur les marchés des Nouvelles routes de la soie depuis 20 ans.",
     "hours": "Lun–Ven, 9h–18h (CST)"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "Approvisionnement B2B direct d'usine",
-          "subtitle": "Sourcing en Chine, livraison dans le monde entier",
-          "description": "Électronique, éclairage LED et produits du quotidien de qualité à prix de gros",
+          "title": "Matières premières en vrac de Chine, livrées à votre marché",
+          "subtitle": "Spécialistes du commerce des Nouvelles routes de la soie",
+          "description": "Noir de carbone, PVC, métaux, minéraux et matériaux de construction expédiés aux acheteurs d'Asie du Sud-Est et d'Afrique à des prix compétitifs",
           "cta": "Voir les produits"
         },
         {
-          "title": "Prix de gros",
-          "subtitle": "Conçu pour les détaillants et les distributeurs",
-          "description": "Tarifs dégressifs, options de marque privée et approvisionnement fiable",
-          "cta": "Explorer les catégories"
+          "title": "Un seul partenaire commercial, 20 ans d'exportations",
+          "subtitle": "Service commercial noté AAA",
+          "description": "Appuyé par une coopération de longue date avec des entreprises publiques, des sociétés cotées et de grandes entreprises chinoises",
+          "cta": "Pourquoi nous"
         },
         {
-          "title": "Une qualité de confiance",
-          "subtitle": "Produits certifiés, inspectés par lot",
-          "description": "Produits certifiés CE, FCC et RoHS avec inspection avant expédition",
-          "cta": "Notre histoire"
+          "title": "Vous cherchez une matière première absente de la liste ?",
+          "subtitle": "Décrivez-nous votre besoin",
+          "description": "Envoyez vos spécifications et votre destination — notre équipe répond rapidement avec une offre de qualité et économique",
+          "cta": "Contactez-nous"
         }
       ],
       "slideLabel": "Diapositive {index}"
     },
     "featuredCategories": {
-      "eyebrow": "Explorez",
-      "heading": "Nos collections",
+      "eyebrow": "Les matières premières que nous exportons",
+      "heading": "Produits en vrac pour marchés en croissance",
       "cards": [
         {
-          "title": "Électronique",
-          "subtitle": "LED et objets connectés",
-          "description": "Électronique et éclairage LED certifiés à prix de gros"
+          "title": "Produits chimiques",
+          "subtitle": "Produits chimiques industriels & polymères",
+          "description": "Noir de carbone, PVC, PP, PE, dioxyde de titane et oxyde de zinc"
         },
         {
-          "title": "Maison & cuisine",
-          "subtitle": "Essentiels du quotidien",
-          "description": "Produits pratiques et durables issus de fabricants certifiés"
+          "title": "Minéraux & poudres",
+          "subtitle": "Minéraux industriels & charges",
+          "description": "Sable de quartz, baryte, talc, carbonate de calcium, sulfate de baryum et plus"
+        },
+        {
+          "title": "Métaux",
+          "subtitle": "Cuivre, aluminium & acier",
+          "description": "Billettes, lingots et profilés pour l'industrie et la construction"
+        },
+        {
+          "title": "Matériaux de construction",
+          "subtitle": "Ciment, verre & céramiques",
+          "description": "Clinker de ciment, verre float et céramiques de construction"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "Notre histoire",
-      "title": "Des produits de qualité, directement à la source",
+      "title": "20 ans à connecter l'industrie chinoise aux acheteurs du monde entier",
       "paragraphs": [
-        "Commodities From China est née d'une conviction simple : les produits de qualité doivent aller directement des fabricants chinois aux acheteurs du monde entier, sans intermédiaires ni marges inutiles.",
-        "Nous bâtissons des partenariats durables avec des fabricants certifiés partout en Chine, des usines d'électronique de Shenzhen aux fabricants d'ustensiles de cuisine de Guangzhou, et nous inspectons chaque lot avant expédition."
+        "Nous sommes une société de commerce chinoise qui fait le pont entre les plus grandes entreprises du pays — groupes publics, sociétés cotées et grands industriels — et les acheteurs d'Asie du Sud-Est, d'Afrique et des autres marchés des Nouvelles routes de la soie.",
+        "En vingt ans d'exportations, nous avons bâti des liens commerciaux durables avec des entreprises réputées dans le monde entier, obtenu une notation de crédit AAA et maintenu des frais de service réduits. Pour une matière première absente de cette liste, envoyez-nous simplement votre besoin — nous répondons vite avec une offre de qualité et économique."
       ],
       "cta": "Lire notre histoire"
     },
     "promo": {
-      "eyebrow": "Pourquoi acheter direct",
-      "title": "Électronique directe d'usine",
-      "body": "Nous nous associons à des fabricants certifiés de toute la Chine pour vous offrir une électronique de qualité à prix de gros — testée, documentée et expédiée dans le monde entier.",
+      "eyebrow": "Pourquoi travailler avec nous",
+      "title": "Votre partenaire d'approvisionnement économique",
+      "body": "Nous connectons des entreprises publiques, des sociétés cotées et de grandes entreprises chinoises à des acheteurs à l'étranger — avec des frais de service réduits, une réponse rapide et des matières premières de qualité à des prix compétitifs.",
       "features": [
         {
-          "title": "Qualité certifiée",
-          "description": "Produits certifiés CE, FCC et RoHS vérifiés avant expédition"
+          "title": "Frais de service avantageux",
+          "description": "Des frais réduits et transparents — vous payez la marchandise et le fret, pas des marges gonflées"
         },
         {
-          "title": "Prix direct d'usine",
-          "description": "Tarifs de gros sans intermédiaires ni marges de détail"
+          "title": "Accès direct aux usines à grande échelle",
+          "description": "Coopération directe avec des entreprises publiques, cotées et de grandes entreprises chinoises"
         },
         {
-          "title": "Quantités minimales faibles",
-          "description": "Commencez avec des références standard, puis augmentez"
+          "title": "Réponse rapide à toute demande",
+          "description": "Une matière première absente de la liste ? Envoyez votre besoin et nous répondons vite"
         },
         {
-          "title": "Logistique mondiale",
-          "description": "Fret aérien et maritime avec suivi jusqu'à votre porte"
+          "title": "20 ans, crédit AAA",
+          "description": "Deux décennies d'exportations, la confiance d'entreprises réputées dans le monde entier"
         }
       ],
       "cta": "Voir tous les produits"
     },
     "carouselFeatured": {
-      "title": "En vedette",
-      "subtitle": "Sélectionné pour vous cette saison"
+      "title": "Matières premières les plus exportées",
+      "subtitle": "Polymères, minerais et produits chimiques en vrac très demandés dans le monde"
     },
     "carouselBestSellers": {
-      "title": "Meilleures ventes",
-      "subtitle": "Nos produits préférés, choisis par vous"
+      "title": "Les plus demandées",
+      "subtitle": "Des matières premières très recherchées par les acheteurs du monde entier"
     },
     "collections": {
-      "eyebrow": "Maison & cuisine",
-      "title": "Essentiels du quotidien",
-      "tagline": "Produits pratiques et durables pour foyers, hôtels et acheteurs en gros",
+      "eyebrow": "Les matières premières que nous exportons",
+      "title": "Produits en vrac pour marchés en croissance",
+      "tagline": "Des matières premières en forte croissance pour les importateurs et distributeurs d'Asie du Sud-Est, d'Afrique et des autres économies des Nouvelles routes de la soie",
       "items": [
         {
-          "title": "Ustensiles de cuisine",
-          "description": "Casseroles, vaisselle et arts de la table"
+          "title": "Produits chimiques & polymères",
+          "description": "Noir de carbone, PVC, PP, PE, dioxyde de titane et oxyde de zinc"
         },
         {
-          "title": "Rangement",
-          "description": "Contenants et organisateurs pour chaque pièce"
+          "title": "Minéraux & poudres",
+          "description": "Sable de quartz, baryte, talc, carbonate de calcium et plus"
         },
         {
-          "title": "Vaisselle",
-          "description": "Services de table pour la maison et l'hôtellerie"
+          "title": "Métaux",
+          "description": "Cuivre, aluminium et acier pour l'industrie et la construction"
         },
         {
-          "title": "Décoration",
-          "description": "Une décoration fonctionnelle appréciée des revendeurs"
+          "title": "Matériaux de construction",
+          "description": "Clinker de ciment, verre float et céramiques de construction"
         }
       ],
       "cta": "Explorer maison & cuisine"
     },
     "testimonials": {
       "eyebrow": "Avis d'acheteurs",
-      "heading": "La confiance des importateurs du monde entier",
+      "heading": "La confiance des importateurs d'Asie du Sud-Est et d'Afrique",
       "verifiedBuyerOf": "Acheteur vérifié de {product}",
       "testimonialLabel": "Témoignage {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "Hambourg, Allemagne",
-          "text": "Nous revendons les veilleuses LED et les batteries externes dans nos magasins. Qualité constante, expéditions à l'heure et prix qui laissent une vraie marge. Ils sont devenus notre fournisseur de référence.",
-          "product": "Veilleuse LED à détection de mouvement"
+          "name": "Siti Rahayu",
+          "location": "Djakarta, Indonésie",
+          "text": "Nous importons du noir de carbone et de la résine PVC pour nos lignes de production de plastiques. Qualité constante, prix honnêtes, et l'équipe répond à chaque demande en quelques heures.",
+          "product": "Noir de carbone & résine PVC"
         },
         {
-          "name": "Aline B.",
-          "location": "Lyon, France",
-          "text": "Le service de vaisselle en céramique se vend chaque saison. Les photos d'inspection avant expédition et les certificats nous donnent une totale confiance, et la quantité minimale était assez flexible pour démarrer petit.",
-          "product": "Service de vaisselle en céramique"
+          "name": "Kevin Okafor",
+          "location": "Lagos, Nigeria",
+          "text": "Ils ont chiffré rapidement notre commande d'aluminium et d'acier, géré toute la documentation d'exportation, et la marchandise est arrivée exactement conforme. Leurs 20 ans d'expérience se voient dans chaque envoi.",
+          "product": "Aluminium & acier"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "Singapour",
-          "text": "Enfin un partenaire qui gère le contrôle qualité et le fret de bout en bout. Notre première commande d'écouteurs TWS est arrivée à temps et sans défaut. Hautement recommandé pour les acheteurs B2B.",
-          "product": "Écouteurs sans fil TWS Pro"
+          "name": "Nguyen Thanh",
+          "location": "Hô Chi Minh-Ville, Viêt Nam",
+          "text": "J'ai demandé une matière première absente de leur site — du clinker de ciment pour notre activité de négoce. Ils ont répondu vite et l'ont trouvée auprès d'un grand fournisseur chinois.",
+          "product": "Clinker de ciment"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "Restez connecté",
-      "heading": "Rejoignez notre cercle",
-      "body": "Soyez les premiers à découvrir les nouveautés et collections exclusives, et profitez de 10 % de réduction sur votre première commande.",
+      "heading": "Recevez les actualités du marché et les cotations",
+      "body": "Recevez les actualités sur les matières premières, les nouvelles grilles de prix et les alertes d'approvisionnement pour vos achats.",
       "placeholder": "Saisissez votre e-mail",
       "subscribing": "Inscription...",
       "subscribe": "S'abonner",
-      "success": "Bienvenue dans le cercle ! Vérifiez votre boîte mail pour votre code de 10 % de réduction.",
+      "success": "Inscrit ! Nous vous tiendrons informé des marchés et de l'offre.",
       "error": "Une erreur est survenue. Veuillez réessayer.",
       "disclaimer": "Jamais de spam. Désabonnez-vous à tout moment. En vous abonnant, vous acceptez notre politique de confidentialité."
     },
     "seo": {
-      "heading": "Découvrez nos collections"
+      "heading": "Découvrez nos matières premières"
     },
-    "seoParagraph": "Découvrez la collection {siteName} : électronique certifiée, éclairage LED, arts de la cuisine et articles ménagers du quotidien. Pensée pour les acheteurs au détail comme pour les acheteurs B2B en gros — commandez en ligne, en volume, ou contactez notre équipe pour les tarifs de gros et les partenariats.",
+    "seoParagraph": "Découvrez la gamme de matières premières {siteName} : noir de carbone, PVC, PP, PE, dioxyde de titane, minéraux industriels, métaux et matériaux de construction. Conçue pour les importateurs et distributeurs d'Asie du Sud-Est, d'Afrique et des marchés des Nouvelles routes de la soie — commandez en vrac ou envoyez-nous votre besoin pour toute matière première absente de la liste.",
     "links": {
       "allProducts": "Tous les produits",
       "faq": "FAQ",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "Tous les produits",
-    "description": "Découvrez notre collection complète d'électronique, d'éclairage LED et d'articles ménagers.",
-    "metaDescription": "Parcourez notre collection complète d'électronique, d'éclairage LED, d'arts de la cuisine et d'articles ménagers. Qualité usine pour les acheteurs au détail et B2B en gros.",
+    "description": "Découvrez nos matières premières en vrac : noir de carbone, PVC, PP, PE, dioxyde de titane, minéraux industriels, métaux et matériaux de construction.",
+    "metaDescription": "Parcourez notre gamme de matières premières en vrac exportées de Chine vers l'Asie du Sud-Est et l'Afrique : produits chimiques, polymères, minéraux, métaux et matériaux de construction. Prix compétitifs et réponse rapide aux demandes hors liste.",
     "filters": {
       "sortBy": "Trier par",
       "newest": "Plus récents",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "Magazine",
-    "metaDescription": "Guides d'importation, conseils de sourcing et analyses du marché du magazine Commodities From China.",
+    "metaDescription": "Analyses du marché des matières premières, guides d'approvisionnement et savoir-faire commercial du journal Commodities From China.",
     "eyebrow": "Guides & analyses",
     "heading": "Le Magazine",
-    "subtitle": "Des connaissances pratiques sur l'importation, le sourcing et la logistique — de notre équipe et de nos partenaires.",
+    "subtitle": "Tendances du marché des matières premières, conseils d'approvisionnement et connaissances logistiques commerciales pour les importateurs d'Asie du Sud-Est, d'Afrique et des marchés des Nouvelles routes de la soie.",
     "all": "Tout",
     "by": "Par {author}",
     "noPosts": "Aucun article pour le moment.",
@@ -340,7 +350,16 @@
       "sourcing": "Approvisionnement",
       "suppliers": "Fournisseurs",
       "tariffs": "Droits de douane",
-      "wholesale": "Gros"
+      "wholesale": "Gros",
+      "chemicals": "Produits chimiques",
+      "polymers": "Polymères",
+      "plastics": "Plastiques",
+      "minerals": "Minéraux",
+      "metals": "Métaux",
+      "building-materials": "Matériaux de construction",
+      "belt-road": "Nouvelles routes de la soie",
+      "steel": "Acier",
+      "cement": "Ciment"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "Résultats de recherche",
-    "description": "Recherchez dans notre gamme d'électronique, d'éclairage LED, d'arts de la cuisine et d'articles ménagers.",
+    "description": "Recherchez dans notre gamme de matières premières en vrac : noir de carbone, PVC, polymères, minéraux, métaux et matériaux de construction.",
     "resultsFor": "Résultats pour « {query} »",
     "showingResults": "{count} résultat(s) pour « {query} »",
     "enterTerm": "Saisissez un terme pour trouver des produits"

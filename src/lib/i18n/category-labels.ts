@@ -90,6 +90,19 @@ const CATEGORY_NAME_MAP: Record<string, Record<string, string>> = {
     th: "บ้านและครัว",
     ms: "Rumah & dapur",
   },
+  "building-materials": {
+    zh: "建材",
+    es: "Materiales de construcción",
+    pt: "Materiais de construção",
+    fr: "Matériaux de construction",
+    de: "Baustoffe",
+    ru: "Строительные материалы",
+    ar: "مواد البناء",
+    id: "Bahan bangunan",
+    vi: "Vật liệu xây dựng",
+    th: "วัสดุก่อสร้าง",
+    ms: "Bahan binaan",
+  },
 }
 
 const CATEGORY_NAME_ALIASES: Record<string, string> = {
@@ -104,6 +117,10 @@ const CATEGORY_NAME_ALIASES: Record<string, string> = {
   "agricultural-commodity": "agricultural-commodities",
   mineral: "minerals",
   electronic: "electronics",
+  building: "building-materials",
+  construction: "building-materials",
+  "construction-materials": "building-materials",
+  cement: "building-materials",
 }
 
 function normalizeCategorySlug(slug: string): string {

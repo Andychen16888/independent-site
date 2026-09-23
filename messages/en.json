@@ -60,9 +60,9 @@
     "language": "Select language",
     "currency": "Currency",
     "openChat": "Open chat",
-    "promoBar": "New customers save 10%",
-    "slogan": "Sourced from China, delivered worldwide",
-    "description": "Direct sourcing from trusted Chinese factories. Quality electronics, kitchenware, and daily-use commodities for retail and wholesale B2B buyers worldwide."
+    "promoBar": "20 Years of China Export Experience \u2014 Request a Quote Today",
+    "slogan": "Chinese supply, connected to your market",
+    "description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers \u2014 exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years."
   },
   "footer": {
     "shop": "Shop",
@@ -75,137 +75,147 @@
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
     "shippingReturns": "Shipping & Returns",
-    "about": "Sourced directly from China. Quality electronics, kitchenware, and everyday commodities for retail and wholesale B2B buyers worldwide.",
+    "about": "A Chinese trading house connecting SOEs, listed companies and large enterprises with buyers across Southeast Asia, Africa and Belt & Road markets for 20 years.",
     "hours": "Mon–Fri, 9am–6pm CST"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "Factory-Direct B2B Sourcing",
-          "subtitle": "Sourced from China, delivered worldwide",
-          "description": "Quality electronics, LED lighting, and daily commodities at wholesale prices",
-          "cta": "Browse Products"
+          "title": "Bulk Commodities from China, Delivered to Your Market",
+          "subtitle": "Belt & Road Trade Specialists",
+          "description": "Carbon black, PVC, metals, minerals and building materials shipped to Southeast Asian and African buyers at competitive prices",
+          "cta": "View Products"
         },
         {
-          "title": "Wholesale Pricing",
-          "subtitle": "Built for retailers and distributors",
-          "description": "Tiered bulk pricing, private label options, and reliable supply schedules",
-          "cta": "Explore Categories"
+          "title": "One Trading Partner, 20 Years of Exports",
+          "subtitle": "AAA-Rated Trade Service",
+          "description": "Backed by long-standing cooperation with Chinese SOEs, listed companies and large enterprises",
+          "cta": "Why Us"
         },
         {
-          "title": "Quality You Can Trust",
-          "subtitle": "Certified goods, inspected every batch",
-          "description": "CE, FCC, and RoHS certified products with pre-shipment inspection",
-          "cta": "Our Story"
+          "title": "Looking for a Commodity Not Listed?",
+          "subtitle": "Tell Us Your Requirement",
+          "description": "Send your specs and destination \u2014 our team responds quickly with quality, cost-effective supply",
+          "cta": "Contact Us"
         }
       ],
       "slideLabel": "Slide {index}"
     },
     "featuredCategories": {
-      "eyebrow": "Explore",
-      "heading": "Our Collections",
+      "eyebrow": "Commodities We Export",
+      "heading": "Bulk Products for Growing Markets",
       "cards": [
         {
-          "title": "Electronics",
-          "subtitle": "LED & Smart Devices",
-          "description": "Certified electronics and LED lighting at wholesale prices"
+          "title": "Chemical Products",
+          "subtitle": "Industrial Chemicals & Polymers",
+          "description": "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide"
         },
         {
-          "title": "Home & Kitchen",
-          "subtitle": "Everyday Essentials",
-          "description": "Practical, durable goods sourced from certified factories"
+          "title": "Minerals & Powders",
+          "subtitle": "Industrial Minerals & Fillers",
+          "description": "Quartz sand, barite, talc, calcium carbonate, barium sulfate and more"
+        },
+        {
+          "title": "Metals",
+          "subtitle": "Copper, Aluminum & Steel",
+          "description": "Billets, ingots and profiles for industry and construction"
+        },
+        {
+          "title": "Building Materials",
+          "subtitle": "Cement, Glass & Ceramics",
+          "description": "Cement clinker, float glass and building ceramics"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "Our Story",
-      "title": "Quality Goods, Direct from the Source",
+      "title": "20 Years Connecting Chinese Industry with Global Buyers",
       "paragraphs": [
-        "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-        "We build long-term partnerships with certified manufacturers across China — from electronics factories in Shenzhen to kitchenware producers in Guangzhou — and inspect every batch before it ships."
+        "We are a Chinese trading house that bridges the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
+        "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed here, just send us your requirement \u2014 we respond fast with quality, cost-effective supply."
       ],
       "cta": "Read Our Story"
     },
     "promo": {
-      "eyebrow": "Why Buy Direct",
-      "title": "Factory-Direct Electronics",
-      "body": "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",
+      "eyebrow": "Why Work With Us",
+      "title": "Your Cost-Effective Sourcing Partner",
+      "body": "We connect Chinese SOEs, listed companies and large enterprises with overseas buyers \u2014 charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
       "features": [
         {
-          "title": "Certified Quality",
-          "description": "CE, FCC, and RoHS certified products verified before shipment"
+          "title": "Cheap Service Fees",
+          "description": "Lean, transparent charges \u2014 you pay for the goods and freight, not inflated margins"
         },
         {
-          "title": "Factory-Direct Pricing",
-          "description": "Wholesale rates without middlemen or retail markups"
+          "title": "Factory Access at Scale",
+          "description": "Direct cooperation with Chinese state-owned, listed and major enterprises"
         },
         {
-          "title": "Low MOQ Options",
-          "description": "Start small with standard SKUs, scale up as you grow"
+          "title": "Fast Response to Any Inquiry",
+          "description": "Commodity not listed? Send your requirement and we respond quickly"
         },
         {
-          "title": "Global Logistics",
-          "description": "Air and sea freight options with tracking to your door"
+          "title": "20 Years, AAA Credit",
+          "description": "Two decades of exports, trusted by well-known companies worldwide"
         }
       ],
       "cta": "View All Products"
     },
     "carouselFeatured": {
-      "title": "Featured",
-      "subtitle": "Handpicked for you this season"
+      "title": "Featured Commodities",
+      "subtitle": "Handpicked lines for this quarter"
     },
     "carouselBestSellers": {
-      "title": "Best Sellers",
-      "subtitle": "Our most-loved products, chosen by you"
+      "title": "Top Commodity Lines",
+      "subtitle": "The most-requested products by our buyers"
     },
     "collections": {
-      "eyebrow": "Home & Kitchen",
-      "title": "Everyday Essentials",
-      "tagline": "Practical, durable goods for homes, hotels, and wholesale buyers",
+      "eyebrow": "Commodities We Export",
+      "title": "Bulk Products for Growing Markets",
+      "tagline": "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies",
       "items": [
         {
-          "title": "Kitchenware",
-          "description": "Cookware, dinnerware, and barware staples"
+          "title": "Chemical & Polymer",
+          "description": "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide"
         },
         {
-          "title": "Storage",
-          "description": "Containers and organizers for every room"
+          "title": "Minerals & Powders",
+          "description": "Quartz sand, barite, talc, calcium carbonate and more"
         },
         {
-          "title": "Tableware",
-          "description": "Dinnerware sets for homes and hospitality"
+          "title": "Metals",
+          "description": "Copper, aluminum and steel for industry and construction"
         },
         {
-          "title": "Home Decor",
-          "description": "Functional decor loved by resellers"
+          "title": "Building Materials",
+          "description": "Cement clinker, float glass and building ceramics"
         }
       ],
-      "cta": "Explore Home & Kitchen"
+      "cta": "View All Products"
     },
     "testimonials": {
       "eyebrow": "Buyer Reviews",
-      "heading": "Trusted by Importers Worldwide",
+      "heading": "Trusted by Importers in Southeast Asia & Africa",
       "verifiedBuyerOf": "Verified Buyer of {product}",
       "testimonialLabel": "Testimonial {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "Hamburg, Germany",
-          "text": "We resell the LED night lights and power banks in our retail stores. Consistent quality, on-time shipments, and pricing that leaves real margin. They've become our go-to supplier.",
-          "product": "LED Motion Sensor Night Light"
+          "name": "Siti Rahayu",
+          "location": "Jakarta, Indonesia",
+          "text": "We import carbon black and PVC resin for our plastic manufacturing lines. Consistent quality, honest pricing, and the team responds to every enquiry within hours.",
+          "product": "Carbon Black & PVC Resin"
         },
         {
-          "name": "Aline B.",
-          "location": "Lyon, France",
-          "text": "The ceramic dinnerware set sells out every season. Pre-shipment inspection photos and certificates give us total confidence, and the MOQ was flexible enough for us to start small.",
-          "product": "Ceramic Dinnerware Set"
+          "name": "Kevin Okafor",
+          "location": "Lagos, Nigeria",
+          "text": "They quoted our aluminum and steel order quickly, handled all export documentation, and the goods arrived exactly to spec. Their 20 years of experience show in every shipment.",
+          "product": "Aluminum & Steel"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "Singapore",
-          "text": "Finally a sourcing partner that handles quality control and freight end to end. Our first order of TWS earbuds arrived on time and defect-free. Highly recommended for B2B buyers.",
-          "product": "TWS Wireless Earbuds Pro"
+          "name": "Nguyen Thanh",
+          "location": "Ho Chi Minh City, Vietnam",
+          "text": "I requested a commodity that wasn't on their site \u2014 cement clinker for our trading business. They responded fast and sourced it from a major Chinese supplier.",
+          "product": "Cement Clinker"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "Stay Connected",
-      "heading": "Join Our Inner Circle",
-      "body": "Be the first to discover new arrivals, exclusive collections, and receive 10% off your first order.",
+      "heading": "Get Market Updates & Quotes",
+      "body": "Receive commodity market updates, new price lists, and supply alerts for your sourcing needs.",
       "placeholder": "Enter your email",
       "subscribing": "Subscribing...",
       "subscribe": "Subscribe",
-      "success": "Welcome to the circle! Check your inbox for your 10% off code.",
+      "success": "Subscribed! We'll keep you updated on markets and supply.",
       "error": "Something went wrong. Please try again.",
       "disclaimer": "No spam, ever. Unsubscribe anytime. By subscribing, you agree to our Privacy Policy."
     },
     "seo": {
-      "heading": "Discover Our Collections"
+      "heading": "Discover Our Commodities"
     },
-    "seoParagraph": "Discover the {siteName} collection: certified electronics, LED lighting, kitchenware, and everyday household goods. Built for retail shoppers and wholesale B2B buyers alike — shop online, order in bulk, or contact our team for trade pricing and partnership inquiries.",
+    "seoParagraph": "Discover the {siteName} commodity range: carbon black, PVC, PP, PE, titanium dioxide, industrial minerals, metals and building materials. Built for importers and distributors across Southeast Asia, Africa and Belt & Road markets \u2014 order in bulk or send us your requirement for any commodity not listed.",
     "links": {
       "allProducts": "All Products",
       "faq": "FAQ",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "All Products",
-    "description": "Discover our complete collection of electronics, LED lighting, and household commodities.",
-    "metaDescription": "Browse our complete collection of electronics, LED lighting, kitchenware, and household commodities. Factory-direct quality for retail and wholesale B2B buyers.",
+    "description": "Discover our bulk commodities: carbon black, PVC, PP, PE, titanium dioxide, industrial minerals, metals and building materials.",
+    "metaDescription": "Browse our bulk commodity range exported from China to Southeast Asia and Africa: chemicals, polymers, minerals, metals and building materials. Competitive prices with fast response to off-list requests.",
     "filters": {
       "sortBy": "Sort By",
       "newest": "Newest",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "Journal",
-    "metaDescription": "Importing guides, sourcing tips, and market insights from the Commodities From China journal.",
+    "metaDescription": "Commodity market insights, sourcing guides, and trade know-how from the Commodities From China journal.",
     "eyebrow": "Guides & Insights",
     "heading": "The Journal",
-    "subtitle": "Practical importing, sourcing, and logistics knowledge — from our team and partners.",
+    "subtitle": "Commodity market trends, sourcing guidance, and trade logistics knowledge for importers in Southeast Asia, Africa and Belt & Road markets.",
     "all": "All",
     "by": "By {author}",
     "noPosts": "No posts yet.",
@@ -340,7 +350,16 @@
       "sourcing": "Sourcing",
       "suppliers": "Suppliers",
       "tariffs": "Tariffs",
-      "wholesale": "Wholesale"
+      "wholesale": "Wholesale",
+      "chemicals": "Chemicals",
+      "polymers": "Polymers",
+      "plastics": "Plastics",
+      "minerals": "Minerals",
+      "metals": "Metals",
+      "building-materials": "Building Materials",
+      "belt-road": "Belt & Road",
+      "steel": "Steel",
+      "cement": "Cement"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "Search Results",
-    "description": "Search our collection of electronics, LED lighting, kitchenware, and household commodities.",
+    "description": "Search our bulk commodity range: carbon black, PVC, polymers, minerals, metals and building materials.",
     "resultsFor": "Results for \"{query}\"",
     "showingResults": "Showing {count} result(s) for \"{query}\"",
     "enterTerm": "Enter a search term to find products"

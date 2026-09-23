@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs"
 import { pageTranslationsSeed } from "./seed-data/pages"
 import { blogTranslationsSeed } from "./seed-data/blog"
 import { faqTranslationsSeed } from "./seed-data/faq"
+import { commodityCategoriesSeed, commodityProductsSeed } from "./seed-data/commodities"
+import { commodityBlogPostsSeed } from "./seed-data/blog-commodity"
+import { commodityFaqsSeed } from "./seed-data/faq-commodity"
 
 const prisma = new PrismaClient()
 
@@ -68,7 +71,10 @@ async function main() {
 
   await seedDefaultPages()
   await seedPageTranslations()
+  await seedCommodityCategories()
+  await seedCommodityProducts()
   await seedDefaultBlogPosts()
+  await seedCommodityBlogPosts()
   await seedBlogPostTranslations()
   await seedSiteFaqs()
 
@@ -78,77 +84,76 @@ async function main() {
 async function seedSiteSettings() {
   const settings: Record<string, string> = {
     "site.name": "Commodities From China",
-    "site.slogan": "Sourced from China, delivered worldwide",
-    "site.description": "Direct sourcing from trusted Chinese factories. Quality electronics, kitchenware, and daily-use commodities for retail and wholesale B2B buyers worldwide.",
+    "site.slogan": "Chinese supply, connected to your market",
+    "site.description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers \u2014 exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years.",
     "site.logo": "",
     "site.favicon": "",
     "site.language": "en",
     "site.currency": "USD",
-    "site.promoBar": "New customers save 10%",
-    "seo.homeTitle": "Commodities From China | Wholesale Electronics & Daily Commodities",
-    "seo.homeDescription": "Factory-direct sourcing from China for retail and wholesale B2B buyers. Quality electronics, LED lighting, kitchenware, and everyday commodities at wholesale prices.",
-    "seo.defaultKeywords": "wholesale electronics, commodities from china, b2b wholesale, led lighting wholesale, factory-direct, kitchenware wholesale",
-    "content.featuredEyebrow": "Explore",
-    "content.featuredHeading": "Our Collections",
-    "content.featuredTagline": "Factory-direct sourcing, quality goods, worldwide delivery",
+    "site.promoBar": "20 Years of China Export Experience \u2014 Request a Quote Today",
+    "seo.homeTitle": "Commodities From China | Bulk Commodities, Metals & Building Materials",
+    "seo.homeDescription": "Chinese trading house exporting bulk commodities and building materials to Southeast Asia, Africa and Belt & Road markets. Carbon black, PVC, PP, PE, titanium dioxide, minerals, copper, aluminum, steel, cement clinker, glass and ceramics. 20 years of export experience, AAA credit, cheap service fees. Request a quote.",
+    "seo.defaultKeywords": "bulk commodities china, commodity trading house, pvc resin wholesale, carbon black export, titanium dioxide, industrial minerals, cement clinker, steel export, b2b commodity supplier, belt and road trade",
+    "content.featuredEyebrow": "Commodities We Export",
+    "content.featuredHeading": "Bulk Products for Growing Markets",
+    "content.featuredTagline": "Carbon black, PVC, polymers, minerals, metals and building materials for Southeast Asia, Africa and Belt & Road buyers.",
     "content.brandStory": JSON.stringify({
       eyebrow: "Our Story",
-      title: "From China to the World",
+      title: "20 Years Connecting Chinese Industry with Global Buyers",
       paragraphs: [
-        "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-        "We partner with manufacturers and suppliers across China who have mastered their craft over decades, from LED lighting produced in modern factories to kitchenware shaped by industrial precision.",
-        "Whether you shop retail or buy wholesale in bulk, we deliver factory-direct quality with reliable global shipping and dedicated support.",
+        "We are a Chinese trading house that bridges the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
+        "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed here, just send us your requirement \u2014 we respond fast with quality, cost-effective supply.",
       ],
       ctaLabel: "Read Our Story",
       ctaHref: "/pages/about",
     }),
     "content.promo1": JSON.stringify({
-      eyebrow: "Modern Manufacturing",
-      title: "Quality Electronics",
-      body: "From LED lighting and power banks to wireless audio — our electronics are manufactured to strict quality standards with global certifications. Built for retail, private label, and wholesale order quantities.",
+      eyebrow: "Why Work With Us",
+      title: "Your Cost-Effective Sourcing Partner",
+      body: "We connect Chinese SOEs, listed companies and large enterprises with overseas buyers \u2014 charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
       features: [
-        { title: "Factory-Direct Pricing", description: "Bulk pricing with tiered discounts for wholesale orders" },
-        { title: "Certified Quality", description: "CE, FCC, RoHS certified products with batch inspection" },
-        { title: "Private Label Ready", description: "Custom branding and packaging for retail programs" },
-        { title: "Reliable Supply", description: "Consistent stock and dependable shipping schedules" },
+        { title: "Cheap Service Fees", description: "Lean, transparent charges \u2014 you pay for the goods and freight, not inflated margins" },
+        { title: "Factory Access at Scale", description: "Direct cooperation with Chinese state-owned, listed and major enterprises" },
+        { title: "Fast Response to Any Inquiry", description: "Commodity not listed? Send your requirement and we respond quickly" },
+        { title: "20 Years, AAA Credit", description: "Two decades of exports, trusted by well-known companies worldwide" },
       ],
       ctaLabel: "View All Products",
       ctaHref: "/products",
     }),
     "content.promo2": JSON.stringify({
-      eyebrow: "Everyday Essentials",
-      title: "Home & Kitchen",
-      tagline: "Practical, durable kitchenware and household goods for daily life",
+      eyebrow: "Commodities We Export",
+      title: "Bulk Products for Growing Markets",
+      tagline: "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies.",
       collections: [
-        { title: "Kitchenware", description: "Cookware, dinnerware, and prep tools", href: "/products" },
-        { title: "Storage", description: "Food containers and organization solutions", href: "/products" },
-        { title: "Textiles", description: "Towels, linens, and kitchen textiles", href: "/products" },
-        { title: "Cleaning", description: "Household cleaning essentials", href: "/products" },
+        { title: "Chemical & Polymer", description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide", href: "/categories/chemical-products" },
+        { title: "Minerals & Powders", description: "Quartz sand, barite, talc, calcium carbonate and more", href: "/categories/minerals" },
+        { title: "Metals", description: "Copper, aluminum and steel for industry and construction", href: "/categories/metal-products" },
+        { title: "Building Materials", description: "Cement clinker, float glass and building ceramics", href: "/categories/building-materials" },
       ],
-      ctaLabel: "Explore All Collections",
+      ctaLabel: "View All Products",
       ctaHref: "/products",
     }),
     "content.testimonials": JSON.stringify([
       {
-        name: "Sarah M.",
-        location: "New York",
+        name: "Siti Rahayu",
+        location: "Jakarta, Indonesia",
         rating: 5,
-        text: "We order LED lighting products in bulk from Commodities From China every quarter. Consistent quality, on-time delivery, and pricing that keeps us competitive.",
-        product: "LED Lighting Range",
+        text: "We import carbon black and PVC resin for our plastic manufacturing lines. Consistent quality, honest pricing, and the team responds to every enquiry within hours.",
+        product: "Carbon Black & PVC Resin",
       },
       {
-        name: "Emily R.",
-        location: "Guangzhou",
+        name: "Kevin Okafor",
+        location: "Lagos, Nigeria",
         rating: 5,
-        text: "The dinnerware set is excellent value for the wholesale price. My customers love the quality, and the supplier communication was fast and professional.",
-        product: "Dinnerware Collection",
+        text: "They quoted our aluminum and steel order quickly, handled all export documentation, and the goods arrived exactly to spec. Their 20 years of experience show in every shipment.",
+        product: "Aluminum & Steel",
       },
       {
-        name: "Jessica K.",
-        location: "London",
+        name: "Nguyen Thanh",
+        location: "Ho Chi Minh City, Vietnam",
         rating: 5,
-        text: "Reliable sourcing partner. The power banks sell out quickly at our retail store. Finally a supplier that delivers what they promise at factory-direct prices.",
-        product: "Portable Power Banks",
+        text: "I requested a commodity that wasn't on their site \u2014 cement clinker for our trading business. They responded fast and sourced it from a major Chinese supplier.",
+        product: "Cement Clinker",
       },
     ]),
     "content.instagram": JSON.stringify({
@@ -159,49 +164,96 @@ async function seedSiteSettings() {
     }),
     "content.faq": JSON.stringify([
       {
-        q: "What is the minimum order quantity (MOQ)?",
-        a: "MOQs vary by product. Most electronics and kitchenware items can be ordered at retail quantities, while some bulk items have a minimum of 100 units. Contact us for detailed MOQ and tiered wholesale pricing.",
+        q: "Are you a manufacturer or a trading company?",
+        a: "We are a China trading house, not a manufacturer. We connect Chinese state-owned enterprises, listed companies and large manufacturers with overseas buyers \u2014 especially small and mid-sized importers \u2014 and handle sourcing, contracts, inspection and export documentation for you.",
       },
       {
-        q: "Can I order in bulk for wholesale or private label?",
-        a: "Yes. We support wholesale orders with tiered discounts, and offer private label services including custom branding, packaging, and product labeling for qualified orders.",
+        q: "What are your service fees?",
+        a: "Our service fees are deliberately low. You pay for the goods and the freight; trading fees are lean, transparent and quoted up front, so there are no surprise margins hidden in the price.",
       },
       {
-        q: "How long does shipping take?",
-        a: "Standard shipping takes 5-8 business days. Express shipping takes 2-3 business days. Free standard shipping is available on orders over the free-shipping threshold.",
+        q: "The commodity I need isn't listed on your site. Can you still supply it?",
+        a: "Yes. Send us the product name, grade, specification, quantity and destination port. Our supply relationships are much wider than the online catalog and we will confirm availability and pricing quickly.",
       },
       {
-        q: "What is your return policy?",
-        a: "We offer a 30-day return window for unused products in original packaging. Defective items are replaced or refunded at no cost. Refunds are processed within 5-7 business days.",
-      },
-      {
-        q: "Do you ship internationally?",
-        a: "Yes, we ship worldwide. International orders may be subject to customs duties and taxes, which are the customer's responsibility. We provide tracking on all orders.",
-      },
-      {
-        q: "Are your products certified?",
-        a: "Most of our electronics carry CE, FCC, and RoHS certifications, and kitchenware meets food-safe standards. Certification documents are available upon request.",
+        q: "Do you work with small buyers?",
+        a: "Absolutely. Our focus is connecting China's large enterprises with overseas small and mid-sized customers. No minimum importer size \u2014 we adapt volumes to your needs.",
       },
     ]),
   }
 
   for (const [key, value] of Object.entries(settings)) {
     const existing = await prisma.siteSetting.findUnique({ where: { key } })
-    if (existing) continue
-    await prisma.siteSetting.create({ data: { key, value } })
+    if (!existing) {
+      await prisma.siteSetting.create({ data: { key, value } })
+      console.log(`Site setting created: ${key}`)
+      continue
+    }
+    if (isOldPositioningDefault(key, existing.value)) {
+      await prisma.siteSetting.update({ where: { key }, data: { value } })
+      console.log(`Site setting upgraded: ${key}`)
+    }
   }
   console.log("Site settings seeded.")
+}
+
+/**
+ * Detects whether a stored setting still holds the pre-repositioning default
+ * (electronics/kitchenware copy). If so the seed may safely overwrite it with
+ * the new commodity-trading-house copy; any setting that has been customized
+ * in the admin panel is left untouched.
+ */
+function isOldPositioningDefault(key: string, value: string): boolean {
+  const jsonHas = (pred: (parsed: unknown) => boolean) => {
+    try {
+      return pred(JSON.parse(value))
+    } catch {
+      return false
+    }
+  }
+  switch (key) {
+    case "site.slogan":
+      return value === "Sourced from China, delivered worldwide"
+    case "site.description":
+      return value.startsWith("Direct sourcing from trusted Chinese factories. Quality electronics")
+    case "site.promoBar":
+      return value === "New customers save 10%"
+    case "seo.homeTitle":
+      return value.includes("Wholesale Electronics & Daily Commodities")
+    case "seo.homeDescription":
+      return value.startsWith("Factory-direct sourcing from China for retail and wholesale B2B buyers")
+    case "seo.defaultKeywords":
+      return value.includes("led lighting wholesale")
+    case "content.featuredEyebrow":
+      return value === "Explore"
+    case "content.featuredHeading":
+      return value === "Our Collections"
+    case "content.featuredTagline":
+      return value === "Factory-direct sourcing, quality goods, worldwide delivery"
+    case "content.brandStory":
+      return jsonHas((o) => (o as { title?: string }).title === "From China to the World")
+    case "content.promo1":
+      return jsonHas((o) => (o as { title?: string }).title === "Quality Electronics")
+    case "content.promo2":
+      return jsonHas((o) => (o as { title?: string }).title === "Home & Kitchen")
+    case "content.testimonials":
+      return jsonHas((arr) => Array.isArray(arr) && (arr as { name?: string }[]).some((t) => t.name === "Sarah M."))
+    case "content.faq":
+      return jsonHas((arr) => Array.isArray(arr) && (arr as { q?: string }[]).some((f) => (f.q || "").includes("minimum order quantity")))
+    default:
+      return false
+  }
 }
 
 const defaultPages: { title: string; slug: string; excerpt: string; content: string; seoTitle: string; seoDescription: string; seoKeywords: string }[] = [
   {
     title: "About Us",
     slug: "about",
-    excerpt: "Our story — sourcing quality goods from China for the world.",
-    content: `<h1>From China to the World</h1><p>Our journey began in the factories and workshops of China — from electronics assembly lines in Shenzhen to kitchenware manufacturers in Guangzhou. We traveled the country to find makers who share one standard: quality you can trust.</p><p>We believe that buying well is simpler when good products move directly from maker to buyer. That's why we handle sourcing, quality control, and shipping ourselves — so you get factory-direct value every time.</p>`,
+    excerpt: "A Chinese trading house connecting large enterprises with overseas buyers for 20 years.",
+    content: `<h1>About Us</h1><p>We are a China trading house with 20 years of export experience. Our business connects the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers, especially small and mid-sized importers in Southeast Asia, Africa and other Belt &amp; Road markets.</p><p>We keep our service fees lean, respond quickly to every inquiry \u2014 including commodities not listed on our site \u2014 and deliver quality, cost-effective goods backed by an AAA credit rating and long-standing relationships with well-known companies worldwide.</p>`,
     seoTitle: "About Us",
-    seoDescription: "Discover how Commodities From China sources quality electronics, kitchenware, and everyday goods directly from Chinese suppliers.",
-    seoKeywords: "about us, our story, sourcing from china, b2b wholesale",
+    seoDescription: "A Chinese trading house with 20 years of export experience connecting state-owned enterprises, listed companies and large manufacturers with overseas buyers.",
+    seoKeywords: "about us, commodity trading house, china export, b2b trading",
   },
   {
     title: "Contact Us",
@@ -244,11 +296,30 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
 async function seedDefaultPages() {
   for (const page of defaultPages) {
     const existing = await prisma.page.findUnique({ where: { slug: page.slug } })
-    if (existing) continue
-    await prisma.page.create({
-      data: { ...page, isPublished: true },
-    })
-    console.log(`Page created: ${page.slug}`)
+    if (!existing) {
+      await prisma.page.create({
+        data: { ...page, isPublished: true },
+      })
+      console.log(`Page created: ${page.slug}`)
+      continue
+    }
+    if (
+      page.slug === "about" &&
+      existing.excerpt === "Our story — sourcing quality goods from China for the world."
+    ) {
+      await prisma.page.update({
+        where: { slug: page.slug },
+        data: {
+          title: page.title,
+          excerpt: page.excerpt,
+          content: page.content,
+          seoTitle: page.seoTitle,
+          seoDescription: page.seoDescription,
+          seoKeywords: page.seoKeywords,
+        },
+      })
+      console.log("About page upgraded to commodity positioning.")
+    }
   }
 }
 
@@ -512,17 +583,92 @@ async function seedBlogPostTranslations() {
   console.log("Blog post translations seeded.")
 }
 
-async function seedSiteFaqs() {
-  const existing = await prisma.siteFaq.findFirst()
-  if (existing) {
-    console.log("Site FAQs already exist, skipping translations seed.")
-    return
+async function seedCommodityCategories() {
+  for (const cat of commodityCategoriesSeed) {
+    const existing = await prisma.category.findUnique({ where: { slug: cat.slug } })
+    if (existing) {
+      if (existing.isFeatured !== true || existing.isActive !== true) {
+        await prisma.category.update({
+          where: { slug: cat.slug },
+          data: { isFeatured: true, isActive: true },
+        })
+      }
+      continue
+    }
+    await prisma.category.create({ data: { ...cat } })
+    console.log(`Category created: ${cat.slug}`)
+  }
+}
+
+async function seedCommodityProducts() {
+  const slugToId = new Map<string, string>()
+  for (const c of commodityCategoriesSeed) {
+    const row = await prisma.category.findUnique({ where: { slug: c.slug }, select: { id: true } })
+    if (row) slugToId.set(c.slug, row.id)
   }
 
-  for (let i = 0; i < faqTranslationsSeed.length; i++) {
-    const perLocale = faqTranslationsSeed[i]
+  for (const p of commodityProductsSeed) {
+    const existing = await prisma.product.findUnique({ where: { slug: p.slug } })
+    if (existing) continue
+
+    const categoryId = slugToId.get(p.categorySlug)
+    await prisma.product.create({
+      data: {
+        name: p.name,
+        slug: p.slug,
+        sku: p.sku,
+        shortDescription: p.shortDescription,
+        description: p.description,
+        unitPrice: p.unitPrice,
+        originalPrice: p.originalPrice,
+        currency: "USD",
+        stock: 0,
+        status: "ACTIVE",
+        isFeatured: p.isFeatured,
+        isBestSeller: p.isBestSeller,
+        isNew: p.isNew,
+        isHomeFeatured: p.isHomeFeatured,
+        sortOrder: p.sortOrder,
+        tags: p.tags,
+        seoTitle: p.seoTitle,
+        seoDescription: p.seoDescription,
+        seoKeywords: p.seoKeywords,
+        categories: categoryId ? { create: [{ categoryId }] } : undefined,
+      },
+    })
+    console.log(`Product created: ${p.slug}`)
+  }
+}
+
+async function seedCommodityBlogPosts() {
+  for (const post of commodityBlogPostsSeed) {
+    const existing = await prisma.blogPost.findUnique({ where: { slug: post.slug } })
+    if (existing) continue
+    await prisma.blogPost.create({
+      data: {
+        ...post,
+        publishedAt: new Date(post.publishedAt),
+        isPublished: true,
+      },
+    })
+    console.log(`Blog post created: ${post.slug}`)
+  }
+}
+
+async function seedSiteFaqs() {
+  const allFaqs = [...faqTranslationsSeed, ...commodityFaqsSeed]
+
+  let createdCount = 0
+  for (let i = 0; i < allFaqs.length; i++) {
+    const perLocale = allFaqs[i]
     const english = perLocale.en
     if (!english) continue
+
+    const exists = await prisma.siteFaqTranslation.findFirst({
+      where: { locale: "en", question: english.q },
+      select: { id: true },
+    })
+    if (exists) continue
 
     const faq = await prisma.siteFaq.create({
       data: {
@@ -536,8 +682,9 @@ async function seedSiteFaqs() {
         data: { siteFaqId: faq.id, locale, question: data.q, answer: data.a },
       })
     }
+    createdCount++
   }
-  console.log("Site FAQs seeded.")
+  console.log(`Site FAQs ensured. ${createdCount} new FAQ(s) created.`)
 }
 
 main()

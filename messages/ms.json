@@ -60,9 +60,9 @@
     "language": "Pilih bahasa",
     "currency": "Mata Wang",
     "openChat": "Buka chat",
-    "promoBar": "Pelanggan baharu jimat 10%",
-    "slogan": "Dari China, ke seluruh dunia",
-    "description": "Bekalan langsung daripada kilang China yang dipercayai. Elektronik, perkakas dapur, dan barangan harian berkualiti untuk pembeli B2B runcit dan borong di seluruh dunia."
+    "promoBar": "20 Tahun Pengalaman Eksport China — Mohon Sebut Harga Hari Ini",
+    "slogan": "Bekalan China, bersambung dengan pasaran anda",
+    "description": "Rumah dagang China yang menghubungkan syarikat milik kerajaan, syarikat tersenarai, dan perusahaan besar dengan pembeli di luar negara — mengeksport komoditi pukal, logam, dan bahan binaan ke Asia Tenggara, Afrika, dan pasaran Jalur dan Jalan sejak 20 tahun."
   },
   "footer": {
     "shop": "Kedai",
@@ -75,137 +75,147 @@
     "newArrivals": "Produk Baharu",
     "bestSellers": "Produk Terlaris",
     "shippingReturns": "Penghantaran & Pemulangan",
-    "about": "Sumber terus dari China. Elektronik berkualiti, peralatan dapur dan barangan harian untuk pembeli runcit dan borong B2B di seluruh dunia.",
+    "about": "Rumah dagang China yang menghubungkan syarikat milik kerajaan, syarikat tersenarai, dan perusahaan besar dengan pembeli di Asia Tenggara, Afrika, dan pasaran Jalur dan Jalan sejak 20 tahun.",
     "hours": "Isn–Jum, 9:00–18:00 (CST)"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "Pembelian Sumber B2B Terus dari Kilang",
-          "subtitle": "Dibekalkan dari China, dihantar ke seluruh dunia",
-          "description": "Elektronik berkualiti, lampu LED, dan keperluan harian pada harga borong",
+          "title": "Komoditi Pukal dari China, Dihantar ke Pasaran Anda",
+          "subtitle": "Pakar Perdagangan Jalur dan Jalan",
+          "description": "Karbon hitam, PVC, logam, mineral, dan bahan binaan dihantar kepada pembeli Asia Tenggara dan Afrika pada harga kompetitif",
           "cta": "Lihat Produk"
         },
         {
-          "title": "Harga Borong",
-          "subtitle": "Dibina untuk peruncit dan pengedar",
-          "description": "Harga borong berperingkat, pilihan jenama peribadi, dan jadual bekalan yang boleh dipercayai",
-          "cta": "Terokai Kategori"
+          "title": "Satu Rakan Perdagangan, 20 Tahun Eksport",
+          "subtitle": "Perkhidmatan Perdagangan Berkelas AAA",
+          "description": "Disokong oleh kerjasama jangka panjang dengan syarikat milik kerajaan, syarikat tersenarai, dan perusahaan besar China",
+          "cta": "Mengapa Kami"
         },
         {
-          "title": "Kualiti yang Boleh Dipercayai",
-          "subtitle": "Barangan diperakui, diperiksa setiap kelompok",
-          "description": "Produk diperakui CE, FCC, dan RoHS dengan pemeriksaan sebelum penghantaran",
-          "cta": "Kisah Kami"
+          "title": "Mencari Komoditi yang Tidak Tersenarai?",
+          "subtitle": "Beritahu Kami Keperluan Anda",
+          "description": "Hantar spesifikasi dan destinasi anda — pasukan kami membalas pantas dengan bekalan berkualiti dan kos efektif",
+          "cta": "Hubungi Kami"
         }
       ],
       "slideLabel": "Slide {index}"
     },
     "featuredCategories": {
-      "eyebrow": "Terokai",
-      "heading": "Koleksi Kami",
+      "eyebrow": "Komoditi yang Kami Eksport",
+      "heading": "Produk Pukal untuk Pasaran Berkembang",
       "cards": [
         {
-          "title": "Elektronik",
-          "subtitle": "LED & Peranti Pintar",
-          "description": "Elektronik dan lampu LED diperakui pada harga borong"
+          "title": "Produk Kimia",
+          "subtitle": "Kimia Industri & Polimer",
+          "description": "Karbon hitam, PVC, PP, PE, titanium dioksida, dan zink oksida"
         },
         {
-          "title": "Rumah & Dapur",
-          "subtitle": "Keperluan Harian",
-          "description": "Barangan praktikal dan tahan lasak dari kilang diperakui"
+          "title": "Mineral & Serbuk",
+          "subtitle": "Mineral Industri & Bahan Pengisi",
+          "description": "Pasir kuarza, barit, talc, kalsium karbonat, barium sulfat, dan banyak lagi"
+        },
+        {
+          "title": "Logam",
+          "subtitle": "Kuprum, Aluminium & Keluli",
+          "description": "Bilet, jongkong, dan profil untuk industri dan pembinaan"
+        },
+        {
+          "title": "Bahan Binaan",
+          "subtitle": "Simen, Kaca & Seramik",
+          "description": "Klinker simen, kaca float, dan seramik binaan"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "Kisah Kami",
-      "title": "Barangan Berkualiti, Terus dari Sumber",
+      "title": "20 Tahun Menghubungkan Industri China dengan Pembeli Global",
       "paragraphs": [
-        "Commodities From China diasaskan atas kepercayaan yang mudah — bahawa barangan berkualiti harus mengalir terus dari pengeluar China kepada pembeli di seluruh dunia, tanpa lapisan perantara dan markup yang tidak perlu.",
-        "Kami membina perkongsian jangka panjang dengan pengeluar diperakui di seluruh China — dari kilang elektronik di Shenzhen hingga pengeluar peralatan dapur di Guangzhou — dan memeriksa setiap kelompok sebelum dihantar."
+        "Kami ialah rumah dagang China yang merapatkan jurang antara perusahaan terkemuka negara ini — kumpulan milik kerajaan, syarikat tersenarai, dan pengeluar besar — dengan pembeli di Asia Tenggara, Afrika, dan pasaran Jalur dan Jalan yang lain.",
+        "Dalam dua dekad eksport, kami telah membina hubungan perniagaan yang berkekalan dengan syarikat terkenal di seluruh dunia, memperoleh penarafan kredit AAA, dan mengekalkan yuran perkhidmatan yang rendah. Untuk komoditi yang tidak tersenarai, hantar sahaja keperluan anda — kami membalas pantas dengan bekalan berkualiti dan kos efektif."
       ],
       "cta": "Baca Kisah Kami"
     },
     "promo": {
-      "eyebrow": "Mengapa Beli Terus",
-      "title": "Elektronik Terus dari Kilang",
-      "body": "Kami bekerjasama dengan pengeluar diperakui di seluruh China untuk membawakan elektronik berkualiti pada harga borong — diuji, didokumenkan, dan dihantar ke seluruh dunia.",
+      "eyebrow": "Mengapa Bekerja dengan Kami",
+      "title": "Rakan Kongsi Perolehan Anda yang Kos Efektif",
+      "body": "Kami menghubungkan syarikat milik kerajaan, syarikat tersenarai, dan perusahaan besar China dengan pembeli di luar negara — dengan yuran perkhidmatan rendah, balasan pantas, dan komoditi berkualiti pada harga kompetitif.",
       "features": [
         {
-          "title": "Kualiti Diperakui",
-          "description": "Produk diperakui CE, FCC, dan RoHS yang disahkan sebelum penghantaran"
+          "title": "Yuran Perkhidmatan Murah",
+          "description": "Caj ringkas dan telus — anda bayar untuk barang dan pengangkutan, bukan margin yang melambung"
         },
         {
-          "title": "Harga Terus dari Kilang",
-          "description": "Kadar borong tanpa orang tengah atau markup runcit"
+          "title": "Akses Kilang Berskala Besar",
+          "description": "Kerjasama terus dengan syarikat milik kerajaan, tersenarai, dan perusahaan besar China"
         },
         {
-          "title": "Pilihan MOQ Rendah",
-          "description": "Mula dengan kuantiti kecil mengikut SKU standard, tingkatkan apabila anda membesar"
+          "title": "Balasan Pantas untuk Sebarang Pertanyaan",
+          "description": "Komoditi tidak tersenarai? Hantar keperluan anda dan kami membalas dengan pantas"
         },
         {
-          "title": "Logistik Global",
-          "description": "Pilihan penghantaran udara dan laut dengan penjejakan sehingga ke depan pintu"
+          "title": "20 Tahun, Kredit AAA",
+          "description": "Dua dekad eksport, dipercayai syarikat terkenal di seluruh dunia"
         }
       ],
       "cta": "Lihat Semua Produk"
     },
     "carouselFeatured": {
-      "title": "Pilihan Utama",
-      "subtitle": "Dipilih khas untuk anda musim ini"
+      "title": "Komoditi Paling Banyak Dieksport",
+      "subtitle": "Polimer, bijih, dan bahan kimia pukal dengan permintaan global tinggi"
     },
     "carouselBestSellers": {
-      "title": "Produk Terlaris",
-      "subtitle": "Produk paling digemari, pilihan anda"
+      "title": "Paling Banyak Dicari",
+      "subtitle": "Komoditi dengan permintaan tinggi dalam kalangan pembeli global"
     },
     "collections": {
-      "eyebrow": "Rumah & Dapur",
-      "title": "Keperluan Harian",
-      "tagline": "Barangan praktikal dan tahan lasak untuk rumah, hotel, dan pembeli borong",
+      "eyebrow": "Komoditi yang Kami Eksport",
+      "title": "Produk Pukal untuk Pasaran Berkembang",
+      "tagline": "Baris komoditi yang berkembang pesat untuk pengimport dan pengedar di Asia Tenggara, Afrika, dan ekonomi Jalur dan Jalan yang lain",
       "items": [
         {
-          "title": "Peralatan Dapur",
-          "description": "Perkakas memasak, pinggan mangkuk, dan kelengkapan bar"
+          "title": "Kimia & Polimer",
+          "description": "Karbon hitam, PVC, PP, PE, titanium dioksida, dan zink oksida"
         },
         {
-          "title": "Penyimpanan",
-          "description": "Bekas dan pengatur untuk setiap bilik"
+          "title": "Mineral & Serbuk",
+          "description": "Pasir kuarza, barit, talc, kalsium karbonat, dan banyak lagi"
         },
         {
-          "title": "Pinggan Mangkuk",
-          "description": "Set makanan untuk rumah dan hospitaliti"
+          "title": "Logam",
+          "description": "Kuprum, aluminium, dan keluli untuk industri dan pembinaan"
         },
         {
-          "title": "Hiasan Rumah",
-          "description": "Dekorasi berfungsi yang digemari penjual semula"
+          "title": "Bahan Binaan",
+          "description": "Klinker simen, kaca float, dan seramik binaan"
         }
       ],
       "cta": "Terokai Rumah & Dapur"
     },
     "testimonials": {
       "eyebrow": "Ulasan Pembeli",
-      "heading": "Dipercayai Pengimport Seluruh Dunia",
+      "heading": "Dipercayai Pengimport di Asia Tenggara & Afrika",
       "verifiedBuyerOf": "Pembeli Disahkan {product}",
       "testimonialLabel": "Ulasan {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "Hamburg, Jerman",
-          "text": "Kami menjual semula lampu malam LED dan power bank di kedai runcit kami. Kualiti konsisten, penghantaran tepat pada masa, dan harga yang mengekalkan margin sebenar. Mereka menjadi pembekal utama kami.",
-          "product": "Lampu Malam LED Sensor Gerakan"
+          "name": "Siti Rahayu",
+          "location": "Jakarta, Indonesia",
+          "text": "Kami mengimport karbon hitam dan resin PVC untuk barisan pengeluaran plastik kami. Kualiti konsisten, harga jujur, dan pasukan membalas setiap pertanyaan dalam beberapa jam.",
+          "product": "Karbon Hitam & Resin PVC"
         },
         {
-          "name": "Aline B.",
-          "location": "Lyon, Perancis",
-          "text": "Set pinggan mangkuk seramik habis dijual setiap musim. Gambar pemeriksaan sebelum penghantaran dan sijil memberi kami keyakinan penuh, dan MOQ cukup fleksibel untuk kami bermula kecil.",
-          "product": "Set Pinggan Mangkuk Seramik"
+          "name": "Kevin Okafor",
+          "location": "Lagos, Nigeria",
+          "text": "Mereka mengkuotakan pesanan aluminium dan keluli kami dengan pantas, menguruskan semua dokumentasi eksport, dan barang tiba tepat mengikut spesifikasi. Pengalaman 20 tahun mereka terserlah dalam setiap penghantaran.",
+          "product": "Aluminium & Keluli"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "Singapura",
-          "text": "Akhirnya rakan kongsi pembelian sumber yang menguruskan kawalan kualiti dan pengangkutan dari awal hingga akhir. Pesanan pertama earbuds TWS kami tiba tepat pada masa dan tiada kecacatan. Sangat disyorkan untuk pembeli B2B.",
-          "product": "Earbud Wayarles TWS Pro"
+          "name": "Nguyen Thanh",
+          "location": "Bandar Ho Chi Minh, Vietnam",
+          "text": "Saya meminta komoditi yang tiada dalam laman mereka — klinker simen untuk perniagaan dagangan kami. Mereka membalas pantas dan mendapatkannya daripada pembekal utama China.",
+          "product": "Klinker Simen"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "Kekal Berhubung",
-      "heading": "Sertai Kalangan Dalaman Kami",
-      "body": "Jadilah yang pertama menemui produk baharu, koleksi eksklusif, dan terima potongan 10% untuk pesanan pertama anda.",
+      "heading": "Dapatkan Kemas Kini Pasaran & Sebut Harga",
+      "body": "Terima kemas kini pasaran komoditi, senarai harga baharu, dan amaran bekalan untuk keperluan perolehan anda.",
       "placeholder": "Masukkan emel anda",
       "subscribing": "Menghantar...",
       "subscribe": "Langgan",
-      "success": "Selamat datang ke kalangan kami! Semak peti masuk anda untuk kod potongan 10%.",
+      "success": "Berjaya! Kami akan memaklumkan anda tentang pasaran dan bekalan.",
       "error": "Berlaku ralat. Sila cuba lagi.",
       "disclaimer": "Tiada spam, selamanya. Nyahlanggan pada bila-bila masa. Dengan melanggan, anda bersetuju dengan Dasar Privasi kami."
     },
     "seo": {
-      "heading": "Terokai Koleksi Kami"
+      "heading": "Terokai Komoditi Kami"
     },
-    "seoParagraph": "Terokai koleksi {siteName}: elektronik diperakui, lampu LED, peralatan dapur, dan barangan keperluan isi rumah harian. Dibina untuk pembeli runcit dan pembeli borong B2B — beli dalam talian, tempah secara pukal, atau hubungi pasukan kami untuk harga perdagangan dan pertanyaan perkongsian.",
+    "seoParagraph": "Terokai julat komoditi {siteName}: karbon hitam, PVC, PP, PE, titanium dioksida, mineral industri, logam, dan bahan binaan. Dibina untuk pengimport dan pengedar di Asia Tenggara, Afrika, dan pasaran Jalur dan Jalan — tempah secara pukal atau hantar keperluan anda untuk sebarang komoditi yang tidak tersenarai.",
     "links": {
       "allProducts": "Semua Produk",
       "faq": "Soalan Lazim",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "Semua Produk",
-    "description": "Terokai koleksi lengkap kami merangkumi elektronik, lampu LED, dan barangan isi rumah.",
-    "metaDescription": "Terokai koleksi lengkap kami merangkumi elektronik, lampu LED, peralatan dapur, dan barangan isi rumah. Kualiti terus dari kilang untuk pembeli runcit dan borong B2B.",
+    "description": "Terokai komoditi pukal kami: karbon hitam, PVC, PP, PE, titanium dioksida, mineral industri, logam, dan bahan binaan.",
+    "metaDescription": "Terokai julat komoditi pukal kami yang dieksport dari China ke Asia Tenggara dan Afrika: bahan kimia, polimer, mineral, logam, dan bahan binaan. Harga kompetitif dengan balasan pantas untuk permintaan luar senarai.",
     "filters": {
       "sortBy": "Susun Mengikut",
       "newest": "Terbaharu",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "Jurnal",
-    "metaDescription": "Panduan pengimportan, tip pembelian sumber, dan pandangan pasaran daripada jurnal Commodities From China.",
+    "metaDescription": "Pandangan pasaran komoditi, panduan pembelian sumber, dan kepakaran perdagangan daripada jurnal Commodities From China.",
     "eyebrow": "Panduan & Pandangan",
     "heading": "Jurnal",
-    "subtitle": "Pengetahuan praktikal tentang pengimportan, pembelian sumber, dan logistik — daripada pasukan dan rakan kongsi kami.",
+    "subtitle": "Trend pasaran komoditi, panduan pembelian sumber, dan pengetahuan logistik perdagangan untuk pengimport di Asia Tenggara, Afrika, dan pasaran Jalur dan Jalan.",
     "all": "Semua",
     "by": "Oleh {author}",
     "noPosts": "Tiada siaran lagi.",
@@ -340,7 +350,16 @@
       "sourcing": "Pemerolehan",
       "suppliers": "Pembekal",
       "tariffs": "Duti",
-      "wholesale": "Borong"
+      "wholesale": "Borong",
+      "chemicals": "Bahan Kimia",
+      "polymers": "Polimer",
+      "plastics": "Plastik",
+      "minerals": "Mineral",
+      "metals": "Logam",
+      "building-materials": "Bahan Binaan",
+      "belt-road": "Jalur dan Jalan",
+      "steel": "Keluli",
+      "cement": "Simen"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "Hasil Carian",
-    "description": "Cari dalam koleksi kami: elektronik, lampu LED, peralatan dapur, dan barangan isi rumah.",
+    "description": "Cari julat komoditi pukal kami: karbon hitam, PVC, polimer, mineral, logam, dan bahan binaan.",
     "resultsFor": "Hasil untuk \"{query}\"",
     "showingResults": "Menunjukkan {count} hasil untuk \"{query}\"",
     "enterTerm": "Masukkan istilah carian untuk mencari produk"

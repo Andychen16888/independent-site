@@ -60,9 +60,9 @@
     "language": "选择语言",
     "currency": "货币",
     "openChat": "打开聊天",
-    "promoBar": "新客户立减 10%",
-    "slogan": "源自中国，全球送达",
-    "description": "从值得信赖的中国工厂直接采购，为全球零售和批发B2B买家提供优质电子产品、厨具及日用商品。"
+    "promoBar": "20 年对华出口经验 —— 立即询价",
+    "slogan": "中国供应，链接您的市场",
+    "description": "我们是连接中国国企、上市公司与大型企业同海外买家之间的贸易服务公司，专注向东南亚、非洲及一带一路沿线市场出口大宗商品、金属与建材，已有 20 年出口经验。"
   },
   "footer": {
     "shop": "商店",
@@ -75,137 +75,147 @@
     "newArrivals": "新品上架",
     "bestSellers": "热销榜单",
     "shippingReturns": "配送与退货",
-    "about": "商品直接源自中国。为您提供优质电子产品、厨房用品及日常热销商品，适用于零售与批发 B2B 采购。",
+    "about": "我们是中国贸易服务公司，专注连接中国国企、上市公司、大型企业与东南亚、非洲及一带一路沿线市场的买家，已有 20 年出口经验。",
     "hours": "周一至周五 上午9:00-下午6:00（北京时间）"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "工厂直供 B2B 采购",
-          "subtitle": "源自中国，全球送达",
-          "description": "批发价供应优质电子产品、LED 照明及日用百货",
-          "cta": "浏览产品"
+          "title": "中国大宗商品，直达您的市场",
+          "subtitle": "一带一路贸易专家",
+          "description": "炭黑、PVC、金属、矿产与建材，以有竞争力的价格运抵东南亚与非洲买家",
+          "cta": "查看产品"
         },
         {
-          "title": "批发价格",
-          "subtitle": "面向零售商与分销商",
-          "description": "阶梯批量价格、贴牌定制与稳定供货计划",
-          "cta": "探索分类"
+          "title": "一个贸易伙伴，20 年出口经验",
+          "subtitle": "AAA 级信用贸易服务",
+          "description": "与中国国企、上市公司及大型企业长期合作——品质可溯、价格公道、响应迅速",
+          "cta": "为何选择我们"
         },
         {
-          "title": "值得信赖的品质",
-          "subtitle": "认证产品，每批检验",
-          "description": "CE、FCC 和 RoHS 认证产品，发货前全面检验",
-          "cta": "了解我们"
+          "title": "寻找平台未列出的商品？",
+          "subtitle": "告诉我们您的需求",
+          "description": "发送您的规格与目的地——我们快速响应，提供优质、高性价比的货源",
+          "cta": "联系我们"
         }
       ],
       "slideLabel": "第 {index} 张"
     },
     "featuredCategories": {
-      "eyebrow": "探索",
-      "heading": "精选系列",
+      "eyebrow": "我们出口的商品",
+      "heading": "面向新兴市场的大宗产品",
       "cards": [
         {
-          "title": "电子产品",
-          "subtitle": "LED 与智能设备",
-          "description": "批发价供应经认证的电子产品与 LED 照明"
+          "title": "化工产品",
+          "subtitle": "工业化学品与聚合物",
+          "description": "炭黑、PVC、PP、PE、钛白粉与氧化锌"
         },
         {
-          "title": "家居厨房",
-          "subtitle": "日常必需品",
-          "description": "源自认证工厂的实用耐用商品"
+          "title": "矿产与粉体",
+          "subtitle": "工业矿产与填料",
+          "description": "石英砂、重晶石、滑石粉、碳酸钙、硫酸钡等"
+        },
+        {
+          "title": "金属材料",
+          "subtitle": "铜、铝与钢材",
+          "description": "方坯、锭材与型材，服务工业与建筑"
+        },
+        {
+          "title": "建材",
+          "subtitle": "水泥、玻璃与陶瓷",
+          "description": "水泥熟料、玻璃原片与建筑陶瓷"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "我们的故事",
-      "title": "优质商品，源头直供",
+      "title": "20 年连接中国工业与全球买家",
       "paragraphs": [
-        "Commodities From China 的创立源于一个简单的信念——优质商品应当从中国制造商直接流向世界各地的买家，减少不必要的中间环节与加价。",
-        "我们与中国各地的认证制造商建立长期合作，从深圳的电子工厂到广州的厨具生产企业，每一批货物在发货前均经过检验。"
+        "我们是一家中国贸易服务公司，在中国领先企业——国企、上市公司与大型制造商——和东南亚、非洲及其他一带一路沿线市场的海外买家之间架起桥梁。",
+        "二十年的出口历程中，我们与全球众多知名公司建立了牢固的商业联系，荣获 AAA 级信用评级，并始终保持低廉的服务收费。平台未列出的商品，只需把您的需求发给我们——我们会快速响应，提供优质、性价比高的大宗商品。"
       ],
       "cta": "阅读我们的故事"
     },
     "promo": {
-      "eyebrow": "为何直购",
-      "title": "工厂直供电子产品",
-      "body": "我们与中国认证制造商合作，以批发价格为您提供经测试、有文件记录并配送全球的优质电子产品。",
+      "eyebrow": "为什么选择我们",
+      "title": "性价比最高的采购伙伴",
+      "body": "我们连接中国国企、上市公司与大型企业和海外买家——服务收费低廉、响应迅速，以有竞争力的价格交付优质大宗商品。",
       "features": [
         {
-          "title": "认证品质",
-          "description": "CE、FCC 和 RoHS 认证产品，发货前核验"
+          "title": "服务费低",
+          "description": "简捷透明的收费——您只为商品与运费付费，不承担虚高利润"
         },
         {
-          "title": "工厂直供价格",
-          "description": "无中间商与零售加价的批发价格"
+          "title": "规模化工厂资源",
+          "description": "与中国国企、上市公司及大型企业直接合作"
         },
         {
-          "title": "低起订量选项",
-          "description": "从标准 SKU 小批量起步，随业务增长灵活扩大"
+          "title": "询价快速响应",
+          "description": "平台未列出的商品？告诉我们您的需求，我们快速报价"
         },
         {
-          "title": "全球物流",
-          "description": "空运与海运可选，全程跟踪直达门到门"
+          "title": "20 年经验，AAA 信用",
+          "description": "二十年出口历程，深受全球知名企业信赖"
         }
       ],
       "cta": "查看全部产品"
     },
     "carouselFeatured": {
-      "title": "精选推荐",
-      "subtitle": "本季为您精心挑选"
+      "title": "重点大宗商品",
+      "subtitle": "本季度精选货盘"
     },
     "carouselBestSellers": {
-      "title": "热销榜单",
-      "subtitle": "买家最喜爱的产品之选"
+      "title": "热门大宗货盘",
+      "subtitle": "买家咨询最多的产品"
     },
     "collections": {
-      "eyebrow": "家居厨房",
-      "title": "日常必需品",
-      "tagline": "为家庭、酒店及批发买家准备的实用耐用品",
+      "eyebrow": "我们出口的商品",
+      "title": "面向新兴市场的大宗产品",
+      "tagline": "面向东南亚、非洲及其他一带一路经济体的进口商与分销商快速增长的大宗品类",
       "items": [
         {
-          "title": "厨房用品",
-          "description": "锅具、餐具与吧台用品"
+          "title": "化工与聚合物",
+          "description": "炭黑、PVC、PP、PE、钛白粉与氧化锌"
         },
         {
-          "title": "收纳整理",
-          "description": "适用于各个房间的收纳盒与整理用品"
+          "title": "矿产与粉体",
+          "description": "石英砂、重晶石、滑石粉、碳酸钙等"
         },
         {
-          "title": "餐桌用品",
-          "description": "适用于家庭与酒店餐饮的餐具套装"
+          "title": "金属材料",
+          "description": "铜、铝与钢材，服务工业与建筑"
         },
         {
-          "title": "家居装饰",
-          "description": "备受经销商青睐的实用装饰品"
+          "title": "建材",
+          "description": "水泥熟料、玻璃原片与建筑陶瓷"
         }
       ],
-      "cta": "探索家居厨房"
+      "cta": "查看全部产品"
     },
     "testimonials": {
       "eyebrow": "买家评价",
-      "heading": "深受全球进口商信赖",
+      "heading": "深受东南亚与非洲进口商信赖",
       "verifiedBuyerOf": "{product} 的认证买家",
       "testimonialLabel": "评价 {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "德国汉堡",
-          "text": "我们在零售门店分销 LED 小夜灯和移动电源。品质稳定、发货准时、价格留有充足利润空间。他们已成为我们的首选供应商。",
-          "product": "LED 感应小夜灯"
+          "name": "Siti Rahayu",
+          "location": "印尼雅加达",
+          "text": "我们进口炭黑和 PVC 树脂用于塑料生产线。品质稳定、价格公道，团队对每次询价都能数小时内响应。",
+          "product": "炭黑与 PVC 树脂"
         },
         {
-          "name": "Aline B.",
-          "location": "法国里昂",
-          "text": "陶瓷餐具套装每季都售罄。发货前检验照片和认证文件让我们完全放心，且起订量足够灵活，便于我们小规模起步。",
-          "product": "陶瓷餐具套装"
+          "name": "Kevin Okafor",
+          "location": "尼日利亚拉各斯",
+          "text": "他们快速为我们的铝材与钢材订单报价，处理全部出口单据，货物完全按规格到港。20 年经验体现在每一批货里。",
+          "product": "铝材与钢材"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "新加坡",
-          "text": "终于找到一家从质检到货运全程负责的采购伙伴。我们的首批 TWS 耳机订单准时到达且零瑕疵。强烈推荐给 B2B 买家。",
-          "product": "TWS 无线蓝牙耳机 Pro"
+          "name": "Nguyen Thanh",
+          "location": "越南胡志明市",
+          "text": "我询了一种网站上没有的商品——用于我们贸易业务的水泥熟料。他们快速响应，并从大型中国供应商处采购到位。",
+          "product": "水泥熟料"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "保持联系",
-      "heading": "加入我们的私享圈",
-      "body": "第一时间了解新品到货与专属系列，首单还可享 10% 优惠。",
+      "heading": "获取市场资讯与报价",
+      "body": "第一时间接收大宗商品市场动态、最新价格表与货源提醒。",
       "placeholder": "输入您的邮箱",
       "subscribing": "订阅中...",
       "subscribe": "订阅",
-      "success": "欢迎加入！请查收邮箱中的 10% 优惠码。",
+      "success": "订阅成功！我们将向您发送市场与货源的最新动态。",
       "error": "出错了，请重试。",
       "disclaimer": "绝不发送垃圾邮件，可随时退订。订阅即表示您同意我们的隐私政策。"
     },
     "seo": {
-      "heading": "探索我们的系列"
+      "heading": "了解我们的大宗商品"
     },
-    "seoParagraph": "探索 {siteName} 系列产品：认证电子产品、LED 照明、厨具及日常家居用品。面向零售消费者与批发 B2B 买家——可在线选购、批量订购，或联系我们的团队获取贸易价格与合作咨询。",
+    "seoParagraph": "探索 {siteName} 大宗商品：炭黑、PVC、PP、PE、钛白粉、工业矿产、金属与建材。面向东南亚、非洲及一带一路市场的进口商与分销商——支持批量订购，平台未列出的商品欢迎直接发需求给我们。",
     "links": {
       "allProducts": "全部产品",
       "faq": "常见问题",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "全部产品",
-    "description": "探索我们品类齐全的电子产品、LED 照明与家居日用百货。",
-    "metaDescription": "在线选购电子产品、LED 照明、厨具及家居日用商品，工厂直供品质，面向零售与批发 B2B 买家。",
+    "description": "浏览我们的大宗商品：炭黑、PVC、PP、PE、钛白粉、工业矿产、金属与建材。",
+    "metaDescription": "浏览我们出口到东南亚与非洲的中国大宗商品：化工原料、聚合物、矿产、金属与建材。价格有竞争力，平台未列出的商品可快速询价。",
     "filters": {
       "sortBy": "排序方式",
       "newest": "最新上架",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "资讯",
-    "metaDescription": "来自 Commodities From China 资讯的进口指南、采购技巧与市场洞察。",
+    "metaDescription": "来自 Commodities From China 资讯的大宗商品行情洞察、采购指南与贸易知识。",
     "eyebrow": "指南与洞察",
     "heading": "资讯",
-    "subtitle": "来自我们团队与合作伙伴的实用进口、采购与物流知识。",
+    "subtitle": "面向东南亚、非洲及一带一路市场进口商的大宗商品行情、采购指导与贸易物流知识。",
     "all": "全部",
     "by": "作者：{author}",
     "noPosts": "暂无文章。",
@@ -340,7 +350,16 @@
       "sourcing": "采购",
       "suppliers": "供应商",
       "tariffs": "关税",
-      "wholesale": "批发"
+      "wholesale": "批发",
+      "chemicals": "化工",
+      "polymers": "聚合物",
+      "plastics": "塑料",
+      "minerals": "矿产",
+      "metals": "金属",
+      "building-materials": "建材",
+      "belt-road": "一带一路",
+      "steel": "钢材",
+      "cement": "水泥"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "搜索结果",
-    "description": "搜索我们品类齐全的电子产品、LED 照明、厨具及家居日用商品。",
+    "description": "搜索我们的大宗商品：炭黑、PVC、聚合物、矿产、金属与建材。",
     "resultsFor": "“{query}”的搜索结果",
     "showingResults": "共 {count} 条“{query}”的结果",
     "enterTerm": "输入搜索词以查找产品"

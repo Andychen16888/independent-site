@@ -60,9 +60,9 @@
     "language": "Selecionar idioma",
     "currency": "Moeda",
     "openChat": "Abrir chat",
-    "promoBar": "Novos clientes economizam 10%",
-    "slogan": "Originário da China, entregue no mundo todo",
-    "description": "Fornecimento direto de fábricas chinesas de confiança. Eletrônicos, utensílios de cozinha e produtos de uso diário de qualidade para compradores B2B de varejo e atacado em todo o mundo."
+    "promoBar": "20 anos de experiência em exportação da China — solicite um orçamento hoje",
+    "slogan": "Fornecimento chinês, conectado ao seu mercado",
+    "description": "Uma casa de comércio chinesa que conecta empresas estatais, companhias listadas e grandes empresas a compradores no exterior — exportando commodities a granel, metais e materiais de construção para o Sudeste Asiático, a África e mercados da Iniciativa Cinturão e Rota há 20 anos."
   },
   "footer": {
     "shop": "Loja",
@@ -75,137 +75,147 @@
     "newArrivals": "Novidades",
     "bestSellers": "Mais vendidos",
     "shippingReturns": "Envio e devolución",
-    "about": "Fornecimento direto da China. Eletrônicos, utensílios de cozinha e produtos do dia a dia de qualidade para compradores de varejo e atacado B2B em todo o mundo.",
+    "about": "Uma casa de comércio chinesa conectando empresas estatais, companhias listadas e grandes empresas a compradores no Sudeste Asiático, na África e nos mercados da Iniciativa Cinturão e Rota há 20 anos.",
     "hours": "Seg–Sex, 9h–18h (CST)"
   },
   "home": {
     "hero": {
       "slides": [
         {
-          "title": "Fornecimento B2B direto da fábrica",
-          "subtitle": "Origem na China, entrega no mundo todo",
-          "description": "Eletrônicos, iluminação LED e produtos do dia a dia de qualidade a preços de atacado",
+          "title": "Commodities a granel da China, entregues ao seu mercado",
+          "subtitle": "Especialistas em comércio do Cinturão e Rota",
+          "description": "Negro de fumo, PVC, metais, minerais e materiais de construção enviados a compradores do Sudeste Asiático e da África a preços competitivos",
           "cta": "Ver produtos"
         },
         {
-          "title": "Preço de atacado",
-          "subtitle": "Feito para varejistas e distribuidores",
-          "description": "Preços escalonados por volume, opções de marca própria e fornecimento confiável",
-          "cta": "Explorar categorias"
+          "title": "Um parceiro comercial, 20 anos de exportações",
+          "subtitle": "Serviço comercial com rating AAA",
+          "description": "Apoiado por uma cooperação de longa data com empresas estatais, companhias listadas e grandes empresas chinesas",
+          "cta": "Por que nós"
         },
         {
-          "title": "Qualidade em que confiar",
-          "subtitle": "Produtos certificados, inspecionados por lote",
-          "description": "Produtos certificados CE, FCC e RoHS com inspeção antes do embarque",
-          "cta": "Nossa história"
+          "title": "Procurando uma commodity fora da lista?",
+          "subtitle": "Conte-nos sua necessidade",
+          "description": "Envie suas especificações e o destino — nossa equipe responde rapidamente com fornecimento de qualidade e custo-benefício",
+          "cta": "Fale conosco"
         }
       ],
       "slideLabel": "Slide {index}"
     },
     "featuredCategories": {
-      "eyebrow": "Explore",
-      "heading": "Nossas coleções",
+      "eyebrow": "Commodities que exportamos",
+      "heading": "Produtos a granel para mercados em crescimento",
       "cards": [
         {
-          "title": "Eletrônicos",
-          "subtitle": "LED e dispositivos inteligentes",
-          "description": "Eletrônicos e iluminação LED certificados a preços de atacado"
+          "title": "Produtos químicos",
+          "subtitle": "Químicos industriais e polímeros",
+          "description": "Negro de fumo, PVC, PP, PE, dióxido de titânio e óxido de zinco"
         },
         {
-          "title": "Casa e cozinha",
-          "subtitle": "Essenciais do dia a dia",
-          "description": "Produtos práticos e duráveis vindos de fábricas certificadas"
+          "title": "Minerais e pós",
+          "subtitle": "Minerais industriais e cargas",
+          "description": "Areia de quartzo, barita, talco, carbonato de cálcio, sulfato de bário e mais"
+        },
+        {
+          "title": "Metais",
+          "subtitle": "Cobre, alumínio e aço",
+          "description": "Tarugos, lingotes e perfis para a indústria e a construção"
+        },
+        {
+          "title": "Materiais de construção",
+          "subtitle": "Cimento, vidro e cerâmicas",
+          "description": "Clínquer de cimento, vidro float e cerâmicas de construção"
         }
       ]
     },
     "brandStory": {
       "eyebrow": "Nossa história",
-      "title": "Produtos de qualidade, direto da origem",
+      "title": "20 anos conectando a indústria chinesa a compradores globais",
       "paragraphs": [
-        "A Commodities From China nasceu de uma crença simples: produtos de qualidade devem ir diretamente dos fabricantes chineses para compradores do mundo todo, sem intermediários nem markup desnecessário.",
-        "Construímos parcerias de longo prazo com fabricantes certificados em toda a China, desde fábricas de eletrônicos em Shenzhen até produtores de utensílios de cozinha em Guangzhou, e inspecionamos cada lote antes do embarque."
+        "Somos uma casa de comércio chinesa que conecta os principais grupos do país — empresas estatais, companhias listadas e grandes fabricantes — a compradores no Sudeste Asiático, na África e em outros mercados da Iniciativa Cinturão e Rota.",
+        "Em duas décadas de exportação, construímos laços comerciais duradouros com empresas reconhecidas no mundo todo, conquistamos um rating de crédito AAA e mantivemos taxas de serviço enxutas. Para commodities fora desta lista, basta enviar sua necessidade — respondemos rápido com fornecimento de qualidade e custo-benefício."
       ],
       "cta": "Leia nossa história"
     },
     "promo": {
-      "eyebrow": "Por que comprar direto",
-      "title": "Eletrônicos direto da fábrica",
-      "body": "Fazemos parceria com fabricantes certificados da China para oferecer eletrônicos de qualidade a preços de atacado — testados, documentados e enviados para todo o mundo.",
+      "eyebrow": "Por que trabalhar conosco",
+      "title": "Seu parceiro de fornecimento com custo-benefício",
+      "body": "Conectamos empresas estatais, companhias listadas e grandes empresas chinesas a compradores no exterior — com taxas de serviço enxutas, resposta rápida e commodities de qualidade a preços competitivos.",
       "features": [
         {
-          "title": "Qualidade certificada",
-          "description": "Produtos certificados CE, FCC e RoHS verificados antes do envio"
+          "title": "Taxas de serviço baixas",
+          "description": "Cobranças enxutas e transparentes — você paga pela mercadoria e pelo frete, não por margens infladas"
         },
         {
-          "title": "Preço direto de fábrica",
-          "description": "Tarifas de atacado sem intermediários ou margens de varejo"
+          "title": "Acesso às fábricas em escala",
+          "description": "Cooperação direta com empresas estatais, listadas e grandes empresas chinesas"
         },
         {
-          "title": "Pedido mínimo baixo",
-          "description": "Comece com SKUs padrão e escale conforme cresce"
+          "title": "Resposta rápida a qualquer consulta",
+          "description": "Commodity fora da lista? Envie sua necessidade e respondemos rapidamente"
         },
         {
-          "title": "Logística global",
-          "description": "Opções de frete aéreo e marítimo com rastreamento até sua porta"
+          "title": "20 anos, crédito AAA",
+          "description": "Duas décadas de exportação, confiança de empresas reconhecidas no mundo todo"
         }
       ],
       "cta": "Ver todos os produtos"
     },
     "carouselFeatured": {
-      "title": "Destaques",
-      "subtitle": "Selecionados para você nesta temporada"
+      "title": "Commodities mais exportadas",
+      "subtitle": "Polímeros, minérios e produtos químicos a granel em alta demanda global"
     },
     "carouselBestSellers": {
-      "title": "Mais vendidos",
-      "subtitle": "Nossos produtos favoritos, escolhidos por você"
+      "title": "Mais procuradas",
+      "subtitle": "Commodities muito procuradas por compradores em todo o mundo"
     },
     "collections": {
-      "eyebrow": "Casa e cozinha",
-      "title": "Essenciais do dia a dia",
-      "tagline": "Produtos práticos e duráveis para lares, hotéis e compradores de atacado",
+      "eyebrow": "Commodities que exportamos",
+      "title": "Produtos a granel para mercados em crescimento",
+      "tagline": "Linhas de commodities em rápido crescimento para importadores e distribuidores do Sudeste Asiático, da África e das demais economias do Cinturão e Rota",
       "items": [
         {
-          "title": "Utensílios de cozinha",
-          "description": "Panelas, louças e utensílios de bar"
+          "title": "Químicos e polímeros",
+          "description": "Negro de fumo, PVC, PP, PE, dióxido de titânio e óxido de zinco"
         },
         {
-          "title": "Armazenamento",
-          "description": "Recipientes e organizadores para cada cômodo"
+          "title": "Minerais e pós",
+          "description": "Areia de quartzo, barita, talco, carbonato de cálcio e mais"
         },
         {
-          "title": "Louças",
-          "description": "Jogos de mesa para lares e hotelaria"
+          "title": "Metais",
+          "description": "Cobre, alumínio e aço para a indústria e a construção"
         },
         {
-          "title": "Decoração",
-          "description": "Decoração funcional amada por revendedores"
+          "title": "Materiais de construção",
+          "description": "Clínquer de cimento, vidro float e cerâmicas de construção"
         }
       ],
       "cta": "Explorar casa e cozinha"
     },
     "testimonials": {
       "eyebrow": "Avaliações de compradores",
-      "heading": "Confiado por importadores do mundo todo",
+      "heading": "Confiado por importadores do Sudeste Asiático e da África",
       "verifiedBuyerOf": "Comprador verificado de {product}",
       "testimonialLabel": "Depoimento {index}",
       "items": [
         {
-          "name": "Marcus L.",
-          "location": "Hamburgo, Alemanha",
-          "text": "Revendemos as luzes noturnas LED e as baterias portáteis em nossas lojas. Qualidade constante, embarques pontuais e preços que deixam margem real. Tornaram-se nosso fornecedor de confiança.",
-          "product": "Luz noturna LED com sensor"
+          "name": "Siti Rahayu",
+          "location": "Jacarta, Indonésia",
+          "text": "Importamos negro de fumo e resina de PVC para nossas linhas de produção de plásticos. Qualidade constante, preços honestos e resposta a cada consulta em poucas horas.",
+          "product": "Negro de fumo e resina de PVC"
         },
         {
-          "name": "Aline B.",
-          "location": "Lyon, França",
-          "text": "O jogo de louça de cerâmica esgota a cada temporada. Fotos de inspeção pré-embarque e certificados nos dão total confiança, e o pedido mínimo foi flexível o bastante para começarmos pequenos.",
-          "product": "Jogo de louça de cerâmica"
+          "name": "Kevin Okafor",
+          "location": "Lagos, Nigéria",
+          "text": "Cotaram rápido nosso pedido de alumínio e aço, cuidaram de toda a documentação de exportação e a mercadoria chegou exatamente como especificada. Os 20 anos de experiência aparecem em cada embarque.",
+          "product": "Alumínio e aço"
         },
         {
-          "name": "Dong-mei H.",
-          "location": "Singapura",
-          "text": "Finalmente um parceiro que cuida do controle de qualidade e do frete de ponta a ponta. Nosso primeiro pedido de fones TWS chegou no prazo e sem defeitos. Altamente recomendado para compradores B2B.",
-          "product": "Fones TWS sem fio Pro"
+          "name": "Nguyen Thanh",
+          "location": "Cidade de Ho Chi Minh, Vietnã",
+          "text": "Solicitei uma commodity que não estava no site — clínquer de cimento para nosso negócio de trading. Responderam rápido e conseguiram de um grande fornecedor chinês.",
+          "product": "Clínquer de cimento"
         }
       ]
     },
@@ -216,19 +226,19 @@
     },
     "newsletter": {
       "eyebrow": "Mantenha contato",
-      "heading": "Entre para o nosso círculo",
-      "body": "Seja o primeiro a descobrir novidades e coleções exclusivas e ganhe 10% de desconto no seu primeiro pedido.",
+      "heading": "Receba atualizações de mercado e cotações",
+      "body": "Receba atualizações do mercado de commodities, novas listas de preços e alertas de oferta para as suas compras.",
       "placeholder": "Digite seu e-mail",
       "subscribing": "Assinando...",
       "subscribe": "Assinar",
-      "success": "Bem-vindo ao círculo! Verifique sua caixa de entrada para o código de 10% de desconto.",
+      "success": "Inscrito! Manteremos você informado sobre mercados e ofertas.",
       "error": "Algo deu errado. Tente novamente.",
       "disclaimer": "Nada de spam, nunca. Cancele quando quiser. Ao assinar, você concorda com nossa política de privacidade."
     },
     "seo": {
-      "heading": "Descubra nossas coleções"
+      "heading": "Conheça nossas commodities"
     },
-    "seoParagraph": "Descubra a coleção de {siteName}: eletrônicos certificados, iluminação LED, utensílios de cozinha e artigos domésticos do dia a dia. Feita para consumidores de varejo e compradores B2B de atacado — compre online, peça em volume ou fale com nossa equipe sobre preços de importação e parcerias.",
+    "seoParagraph": "Conheça a linha de commodities da {siteName}: negro de fumo, PVC, PP, PE, dióxido de titânio, minerais industriais, metais e materiais de construção. Feita para importadores e distribuidores do Sudeste Asiático, da África e dos mercados do Cinturão e Rota — compre em volume ou envie sua necessidade para qualquer commodity não listada.",
     "links": {
       "allProducts": "Todos os produtos",
       "faq": "Perguntas frequentes",
@@ -293,8 +303,8 @@
   },
   "products": {
     "title": "Todos os produtos",
-    "description": "Descubra nossa coleção completa de eletrônicos, iluminação LED e produtos domésticos.",
-    "metaDescription": "Explore nossa coleção completa de eletrônicos, iluminação LED, utensílios de cozinha e produtos domésticos. Qualidade direto da fábrica para compradores de varejo e B2B de atacado.",
+    "description": "Descubra nossas commodities a granel: negro de fumo, PVC, PP, PE, dióxido de titânio, minerais industriais, metais e materiais de construção.",
+    "metaDescription": "Navegue pela nossa linha de commodities a granel exportadas da China para o Sudeste Asiático e a África: químicos, polímeros, minerais, metais e materiais de construção. Preços competitivos com resposta rápida a pedidos fora da lista.",
     "filters": {
       "sortBy": "Ordenar por",
       "newest": "Mais recentes",
@@ -312,10 +322,10 @@
   },
   "blog": {
     "title": "Revista",
-    "metaDescription": "Guias de importação, dicas de sourcing e insights de mercado da revista Commodities From China.",
+    "metaDescription": "Perspectivas do mercado de commodities, guias de abastecimento e conhecimentos de comércio do jornal Commodities From China.",
     "eyebrow": "Guias e insights",
     "heading": "A Revista",
-    "subtitle": "Conhecimento prático sobre importação, sourcing e logística — da nossa equipe e parceiros.",
+    "subtitle": "Tendências do mercado de commodities, orientação de abastecimento e conhecimento de logística comercial para importadores do Sudeste Asiático, da África e dos mercados do Cinturão e Rota.",
     "all": "Todos",
     "by": "Por {author}",
     "noPosts": "Ainda não há artigos.",
@@ -340,7 +350,16 @@
       "sourcing": "Fornecimento",
       "suppliers": "Fornecedores",
       "tariffs": "Tarifas",
-      "wholesale": "Atacado"
+      "wholesale": "Atacado",
+      "chemicals": "Químicos",
+      "polymers": "Polímeros",
+      "plastics": "Plásticos",
+      "minerals": "Minerais",
+      "metals": "Metais",
+      "building-materials": "Materiais de construção",
+      "belt-road": "Cinturão e Rota",
+      "steel": "Aço",
+      "cement": "Cimento"
     }
   },
   "faq": {
@@ -352,7 +371,7 @@
   },
   "search": {
     "title": "Resultados da busca",
-    "description": "Busque em nossa coleção de eletrônicos, iluminação LED, utensílios de cozinha e produtos domésticos.",
+    "description": "Pesquise nossa linha de commodities a granel: negro de fumo, PVC, polímeros, minerais, metais e materiais de construção.",
     "resultsFor": "Resultados para \"{query}\"",
     "showingResults": "Mostrando {count} resultado(s) para \"{query}\"",
     "enterTerm": "Digite um termo para encontrar produtos"

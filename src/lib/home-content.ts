@@ -11,29 +11,29 @@ export interface HeroSlide {
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
-    title: "Sourced in China, Delivered Worldwide",
-    subtitle: "Bulk Commodities & Wholesale Supply",
-    description: "A single sourcing partner for bulk goods — factory access, quality control and freight coordinated end to end.",
+    title: "Bulk Commodities from China, Delivered to Your Market",
+    subtitle: "Belt & Road Trade Specialists",
+    description: "China's key industrial commodities — carbon black, PVC, metals, minerals and building materials — shipped to Southeast Asian and African buyers at competitive prices.",
     cta: "View Products",
     href: "/products",
     bg: "bg-navy",
     align: "left",
   },
   {
-    title: "One Connected Supply Chain",
-    subtitle: "Factory to Port to Buyer",
-    description: "From manufacturing and inspection to warehousing and shipping, every stage is coordinated for predictable delivery.",
-    cta: "Explore Commodities",
-    href: "/products",
+    title: "One Trading Partner, 20 Years of Exports",
+    subtitle: "AAA-Rated Trade Service",
+    description: "Backed by long-standing cooperation with Chinese SOEs, listed companies and large enterprises — traceable quality, honest pricing, fast response.",
+    cta: "Why Us",
+    href: "/pages/about",
     bg: "bg-navy",
     align: "left",
   },
   {
-    title: "Built for International Buyers",
-    subtitle: "Wholesale & Distribution",
-    description: "Support for importers, distributors and retailers sourcing from China at scale.",
-    cta: "How It Works",
-    href: "/pages/about",
+    title: "Looking for a Commodity Not Listed?",
+    subtitle: "Tell Us Your Requirement",
+    description: "Our team responds quickly to requests for any bulk commodity — send your specs and destination, and we handle sourcing, documentation and freight end to end.",
+    cta: "Contact Us",
+    href: "/pages/contact",
     bg: "bg-navy",
     align: "left",
   },
@@ -50,10 +50,10 @@ export interface BrandStoryContent {
 
 export const DEFAULT_BRAND_STORY: BrandStoryContent = {
   eyebrow: "Our Story",
-  title: "Quality Goods, Direct from the Source",
+  title: "20 Years Connecting Chinese Industry with Global Buyers",
   paragraphs: [
-    "Commodities From China was founded on a simple belief — that quality goods should move directly from Chinese makers to buyers around the world, without unnecessary layers and markup.",
-    "We build long-term partnerships with manufacturing partners across China and inspect goods before they ship, so buyers can source with confidence.",
+    "We are a Chinese trading house that bridges the country's leading enterprises — state-owned groups, listed companies and large manufacturers — with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
+    "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed on this site, just send us your requirement — we respond fast with quality, cost-effective supply.",
   ],
   ctaLabel: "Read Our Story",
   ctaHref: "/pages/about",
@@ -70,18 +70,28 @@ export interface FeaturedCategory {
 
 export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
   {
-    title: "Electronics",
-    subtitle: "LED & Smart Devices",
-    description: "Certified electronics and LED lighting at wholesale prices",
-    href: "/categories/electronics",
-    icon: "sparkles",
+    title: "Chemical Products",
+    subtitle: "Industrial Chemicals & Polymers",
+    description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide for every downstream industry",
+    href: "/categories/chemical-products",
   },
   {
-    title: "Home & Kitchen",
-    subtitle: "Everyday Essentials",
-    description: "Practical, durable goods sourced from certified factories",
-    href: "/categories/home-kitchen",
-    icon: "swatch",
+    title: "Minerals & Powders",
+    subtitle: "Industrial Minerals & Fillers",
+    description: "Quartz sand, barite, talc, calcium carbonate, barium sulfate, wollastonite, fluorite and iron oxide pigments",
+    href: "/categories/minerals",
+  },
+  {
+    title: "Metals",
+    subtitle: "Copper, Aluminum & Steel",
+    description: "Billets, ingots and profiles trusted by distributors and fabricators across emerging markets",
+    href: "/categories/metal-products",
+  },
+  {
+    title: "Building Materials",
+    subtitle: "Cement, Glass & Ceramics",
+    description: "Cement clinker, float glass and building ceramics for infrastructure and construction projects",
+    href: "/categories/building-materials",
   },
 ]
 
@@ -98,25 +108,25 @@ export interface PromoContent {
 }
 
 export const DEFAULT_PROMO: PromoContent = {
-  eyebrow: "Why Buy Direct",
-  title: "Factory-Direct Electronics",
-  body: "We partner with certified manufacturers across China to bring you quality electronics at wholesale prices — tested, documented, and shipped worldwide.",
+  eyebrow: "Why Work With Us",
+  title: "Your Cost-Effective Sourcing Partner",
+  body: "We connect Chinese SOEs, listed companies and large enterprises with overseas mid-sized buyers — charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
   features: [
     {
-      title: "Certified Quality",
-      description: "CE, FCC, and RoHS certified products verified before shipment",
+      title: "Cheap Service Fees",
+      description: "Lean, transparent charges — you pay for the goods and freight, not inflated middleman margins",
     },
     {
-      title: "Factory-Direct Pricing",
-      description: "Wholesale rates without middlemen or retail markups",
+      title: "Factory Access at Scale",
+      description: "Direct cooperation with Chinese state-owned enterprises, listed companies and major manufacturers",
     },
     {
-      title: "Low MOQ Options",
-      description: "Start small with standard SKUs, scale up as you grow",
+      title: "Fast Response to Any Inquiry",
+      description: "Commodity not listed? Send your requirement and our team responds quickly with a quotation",
     },
     {
-      title: "Global Logistics",
-      description: "Air and sea freight options with tracking to your door",
+      title: "20 Years, AAA Credit",
+      description: "Two decades of export experience and business ties with well-known companies worldwide",
     },
   ],
   ctaLabel: "View All Products",
@@ -135,42 +145,42 @@ export interface CollectionContent {
 }
 
 export const DEFAULT_COLLECTIONS: CollectionContent = {
-  eyebrow: "Home & Kitchen",
-  title: "Everyday Essentials",
-  tagline: "Practical, durable goods for homes, hotels, and wholesale buyers",
+  eyebrow: "Commodities We Export",
+  title: "Bulk Products for Growing Markets",
+  tagline: "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies",
   collections: [
-    { title: "Kitchenware", description: "Cookware, dinnerware, and barware staples", href: "/categories/home-kitchen?sub=kitchenware" },
-    { title: "Storage", description: "Containers and organizers for every room", href: "/categories/home-kitchen?sub=storage" },
-    { title: "Tableware", description: "Dinnerware sets for homes and hospitality", href: "/categories/home-kitchen?sub=tableware" },
-    { title: "Home Decor", description: "Functional decor loved by resellers", href: "/categories/home-kitchen?sub=decor" },
+    { title: "Chemical & Polymer", description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide", href: "/categories/chemical-products" },
+    { title: "Minerals & Powders", description: "Quartz sand, barite, talc, calcium carbonate and more", href: "/categories/minerals" },
+    { title: "Metals", description: "Copper, aluminum and steel for industry and construction", href: "/categories/metal-products" },
+    { title: "Building Materials", description: "Cement clinker, float glass and building ceramics", href: "/categories/building-materials" },
   ],
-  ctaLabel: "Explore Home & Kitchen",
-  ctaHref: "/categories/home-kitchen",
+  ctaLabel: "View All Products",
+  ctaHref: "/products",
 }
 
 export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
 
 export const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
-    name: "Marcus L.",
-    location: "Hamburg, Germany",
+    name: "Siti Rahayu",
+    location: "Jakarta, Indonesia",
     rating: 5,
-    text: "We resell the LED night lights and power banks in our retail stores. Consistent quality, on-time shipments, and pricing that leaves real margin. They've become our go-to supplier.",
-    product: "LED Motion Sensor Night Light",
+    text: "We import carbon black and PVC resin for our plastic manufacturing lines. Consistent quality, honest pricing, and the team responds to every enquiry within hours. A trading partner we can rely on.",
+    product: "Carbon Black & PVC Resin",
   },
   {
-    name: "Aline B.",
-    location: "Lyon, France",
+    name: "Kevin Okafor",
+    location: "Lagos, Nigeria",
     rating: 5,
-    text: "The ceramic dinnerware set sells out every season. Pre-shipment inspection photos and certificates give us total confidence, and the MOQ was flexible enough for us to start small.",
-    product: "Ceramic Dinnerware Set",
+    text: "They quoted our aluminum and steel order quickly, handled all export documentation, and the goods arrived exactly to spec. Their 20 years of experience show in every shipment.",
+    product: "Aluminum & Steel",
   },
   {
-    name: "Dong-mei H.",
-    location: "Singapore",
+    name: "Nguyen Thanh",
+    location: "Ho Chi Minh City, Vietnam",
     rating: 5,
-    text: "Finally a sourcing partner that handles quality control and freight end to end. Our first order of TWS earbuds arrived on time and defect-free. Highly recommended for B2B buyers.",
-    product: "TWS Wireless Earbuds Pro",
+    text: "I requested a commodity that wasn't on their site — cement clinker for our trading business. They responded fast, sourced it from a major Chinese supplier, and the terms were excellent.",
+    product: "Cement Clinker",
   },
 ]
 

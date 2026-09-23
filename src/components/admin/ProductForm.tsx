@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
+import { readJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import ProductTranslationsEditor, { type ProductTranslationFields } from "@/components/admin/ProductTranslationsEditor"
@@ -148,9 +149,11 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       const fd = new FormData()
       fd.append("file", file)
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Upload failed", "上传失败"))
-      setImages((prev) => [...prev, { url: data.url, alt: "", isPrimary: prev.length === 0 }])
+      const parsed = await readJsonResponse(res)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Upload failed", "上传失败")))
+      const url = parsed.data?.url
+      if (typeof url !== "string") throw new Error(bi("Upload failed", "上传失败"))
+      setImages((prev) => [...prev, { url, alt: "", isPrimary: prev.length === 0 }])
     } catch (e: any) {
       setError(e.message)
     } finally {

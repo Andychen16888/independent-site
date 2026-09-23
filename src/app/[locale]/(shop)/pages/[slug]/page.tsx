@@ -8,8 +8,28 @@ import { SupplyChain } from "@/components/home/SupplyChain"
 import { getGroupedSiteImages } from "@/lib/settings/site-images"
 import { getSiteContent } from "@/config/site-content"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
-import { getSiteSeo } from "@/lib/settings/settings"
+import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 import { fetchPageTranslations, applyPageLocalization } from "@/lib/i18n/content"
+import {
+  HiOutlineEnvelope,
+  HiOutlinePhone,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineClock,
+} from "react-icons/hi2"
+
+const CONTACT_INFO_KEYS = [
+  "contact.email",
+  "contact.phone",
+  "contact.whatsapp",
+  "contact.hours",
+]
+
+// Canned email paragraph previously seeded into translation content; now sourced from settings.
+const CONTACT_EMAIL_RE = /<p[^>]*>[^<]*info@commoditychina\.com[^<]*<\/p>/gi
+
+function stripCannedContactEmail(html: string): string {
+  return html.replace(CONTACT_EMAIL_RE, "")
+}
 import {
   breadcrumbSchema,
   articleSchema,
@@ -59,11 +79,15 @@ export default async function PageView({ params }: Props) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const pageUrl = `${baseUrl}/${locale}/pages/${slug}`
   const tc = await getTranslations("common")
+  const tfooter = await getTranslations("footer")
   const site = getSiteContent(locale)
   const siteImages = await getGroupedSiteImages()
 
   const isAbout = slug === "about"
   const isContact = slug === "contact"
+  const contactSettings = isContact ? await getSettingsForKeys(CONTACT_INFO_KEYS) : {}
+  const hasContactInfo = isContact && CONTACT_INFO_KEYS.some((k) => contactSettings[k])
+  const body = isContact ? stripCannedContactEmail(pageL.content || page.content) : pageL.content || page.content
   const heroAsset = isAbout ? siteImages.about[2] : isContact ? siteImages.about[3] : null
 
   const schemas = [
@@ -140,8 +164,43 @@ export default async function PageView({ params }: Props) {
         )}
         <div
           className="page-prose max-w-3xl"
-          dangerouslySetInnerHTML={{ __html: pageL.content || page.content }}
+          dangerouslySetInnerHTML={{ __html: body }}
         />
+
+        {hasContactInfo && (
+          <div className="max-w-3xl mt-10 border border-mist rounded-lg divide-y divide-mist bg-white">
+            {contactSettings["contact.email"] && (
+              <div className="flex items-center gap-3 px-5 py-4 text-sm text-stone">
+                <HiOutlineEnvelope className="w-4 h-4 text-charcoal/60 flex-shrink-0" />
+                <span>{contactSettings["contact.email"]}</span>
+              </div>
+            )}
+            {contactSettings["contact.phone"] && (
+              <div className="flex items-center gap-3 px-5 py-4 text-sm text-stone">
+                <HiOutlinePhone className="w-4 h-4 text-charcoal/60 flex-shrink-0" />
+                <span>
+                  <span className="font-medium text-charcoal">{tfooter("phone")}: </span>
+                  {contactSettings["contact.phone"]}
+                </span>
+              </div>
+            )}
+            {contactSettings["contact.whatsapp"] && (
+              <div className="flex items-center gap-3 px-5 py-4 text-sm text-stone">
+                <HiOutlineChatBubbleLeftRight className="w-4 h-4 text-charcoal/60 flex-shrink-0" />
+                <span>
+                  <span className="font-medium text-charcoal">{tfooter("whatsapp")}: </span>
+                  {contactSettings["contact.whatsapp"]}
+                </span>
+              </div>
+            )}
+            {contactSettings["contact.hours"] && (
+              <div className="flex items-center gap-3 px-5 py-4 text-sm text-stone">
+                <HiOutlineClock className="w-4 h-4 text-charcoal/60 flex-shrink-0" />
+                <span>{contactSettings["contact.hours"]}</span>
+              </div>
+            )}
+          </div>
+        )}
       </Container>
 
       {isAbout && <SupplyChain content={site.supplyChain} images={siteImages.supplyChain} />}

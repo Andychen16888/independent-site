@@ -117,7 +117,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "联系我们",
       excerpt: "联系我们——我们会在24小时内回复。",
       content:
-        "<h1>联系我们</h1><p>无论您是零售购物还是需要批发报价，我们都乐意倾听。给我们发送消息，我们会在24小时内回复。</p><p>邮箱：info@commoditychina.com</p>",
+        "<h1>联系我们</h1><p>无论您是零售购物还是需要批发报价，我们都乐意倾听。给我们发送消息，我们会在24小时内回复。</p>",
       seoTitle: "联系我们",
       seoDescription: "联系我们的客服团队，咨询订单、产品及各类问题。",
       seoKeywords: "联系, 支持, 客服",
@@ -126,7 +126,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Contáctenos",
       excerpt: "Póngase en contacto — respondemos en un plazo de 24 horas.",
       content:
-        "<h1>Contáctenos</h1><p>Nos encantaría saber de usted, ya sea que compre al por menor o necesite una cotización al por mayor. Envíenos un mensaje y le responderemos en un plazo de 24 horas.</p><p>Correo electrónico: info@commoditychina.com</p>",
+        "<h1>Contáctenos</h1><p>Nos encantaría saber de usted, ya sea que compre al por menor o necesite una cotización al por mayor. Envíenos un mensaje y le responderemos en un plazo de 24 horas.</p>",
       seoTitle: "Contáctenos",
       seoDescription: "Contacte a nuestro equipo de soporte para pedidos, productos y consultas generales.",
       seoKeywords: "contacto, soporte",
@@ -135,7 +135,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Fale Conosco",
       excerpt: "Entre em contato — respondemos em até 24 horas.",
       content:
-        "<h1>Fale Conosco</h1><p>Adoraríamos ouvi-lo, seja comprando no varejo ou precisando de um orçamento no atacado. Envie-nos uma mensagem e responderemos em até 24 horas.</p><p>E-mail: info@commoditychina.com</p>",
+        "<h1>Fale Conosco</h1><p>Adoraríamos ouvi-lo, seja comprando no varejo ou precisando de um orçamento no atacado. Envie-nos uma mensagem e responderemos em até 24 horas.</p>",
       seoTitle: "Fale Conosco",
       seoDescription: "Entre em contato com nossa equipe de suporte para pedidos, produtos e dúvidas gerais.",
       seoKeywords: "contato, suporte",
@@ -144,7 +144,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Contactez-nous",
       excerpt: "Contactez-nous — nous répondons sous 24 heures.",
       content:
-        "<h1>Contactez-nous</h1><p>Nous serions ravis de vous lire, que vous achetiez au détail ou que vous ayez besoin d'un devis en gros. Envoyez-nous un message et nous vous répondrons sous 24 heures.</p><p>E-mail : info@commoditychina.com</p>",
+        "<h1>Contactez-nous</h1><p>Nous serions ravis de vous lire, que vous achetiez au détail ou que vous ayez besoin d'un devis en gros. Envoyez-nous un message et nous vous répondrons sous 24 heures.</p>",
       seoTitle: "Contactez-nous",
       seoDescription: "Contactez notre équipe d'assistance pour vos commandes, produits et demandes générales.",
       seoKeywords: "contact, assistance",
@@ -153,7 +153,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Kontakt",
       excerpt: "Nehmen Sie Kontakt auf — wir antworten innerhalb von 24 Stunden.",
       content:
-        "<h1>Kontakt</h1><p>Wir würden gerne von Ihnen hören — ob Sie im Einzelhandel einkaufen oder ein Großhandelsangebot benötigen. Senden Sie uns eine Nachricht und wir antworten innerhalb von 24 Stunden.</p><p>E-Mail: info@commoditychina.com</p>",
+        "<h1>Kontakt</h1><p>Wir würden gerne von Ihnen hören — ob Sie im Einzelhandel einkaufen oder ein Großhandelsangebot benötigen. Senden Sie uns eine Nachricht und wir antworten innerhalb von 24 Stunden.</p>",
       seoTitle: "Kontakt",
       seoDescription: "Kontaktieren Sie unser Support-Team für Bestellungen, Produkte und allgemeine Anfragen.",
       seoKeywords: "kontakt, support",
@@ -162,7 +162,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Свяжитесь с нами",
       excerpt: "Обратитесь к нам — мы отвечаем в течение 24 часов.",
       content:
-        "<h1>Свяжитесь с нами</h1><p>Мы будем рады услышать вас — покупаете ли вы в розницу или вам нужен оптовый расчёт. Отправьте нам сообщение, и мы ответим в течение 24 часов.</p><p>Эл. почта: info@commoditychina.com</p>",
+        "<h1>Свяжитесь с нами</h1><p>Мы будем рады услышать вас — покупаете ли вы в розницу или вам нужен оптовый расчёт. Отправьте нам сообщение, и мы ответим в течение 24 часов.</p>",
       seoTitle: "Свяжитесь с нами",
       seoDescription: "Свяжитесь с нашей службой поддержки по вопросам заказов, товаров и общим запросам.",
       seoKeywords: "контакты, поддержка",
@@ -171,7 +171,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "اتصل بنا",
       excerpt: "تواصل معنا — نرد خلال 24 ساعة.",
       content:
-        "<h1>اتصل بنا</h1><p>يسعدنا أن نسمع منك — سواء كنت تتسوق بالتجزئة أو تحتاج إلى عرض أسعار بالجملة. أرسل لنا رسالة وسنرد خلال 24 ساعة.</p><p>البريد الإلكتروني: info@commoditychina.com</p>",
+        "<h1>اتصل بنا</h1><p>يسعدنا أن نسمع منك — سواء كنت تتسوق بالتجزئة أو تحتاج إلى عرض أسعار بالجملة. أرسل لنا رسالة وسنرد خلال 24 ساعة.</p>",
       seoTitle: "اتصل بنا",
       seoDescription: "تواصل مع فريق الدعم لدينا للطلبات والمنتجات والاستفسارات العامة.",
       seoKeywords: "اتصال, دعم",
@@ -180,7 +180,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Hubungi Kami",
       excerpt: "Hubungi kami — kami merespons dalam 24 jam.",
       content:
-        "<h1>Hubungi Kami</h1><p>Kami senang mendengar dari Anda, baik Anda berbelanja eceran atau membutuhkan penawaran grosir. Kirim pesan kepada kami dan kami akan merespons dalam waktu 24 jam.</p><p>Email: info@commoditychina.com</p>",
+        "<h1>Hubungi Kami</h1><p>Kami senang mendengar dari Anda, baik Anda berbelanja eceran atau membutuhkan penawaran grosir. Kirim pesan kepada kami dan kami akan merespons dalam waktu 24 jam.</p>",
       seoTitle: "Hubungi Kami",
       seoDescription: "Hubungi tim dukungan kami untuk pesanan, produk, dan pertanyaan umum.",
       seoKeywords: "hubungi, dukungan",
@@ -189,7 +189,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Liên Hệ Chúng Tôi",
       excerpt: "Liên hệ với chúng tôi — chúng tôi phản hồi trong vòng 24 giờ.",
       content:
-        "<h1>Liên Hệ Chúng Tôi</h1><p>Chúng tôi rất muốn được lắng nghe bạn — dù bạn mua lẻ hay cần báo giá bán buôn. Gửi tin nhắn cho chúng tôi và chúng tôi sẽ phản hồi trong vòng 24 giờ.</p><p>Email: info@commoditychina.com</p>",
+        "<h1>Liên Hệ Chúng Tôi</h1><p>Chúng tôi rất muốn được lắng nghe bạn — dù bạn mua lẻ hay cần báo giá bán buôn. Gửi tin nhắn cho chúng tôi và chúng tôi sẽ phản hồi trong vòng 24 giờ.</p>",
       seoTitle: "Liên Hệ Chúng Tôi",
       seoDescription: "Liên hệ đội ngũ hỗ trợ của chúng tôi để được tư vấn về đơn hàng, sản phẩm và các câu hỏi chung.",
       seoKeywords: "liên hệ, hỗ trợ",
@@ -198,7 +198,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "ติดต่อเรา",
       excerpt: "ติดต่อเรา — เราตอบกลับภายใน 24 ชั่วโมง",
       content:
-        "<h1>ติดต่อเรา</h1><p>เรายินดีเป็นอย่างยิ่งที่ได้ยินจากคุณ ไม่ว่าคุณจะซื้อขายปลีกหรือต้องการใบเสนอราคาส่ง ส่งข้อความถึงเรา แล้วเราจะตอบกลับภายใน 24 ชั่วโมง</p><p>อีเมล: info@commoditychina.com</p>",
+        "<h1>ติดต่อเรา</h1><p>เรายินดีเป็นอย่างยิ่งที่ได้ยินจากคุณ ไม่ว่าคุณจะซื้อขายปลีกหรือต้องการใบเสนอราคาส่ง ส่งข้อความถึงเรา แล้วเราจะตอบกลับภายใน 24 ชั่วโมง</p>",
       seoTitle: "ติดต่อเรา",
       seoDescription: "ติดต่อทีมสนับสนุนของเราเกี่ยวกับคำสั่งซื้อ สินค้า และคำถามทั่วไป",
       seoKeywords: "ติดต่อ, การสนับสนุน",
@@ -207,7 +207,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
       title: "Hubungi Kami",
       excerpt: "Hubungi kami — kami membalas dalam masa 24 jam.",
       content:
-        "<h1>Hubungi Kami</h1><p>Kami amat berbesar hati mendengar daripada anda — sama ada membeli secara runcit atau memerlukan sebut harga borong. Hantar mesej kepada kami dan kami akan membalas dalam masa 24 jam.</p><p>E-mel: info@commoditychina.com</p>",
+        "<h1>Hubungi Kami</h1><p>Kami amat berbesar hati mendengar daripada anda — sama ada membeli secara runcit atau memerlukan sebut harga borong. Hantar mesej kepada kami dan kami akan membalas dalam masa 24 jam.</p>",
       seoTitle: "Hubungi Kami",
       seoDescription: "Hubungi pasukan sokongan kami untuk tempahan, produk dan pertanyaan umum.",
       seoKeywords: "hubungi, sokongan",

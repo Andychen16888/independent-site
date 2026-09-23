@@ -6,7 +6,13 @@ import { Container } from "@/components/ui/Container"
 import { fetchPageTranslations } from "@/lib/i18n/content"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { PageTranslation } from "@prisma/client"
-import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock } from "react-icons/hi2"
+import {
+  HiOutlineEnvelope,
+  HiOutlineMapPin,
+  HiOutlineClock,
+  HiOutlinePhone,
+  HiOutlineChatBubbleLeftRight,
+} from "react-icons/hi2"
 
 const DEFAULT_SHOP_LINKS = [
   { name: "All Products", href: "/products" },
@@ -192,8 +198,24 @@ export async function Footer({
                   <span>{safeHours}</span>
                 </div>
               )}
-              {contactPhone && <span className="pt-1 inline-block">{contactPhone}</span>}
-              {whatsapp && <span className="pt-1 inline-block">{whatsapp}</span>}
+              {contactPhone && (
+                <div className="flex items-center gap-3 pt-1">
+                  <HiOutlinePhone className="w-4 h-4" />
+                  <span>
+                    <span className="font-medium text-ivory/85">{t("phone")}: </span>
+                    {contactPhone}
+                  </span>
+                </div>
+              )}
+              {whatsapp && (
+                <div className="flex items-center gap-3 pt-1">
+                  <HiOutlineChatBubbleLeftRight className="w-4 h-4" />
+                  <span>
+                    <span className="font-medium text-ivory/85">{t("whatsapp")}: </span>
+                    {whatsapp}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

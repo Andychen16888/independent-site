@@ -76,7 +76,9 @@
     "bestSellers": "Bestseller",
     "shippingReturns": "Versand & Rückgabe",
     "about": "Ein chinesisches Handelshaus, das Staatsunternehmen, börsennotierte Unternehmen und große Konzerne seit 20 Jahren mit Käufern in Südostasien, Afrika und den Märkten der Neuen Seidenstraße verbindet.",
-    "hours": "Mo–Fr, 9–18 Uhr (CST)"
+    "hours": "Mo–Fr, 9–18 Uhr (CST)",
+    "phone": "Telefon",
+    "whatsapp": "WhatsApp"
   },
   "home": {
     "hero": {

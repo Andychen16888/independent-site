@@ -76,7 +76,9 @@
     "bestSellers": "Best Sellers",
     "shippingReturns": "Shipping & Returns",
     "about": "A Chinese trading house connecting SOEs, listed companies and large enterprises with buyers across Southeast Asia, Africa and Belt & Road markets for 20 years.",
-    "hours": "Mon–Fri, 9am–6pm CST"
+    "hours": "Mon–Fri, 9am–6pm CST",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp"
   },
   "home": {
     "hero": {

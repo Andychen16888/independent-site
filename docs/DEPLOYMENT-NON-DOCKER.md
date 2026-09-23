@@ -374,9 +374,21 @@ npm run db:generate
 npm run db:migrate
 npm run db:seed
 npm run build:server
-pm2 restart b2b-independent-site
+pm2 startOrReload ecosystem.config.js
 pm2 save
 ```
+
+> **⚠️ 上传文件目录**：`ecosystem.config.js` 已把 `UPLOAD_DIR` 固定到项目根目录 `./uploads/`（可靠持久化，不随构建清空）。
+>
+> - 重启必须用 `pm2 startOrReload ecosystem.config.js`（不要用 `pm2 restart b2b-independent-site`），否则新的 `UPLOAD_DIR` 不生效，上传仍会写回 `.next/standalone/uploads` 并在下次重构时丢图。
+> - 若此前版本把上传文件存在 `.next/standalone/uploads`，重新部署前先迁移（可选）：
+>   ```bash
+>   pm2 stop b2b-independent-site
+>   mkdir -p /var/www/b2b-independent-site/uploads
+>   [ -d .next/standalone/uploads ] && mv -f .next/standalone/uploads/* /var/www/b2b-independent-site/uploads/
+>   pm2 startOrReload ecosystem.config.js
+>   ```
+> - 若重新部署后产品图/上传图仍 404，说明旧文件已被构建清空且无法恢复，需要到管理后台重新上传对应图片。
 
 > **⚠️ 若本次更新修改了 nginx 模板（如 `b2b-independent-site.nginx.conf`，本次即增加了代理超时与开机自启相关调整），需要重新部署模板并重载**（每次都执行一次也没成本）：
 >

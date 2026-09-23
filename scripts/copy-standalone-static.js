@@ -53,3 +53,28 @@ if (pubSrcFiles !== pubDestFiles) {
   console.error(`ERROR: public file count mismatch! Source: ${pubSrcFiles}, Dest: ${pubDestFiles}`)
   process.exit(1)
 }
+
+// 用户上传文件 (默认 UPLOAD_DIR = <cwd>/uploads)。
+// 运行时 standalone 服务会 process.chdir() 到 .next/standalone，
+// 因此把项目根目录的 uploads/ 一并拷进 .next/standalone/uploads，
+// 防止旧版部署把文件落在 build 目录里、重新构建后被清空而丢图。
+const uploadsSrc = path.join(__dirname, "..", "uploads")
+const uploadsDest = path.join(__dirname, "..", ".next", "standalone", "uploads")
+
+if (fs.existsSync(uploadsSrc)) {
+  if (fs.existsSync(uploadsDest)) {
+    fs.rmSync(uploadsDest, { recursive: true, force: true })
+  }
+  fs.mkdirSync(path.dirname(uploadsDest), { recursive: true })
+  fs.cpSync(uploadsSrc, uploadsDest, { recursive: true })
+  const uploadsSrcFiles = fs.readdirSync(uploadsSrc, { recursive: true }).length
+  const uploadsDestFiles = fs.readdirSync(uploadsDest, { recursive: true }).length
+  console.log(`Copied ${uploadsDestFiles} files from uploads to .next/standalone/uploads`)
+
+  if (uploadsSrcFiles !== uploadsDestFiles) {
+    console.error(`ERROR: uploads file count mismatch! Source: ${uploadsSrcFiles}, Dest: ${uploadsDestFiles}`)
+    process.exit(1)
+  }
+} else {
+  console.log("No project-root uploads/ directory found; skipping uploads copy")
+}

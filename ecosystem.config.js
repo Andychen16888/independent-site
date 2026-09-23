@@ -8,6 +8,10 @@ module.exports = {
         NODE_ENV: "production",
         HOST: "127.0.0.1",
         PORT: 3000,
+        // 上传目录固定在项目根目录 uploads/。
+        // 绝对不能落在 .next/standalone/uploads —— standalone 每次 next build 都会被重写，
+        // 落在里面的用户上传图片会在重新部署后全部丢失（产品图显示不出来）。
+        UPLOAD_DIR: __dirname + "/uploads",
       },
       instances: 1,
       exec_mode: "fork",

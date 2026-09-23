@@ -480,7 +480,7 @@ pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m
 | 迁移报 `table does not exist` | 迁移/种子顺序反了，或旧迁移残留，按第 6 节重置空库 |
 | `npm install` 报 ERESOLVE | 必须 `npm ci --legacy-peer-deps` |
 | 502 Bad Gateway | `curl http://localhost:3000/api/health`；`sudo nginx -t` |
-| 504 Gateway Time-out | nginx 代理超时：确认服务器已按**第 8 节/11 节**重新部署 nginx 模板（/api 已放宽到 360s）；若刚重启过机器，多因 Node 没起来，见第 11.1 节开机自启 |
+| 504 Gateway Time-out | ① 确认 nginx 模板已按**第 8 节/11 节**重新部署（`/api` 已放宽到 360s）；② `curl http://localhost:3000/api/health` + `pm2 status`：若 app 反复重启 / restart 次数暴涨，多半是 `max_memory_restart` 太低被瞬时峰值误杀（首页全动态 SSR + 首次访问的图像优化内存飙升）——已把 `ecosystem.config.js` 调到 2G 堆、2G 重启阈值，确认服务器按新版重启过；小内存机器按该文件注释下调；③ 部署后首次打开很慢属正常（图像优化缓存是冷的），可先访问一次首页预热；④ 刚重启过机器而 Node 没起来时见第 11.1 节开机自启 |
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |

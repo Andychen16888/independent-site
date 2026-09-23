@@ -380,15 +380,24 @@ pm2 save
 
 > **⚠️ 上传文件目录**：`ecosystem.config.js` 已把 `UPLOAD_DIR` 固定到项目根目录 `./uploads/`（可靠持久化，不随构建清空）。
 >
-> - 重启必须用 `pm2 startOrReload ecosystem.config.js`（不要用 `pm2 restart b2b-independent-site`），否则新的 `UPLOAD_DIR` 不生效，上传仍会写回 `.next/standalone/uploads` 并在下次重构时丢图。
-> - 若此前版本把上传文件存在 `.next/standalone/uploads`，重新部署前先迁移（可选）：
+> - 即便 `UPLOAD_DIR` 没生效，代码也会自动把上传目录解析到 `<项目根>/uploads/`（见 `src/lib/uploads.ts`），**不再依赖 PM2 环境变量**，所以 `pm2 restart` / `pm2 startOrReload` 都不会再丢图。
+> - 若此前版本把上传文件存在 `.next/standalone/uploads`，重新部署前请迁移一次（否则旧文件会被构建清空，只能后台重新上传）：
 >   ```bash
 >   pm2 stop b2b-independent-site
 >   mkdir -p /var/www/b2b-independent-site/uploads
 >   [ -d .next/standalone/uploads ] && mv -f .next/standalone/uploads/* /var/www/b2b-independent-site/uploads/
 >   pm2 startOrReload ecosystem.config.js
 >   ```
-> - 若重新部署后产品图/上传图仍 404，说明旧文件已被构建清空且无法恢复，需要到管理后台重新上传对应图片。
+>
+> **⚠️ PM2 环境变量只在「首次创建进程」时生效**：若当前运行的 `b2b-independent-site` 进程是在旧配置（没有 UPLOAD_DIR）下启动的，之后无论 `pm2 restart` 还是 `pm2 startOrReload` 都**不会**把新的 `UPLOAD_DIR` 注入进程（PM2 复用旧 env）。新代码已不依赖该环境变量，但为了拿到更清晰的目录并强行纠正一次，建议一次性重建进程：
+>
+> ```bash
+> pm2 delete b2b-independent-site
+> pm2 startOrReload ecosystem.config.js
+> pm2 save
+> ```
+>
+> 之后正常升级沿用 `pm2 startOrReload ecosystem.config.js`（不要用 `pm2 restart b2b-independent-site`，避免与脚本期望不一致）。
 
 > **⚠️ 若本次更新修改了 nginx 模板（如 `b2b-independent-site.nginx.conf`，本次即增加了代理超时与开机自启相关调整），需要重新部署模板并重载**（每次都执行一次也没成本）：
 >
@@ -440,7 +449,7 @@ npm run db:generate
 npm run db:migrate
 npm run db:seed
 npm run build:server
-pm2 restart b2b-independent-site
+pm2 startOrReload ecosystem.config.js
 pm2 save
 echo "Deployment complete!"
 EOF
@@ -484,6 +493,7 @@ pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
+| 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
 
 ---

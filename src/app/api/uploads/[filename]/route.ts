@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { readFile } from "fs/promises"
 import path from "path"
-
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads")
+import { readUploadedFile } from "../../../../lib/uploads"
 
 const MIME_MAP: Record<string, string> = {
   webp: "image/webp",
@@ -39,8 +37,9 @@ export async function GET(
   const contentType = MIME_MAP[ext] || "application/octet-stream"
 
   try {
-    const buffer = await readFile(path.join(UPLOAD_DIR, filename))
-    return new NextResponse(buffer, {
+    const found = await readUploadedFile(filename)
+    if (!found) throw new Error("missing")
+    return new NextResponse(found.data, {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=604800, immutable",

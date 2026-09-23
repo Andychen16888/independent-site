@@ -4,6 +4,7 @@ import { writeFile, mkdir } from "fs/promises"
 import path from "path"
 import { v4 as uuidv4 } from "uuid"
 import sharp from "sharp"
+import { getUploadDir } from "../../../../lib/uploads"
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     const filename = isAnimatedGif ? `${uuidv4()}.gif` : `${uuidv4()}.webp`
-    const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads")
+    const uploadDir = getUploadDir()
 
     await mkdir(uploadDir, { recursive: true })
     await writeFile(path.join(uploadDir, filename), processedBuffer)

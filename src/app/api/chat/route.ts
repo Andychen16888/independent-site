@@ -1,39 +1,43 @@
 import { NextRequest } from "next/server"
 import OpenAI from "openai"
 import { buildSystemPrompt } from "@/lib/ai/system-prompt"
+import { isRateLimited, clientIp } from "@/lib/ai/rate-limit"
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const API_KEY = process.env.OPENAI_API_KEY
-const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini"
+const CHAT_TIMEOUT_MS = Number(process.env.CHAT_TIMEOUT_MS) || 90_000
 const MAX_HISTORY = 20
 const MAX_INPUT_LENGTH = 2000
 const MAX_OUTPUT_TOKENS = 600
 
-// Simple in-memory rate limiter: N requests per 60s per client IP.
-const RATE_LIMIT = Number(process.env.CHAT_RATE_LIMIT) || 20
-const RATE_WINDOW_MS = 60_000
-const buckets = new Map<string, { count: number; resetAt: number }>()
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  const bucket = buckets.get(ip)
-  if (!bucket || bucket.resetAt < now) {
-    buckets.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return false
-  }
-  bucket.count += 1
-  if (bucket.count > RATE_LIMIT) return true
-  return false
-}
-
-function clientIp(req: NextRequest): string {
-  const forwarded = req.headers.get("x-forwarded-for")
-  if (forwarded) return forwarded.split(",")[0].trim()
-  return req.headers.get("x-real-ip") || "unknown"
-}
+// Failure defense for the AI stream.
+//
+// Two problems were killing the whole site (client + admin) every day:
+//
+// 1. Memory: the old rate limiter here used a module-level Map of client-IP
+//    buckets that was NEVER evicted. Every unique visitor (or crawler, which
+//    hits /api/chat with real and spoofed X-Forwarded-For IPs) added a
+//    permanent entry, so the map grew without limit 24/7. On this long-running
+//    pm2 process that eventually crossed the 2G heap cap → OOM → restart, and
+//    because every page is dynamic SSR (no ISR, no caching) the ENTIRE site
+//    (client AND admin, which is also SSR) returned 504 until the process came
+//    back.
+//
+//    The rate limiter now lives in src/lib/ai/rate-limit.ts, which is bounded:
+//    expired buckets are dropped on access and a periodic sweep prunes stale
+//    entries once the table grows large, so memory usage is fixed.
+//
+// 2. Hangs: an OpenAI stream can stall for the SDK's default 10-minute timeout
+//    (with up to 2 internal retries). Each stalled request ties up a handler +
+//    response stream and, on a busy site, several of these piling up over the
+//    day is exactly what tips the process over the /api 360s nginx timeout
+//    (504) for everyone.
+//
+//    So every chat call now gets a hard wall-clock timeout (aborts the stream,
+//    upstream socket, and buffers) and is aborted immediately if the client
+//    disconnects, so no request can ever leak memory or hang past its bound.
 
 function jsonError(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -43,13 +47,13 @@ function jsonError(message: string, status: number): Response {
 }
 
 export async function POST(req: NextRequest) {
-  if (!API_KEY) {
+  if (!process.env.OPENAI_API_KEY) {
     return jsonError("The AI assistant is not configured yet. Please contact the admin.", 503)
   }
 
   const ip = clientIp(req)
   if (isRateLimited(ip)) {
-    return jsonError("You're sending messages too quickly. Please wait a moment and try again.", 429)
+    return jsonError("You are sending messages too quickly. Please slow down and try again.", 429)
   }
 
   let payload: { messages?: unknown }
@@ -76,21 +80,31 @@ export async function POST(req: NextRequest) {
     }))
 
   if (history.length === 0) {
-    return jsonError("No valid messages provided.", 400)
+    return jsonError("Messages array is required.", 400)
   }
 
-  const openai = new OpenAI({ apiKey: API_KEY })
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   try {
     const systemPrompt = await buildSystemPrompt()
 
-    const stream = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [{ role: "system", content: systemPrompt }, ...(history as ChatCompletionMessageParam[])],
-      temperature: 0.7,
-      max_tokens: MAX_OUTPUT_TOKENS,
-      stream: true,
-    })
+    const stream = await openai.chat.completions.create(
+      {
+        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...(history as ChatCompletionMessageParam[]),
+        ],
+        temperature: 0.7,
+        max_tokens: MAX_OUTPUT_TOKENS,
+        stream: true,
+      },
+      {
+        maxRetries: 0,
+        timeout: CHAT_TIMEOUT_MS,
+        signal: req.signal,
+      }
+    )
 
     const encoder = new TextEncoder()
     const readable = new ReadableStream({
@@ -106,7 +120,9 @@ export async function POST(req: NextRequest) {
         } catch (error) {
           console.error("Stream error:", error)
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ error: "The response was interrupted. Please try again." })}\n\n`)
+            encoder.encode(
+              `data: ${JSON.stringify({ error: "The response was interrupted. Please try again." })}\n\n`
+            )
           )
         } finally {
           controller.close()

@@ -361,7 +361,9 @@
       "building-materials": "Vật liệu xây dựng",
       "belt-road": "Vành đai và Con đường",
       "steel": "Thép",
-      "cement": "Xi măng"
+      "cement": "Xi măng",
+      "copper": "Đồng",
+      "aluminum": "Nhôm"
     }
   },
   "faq": {

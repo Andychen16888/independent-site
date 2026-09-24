@@ -361,7 +361,9 @@
       "building-materials": "วัสดุก่อสร้าง",
       "belt-road": "เส้นทางสายไหม",
       "steel": "เหล็ก",
-      "cement": "ซีเมนต์"
+      "cement": "ซีเมนต์",
+      "copper": "ทองแดง",
+      "aluminum": "อะลูมิเนียม"
     }
   },
   "faq": {

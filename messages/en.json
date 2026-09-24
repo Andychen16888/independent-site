@@ -361,7 +361,9 @@
       "building-materials": "Building Materials",
       "belt-road": "Belt & Road",
       "steel": "Steel",
-      "cement": "Cement"
+      "cement": "Cement",
+      "copper": "Copper",
+      "aluminum": "Aluminum"
     }
   },
   "faq": {

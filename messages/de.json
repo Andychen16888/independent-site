@@ -361,7 +361,9 @@
       "building-materials": "Baumaterialien",
       "belt-road": "Neue Seidenstraße",
       "steel": "Stahl",
-      "cement": "Zement"
+      "cement": "Zement",
+      "copper": "Kupfer",
+      "aluminum": "Aluminium"
     }
   },
   "faq": {

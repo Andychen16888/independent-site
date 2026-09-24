@@ -361,7 +361,9 @@
       "building-materials": "Bahan Bangunan",
       "belt-road": "Jalur dan Jalan",
       "steel": "Baja",
-      "cement": "Semen"
+      "cement": "Semen",
+      "copper": "Tembaga",
+      "aluminum": "Aluminium"
     }
   },
   "faq": {

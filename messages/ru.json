@@ -361,7 +361,9 @@
       "building-materials": "Стройматериалы",
       "belt-road": "Пояс и путь",
       "steel": "Сталь",
-      "cement": "Цемент"
+      "cement": "Цемент",
+      "copper": "Медь",
+      "aluminum": "Алюминий"
     }
   },
   "faq": {

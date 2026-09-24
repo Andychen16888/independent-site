@@ -361,7 +361,9 @@
       "building-materials": "Matériaux de construction",
       "belt-road": "Nouvelles routes de la soie",
       "steel": "Acier",
-      "cement": "Ciment"
+      "cement": "Ciment",
+      "copper": "Cuivre",
+      "aluminum": "Aluminium"
     }
   },
   "faq": {

@@ -361,7 +361,9 @@
       "building-materials": "Materiais de construção",
       "belt-road": "Cinturão e Rota",
       "steel": "Aço",
-      "cement": "Cimento"
+      "cement": "Cimento",
+      "copper": "Cobre",
+      "aluminum": "Alumínio"
     }
   },
   "faq": {

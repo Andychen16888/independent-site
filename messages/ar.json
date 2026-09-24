@@ -361,7 +361,9 @@
       "building-materials": "مواد البناء",
       "belt-road": "الحزام والطريق",
       "steel": "الصلب",
-      "cement": "الإسمنت"
+      "cement": "الإسمنت",
+      "copper": "النحاس",
+      "aluminum": "الألمنيوم"
     }
   },
   "faq": {

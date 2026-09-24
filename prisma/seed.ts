@@ -573,11 +573,18 @@ async function seedBlogPostTranslations() {
     for (const locale of CONTENT_LOCALES) {
       const data = perLocale[locale]
       if (!data) continue
-      await prisma.blogPostTranslation.upsert({
-        where: { blogPostId_locale: { blogPostId: post.id, locale } },
-        update: {},
-        create: { blogPostId: post.id, locale, ...data },
-      })
+      const where = { blogPostId_locale: { blogPostId: post.id, locale } }
+      const existing = await prisma.blogPostTranslation.findUnique({ where })
+      if (!existing) {
+        await prisma.blogPostTranslation.create({
+          data: { blogPostId: post.id, locale, ...data },
+        })
+        continue
+      }
+      // Preserve admin-edited title/excerpt/SEO, but backfill a missing article body.
+      if (data.content && !existing.content) {
+        await prisma.blogPostTranslation.update({ where, data: { content: data.content } })
+      }
     }
   }
   console.log("Blog post translations seeded.")

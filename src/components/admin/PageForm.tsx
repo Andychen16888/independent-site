@@ -49,6 +49,7 @@ export default function PageForm({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
   const [notFound, setNotFound] = useState(false)
+  const [resolvedId, setResolvedId] = useState(pageId)
   const [form, setForm] = useState(() =>
     initialData
       ? {
@@ -87,6 +88,7 @@ export default function PageForm({
         if (!res.ok) throw new Error(bi("Failed to load page", "加载页面失败"))
         const data = await res.json()
         const p = data.page
+        setResolvedId(p.id)
         setForm({
           title: p.title, slug: p.slug, excerpt: p.excerpt || "", content: p.content || "",
           coverImage: p.coverImage || "", isPublished: p.isPublished === true,
@@ -120,7 +122,7 @@ export default function PageForm({
     setSaving(true)
     setError("")
     try {
-      const url = mode === "edit" ? `/api/admin/pages/${pageId}` : "/api/admin/pages"
+      const url = mode === "edit" ? `/api/admin/pages/${resolvedId}` : "/api/admin/pages"
       const res = await fetch(url, {
         method: mode === "edit" ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },

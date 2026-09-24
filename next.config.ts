@@ -63,13 +63,18 @@ const nextConfig: NextConfig = {
     ]
   },
   async redirects() {
+    // Keep in sync with src/i18n/routing.ts. Enumerating real locales prevents the
+    // ":locale" param from greedily matching unrelated first segments (e.g. /admin/about).
     const pages = ["about", "contact", "shipping", "privacy", "terms"]
+    const locales = ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
     return [
-      ...pages.map((slug) => ({
-        source: `/:locale/${slug}`,
-        destination: `/:locale/pages/${slug}`,
-        permanent: true,
-      })),
+      ...locales.flatMap((locale) =>
+        pages.map((slug) => ({
+          source: `/${locale}/${slug}`,
+          destination: `/${locale}/pages/${slug}`,
+          permanent: true,
+        }))
+      ),
       ...pages.map((slug) => ({
         source: `/${slug}`,
         destination: `/en/pages/${slug}`,

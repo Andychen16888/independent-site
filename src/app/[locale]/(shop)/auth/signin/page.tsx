@@ -30,6 +30,11 @@ export default function SignInPage() {
     if (result?.error) {
       setError(t("invalidCredentials"))
       setIsLoading(false)
+      fetch("/api/track/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, provider: "credentials", success: false }),
+      }).catch(() => {})
     } else {
       const params = new URLSearchParams(window.location.search)
       const callbackUrl = params.get("callbackUrl") || `/${locale}/account`

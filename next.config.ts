@@ -5,8 +5,12 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  serverExternalPackages: ["geoip-lite"],
   outputFileTracingIncludes: {
-    "/*": ["./messages/**/*.json"],
+    "/*": [
+      "./messages/**/*.json",
+      "./node_modules/geoip-lite/data/**",
+    ],
   },
   staleTimes: {
     dynamic: 0,

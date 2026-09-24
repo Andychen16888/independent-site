@@ -780,3 +780,52 @@ model PageView {
   @@unique([path, date])
   @@map("page_views")
 }
+
+model VisitorSession {
+  id        String   @id @default(cuid())
+  visitorId String   @unique
+  ip        String?
+  country   String?
+  userAgent String?
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @default(now())
+  pageCount Int      @default(0)
+
+  @@index([country])
+  @@index([lastSeen])
+  @@map("visitor_sessions")
+}
+
+model VisitEvent {
+  id        String   @id @default(cuid())
+  visitorId String
+  path      String
+  title     String?
+  referrer  String?
+  ip        String?
+  country   String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([visitorId, createdAt])
+  @@index([path])
+  @@index([country])
+  @@index([createdAt])
+  @@map("visit_events")
+}
+
+model LoginRecord {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String
+  provider  String
+  success   Boolean  @default(true)
+  ip        String?
+  country   String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+  @@map("login_records")
+}

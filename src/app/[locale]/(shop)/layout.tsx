@@ -4,6 +4,7 @@ import { getSiteSettings } from "@/lib/settings/settings"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { ChatButton } from "@/components/chat/ChatButton"
+import { VisitorBeacon } from "@/components/tracking/VisitorBeacon"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
 
 interface ShopLayoutProps {
@@ -97,6 +98,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
           tag: p.isBestSeller ? t("best") : p.isNew ? t("new") : undefined,
         }))}
       />
+      <VisitorBeacon />
     </>
   )
 }

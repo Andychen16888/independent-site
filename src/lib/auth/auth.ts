@@ -5,6 +5,8 @@ import AppleProvider from "next-auth/providers/apple"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db/prisma"
+import { getRequestMeta } from "@/lib/auth/request-context"
+import { countryFromIp } from "@/lib/tracking/geo"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -95,6 +97,26 @@ export const authOptions: NextAuthOptions = {
         ;(session.user as any).role = token.role
       }
       return session
+    },
+  },
+  events: {
+    async signIn({ user, account }) {
+      const meta = getRequestMeta()
+      const ip = meta?.ip ?? null
+      const country = countryFromIp(ip)
+      await prisma.loginRecord
+        .create({
+          data: {
+            userId: user?.id ?? null,
+            email: user?.email ?? "",
+            provider: account?.provider ?? "unknown",
+            success: true,
+            ip,
+            country,
+            userAgent: meta?.userAgent ? meta.userAgent.slice(0, 300) : null,
+          },
+        })
+        .catch(() => {})
     },
   },
 }

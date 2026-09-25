@@ -164,6 +164,11 @@ export default async function AdminMonitoringPage() {
           rows={[
             { label: "Cores", labelZh: "核心数", value: `${sys.cpu.cores}` },
             { label: "Load avg", labelZh: "负载", value: sys.cpu.loadAvg.map((v) => v.toFixed(2)).join(" / ") },
+            {
+              label: "Load per core",
+              labelZh: "每核负载",
+              value: `${(sys.cpu.loadAvg[0] / Math.max(sys.cpu.cores, 1)).toFixed(2)} (＞1 表示排队)`,
+            },
           ]}
           footer={sys.cpu.model}
         />
@@ -200,11 +205,16 @@ export default async function AdminMonitoringPage() {
         <GaugeCard
           title="Application"
           titleZh="应用程序"
-          percent={sys.process.percent}
+          percent={sys.process.cpuPercent}
           status={sys.process.status}
           rows={[
-            { label: "Node.js", labelZh: "运行时", value: sys.process.nodeVersion },
+            { label: "Node CPU", labelZh: "Node 占用", value: `${sys.process.cpuPercent}%` },
             { label: "Process RSS", labelZh: "内存", value: formatBytes(sys.process.memory) },
+            {
+              label: "Mem share",
+              labelZh: "内存占比",
+              value: `${sys.process.memoryPercent}% of ${formatBytes(sys.memory.total)}`,
+            },
             { label: "Uptime", labelZh: "运行时长", value: formatUptime(sys.process.uptime) },
           ]}
           footer={`System uptime 系统运行：${formatUptime(sys.uptime)}`}

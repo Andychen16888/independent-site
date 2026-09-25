@@ -229,7 +229,7 @@ docker compose up -d --build
 
 > **ⓐ 普通代码更新 与 ⓑ CPU 优化 的部署差别（本次 CPU 优化的一个特别说明）**
 >
-> Docker 版 nginx 配置 `deploy/nginx.conf` 在本次提交（`18e029c`）**已补上** `/_next/image` 图片缓存（`proxy_cache_path b2b_img` + `location /_next/image`），和宿主版模板 b2b_independent-site.nginx.conf 的缓存块一致。所以在 Docker 下部署 CPU 优化也只需**一个命令**：
+> Docker 版 nginx 配置 `deploy/nginx.conf` 在本次提交（`a5d6f61`）**已补上** `/_next/image` 图片缓存（`proxy_cache_path b2b_img` + `location /_next/image`），和宿主版模板 b2b_independent-site.nginx.conf 的缓存块一致。所以在 Docker 下部署 CPU 优化也只需**一个命令**：
 >
 > ```bash
 > cd /var/www/b2b-independent-site

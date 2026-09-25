@@ -13,12 +13,19 @@ const nextConfig: NextConfig = {
     ],
   },
   staleTimes: {
-    dynamic: 0,
+    dynamic: 30,
+    static: 300,
   },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },
     ],
+    // CPU 优化: 只生成 WebP（不生成 AVIF——sharp 的 AVIF 编码极耗 CPU，
+    // 双核小机在爬虫请求图片时容易被 AVIF 编码打满）。
+    formats: ["image/webp"],
+    // 优化结果在 .next/cache 落盘缓存 1 年，同一张图只编码一次。
+    minimumCacheTTL: 31536000,
+    qualities: [60, 75, 82, 85],
   },
   async headers() {
     const privateRoutes = [

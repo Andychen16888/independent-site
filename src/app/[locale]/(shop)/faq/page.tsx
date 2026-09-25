@@ -7,6 +7,8 @@ import { fetchLocalizedFaqs } from "@/lib/i18n/content"
 import { breadcrumbSchema, faqPageSchema, qaPageSchema } from "@/lib/seo/structured-data"
 import type { Metadata } from "next"
 
+export const revalidate = 300
+
 interface FaqItem {
   q: string
   a: string

@@ -17,6 +17,8 @@ import {
   HiOutlineClock,
 } from "react-icons/hi2"
 
+export const revalidate = 300
+
 const CONTACT_INFO_KEYS = [
   "contact.email",
   "contact.phone",

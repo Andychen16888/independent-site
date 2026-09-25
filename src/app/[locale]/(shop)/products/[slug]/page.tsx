@@ -15,6 +15,8 @@ interface Props {
   params: Promise<{ slug: string; locale: string }>
 }
 
+export const revalidate = 300
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
   const product = await prisma.product.findFirst({

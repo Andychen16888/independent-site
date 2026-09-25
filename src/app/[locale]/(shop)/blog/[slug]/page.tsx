@@ -14,6 +14,8 @@ interface Props {
   params: Promise<{ slug: string; locale: string }>
 }
 
+export const revalidate = 300
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug, locale } = await params
   const post = await prisma.blogPost.findFirst({

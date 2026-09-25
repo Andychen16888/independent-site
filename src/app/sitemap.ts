@@ -15,6 +15,8 @@ function absUrl(u: string): string {
   return u.startsWith("http") ? u : `${baseUrl}${u.startsWith("/") ? u : `/${u}`}`
 }
 
+// 保持运行时动态生成（构建期无需数据库）。重复的爬虫请求会被 nginx 微缓存
+// (location / 的 b2b_core) 在 5 分钟内直接命中, 不会反复回到 Node 渲染。
 export const dynamic = "force-dynamic"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

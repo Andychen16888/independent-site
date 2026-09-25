@@ -22,7 +22,6 @@ export interface ImageAsset {
 
 export type SiteImageGroup =
   | "hero"
-  | "commodities"
   | "supplyChain"
   | "process"
   | "port"
@@ -78,14 +77,6 @@ export const SITE_IMAGE_SLOTS: SiteImageSlot[] = [
     defaultSrc: "/images/hero/global-logistics.jpg",
   },
 
-  // Commodities
-  { key: "commodity.chemicals", group: "commodities", label: "Chemicals", alt: "Industrial chemical processing and storage", tone: TONES.steel, defaultSrc: "/images/commodities/chemicals.jpg" },
-  { key: "commodity.metals", group: "commodities", label: "Metals", alt: "Stacked steel coils and metal billets in a warehouse", tone: TONES.slate, defaultSrc: "/images/commodities/metals.jpg" },
-  { key: "commodity.minerals", group: "commodities", label: "Minerals", alt: "Bulk mineral ore and aggregates", tone: TONES.earth, defaultSrc: "/images/commodities/minerals.jpg" },
-  { key: "commodity.energy", group: "commodities", label: "Energy", alt: "Energy sector storage and distribution infrastructure", tone: TONES.deep, defaultSrc: "/images/commodities/energy.jpg" },
-  { key: "commodity.agriculture", group: "commodities", label: "Agricultural Commodities", alt: "Bulk agricultural produce prepared for export", tone: TONES.warm, defaultSrc: "/images/commodities/agriculture.jpg" },
-  { key: "commodity.industrial", group: "commodities", label: "Industrial Materials", alt: "Heavy industrial materials and machinery components", tone: TONES.steel, defaultSrc: "/images/commodities/industrial.jpg" },
-
   // Supply chain
   { key: "supplyChain.0", group: "supplyChain", label: "Supply Chain — Factory", alt: "Manufacturing partners on the production floor", tone: TONES.steel, defaultSrc: "/images/supply-chain/factory.jpg" },
   { key: "supplyChain.1", group: "supplyChain", label: "Supply Chain — Warehouse", alt: "Organised export warehouse with palletised goods", tone: TONES.slate, defaultSrc: "/images/supply-chain/warehouse.jpg" },
@@ -113,7 +104,6 @@ export const SITE_IMAGE_SLOTS: SiteImageSlot[] = [
 
 export const SITE_IMAGE_GROUP_LABELS: Record<SiteImageGroup, string> = {
   hero: "Homepage Hero",
-  commodities: "Commodity Categories",
   supplyChain: "China Supply Chain",
   process: "Sourcing Process",
   port: "Port Banner",
@@ -141,21 +131,6 @@ export const portImage: ImageAsset = DEFAULT_SITE_IMAGES["port"]
 export const globalImage: ImageAsset = DEFAULT_SITE_IMAGES["global"]
 
 /* -------------------------------------------------------------------------- */
-/* Commodities                                                                */
-/* -------------------------------------------------------------------------- */
-
-export type CommodityKey = "chemicals" | "metals" | "minerals" | "energy" | "agriculture" | "industrial"
-
-export const commodityImages: Record<CommodityKey, ImageAsset> = {
-  chemicals: DEFAULT_SITE_IMAGES["commodity.chemicals"],
-  metals: DEFAULT_SITE_IMAGES["commodity.metals"],
-  minerals: DEFAULT_SITE_IMAGES["commodity.minerals"],
-  energy: DEFAULT_SITE_IMAGES["commodity.energy"],
-  agriculture: DEFAULT_SITE_IMAGES["commodity.agriculture"],
-  industrial: DEFAULT_SITE_IMAGES["commodity.industrial"],
-}
-
-/* -------------------------------------------------------------------------- */
 /* Category fallback (database categories are dynamic)                        */
 /* -------------------------------------------------------------------------- */
 
@@ -170,67 +145,3 @@ export function categoryFallbackTone(slug: string): string {
 
 /** Optional real photograph per category slug. */
 export const categoryImages: Record<string, string> = {}
-
-/* -------------------------------------------------------------------------- */
-/* Wire "Commodity Categories" site images to storefront category cards        */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Legacy static commodity slots (domin "commodity.*"), each tied to a default
- * photo. Category slugs that match one of these reuse its default photo and
- * any previously uploaded value. Dynamic categories keep their own slot
- * (`commodity.<categorySlug>`); see `commoditySlotsForCategories`.
- */
-export const LEGACY_COMMODITY_SLOT: Record<string, string> = {
-  "chemical-products": "commodity.chemicals",
-  chemicals: "commodity.chemicals",
-  "metal-products": "commodity.metals",
-  metals: "commodity.metals",
-  minerals: "commodity.minerals",
-  "building-materials": "commodity.industrial",
-  industrial: "commodity.industrial",
-  energy: "commodity.energy",
-  "agricultural-commodities": "commodity.agriculture",
-  agriculture: "commodity.agriculture",
-}
-
-/** Stable per-category image slot key. */
-export function commoditySlotKey(categorySlug: string): string {
-  return `commodity.${categorySlug}`
-}
-
-/**
- * Resolve the admin-managed commodity image for a category slug from a
- * resolved site-image map: own category slot first, legacy slot as fallback.
- */
-export function commodityImageForSlug(
-  slug: string,
-  resolved: Record<string, ImageAsset>,
-): ImageAsset | undefined {
-  const ownKey = commoditySlotKey(slug)
-  if (resolved[ownKey]) return resolved[ownKey]
-  const legacyKey = LEGACY_COMMODITY_SLOT[slug]
-  return legacyKey ? resolved[legacyKey] : undefined
-}
-
-/** A storefront category as rendered by the "Commodity Categories" group. */
-export interface CategorySlotSeed {
-  slug: string
-  name: string
-}
-
-/** Build the admin "Commodity Categories" slots from the active storefront categories. */
-export function commoditySlotsForCategories(categories: CategorySlotSeed[]): SiteImageSlot[] {
-  return categories.map((c) => {
-    const legacyKey = LEGACY_COMMODITY_SLOT[c.slug] || commoditySlotKey(c.slug)
-    const fallback = DEFAULT_SITE_IMAGES[legacyKey]
-    return {
-      key: commoditySlotKey(c.slug),
-      group: "commodities",
-      label: c.name,
-      alt: fallback?.alt ?? `${c.name} category cover`,
-      tone: fallback?.tone ?? categoryFallbackTone(c.slug),
-      defaultSrc: fallback?.src ?? null,
-    }
-  })
-}

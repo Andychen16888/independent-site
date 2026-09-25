@@ -363,43 +363,32 @@ curl -I http://commoditychina.com           # 期望 301 → https
 
 ## 11. 更新部署
 
-> **CPU 优化 与 普通代码更新 的差别 —— 只有一处必须额外做**
+> ## ⚡ 本次拉取（`ad79c62` CPU 优化）后：普通部署命令之外，**额外多一步** —— 重新复制 nginx 模板并 `nginx -t && reload`
 >
-> 本次 CPU 优化（commit `ad79c62`）改了两类东西：
+> 原因：CPU 优化的 `/_next/image` 图片缓存加在 nginx 模板里，**`git pull` / 重建 / `pm2` 都覆盖不到**，不重载 nginx 就不会生效（改了代码也不会自动生效，必须手动重载一次）。
 >
 > | 改动 | 生效方式 |
 > |------|----------|
-> | `/_next/image` 缓存（nginx 新增 `b2b_img` cache zone + `location /_next/image`） | **改的是 `.nginx.conf` 模板，`git pull`/重建/pm2 都覆盖不到**。必须把模板重新复制到服务器并 `nginx -t && reload`（见下方第 402 行的警告块，**本次必须执行**） |
-> | sharp 宽度从 8 个减到 5/6 个 + 可选 CORS/代理图用 `width/unshifted`（`src/config/images.ts`） | 在代码里，正常 `npm run build` 即生效 |
+> | `/_next/image` 缓存（nginx 新增 `b2b_img` cache zone + `location /_next/image`） | **只改 nginx 模板** → 必须 `cp 模板 → sed 换域名 → nginx -t && reload`（**本次必做**） |
+> | sharp 宽度从 8 个减到 5/6 个（`next.config.ts`） | 在代码里，`npm run build` 即生效 |
 > | ISR `revalidate` 300→3600（首页等 6 个页面）+ admin 更新即时 `revalidatePath` | 相同 |
 > | `/api/track` 埋点 12s 突发去重 | 相同 |
 >
-> 所以：**普通代码更新**按下方命令即可，**CPU 优化/任何改 nginx 模板的提交**必须额外执行 `cp 模板 → sed 换域名 → nginx -t && reload`。
+> **如何判断以后某次更新是否也要重载 nginx**：`git log --stat -1 HEAD | grep nginx`
+> - 有输出且文件是 `b2b-independent-site.nginx.conf` → 需要执行下方「重载 nginx 模板」步骤；
+> - 有输出但文件是 `deploy/nginx.conf` → 那是 Docker 版，与你无关；
+> - 没有输出 → 纯代码更新，跳过 nginx 步骤。
 >
-> 怎么判断本次提交是否需要重载 nginx：`git log --stat -1 HEAD | grep nginx`，有输出就是要。本仓库 nginx 模板只有一个（`b2b-independent-site.nginx.conf`），只要它被改动过就按下方做。
->
-> CPU 优化完成后如何确认生效：
+> 重载后如何确认缓存生效：
 > ```bash
-> # 1. 重载后，两张 url= 完全相同的 /_next/image 请求，第二次应 MISS → HIT
-> curl -s -o /dev/null -H "X-CACHE-KEY-PROBE: 1" "https://YOUR_DOMAIN/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75"; sleep 1
+> # 1. 同一张 /_next/image 请求两次，第二次应从 MISS 变 HIT
 > curl -s -o /dev/null -D - "https://YOUR_DOMAIN/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
-> #   输出 X-Cache-Status: HIT 即缓存生效（第一张图是冷缓存 MISS，正常）
+> curl -s -o /dev/null -D - "https://YOUR_DOMAIN/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
+> #   第一次 MISS（冷缓存）、第二次 HIT，即缓存已生效
 > #
-> # 2. 观察 CPU：idle 高峰期或爬虫抓图时，/var/cache/nginx/b2b 命中后 sharp 不再重复编码
+> # 2. 观察 CPU：爬虫抓图 / 访客看图高峰过后应明显回落
 > top -bn1 | head -15        # 或 pm2 monit 看 b2b-independent-site 的 CPU%
 > ```
-
-> **ⓐ 普通代码更新 与 ⓑ CPU 优化 的部署差别**（本小节是合二为一的通用流程，注意两处差异）
->
-> | 步骤 | ⓐ 普通代码更新 | ⓑ 本次 CPU 优化（图片 CDN 缓存） |
-> |------|---------------|--------------------------------|
-> | `git pull` / `npm ci` / `db:generate` / 构建 | ⭐ 必须 | ⭐ 必须（代码改动也在这里：sharp 宽度、ISR revalidate 1h、instant revalidation、track 去重） |
-> | `npm run db:migrate` / `db:seed` | ⭐ 必须 | ⭐ 必须 |
-> | `pm2 startOrReload` | ⭐ 必须（热重载即可，不必重建进程） | ⭐ 必须 |
-> | **重新复制 nginx 模板 + 替换域名 + 重载** | ❌ 通常**不需要** | ✅ **必须**（模板新增了 `location /_next/image` 图片缓存块 + `proxy_cache_path b2b_img`，只有重载后才生效） |
-> | **验证缓存生效** | 无 | `curl -I` 看 `_next/image` 是否 `X-Cache-Status: HIT`（见下方「验证缓存」） |
->
-> 判断本次提交是否改了 nginx 模板：`git log --stat -1 | grep nginx`。有输出 → 需要重载；没有 → 跳过模板步骤。
 
 每次拉取新代码后重新构建并重启：
 
@@ -414,6 +403,12 @@ npm run db:seed
 npm run build:server
 pm2 startOrReload ecosystem.config.js
 pm2 save
+
+# ↓↓↓ 本次 CPU 优化（ad79c62）必做：复制 nginx 模板并重载，否则 /_next/image 缓存不生效 ↓↓↓
+# 纯代码更新且 git log --stat -1 HEAD | grep nginx 无输出时，可跳过下面三行
+sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
+sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 > **⚠️ 上传文件目录**：`ecosystem.config.js` 已把 `UPLOAD_DIR` 固定到项目根目录 `./uploads/`（可靠持久化，不随构建清空）。

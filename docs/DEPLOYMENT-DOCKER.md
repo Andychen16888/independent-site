@@ -229,13 +229,16 @@ docker compose up -d --build
 
 > **ⓐ 普通代码更新 与 ⓑ CPU 优化 的部署差别（本次 CPU 优化的一个特别说明）**
 >
-> 本次 CPU 优化（commit `ad79c62`）的代码部分（sharp 宽度减半、ISR revalidate 1h、admin 即时 `revalidatePath`、`/api/track` 12s 去重）——用上面 `docker compose up -d --build` 重建即生效，**无额外步骤**。
+> Docker 版 nginx 配置 `deploy/nginx.conf` 在本次提交（`18e029c`）**已补上** `/_next/image` 图片缓存（`proxy_cache_path b2b_img` + `location /_next/image`），和宿主版模板 b2b_independent-site.nginx.conf 的缓存块一致。所以在 Docker 下部署 CPU 优化也只需**一个命令**：
 >
-> 但它的 **nginx 缓存部分**目前**只加在了非 Docker 版本的宿主 nginx 模板**（`b2b-independent-site.nginx.conf` 里的 `location /_next/image` + `b2b_img` 缓存区）。Docker 版 nginx 配置 `deploy/nginx.conf` **尚未加入这个缓存块**，所以 Docker 部署**目前不会**命中 `/_next/image` 图片缓存、CPU 优化的一半收益享受不到。
+> ```bash
+> cd /var/www/b2b-independent-site
+> docker compose up -d --build
+> ```
 >
-> 如果你用的是 Docker 部署并且这台机器 CPU 紧张，建议改用 [非 Docker 部署（PM2 直跑）](./DEPLOYMENT-NON-DOCKER.md)（推荐，1 核 2G 即可），或者等我给 `deploy/nginx.conf` 补上同样的 `/_next/image` 缓存后再升级。
+> `deploy/nginx.conf` 走的是 nginx 容器内的 proxy_cache_path（`/etc/nginx/nginx.conf` 挂载），`git pull` + `docker compose up -d --build`（会重建 nginx 容器）即生效，**没有额外的宿主 nginx 重载步骤**。
 >
-> 判断某次提交是否改动了 nginx 模板（决定是否需要额外重载/同步）：`git log --stat -1 HEAD | grep nginx`。有输出就要处理，否则 CPU 优化不会在部署后生效。
+> 判断某次提交是否改动了 nginx 模板（决定是否需要额外处理）：`git log --stat -1 HEAD | grep nginx`。有输出 → 若为 `deploy/nginx.conf`（Docker）则 `docker compose up -d --build` 已含在下方命令；若为宿主模板 `b2b-independent-site.nginx.conf`（非 Docker）则按 [DEPLOYMENT-NON-DOCKER.md](./DEPLOYMENT-NON-DOCKER.md) 第 11 节复制模板并重载。
 
 # 如需强制重新执行迁移（比如修复了迁移脚本）
 docker compose run --rm migrate

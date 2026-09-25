@@ -306,11 +306,17 @@ sudo ln -sf /etc/nginx/sites-available/b2b-independent-site /etc/nginx/sites-ena
 # 删除默认欢迎页站点（避免与本站 server_name 冲突）
 sudo rm -f /etc/nginx/sites-enabled/default
 
+# 创建模板里 proxy_cache_path 需要的缓存父目录（必须！nginx 不会自动创建父目录）
+sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+sudo chown -R www-data:www-data /var/cache/nginx
+
 # 测试 + 重载
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
 > 若 `nginx -t` 报 `cannot load certificate ... fullchain.pem`，说明 SSL 证书还没申请——去第 9 节先申请证书再回来测试。模板中的 80 端口 server 块保留。
+>
+> 若 `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)`，说明上面那两行 `mkdir -p` / `chown` 没执行（或服务器重启后被清理了）——补跑一次即可。
 >
 > 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理超时 360s（AI 多语言翻译等长任务不报 504）。
 
@@ -405,9 +411,13 @@ pm2 startOrReload ecosystem.config.js
 pm2 save
 
 # ↓↓↓ 本次 CPU 优化（ad79c62）必做：复制 nginx 模板并重载，否则 /_next/image 缓存不生效 ↓↓↓
-# 纯代码更新且 git log --stat -1 HEAD | grep nginx 无输出时，可跳过下面三行
+# 纯代码更新且 git log --stat -1 HEAD | grep nginx 无输出时，可跳过下面几行
 sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
 sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+# 必须先建缓存父目录：nginx 不会自动创建 /var/cache/nginx，缺它会报
+#   mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
+sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+sudo chown -R www-data:www-data /var/cache/nginx
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -438,10 +448,18 @@ sudo nginx -t && sudo systemctl reload nginx
 > # 从仓库重新复制模板，并把域名替换成你的（示例：commoditychina.com）
 > sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
 > sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+>
+> # 必须先创建缓存父目录（模板里的 proxy_cache_path 需要它）：
+> #   缺这一步会报 mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
+> sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+> sudo chown -R www-data:www-data /var/cache/nginx
+>
 > sudo nginx -t && sudo systemctl reload nginx
 > ```
 >
 > 不要直接在服务器上改动模板里的域名占位为新域名后保存——复制过来的文件会被下次 `git pull` 覆盖。
+>
+> **服务器重启后若报同样的 mkdir 错误**：Ubuntu 的 `/etc/tmpfiles.d/` 会在重启时清空 `/var/cache/nginx`，重跑上面那两行 `mkdir -p` + `chown` 即可（可写进 crontab @reboot 自动化）。
 
 ### 11.1 开机自启（服务器重启后自动恢复网站，必须配置一次）
 
@@ -526,6 +544,7 @@ pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
+| `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
 

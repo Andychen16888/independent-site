@@ -170,3 +170,29 @@ export function categoryFallbackTone(slug: string): string {
 
 /** Optional real photograph per category slug. */
 export const categoryImages: Record<string, string> = {}
+
+/* -------------------------------------------------------------------------- */
+/* Wire "Commodity Categories" site images to storefront category cards        */
+/* -------------------------------------------------------------------------- */
+
+/** Map a storefront category slug to a "Commodity Categories" image slot. */
+export const COMMODITY_SLOT_BY_SLUG: Record<string, string> = {
+  "chemical-products": "commodity.chemicals",
+  chemicals: "commodity.chemicals",
+  "metal-products": "commodity.metals",
+  metals: "commodity.metals",
+  minerals: "commodity.minerals",
+  "building-materials": "commodity.industrial",
+  industrial: "commodity.industrial",
+  energy: "commodity.energy",
+  agriculture: "commodity.agriculture",
+}
+
+/** Resolve the admin-managed commodity image for a category slug from a resolved site-image map. */
+export function commodityImageForSlug(
+  slug: string,
+  resolved: Record<string, ImageAsset>,
+): ImageAsset | undefined {
+  const key = COMMODITY_SLOT_BY_SLUG[slug]
+  return key ? resolved[key] : undefined
+}

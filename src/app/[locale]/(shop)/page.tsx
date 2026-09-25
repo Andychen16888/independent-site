@@ -19,6 +19,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { getSiteContent } from "@/config/site-content"
+import { commodityImageForSlug } from "@/config/images"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import {
   DEFAULT_FEATURED_CATEGORIES,
@@ -129,12 +130,15 @@ export default async function HomePage({
     title: localizeCategoryName(locale, c.slug, c.name),
     description: c.description || undefined,
     href: `/categories/${c.slug}`,
-    image: c.image || undefined,
+    image: c.image || commodityImageForSlug(c.slug, siteImages.all)?.src || undefined,
   }))
 
   const featuredFallback: FeaturedCategory[] = DEFAULT_FEATURED_CATEGORIES.map((d, i) => ({
     ...d,
     ...(((t.raw("featuredCategories.cards") as Record<string, string>[])[i] || {}) as object),
+    image:
+      commodityImageForSlug(d.href.replace("/categories/", ""), siteImages.all)?.src ||
+      undefined,
   }))
 
   const featuredCategories: FeaturedCategory[] =

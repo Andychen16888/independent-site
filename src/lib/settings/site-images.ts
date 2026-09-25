@@ -74,6 +74,7 @@ export async function getGroupedSiteImages() {
   const all = await getResolvedSiteImages()
   return {
     hero: groupImages(all, "hero"),
+    commodities: groupImages(all, "commodities"),
     supplyChain: groupImages(all, "supplyChain"),
     process: groupImages(all, "process"),
     about: groupImages(all, "about"),

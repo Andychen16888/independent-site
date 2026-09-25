@@ -225,6 +225,17 @@ git pull origin main
 
 # 重新构建并启动（会自动重跑迁移服务；NEXT_PUBLIC_* 变更也在此生效）
 docker compose up -d --build
+```
+
+> **ⓐ 普通代码更新 与 ⓑ CPU 优化 的部署差别（本次 CPU 优化的一个特别说明）**
+>
+> 本次 CPU 优化（commit `ad79c62`）的代码部分（sharp 宽度减半、ISR revalidate 1h、admin 即时 `revalidatePath`、`/api/track` 12s 去重）——用上面 `docker compose up -d --build` 重建即生效，**无额外步骤**。
+>
+> 但它的 **nginx 缓存部分**目前**只加在了非 Docker 版本的宿主 nginx 模板**（`b2b-independent-site.nginx.conf` 里的 `location /_next/image` + `b2b_img` 缓存区）。Docker 版 nginx 配置 `deploy/nginx.conf` **尚未加入这个缓存块**，所以 Docker 部署**目前不会**命中 `/_next/image` 图片缓存、CPU 优化的一半收益享受不到。
+>
+> 如果你用的是 Docker 部署并且这台机器 CPU 紧张，建议改用 [非 Docker 部署（PM2 直跑）](./DEPLOYMENT-NON-DOCKER.md)（推荐，1 核 2G 即可），或者等我给 `deploy/nginx.conf` 补上同样的 `/_next/image` 缓存后再升级。
+>
+> 判断某次提交是否改动了 nginx 模板（决定是否需要额外重载/同步）：`git log --stat -1 HEAD | grep nginx`。有输出就要处理，否则 CPU 优化不会在部署后生效。
 
 # 如需强制重新执行迁移（比如修复了迁移脚本）
 docker compose run --rm migrate

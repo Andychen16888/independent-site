@@ -3,20 +3,44 @@ import { revalidatePath } from "next/cache"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { updateSiteSettings } from "@/lib/settings/settings"
 import { IMAGE_SETTING_KEY } from "@/lib/settings/keys"
-import { getSiteImageMap, serializeSiteImageMap } from "@/lib/settings/site-images"
-import { SITE_IMAGE_SLOTS, SITE_IMAGE_GROUP_LABELS } from "@/config/images"
+import {
+  getSiteImageMap,
+  getStorefrontCategories,
+  serializeSiteImageMap,
+} from "@/lib/settings/site-images"
+import {
+  SITE_IMAGE_SLOTS,
+  SITE_IMAGE_GROUP_LABELS,
+  LEGACY_COMMODITY_SLOT,
+  commoditySlotKey,
+  commoditySlotsForCategories,
+} from "@/config/images"
 
-const KNOWN_SLOT_KEYS = new Set(SITE_IMAGE_SLOTS.map((s) => s.key))
+function mergedSlots(categories: { slug: string; name: string }[]) {
+  const dynamic = commoditySlotsForCategories(categories)
+  return SITE_IMAGE_SLOTS.filter((s) => s.group !== "commodities").concat(dynamic)
+}
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
   if (authError) return authError
 
-  const images = await getSiteImageMap()
+  const raw = await getSiteImageMap()
+  const categories = await getStorefrontCategories()
+
+  // Fold legacy commodity values (commodity.chemicals, …) into the matching
+  // per-category slot so pre-existing uploads keep showing in the admin.
+  const effective = { ...raw }
+  for (const category of categories) {
+    const key = commoditySlotKey(category.slug)
+    if (effective[key]) continue
+    const legacyKey = LEGACY_COMMODITY_SLOT[category.slug]
+    if (legacyKey && raw[legacyKey]) effective[key] = raw[legacyKey]
+  }
 
   return NextResponse.json({
-    images,
-    slots: SITE_IMAGE_SLOTS,
+    images: effective,
+    slots: mergedSlots(categories),
     groups: SITE_IMAGE_GROUP_LABELS,
   })
 }
@@ -31,9 +55,13 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "images object is required" }, { status: 400 })
   }
 
+  const knownSlotKeys = new Set(SITE_IMAGE_SLOTS.map((s) => s.key))
+  const categories = await getStorefrontCategories()
+  for (const category of categories) knownSlotKeys.add(commoditySlotKey(category.slug))
+
   const clean: Record<string, string> = {}
   for (const [key, value] of Object.entries(images as Record<string, unknown>)) {
-    if (!KNOWN_SLOT_KEYS.has(key)) continue
+    if (!knownSlotKeys.has(key)) continue
     if (typeof value === "string" && value.trim()) clean[key] = value.trim()
   }
 

@@ -175,8 +175,13 @@ export const categoryImages: Record<string, string> = {}
 /* Wire "Commodity Categories" site images to storefront category cards        */
 /* -------------------------------------------------------------------------- */
 
-/** Map a storefront category slug to a "Commodity Categories" image slot. */
-export const COMMODITY_SLOT_BY_SLUG: Record<string, string> = {
+/**
+ * Legacy static commodity slots (domin "commodity.*"), each tied to a default
+ * photo. Category slugs that match one of these reuse its default photo and
+ * any previously uploaded value. Dynamic categories keep their own slot
+ * (`commodity.<categorySlug>`); see `commoditySlotsForCategories`.
+ */
+export const LEGACY_COMMODITY_SLOT: Record<string, string> = {
   "chemical-products": "commodity.chemicals",
   chemicals: "commodity.chemicals",
   "metal-products": "commodity.metals",
@@ -185,14 +190,47 @@ export const COMMODITY_SLOT_BY_SLUG: Record<string, string> = {
   "building-materials": "commodity.industrial",
   industrial: "commodity.industrial",
   energy: "commodity.energy",
+  "agricultural-commodities": "commodity.agriculture",
   agriculture: "commodity.agriculture",
 }
 
-/** Resolve the admin-managed commodity image for a category slug from a resolved site-image map. */
+/** Stable per-category image slot key. */
+export function commoditySlotKey(categorySlug: string): string {
+  return `commodity.${categorySlug}`
+}
+
+/**
+ * Resolve the admin-managed commodity image for a category slug from a
+ * resolved site-image map: own category slot first, legacy slot as fallback.
+ */
 export function commodityImageForSlug(
   slug: string,
   resolved: Record<string, ImageAsset>,
 ): ImageAsset | undefined {
-  const key = COMMODITY_SLOT_BY_SLUG[slug]
-  return key ? resolved[key] : undefined
+  const ownKey = commoditySlotKey(slug)
+  if (resolved[ownKey]) return resolved[ownKey]
+  const legacyKey = LEGACY_COMMODITY_SLOT[slug]
+  return legacyKey ? resolved[legacyKey] : undefined
+}
+
+/** A storefront category as rendered by the "Commodity Categories" group. */
+export interface CategorySlotSeed {
+  slug: string
+  name: string
+}
+
+/** Build the admin "Commodity Categories" slots from the active storefront categories. */
+export function commoditySlotsForCategories(categories: CategorySlotSeed[]): SiteImageSlot[] {
+  return categories.map((c) => {
+    const legacyKey = LEGACY_COMMODITY_SLOT[c.slug] || commoditySlotKey(c.slug)
+    const fallback = DEFAULT_SITE_IMAGES[legacyKey]
+    return {
+      key: commoditySlotKey(c.slug),
+      group: "commodities",
+      label: c.name,
+      alt: fallback?.alt ?? `${c.name} category cover`,
+      tone: fallback?.tone ?? categoryFallbackTone(c.slug),
+      defaultSrc: fallback?.src ?? null,
+    }
+  })
 }

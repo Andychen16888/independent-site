@@ -8,6 +8,7 @@ import {
   SITE_IMAGE_SLOTS,
   SITE_IMAGE_GROUP_LABELS,
   type SiteImageGroup,
+  type SiteImageSlot,
 } from "@/config/images"
 
 const GROUP_ORDER: SiteImageGroup[] = [
@@ -22,6 +23,7 @@ const GROUP_ORDER: SiteImageGroup[] = [
 
 export default function AdminImagesPage() {
   const [images, setImages] = useState<Record<string, string>>({})
+  const [slots, setSlots] = useState<SiteImageSlot[]>(SITE_IMAGE_SLOTS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
@@ -30,6 +32,7 @@ export default function AdminImagesPage() {
       .then((r) => r.json())
       .then((data) => {
         if (data.images) setImages(data.images)
+        if (Array.isArray(data.slots) && data.slots.length) setSlots(data.slots)
       })
       .catch(() => toast.error(bi("Failed to load images", "加载图片失败")))
       .finally(() => setLoading(false))
@@ -80,12 +83,12 @@ export default function AdminImagesPage() {
       ) : (
         <form onSubmit={handleSave} className="max-w-4xl space-y-8">
           {GROUP_ORDER.map((group) => {
-            const slots = SITE_IMAGE_SLOTS.filter((s) => s.group === group)
-            if (slots.length === 0) return null
+            const groupSlots = slots.filter((s) => s.group === group)
+            if (groupSlots.length === 0) return null
             return (
               <div key={group} className="bg-white border border-mist p-8 space-y-6">
                 <h2 className="font-serif text-lg">{SITE_IMAGE_GROUP_LABELS[group]}</h2>
-                {slots.map((slot) => (
+                {groupSlots.map((slot) => (
                   <div key={slot.key} className="flex flex-col sm:flex-row sm:items-start gap-4">
                     <div className="sm:w-48 shrink-0">
                       <div className="text-sm text-charcoal">{slot.label}</div>

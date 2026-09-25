@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertPageTranslations } from "@/lib/i18n/content"
 
 /**
@@ -54,6 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       await upsertPageTranslations(page.id, translations)
     }
 
+    invalidateStorefront()
     return NextResponse.json({ page: updated })
   } catch (error) {
     console.error("Admin page update error:", error)
@@ -70,6 +72,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const page = await resolvePage(id)
     if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 })
     await prisma.page.delete({ where: { id: page.id } })
+    invalidateStorefront()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Admin page delete error:", error)

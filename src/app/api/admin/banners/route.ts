@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    invalidateStorefront()
     return NextResponse.json({ banner }, { status: 201 })
   } catch (error) {
     console.error("Admin banner create error:", error)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
       include: { translations: true },
     })
 
+    invalidateStorefront()
     return NextResponse.json({ faq: created }, { status: 201 })
   } catch (error) {
     console.error("Admin faqs create error:", error)

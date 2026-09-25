@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
@@ -56,6 +57,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const category = await prisma.category.update({ where: { id }, data })
+    invalidateStorefront()
     return NextResponse.json({ category })
   } catch (error) {
     console.error("Admin category update error:", error)
@@ -105,6 +107,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     }
 
     await prisma.category.delete({ where: { id } })
+    invalidateStorefront()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Admin category delete error:", error)

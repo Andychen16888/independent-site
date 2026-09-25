@@ -12,9 +12,13 @@ const nextConfig: NextConfig = {
       "./node_modules/geoip-lite/data/**",
     ],
   },
-  staleTimes: {
-    dynamic: 30,
-    static: 300,
+  experimental: {
+    // 客户端路由缓存：静态分段缓存 1 小时，减少客户端导航时对服务器的重复请求。
+    // （Next 15 中 staleTimes 必须是 experimental.staleTimes，放顶层会被忽略）
+    staleTimes: {
+      dynamic: 30,
+      static: 3600,
+    },
   },
   images: {
     remotePatterns: [
@@ -26,6 +30,10 @@ const nextConfig: NextConfig = {
     // 优化结果在 .next/cache 落盘缓存 1 年，同一张图只编码一次。
     minimumCacheTTL: 31536000,
     qualities: [60, 75, 82, 85],
+    // 限制候选分辨率，减少 sharp 编码组合数（同一张图最多按这几个宽度出图），
+    // 其余宽度全部落到最小可用档，显著降低图片优化 CPU 占用。
+    deviceSizes: [640, 828, 1080, 1920],
+    imageSizes: [16, 32, 64, 128, 256, 384],
   },
   async headers() {
     const privateRoutes = [

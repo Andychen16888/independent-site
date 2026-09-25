@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertPageTranslations } from "@/lib/i18n/content"
 
 function generateSlug(name: string): string {
@@ -55,6 +56,7 @@ export async function POST(req: NextRequest) {
       await upsertPageTranslations(page.id, translations)
     }
 
+    invalidateStorefront()
     return NextResponse.json({ page }, { status: 201 })
   } catch (error) {
     console.error("Admin page create error:", error)

@@ -37,7 +37,7 @@ import {
   type InstagramConfig,
 } from "@/lib/home-content"
 
-export const revalidate = 300
+export const revalidate = 3600
 
 function parseJson<T>(value: string | undefined, fallback: T): T {
   if (!value) return fallback

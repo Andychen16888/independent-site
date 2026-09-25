@@ -14,7 +14,7 @@ interface Props {
   params: Promise<{ slug: string; locale: string }>
 }
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug, locale } = await params

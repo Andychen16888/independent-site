@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertBlogPostTranslations } from "@/lib/i18n/content"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -51,6 +52,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       await upsertBlogPostTranslations(id, translations)
     }
 
+invalidateStorefront()
     return NextResponse.json({ post })
   } catch (error) {
     console.error("Admin blog update error:", error)
@@ -65,6 +67,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const { id } = await params
     await prisma.blogPost.delete({ where: { id } })
+    invalidateStorefront()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Admin blog delete error:", error)

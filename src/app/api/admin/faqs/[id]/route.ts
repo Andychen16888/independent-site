@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
@@ -59,6 +60,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const updated = await prisma.siteFaq.findUnique({ where: { id }, include: { translations: true } })
+    invalidateStorefront()
     return NextResponse.json({ faq: updated })
   } catch (error) {
     console.error("Admin faqs update error:", error)
@@ -73,6 +75,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const { id } = await params
     await prisma.siteFaq.delete({ where: { id } })
+    invalidateStorefront()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Admin faqs delete error:", error)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertProductTranslations } from "@/lib/i18n/product"
 import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
 
@@ -214,6 +215,7 @@ export async function POST(req: NextRequest) {
       orderBy: { locale: "asc" },
     })
 
+    invalidateStorefront()
     return NextResponse.json(
       { product, translations: savedTranslations, translation, translationError },
       { status: 201 }

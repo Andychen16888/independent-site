@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertProductTranslations } from "@/lib/i18n/product"
 import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
 
@@ -154,6 +155,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       orderBy: { locale: "asc" },
     })
 
+    invalidateStorefront()
     return NextResponse.json({ product, translations: savedTranslations, translation, translationError })
   } catch (error) {
     console.error("Admin product update error:", error)
@@ -176,7 +178,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (force) {
       // Hard delete requested explicitly by the admin.
       await prisma.product.delete({ where: { id } })
-      return NextResponse.json({ success: true, soft: false })
+      invalidateStorefront()
+    return NextResponse.json({ success: true, soft: false })
     }
 
     // Soft delete — order history, carts snapshot data, reviews remain intact.
@@ -185,6 +188,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       data: { deletedAt: new Date(), status: "ARCHIVED" },
     })
 
+    invalidateStorefront()
     return NextResponse.json({ success: true, soft: true })
   } catch (error) {
     console.error("Admin product delete error:", error)

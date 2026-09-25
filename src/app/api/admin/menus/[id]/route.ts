@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
@@ -37,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const menu = await prisma.menu.update({ where: { id }, data })
+invalidateStorefront()
     return NextResponse.json({ menu })
   } catch (error) {
     console.error("Admin menu update error:", error)
@@ -59,6 +61,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       )
     }
     await prisma.menu.delete({ where: { id } })
+    invalidateStorefront()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Admin menu delete error:", error)

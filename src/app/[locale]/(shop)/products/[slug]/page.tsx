@@ -15,7 +15,7 @@ interface Props {
   params: Promise<{ slug: string; locale: string }>
 }
 
-export const revalidate = 300
+export const revalidate = 3600
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params

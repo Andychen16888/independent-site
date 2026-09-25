@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
+import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
 
 export const runtime = "nodejs"
@@ -85,12 +86,14 @@ export async function POST(req: NextRequest) {
             console.error(`Batch translate failed for ${p.id}:`, err)
           }
         }
+        invalidateStorefront()
         return NextResponse.json({ success: true, count: ids.length, translatedCount, failedCount })
       }
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
     }
 
+    invalidateStorefront()
     return NextResponse.json({ success: true, count: ids.length })
   } catch (error) {
     console.error("Admin product batch error:", error)

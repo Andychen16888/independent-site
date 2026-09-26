@@ -360,6 +360,22 @@ nano .env
 | `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_NAME` | 站点名 | `Commodities From China` |
 
+> ⚠️ **`.env` 里的 `DATABASE_URL` 不能被 `#` 注释掉**。项目使用 `prisma.config.ts`，
+> Prisma 6 检测到它就**不再自动加载 `.env`**（会打印
+> `Prisma config detected, skipping environment variable loading`），
+> 改由该文件负责注入。若这一行被注释或缺失，`npm run db:migrate` 会报：
+> ```
+> Error code: P1012
+> error: Environment variable not found: DATABASE_URL.
+> ```
+> 现在 `db:migrate` / `db:seed` / `db:push` 前置了检查脚本，会直接告诉你怎么修。
+> 自行确认：
+> ```bash
+> grep '^DATABASE_URL' .env        # 必须有输出，且行首不是 #
+> ```
+> 注：`prisma generate` 与 `next build` 不需要连库，所以 `.env` 缺失时构建仍会成功（只打印警告）——
+> **不要因此以为 `.env` 没问题**，紧接着的 `db:migrate` 就会失败。
+
 > `.env` 里**不要**填写 `UPLOAD_DIR`：`ecosystem.config.js` 已把它固定到项目根目录的
 > `uploads/`，填错会让上传的图片在下次 `next build` 后全部丢失。
 >

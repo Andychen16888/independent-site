@@ -9,9 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed": "prisma generate && prisma db seed",
-    "db:migrate": "prisma migrate deploy",
+    "db:push": "node scripts/require-db-env.mjs && prisma db push",
+    "db:seed": "prisma generate && node scripts/require-db-env.mjs && prisma db seed",
+    "db:migrate": "node scripts/require-db-env.mjs && prisma migrate deploy",
     "db:translate-blog": "tsx prisma/translate-blog-content.ts",
     "db:translate-products": "tsx prisma/translate-product-content.ts",
     "db:studio": "prisma studio"

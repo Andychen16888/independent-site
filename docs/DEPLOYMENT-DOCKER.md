@@ -46,16 +46,26 @@
 
 ### 1.2 安全加固
 
+> ⚠️ **不要一次性把 SSH 和防火墙全改完。** 顺序必须是
+> 「先确认密钥能登录 → 再关密码登录 → 最后开 UFW」，每一步都**另开一个终端**验证能登回来。
+> 详见 [DEPLOYMENT-NON-DOCKER.md §1.2](./DEPLOYMENT-NON-DOCKER.md#12-安全加固部署前必须完成) 的完整说明与自检清单。
+
 ```bash
 ssh root@your-server-ip
 apt update && apt upgrade -y
 
-# 禁止密码登录（先 ssh-copy-id 传好公钥）
-sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl restart sshd
+# 1. 先确认密钥登录可用（本地执行：ssh-copy-id 后用
+#    ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@IP 验证）
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
+ls -l /root/.ssh/authorized_keys
+
+# 2. fail2ban + 自动安全更新
+apt install -y fail2ban unattended-upgrades
+systemctl enable --now fail2ban
 
 # 防火墙
+#    ICMP 必须写 `ufw allow proto icmp`；`ufw allow in proto icmp` 会报
+#    ERROR: Need 'to' or 'from' clause。详见 DEPLOYMENT-NON-DOCKER.md §1.2。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -66,10 +76,16 @@ ufw allow in 80/tcp
 ufw allow in 443/tcp
 ufw allow out 22,80,443,587,465,25/tcp
 ufw allow out 53,123/udp
-ufw allow in proto icmp
-ufw allow out proto icmp
+ufw allow out 53/tcp
+ufw allow proto icmp
 ufw --force enable
 ufw status verbose
+
+# 3. 【最后】关闭密码登录 —— 务必先用密钥成功登录一次，并保留当前会话
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl reload sshd
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'   # 期望 no
 
 apt install -y fail2ban unattended-upgrades
 systemctl enable --now fail2ban

@@ -54,6 +54,11 @@
 ### 1.2 安全加固（部署前必须完成）
 
 > **原则**：新服务器在完成加固前，暴露时间越短越好。以下步骤在安装任何依赖 / 克隆代码**之前**完成。
+>
+> ⚠️ **不要一次性把 SSH 和防火墙全改完。** 顺序必须是
+> 「先确认密钥能登录 → 再关密码登录 → 最后开 UFW」，每一步都**另开一个终端**验证能登回来。
+> 否则一旦密钥没配好就关了密码，你会把自己锁在服务器外面。
+> 下面第 1 步默认**保留**密码登录（`PasswordAuthentication yes`），第 5 步才关闭。
 
 ```bash
 # 连接服务器
@@ -62,12 +67,29 @@ ssh root@your-server-ip
 # 更新系统
 apt update && apt upgrade -y
 
-# 1. 禁止密码登录（仅密钥）。先在本地 ssh-copy-id 传好公钥
-sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl restart sshd
+# 1. 确认密钥登录已可用（此时密码登录仍开着，务必先验证）
+#    在本地执行，不是服务器上：
+#      ssh-copy-id -i ~/.ssh/id_ed25519.pub root@your-server-ip
+#    然后本地再执行，强制用密钥登录一次：
+#      ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@your-server-ip
+#    能进去才继续下面的步骤。
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
+#    期望：pubkeyauthentication yes
+#          passwordauthentication yes   ← 第 5 步才改成 no
 
-# 2. 防火墙 (UFW)
+# 2. 确认已放行公钥，否则先补上
+ls -l /root/.ssh/authorized_keys && wc -l /root/.ssh/authorized_keys
+
+# 3. fail2ban (SSH 防爆破) + 自动安全更新
+apt install -y fail2ban unattended-upgrades
+systemctl enable --now fail2ban
+
+# 4. 防火墙 (UFW)
+#    入站默认拒绝（只放行 SSH/HTTP/HTTPS）；出站也默认拒绝，再逐条放行站点
+#    运行必需的外连（DNS/NTP/HTTPS/SMTP），这样即使进程被植入也不会任意外联。
+#    想简化成"出站不限制"，把 `ufw default deny outgoing` 换成
+#    `ufw default allow outgoing` 即可，下面的 allow out 规则留着也无害。
+#    22 端口在开关之前已明确放行，UFW 不会把当前 SSH 连接踢掉。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -78,8 +100,10 @@ ufw allow in 22/tcp
 ufw allow in 80/tcp
 ufw allow in 443/tcp
 
+# 出站：git clone(22) / DNS / npm·Stripe·PayPal·OpenAI·Let's Encrypt(443) / NTP / SMTP
 ufw allow out 22/tcp
 ufw allow out 53/udp
+ufw allow out 53/tcp
 ufw allow out 80/tcp
 ufw allow out 443/tcp
 ufw allow out 123/udp
@@ -87,19 +111,48 @@ ufw allow out 587/tcp
 ufw allow out 465/tcp
 ufw allow out 25/tcp
 
-ufw allow in proto icmp
-ufw allow out proto icmp
+# ICMP（ping / PMTU）。必须写 `ufw allow proto icmp`：
+# `ufw allow in proto icmp` 会报 ERROR: Need 'to' or 'from' clause，
+# 因为 in/out 方向必须搭配 on <interface> 或 to/from 子句才合法。
+# 不放行 ICMP 的后果：ping 不通，且大响应/大包可能因 PMTU 探测失败而卡住。
+ufw allow proto icmp
 
 ufw --force enable
 ufw status verbose
 
-# 3. fail2ban (SSH 防爆破) + 自动安全更新
-apt install -y fail2ban unattended-upgrades
-systemctl enable --now fail2ban
+# 期望输出：Default: deny (incoming), deny (outgoing), disabled (routed)
+#          22/tcp ALLOW IN   80/tcp ALLOW IN   443/tcp ALLOW IN
+# 若要确认出站规则已生效：ufw status numbered | grep -E '53|123|443|587'
 
-# 4. 基础工具
+# 5. 【最后一步】关闭密码登录。
+#    执行前务必：另开一个终端，用密钥成功登录一次。
+#    万一失败，原会话不要关，用它改回 PasswordAuthentication yes 再重启 sshd。
+#    建议同时改非默认端口，进一步降低被爆破概率（改端口后本地 ssh -p 新端口）
+#      sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl reload sshd
+
+# 6. 复核最终状态
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
+#    期望：pubkeyauthentication yes
+#          passwordauthentication no      ← 已关闭
+ufw status verbose | head -8
+
+# 7. 基础工具
 apt install -y curl wget git vim
+
 ```
+
+> **自检清单（避免把自己锁在外面）**
+> - [ ] 本地 `ssh -o PasswordAuthentication=no root@IP` 能免密登录
+> - [ ] `/root/.ssh/authorized_keys` 里至少一条公钥
+> - [ ] `ufw status` 里 22/tcp 是 ALLOW IN
+> - [ ] 以上三条都满足后，才把 `PasswordAuthentication` 改成 `no`
+> - [ ] 改完后**另开终端**再连一次，确认通了才关闭当前会话
+>
+> 如果确实被锁在外面：Vultr 控制台 → 该实例 → **View Console**（网页 VNC，可直接登录），
+> 进去把 `PasswordAuthentication yes` 改回来再 `systemctl reload sshd`。
 
 ---
 

@@ -157,12 +157,18 @@ scp root@<OLD_SERVER_IP>:/root/incident/auth.log .
 ```bash
 apt update && apt upgrade -y
 
-# 禁止密码登录，仅密钥
-sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl restart sshd
+# 1. 先确认密钥登录可用（本地：ssh-copy-id 后用
+#    ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@IP 验证）
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
+ls -l /root/.ssh/authorized_keys
 
-# 防火墙：只开 22/80/443
+# 2. fail2ban + 自动安全更新
+apt install -y fail2ban unattended-upgrades
+systemctl enable --now fail2ban
+
+# 防火墙：入站只开 22/80/443；出站默认拒绝后逐条放行必需外连。
+# ICMP 必须写 `ufw allow proto icmp`（`ufw allow in proto icmp` 会报
+# ERROR: Need 'to' or 'from' clause）。详见 DEPLOYMENT-NON-DOCKER.md §1.2。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -170,15 +176,18 @@ ufw allow in on lo && ufw allow out on lo
 ufw allow in 22/tcp && ufw allow out 22/tcp
 ufw allow in 80/tcp && ufw allow out 80/tcp
 ufw allow in 443/tcp && ufw allow out 443/tcp
-ufw allow out 53/udp
+ufw allow out 53/udp && ufw allow out 53/tcp
 ufw allow out 123/udp          # NTP，证书/时间相关
 ufw allow out 587/tcp && ufw allow out 465/tcp && ufw allow out 25/tcp   # SMTP
-ufw allow in proto icmp && ufw allow out proto icmp
+ufw allow proto icmp
 ufw --force enable && ufw status verbose
 
-# fail2ban + 自动安全更新
-apt install -y fail2ban unattended-upgrades
-systemctl enable --now fail2ban
+# 3. 【最后】关闭密码登录。务必先用密钥成功登录一次，并保留当前会话，
+#    另开终端确认还能连上再关闭本会话。改端口可进一步降低爆破概率。
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl reload sshd
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'   # 期望 no
 
 apt install -y curl wget git vim
 ```

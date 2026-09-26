@@ -314,9 +314,33 @@ GRANT ALL ON SCHEMA public TO b2b_user;
 ```bash
 cd /var/www
 git clone https://github.com/Andychen16888/B2B-Independent-Site.git
+
+# ⚠️ 必须重命名：仓库名是 B2B-Independent-Site（大写 B2B），
+#    而本教程后续所有命令、Nginx 模板里的绝对路径都按小写 b2b-independent-site 写。
+#    Linux 区分大小写，不改的话后面每条 cd 都会报 "No such file or directory"。
+mv B2B-Independent-Site b2b-independent-site
+
 chown -R root:root b2b-independent-site
 cd b2b-independent-site
+
+# 确认路径与属主都正确（必须是小写 b2b-）
+ls -ld /var/www/b2b-independent-site        # 期望：drwxr-xr-x ... root root ... b2b-independent-site
 ```
+
+> **为什么全篇用小写**：仓库名带大写 `B2B`，`git clone` 出来的目录就是大写；
+> 但 Nginx 模板（`b2b-independent-site.nginx.conf`）里 `root` / `alias` / `proxy_cache_path`
+> 等多处硬编码了 `/var/www/b2b-independent-site`，日志、备份、运维命令也统一用小写。
+> 统一成小写一处改到底，比在几十处命令里反复区分大小写可靠得多。
+>
+> **为什么属主是 `root:root`**：本教程全程 root 部署，`ecosystem.config.js` 里的
+> `pm2` 也以 root 运行（`pm2 startup systemd -u root`），应用需要**写**权限到
+> `uploads/`、`logs/`、`.next/`，因此属主必须是 root。
+> Nginx 以 `www-data` 运行，只需**读**静态文件，默认 `755` 权限已足够，无需改成 www-data。
+> 若你改成用非 root 用户跑 PM2，则需同步调整 `ecosystem.config.js` 属主，并确认该用户
+> 对 `uploads/` `logs/` `.next/` 有写权限。
+>
+> 已克隆成大写目录、且不想重命名？也可以就地改用大写路径，但必须同时改：
+> Nginx 模板内所有 `/var/www/b2b-independent-site`、以及后续命令里的路径 —— 极易漏改，不推荐。
 
 创建 `.env`：
 
@@ -490,6 +514,12 @@ sudo rm -f /etc/nginx/sites-enabled/default
 # 创建模板里 proxy_cache_path 需要的缓存父目录（必须！nginx 不会自动创建父目录）
 sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
 sudo chown -R www-data:www-data /var/cache/nginx
+
+# 断言：模板里的项目路径必须真实存在（大小写不一致时 nginx -t 不会报错，
+# 但运行期会 404/502，非常隐蔽）。目录名对不上时先回 §4 重命名。
+grep -o '/var/www/[^ /;]*' /etc/nginx/sites-available/b2b-independent-site | sort -u | while read -r p; do
+  [ -e "$p" ] && echo "OK   $p" || echo "缺失 $p  ← 目录名大小写或路径不对"
+done
 
 # 测试 + 重载
 sudo nginx -t && sudo systemctl reload nginx

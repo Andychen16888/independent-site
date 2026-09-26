@@ -5,6 +5,7 @@ import {
   formatBytes,
   formatUptime,
   type HealthStatus,
+  type ProcessMetric,
 } from "@/lib/system/metrics"
 
 export const dynamic = "force-dynamic"
@@ -96,6 +97,51 @@ function GaugeCard({
       </div>
 
       {footer && <p className="mt-4 pt-4 border-t border-mist/60 text-xs text-stone break-all">{footer}</p>}
+    </section>
+  )
+}
+
+function TopProcessesCard({ processes }: { processes: ProcessMetric[] }) {
+  if (processes.length === 0) {
+    return (
+      <section className="bg-white border border-mist p-6">
+        <h3 className="font-serif text-base">
+          Top Processes <span className="text-sm text-stone">进程 CPU 占用</span>
+        </h3>
+        <p className="mt-4 text-sm text-stone">
+          当前平台无法采集进程级数据（非 Linux 或无权限）。
+        </p>
+      </section>
+    )
+  }
+  return (
+    <section className="bg-white border border-mist p-6">
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="font-serif text-base">
+          Top Processes <span className="text-sm text-stone">进程 CPU 占用</span>
+        </h3>
+        <span className="text-xs text-stone">双核机器单个进程可超过 100%</span>
+      </div>
+      <div className="mt-5 space-y-3 text-sm">
+        {processes.map((p) => (
+          <div key={p.pid} className="flex items-center justify-between gap-4">
+            <span className="font-mono text-xs truncate">
+              {p.name} <span className="text-stone">#{p.pid}</span>
+            </span>
+            <span className="flex items-center gap-3 shrink-0">
+              <span className="tabular-nums font-medium">
+                {p.cpuPercent}% <span className="text-xs text-stone">CPU</span>
+              </span>
+              <span className="tabular-nums text-stone text-xs">
+                {formatBytes(p.memory)} / {p.memoryPercent}%
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 pt-4 border-t border-mist/60 text-xs text-stone">
+        整机 CPU 偏高时，先看这里定位元凶；本站应用为 next-server 进程。
+      </p>
     </section>
   )
 }
@@ -256,6 +302,10 @@ export default async function AdminMonitoringPage() {
           </div>
         )}
       </section>
+
+      <div className="mt-8">
+        <TopProcessesCard processes={sys.topProcesses} />
+      </div>
     </div>
   )
 }

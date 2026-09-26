@@ -11,6 +11,15 @@ export interface ResourceMetric {
   status: HealthStatus
 }
 
+export interface ProcessMetric {
+  pid: number
+  name: string
+  /** 该进程占整机 CPU 的百分比（已按核数归一，多核可超过 100）。 */
+  cpuPercent: number
+  memory: number
+  memoryPercent: number
+}
+
 export interface SystemMetrics {
   hostname: string
   platform: string
@@ -43,6 +52,8 @@ export interface SystemMetrics {
     cpuPercent: number
     status: HealthStatus
   }
+  /** 占用整机 CPU 最多的进程（Linux 下从 /proc 采集，其它平台为空数组）。 */
+  topProcesses: ProcessMetric[]
   status: HealthStatus
 }
 
@@ -163,6 +174,101 @@ function measureProcessCpuPercent(): number {
   return clampPercent(usedUs / elapsedUs / cores * 100)
 }
 
+// 进程级 CPU 归因：整机 100% 时，必须能指出「是谁在吃」。
+// 之前监控只看整机百分比，定位不到元凶（实际是一个与本站无关的 dashboard 进程跑满双核）。
+// Linux 下读 /proc：utime+stime 的时间差即为该进程消耗的 CPU 时间。
+// 注意：这里不能用 clampPercent，%CPU 在多核机器上本就可以超过 100。
+const CLK_TCK = 100
+const PAGE_SIZE = 4096
+
+interface ProcStatSample {
+  ticks: number
+  rss: number
+  name: string
+}
+
+let procSamples: Map<number, ProcStatSample> | null = null
+let procSamplesAt = 0
+
+async function readProcSamples(): Promise<Map<number, ProcStatSample>> {
+  const out = new Map<number, ProcStatSample>()
+  let entries: string[]
+  try {
+    entries = await fs.readdir("/proc")
+  } catch {
+    return out
+  }
+  for (const entry of entries) {
+    if (!/^\d+$/.test(entry)) continue
+    const pid = Number(entry)
+    try {
+      const [stat, statm] = await Promise.all([
+        fs.readFile(`/proc/${pid}/stat`, "utf8"),
+        fs.readFile(`/proc/${pid}/statm`, "utf8"),
+      ])
+      // comm 字段（pid 与 state 之间）可能含空格与括号，所以从最后一个 ')' 之后再切。
+      const open = stat.indexOf("(")
+      const close = stat.lastIndexOf(")")
+      if (open < 0 || close < 0) continue
+      const name = stat.slice(open + 1, close)
+      // 切掉 "pid (comm) " 之后：fields[0] 对应 stat 第 3 个字段 state，
+      // 因此 utime(第 14) 在索引 11，stime(第 15) 在索引 12。
+      const fields = stat.slice(close + 2).split(" ")
+      const ticks = Number(fields[11]) + Number(fields[12])
+      if (!Number.isFinite(ticks)) continue
+      const rssPages = Number(statm.split(" ")[1])
+      out.set(pid, {
+        ticks,
+        rss: (Number.isFinite(rssPages) ? rssPages : 0) * PAGE_SIZE,
+        name,
+      })
+    } catch {
+      // 进程已退出或无权限，忽略。
+    }
+  }
+  return out
+}
+
+export async function getTopProcesses(limit = 8): Promise<ProcessMetric[]> {
+  const cores = Math.max(os.cpus().length, 1)
+  const memTotal = os.totalmem()
+  let samples = await readProcSamples()
+
+  if (procSamples === null) {
+    // 进程内仅首次：等一个短窗口拿真实增量，让首屏就有归因数据。
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    samples = await readProcSamples()
+  }
+  const now = Date.now()
+  const prev = procSamples
+  const prevAt = procSamplesAt
+  procSamples = samples
+  procSamplesAt = now
+  if (!prev) return []
+
+  const windowSec = (now - prevAt) / 1000
+  if (windowSec <= 0) return []
+
+  const rows: ProcessMetric[] = []
+  for (const [pid, cur] of samples) {
+    const before = prev.get(pid)
+    if (!before) continue
+    const deltaTicks = cur.ticks - before.ticks
+    if (deltaTicks <= 0) continue
+    const percent = Math.round((deltaTicks / CLK_TCK / windowSec / cores) * 100)
+    if (percent <= 0) continue
+    rows.push({
+      pid,
+      name: cur.name,
+      cpuPercent: percent,
+      memory: cur.rss,
+      memoryPercent: memTotal > 0 ? Math.round((cur.rss / memTotal) * 100) : 0,
+    })
+  }
+  rows.sort((a, b) => b.cpuPercent - a.cpuPercent)
+  return rows.slice(0, limit)
+}
+
 async function measureStorage() {
   const path = process.cwd()
   try {
@@ -186,7 +292,11 @@ async function measureStorage() {
 }
 
 export async function getSystemMetrics(): Promise<SystemMetrics> {
-  const [cpuPercent, storage] = await Promise.all([measureCpuPercent(), measureStorage()])
+  const [cpuPercent, storage, topProcesses] = await Promise.all([
+    measureCpuPercent(),
+    measureStorage(),
+    getTopProcesses(),
+  ])
   const processCpuPercent = measureProcessCpuPercent()
 
   const cpus = os.cpus()
@@ -230,6 +340,7 @@ export async function getSystemMetrics(): Promise<SystemMetrics> {
       cpuPercent: processCpuPercent,
       status: procStatus,
     },
+    topProcesses,
     status: worst(cpuStatus, memStatus, storage.status),
   }
 }

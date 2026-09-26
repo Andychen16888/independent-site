@@ -26,8 +26,11 @@
 5. [构建应用](#5-构建应用)
 6. [数据库迁移与种子数据](#6-数据库迁移与种子数据)
 7. [启动应用 (PM2)](#7-启动应用-pm2)
-8. [Nginx 配置](#8-nginx-配置)
-9. [SSL 证书 (Let's Encrypt)](#9-ssl-证书-lets-encrypt)
+8. [Nginx 配置](#8-nginx-配置)　**首次部署必看，顺序不能颠倒**
+   - [8.1 先放 HTTP-only 引导配置](#81-先放一个-http-only-引导配置不需要证书)
+   - [8.2 申请 SSL 证书](#82-申请-ssl-证书)
+   - [8.3 启用完整模板](#83-启用完整模板含-https--缓存)
+9. [SSL 证书续期与排错](#9-ssl-证书-lets-encrypt)
 10. [验证部署](#10-验证部署)
 11. [更新部署](#11-更新部署)
 12. [运维命令](#12-运维命令)
@@ -392,7 +395,7 @@ nano .env
 > `.env` 里**不要**填写 `UPLOAD_DIR`：`ecosystem.config.js` 已把它固定到项目根目录的
 > `uploads/`，填错会让上传的图片在下次 `next build` 后全部丢失。
 >
-> 详细变量说明见 [DEPLOYMENT.md § 环境变量](./DEPLOYMENT.md#环境变量)。
+> 详细变量说明见 [运维与通用参考 § 环境变量说明](./OPERATIONS.md#1-环境变量说明)。
 
 ---
 
@@ -527,18 +530,75 @@ pm2 status
 
 ## 8. Nginx 配置
 
-仓库自带完整 server 块模板 `b2b-independent-site.nginx.conf`（含 HTTP→HTTPS 跳转、静态缓存、上传代理）。复制并替换域名即可：
+仓库自带完整模板 `b2b-independent-site.nginx.conf`（含 HTTP→HTTPS 跳转、静态缓存、上传代理），
+但**不能直接 `nginx -t`**：模板里的 443 块引用 `/etc/letsencrypt/live/<域名>/fullchain.pem`，
+而证书要靠一个能正常启动的 nginx 去申请 —— 先有鸡还是先有蛋。
+
+所以本节分三步，**必须按顺序执行**：
+
+### 8.1 先放一个 HTTP-only 引导配置（不需要证书）
 
 ```bash
-# 复制模板并替换 your-domain.com 为你的域名（示例：commoditychina.com）
+sudo tee /etc/nginx/sites-available/b2b-independent-site > /dev/null <<'EOF'
+server {
+  listen 80;
+  server_name commoditychina.com www.commoditychina.com;
+
+  # certbot 验证路径（HTTP-only 阶段不能用 301 跳转，必须显式放行）
+  location /.well-known/acme-challenge/ {
+    root /var/www/b2b-independent-site/public;
+  }
+
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 360s;
+  }
+}
+EOF
+
+sudo ln -sf /etc/nginx/sites-available/b2b-independent-site /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo mkdir -p /var/www/b2b-independent-site/public/.well-known/acme-challenge
+
+# 这一步必须通过
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+此时 `http://commoditychina.com` 已能正常访问（纯 HTTP）。
+
+### 8.2 申请 SSL 证书
+
+```bash
+sudo apt update
+sudo apt install -y certbot
+
+sudo certbot certonly --webroot \
+  -w /var/www/b2b-independent-site/public \
+  -d commoditychina.com -d www.commoditychina.com \
+  --email you@example.com --agree-tos --no-eff-email
+
+# 确认证书已生成
+sudo ls -l /etc/letsencrypt/live/commoditychina.com/
+```
+
+> 用 `certonly --webroot` 而不是 `certbot --nginx`：后者会重写 nginx 配置，
+> 可能删掉模板里的 `/static/`、`/uploads/`、安全头等自定义 location。
+> `certonly` 只签发证书、不碰配置，配合 8.3 重新套模板最干净。
+> 详细说明见 [§9 SSL 证书](#9-ssl-证书-lets-encrypt)。
+
+### 8.3 启用完整模板（含 HTTPS + 缓存）
+
+```bash
+# 复制模板并替换 your-domain.com 为你的域名
 sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
 sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
-
-# 启用站点
-sudo ln -sf /etc/nginx/sites-available/b2b-independent-site /etc/nginx/sites-enabled/
-
-# 删除默认欢迎页站点（避免与本站 server_name 冲突）
-sudo rm -f /etc/nginx/sites-enabled/default
 
 # 创建模板里 proxy_cache_path 需要的缓存父目录（必须！nginx 不会自动创建父目录）
 sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
@@ -550,13 +610,15 @@ grep -o '/var/www/[^ /;]*' /etc/nginx/sites-available/b2b-independent-site | sor
   [ -e "$p" ] && echo "OK   $p" || echo "缺失 $p  ← 目录名大小写或路径不对"
 done
 
-# 测试 + 重载
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-> 若 `nginx -t` 报 `cannot load certificate ... fullchain.pem`，说明 SSL 证书还没申请——去第 9 节先申请证书再回来测试。模板中的 80 端口 server 块保留。
->
-> 若 `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)`，说明上面那两行 `mkdir -p` / `chown` 没执行（或服务器重启后被清理了）——补跑一次即可。
+现在 `http` 会 301 跳到 `https`。
+
+> **常见报错对照**
+> - `cannot load certificate .../fullchain.pem` → 证书还没签发，跳到 8.2
+> - `mkdir() "/var/cache/nginx/b2b" failed` → 8.3 的 `mkdir -p` 没跑，补跑
+> - `no "ssl_certificate" is defined for the "listen ... ssl"` → 证书路径与模板里的域名不一致，检查 `sed` 是否替换成功
 >
 > 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理超时 360s（AI 多语言翻译等长任务不报 504）。
 
@@ -564,26 +626,27 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## 9. SSL 证书 (Let's Encrypt)
 
-> **前置**：域名 A/AAAA 记录已解析到本服务器 IP；Nginx 80 端口配置已就绪。
+> **前置**：域名 A/AAAA 已解析到本机；已完成 §8.1（nginx 能以 HTTP-only 启动）。
+
+签发命令见 [§8.2](#82-申请-ssl-证书)。本节补充续期与排错。
 
 ```bash
-sudo apt update
-sudo apt install -y certbot python3-certbot-nginx
-
-# 申请证书（certbot 会自动改写 nginx 配置加 SSL；把域名替换成你的）
-sudo certbot --nginx -d commoditychina.com -d www.commoditychina.com
-
 # 测试自动续期
 sudo certbot renew --dry-run
 ```
 
-> ⚠️ `certbot --nginx` 会修改 nginx 配置文件，但可能移除站点自定义 location（安全头、/static/、/uploads/）。申请成功后**重新执行第 8 节**的复制+替换域名+重载命令，确保自定义配置恢复。证书文件本身不依赖站点配置，重载无影响。
->
-> 若你更习惯手动 webroot 模式（先有 HTTP-only nginx，再补 HTTPS server 块），模板 `b2b-independent-site.nginx.conf` 的 80 block 已含 `/.well-known/acme-challenge/` 验证路径，可用：
-> ```bash
-> sudo certbot certonly --webroot -w /var/www/b2b-independent-site/public -d commoditychina.com -d www.commoditychina.com --email you@example.com --agree-tos --no-eff-email
-> ```
-> 之后恢复完整模板并替换域名即可。
+certbot 自带 systemd 定时器（`certbot.timer`，每天检查两次、到期前 30 天续期），
+`systemctl list-timers | grep certbot` 可确认已启用，无需额外加 crontab。
+
+```bash
+# 手动强制续期（排查用）
+sudo certbot renew --force-renewal
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+> 证书是独立文件，续期成功后只需 `reload nginx` 加载新证书；
+> **不要**重装站点或重新套模板。若你改了 §8.3 的模板导致重载失败，
+> 续期会照常成功，只是 nginx 仍在用旧证书 —— 所以续期后务必 `nginx -t` 确认。
 
 ---
 
@@ -617,7 +680,7 @@ IMG=$(grep -oP 'https://[^"]*uploads/[^"]*' public/uploads/*.json 2>/dev/null | 
 curl -sI "https://commoditychina.com/实际图片路径" | grep -i X-Cache-Status   # 期望 HIT
 ```
 
-> 始终 `MISS` 说明磁盘缓存没写入或缓存目录被清空，见 §8 的 `mkdir -p /var/cache/nginx/b2b_img`。
+> 持续 `MISS` 说明磁盘缓存没写入或缓存目录被清空，见 §8.3 的 `mkdir -p /var/cache/nginx/b2b_img`。
 > `X-Cache-Status` 若是 `EXPIRED`，说明命中但已过新鲜期，会回源更新一次，仍算正常。
 
 **6. 管理后台监控页**（`/admin/monitoring`）：
@@ -814,7 +877,7 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | 504 Gateway Time-out | ① 确认 nginx 模板已按**第 8 节/11 节**重新部署（`/api` 已放宽到 360s）；② `curl http://localhost:3000/api/health` + `pm2 status`：若 app 反复重启 / restart 次数暴涨，多半是 `max_memory_restart` 太低被瞬时峰值误杀（首页全动态 SSR + 首次访问的图像优化内存飙升）——已把 `ecosystem.config.js` 调到 2G 堆、2G 重启阈值，确认服务器按新版重启过；小内存机器按该文件注释下调；③ 部署后首次打开很慢属正常（图像优化缓存是冷的），可先访问一次首页预热；④ 刚重启过机器而 Node 没起来时见第 11.1 节开机自启 |
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
-| `nginx -t` 报证书不存在 | 先跑第 9 节 certbot |
+| `nginx -t` 报证书不存在 | 证书还没签发。必须按 §8.1 → §8.2 → §8.3 顺序：先用 HTTP-only 引导配置把 nginx 跑起来，再 `certbot certonly --webroot` 签发，最后才套含 443 块的完整模板。直接套模板必然报 `cannot load certificate .../fullchain.pem` |
 | `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | OOM 构建失败 | 加 swap（第 1.1 节） |

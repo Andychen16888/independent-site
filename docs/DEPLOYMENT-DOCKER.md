@@ -46,58 +46,23 @@
 
 ### 1.2 安全加固
 
-> ⚠️ **不要一次性把 SSH 和防火墙全改完。** 顺序必须是
-> 「先确认能登回来 → 再收紧限制 → 最后开 UFW」，每一步都**另开一个终端**验证。
+> **加固流程与 PM2 部署完全相同，直接照做那一段即可**（SSH / UFW / fail2ban / swap
+> 都与运行方式无关，没必要在这里重复维护一份，避免两处文档日后不一致）：
 >
-> **登录方式二选一**：
-> - **方案 A（推荐）SSH 密钥**：完整步骤见
->   [DEPLOYMENT-NON-DOCKER.md §1.2.A](./DEPLOYMENT-NON-DOCKER.md#12a-方案-a方案-a--ssh-密钥登录推荐)
-> - **方案 B 密码登录 + 改 SSH 端口到 2222 + 收紧 fail2ban**：见
->   [DEPLOYMENT-NON-DOCKER.md §1.2.B](./DEPLOYMENT-NON-DOCKER.md#12b-方案-b方案-b--密码登录--端口加固)
->   （公网密码登录是持续被爆破的目标，改端口 + fail2ban 是必须的补偿措施）
-
-```bash
-ssh root@your-server-ip
-apt update && apt upgrade -y
-
-# 1. 确认登录方式已就位
-#    方案 A：ls -l /root/.ssh/authorized_keys
-#    方案 B：passwd root  设强密码；sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
-sshd -T | grep -E 'passwordauthentication|port'
-
-# 2. fail2ban + 自动安全更新
-apt install -y fail2ban unattended-upgrades
-systemctl enable --now fail2ban
-
-# 防火墙
-#    SSH 端口：方案 A 放行 22，方案 B 放行 2222（下面按方案 A 写，方案 B 请替换）
-#    ICMP 不要用 ufw 命令添加（CLI 不支持，会报 ERROR: Need 'to' or 'from' clause）；
-#    before.rules 默认已放行 echo-request / destination-unreachable(PMTU) 等关键类型。
-#    详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
-ufw --force reset
-ufw default deny incoming
-ufw default deny outgoing
-ufw allow in on lo
-ufw allow out on lo
-ufw allow in 22/tcp
-ufw allow in 80/tcp
-ufw allow in 443/tcp
-ufw allow out 22,80,443,587,465,25/tcp
-ufw allow out 53,123/udp
-ufw allow out 53/tcp
-ufw --force enable
-ufw status verbose
-
-# 3. 【最后】关闭密码登录 —— 务必先用密钥成功登录一次，并保留当前会话
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl reload sshd
-sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'   # 期望 no
-
-apt install -y fail2ban unattended-upgrades
-systemctl enable --now fail2ban
-apt install -y curl wget git vim
-```
+> 👉 **[DEPLOYMENT-NON-DOCKER.md §1.2 安全加固](./DEPLOYMENT-NON-DOCKER.md#12-安全加固部署前必须完成)**
+>
+> 该节是一整段可直接粘贴的命令，包含：
+> 0. 更新系统 + 基础工具　1. 强密码　2. fail2ban（`banaction = ufw`）
+> 3. SSH 端口改 2222　4. UFW 防火墙　5. 重载 sshd　6. 加 2G swap
+>
+> 另见 §1.2.1 验证自检清单、§1.2.2 VNC 救援、§1.2.4 可选改用 SSH 密钥登录。
+>
+> ⚠️ 两个易错点（已在 §1.2 中修正，此处提醒）：
+> - **ICMP 不要用 ufw 命令添加**：`ufw allow proto icmp` / `ufw allow in proto icmp`
+>   都会报 `ERROR: Need 'to' or 'from' clause`（ufw CLI 不支持 ICMP 规则）。
+>   `/etc/ufw/before.rules` 默认已放行 echo-request、destination-unreachable(PMTU) 等关键类型。
+> - **fail2ban 必须设 `banaction = ufw`**：否则它直接改 iptables 与 ufw 打架，
+>   且 `ufw reload` 会清空所有封禁记录。
 
 ---
 

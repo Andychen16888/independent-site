@@ -161,8 +161,8 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 
-# 2. SSH 登录方式二选一（详见 DEPLOYMENT-NON-DOCKER.md §1.2）
-#    方案 A（推荐）SSH 密钥：本地 ssh-copy-id 后，验证可免密登录，再
+# 2. SSH 登录方式二选一（完整可粘贴流程见 DEPLOYMENT-NON-DOCKER.md §1.2）
+#    方案 A（推荐）SSH 密钥：本地 ssh-keygen + ssh-copy-id，验证可免密登录后
 #      sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 #
 #    方案 B 密码登录 —— 本次事件极可能就是密码爆破导致，务必做完这三步：
@@ -170,14 +170,17 @@ systemctl enable --now fail2ban
 #      sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config            # 2. 改端口
 #      cat > /etc/fail2ban/jail.local <<'EOF'                            # 3. 收紧 fail2ban
 #      [DEFAULT]
-#      bantime  = 1h
-#      findtime = 10m
-#      maxretry = 3
-#      backend  = systemd
+#      bantime   = 24h
+#      findtime  = 10m
+#      maxretry  = 3
+#      backend   = systemd
+#      banaction = ufw      ← 关键：缺了它 fail2ban 直接改 iptables，与 ufw 打架，
+#                               且 ufw reload 会把封禁记录清空
 #      [sshd]
-#      enabled  = true
+#      enabled   = true
 #      EOF
 #      systemctl restart fail2ban
+#      fail2ban-client get sshd banaction     # 期望：ufw
 #      ufw allow 2222/tcp        # 防火墙同步放行新端口（在下面 ufw enable 之前执行）
 #      # 然后另开 PuTTY，端口填 2222，确认能登录再关掉当前会话
 #

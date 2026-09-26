@@ -14,6 +14,11 @@
 ## 目录
 
 1. [服务器准备与安全加固](#1-服务器准备与安全加固)
+   - [1.2 一整段可粘贴的加固流程](#12-安全加固部署前必须完成)　← **新服务器从这里开始**
+   - [1.2.1 验证与自检](#121-验证与自检做完必查)
+   - [1.2.2 救援：万一被锁在外面](#122-救援万一被锁在外面)
+   - [1.2.3 日常查看](#123-日常查看)
+   - [1.2.4 可选：改用 SSH 密钥登录](#124-可选改用-ssh-密钥登录)
 2. [安装依赖](#2-安装依赖)
 3. [配置 PostgreSQL](#3-配置-postgresql)
 4. [获取代码与环境变量](#4-获取代码与环境变量)
@@ -28,6 +33,9 @@
 13. [故障排查](#13-故障排查)
 14. [通用参考（支付/邮件/SEO/管理后台）](#14-通用参考支付邮件seo管理后台)
 
+> 🚨 服务器疑似被入侵（挖矿程序 / 后门账号 / CPU 满载）？不要在原机上修，
+> 直接看 [服务器被入侵后的恢复清单](./INCIDENT-RECOVERY.md)。
+
 ---
 
 ## 1. 服务器准备与安全加固
@@ -41,146 +49,79 @@
 | 硬盘 | 20 GB SSD | 40 GB SSD |
 | 系统 | Ubuntu 22.04 | Ubuntu 22.04 LTS |
 
-> 1 核 2G 小机器强烈建议先加 swap，防止 `next build` 时 OOM：
->
-> ```bash
-> sudo fallocate -l 2G /swapfile
-> sudo chmod 600 /swapfile
-> sudo mkswap /swapfile
-> sudo swapon /swapfile
-> echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-> ```
+> 1 核 2G 小机器**必须**先加 swap，防止 `next build` 时 OOM。
+> 具体命令见 [§1.2 安全加固](#12-安全加固部署前必须完成) 的第 6 步（那里是一整段可直接粘贴的流程）。
 
 ### 1.2 安全加固（部署前必须完成）
 
 > **原则**：新服务器在完成加固前，暴露时间越短越好。以下步骤在安装任何依赖 / 克隆代码**之前**完成。
-
-#### 1.2.0 先选一种 SSH 登录方式
-
-| 方案 | 登录方式 | 适合 | 安全性 |
-|------|---------|------|--------|
-| **A** | SSH 密钥（关闭密码登录） | 多设备、需要脚本/CI 免密登录 | ★★★★★ |
-| **B** | 密码登录 + 端口加固 | 单人单机维护、只想记住一个密码 | ★★☆☆☆ |
-
-> ⚠️ **方案 B 的现实风险**：公网 IP 上的密码登录是持续被爆破的目标。本项目此前的服务器
-> 就是被植入后门账号（crontab 反复创建带密码用户）而沦陷的。若选方案 B，
-> **下面的「改 SSH 端口」和「fail2ban 收紧」两步是必须的，不是可选的**。
 >
-> 🔒 无论选哪个，都遵守同一条铁律：**每改一项就另开一个终端验证能登回来，再改下一项。**
-
-公共步骤（两个方案都要做）：
+> 本节是**一整段可直接粘贴执行**的加固流程（PuTTY / 密码登录 + SSH 端口改 2222）。
+> 想改用 SSH 密钥登录见 [1.2.4 可选：改用密钥登录](#124-可选改用-ssh-密钥登录)。
 
 ```bash
-# 连接服务器
-ssh root@your-server-ip
-
-# 更新系统
+# ============================================================
+# 0. 更新系统 + 基础工具
+# ============================================================
 apt update && apt upgrade -y
-
-# 基础工具 + fail2ban + 自动安全更新
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 systemctl enable --now unattended-upgrades
-```
 
----
-
-#### 1.2.A 方案 A：SSH 密钥登录（推荐）
-
-```bash
-# 1. 在【本地】执行，把公钥装到服务器（这一步在服务器上不做）
-#      ssh-copy-id -i ~/.ssh/id_ed25519.pub root@your-server-ip
-#    若还没有密钥对：ssh-keygen -t ed25519 -C "b2b-server"
-
-# 2. 在服务器上确认公钥已就位
-ls -l /root/.ssh/authorized_keys && wc -l /root/.ssh/authorized_keys
-
-# 3. 在【本地】强制用密钥登录一次，验证成功再继续
-#      ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@IP
-
-# 4. 确认可用后才关闭密码登录
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl reload sshd
-
-# 5. 复核
-sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
-#    期望：pubkeyauthentication yes
-#          passwordauthentication no
-```
-
----
-
-#### 1.2.B 方案 B：密码登录 + 端口加固
-
-> 保留密码登录，但用「强密码 + 改端口 + fail2ban 严打」把风险压到可接受。
-> 改端口这一条性价比最高：全网自动爆破脚本绝大多数只扫 22，改掉后噪音基本消失。
-
-```bash
-# 1. 设置一个强密码（不要用 Vultr 默认密码，不要和其它服务复用）
+# ============================================================
+# 1. 设置强密码（不要用 Vultr 默认密码，不要与其它服务复用）
+# ============================================================
 passwd root
 
-# 2. 改 SSH 端口（避开 22，这是最关键的一步）
-sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
-grep -n '^Port' /etc/ssh/sshd_config          # 期望：Port 2222
-
-# 3. 同步改防火墙规则：放行 2222，同时把 22 关掉
-ufw allow 2222/tcp
-ufw delete allow 22/tcp 2>/dev/null || true
-ufw status numbered | grep -E '2222|22/tcp'
-
-# 4. 重载 sshd，然后【另开 PuTTY 会话】用 2222 端口登录确认
-#    ★★★ 这一步没验证通过之前，不要关闭当前会话 ★★★
-systemctl reload sshd
-#    PuTTY 配置：Session → Port 改成 2222
-
-# 5. 收紧 fail2ban（密码登录必须配合它）
+# ============================================================
+# 2. fail2ban 防爆破
+#    banaction = ufw 是关键：缺了它 fail2ban 会直接改 iptables，
+#    与 ufw 打架，且一旦执行 ufw reload 封禁记录就被清空。
+# ============================================================
 cat > /etc/fail2ban/jail.local <<'EOF'
 [DEFAULT]
-bantime  = 1h
-findtime = 10m
-maxretry = 3
-backend  = systemd
+bantime   = 24h
+findtime  = 10m
+maxretry  = 3
+backend   = systemd
+banaction = ufw
 
 [sshd]
-enabled  = true
+enabled   = true
 EOF
 systemctl restart fail2ban
-fail2ban-client status sshd                # 确认 jail 正常
-systemctl status fail2ban --no-pager | head -3
+sleep 3
+fail2ban-client get sshd banaction        # 期望输出：ufw
+fail2ban-client status sshd               # 期望看到 Jail: sshd
 
-# 6. 确认密码登录仍开启（不要误关）
-sshd -T | grep -E 'passwordauthentication|port'
-#    期望：passwordauthentication yes
-#          port 2222
+# ============================================================
+# 3. 改 SSH 端口 22 → 2222
+#    全网自动爆破脚本绝大多数只扫 22，改端口是性价比最高的一步。
+# ============================================================
+sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
+grep -n '^Port' /etc/ssh/sshd_config       # 期望：Port 2222
 
-# 7. 看一眼有没有正在爆破的 IP
-fail2ban-client status sshd
-```
-
-**方案 B 后续维护**：以后每次连接要带端口（PuTTY 填 2222，或 `ssh -p 2222 root@IP`）。
-
----
-
-#### 1.2.1 防火墙（两个方案共用）
-
-> ⚠️ **不要一次性把 SSH 和防火墙全改完。** 若走方案 A，22 或 2222 都要在 `ufw enable`
-> 之前放行，否则当前 SSH 会被踢掉。
-
-```bash
+# ============================================================
+# 4. 防火墙 UFW
+#    · 先把 2222 放进去，再 enable，避免把自己挡在外面
+#    · ICMP 不需要手动加：ufw 命令行不支持 ICMP 规则
+#      （`ufw allow proto icmp` 会报 ERROR: Need 'to' or 'from' clause），
+#      而 /etc/ufw/before.rules 默认已放行 echo-request（可被 ping）、
+#      destination-unreachable（PMTU，防大响应卡死）等关键类型。
+#    · 想改成「出站不限制」，把 deny outgoing 换成 allow outgoing 即可。
+# ============================================================
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
 ufw allow in on lo
 ufw allow out on lo
 
-# SSH：方案 A 用 22，方案 B 用 2222（二选一，另一条注释掉）
-ufw allow in 22/tcp
-# ufw allow in 2222/tcp
+# 入站：SSH(新端口) / HTTP / HTTPS
+ufw allow in 2222/tcp
 ufw allow in 80/tcp
 ufw allow in 443/tcp
 
-# 出站：git clone(22) / DNS / npm·Stripe·PayPal·OpenAI·Let's Encrypt(443) / NTP / SMTP
+# 出站：git(22) / DNS(53) / npm·Stripe·PayPal·OpenAI·Let's Encrypt(80,443) / NTP(123) / SMTP(25,465,587)
 ufw allow out 22/tcp
 ufw allow out 53/udp
 ufw allow out 53/tcp
@@ -191,49 +132,103 @@ ufw allow out 587/tcp
 ufw allow out 465/tcp
 ufw allow out 25/tcp
 
-# ICMP：**不要**用 ufw 命令添加。ufw 的 CLI 不支持 ICMP 规则，
-#   `ufw allow proto icmp` 和 `ufw allow in proto icmp` 都会报
-#   ERROR: Need 'to' or 'from' clause —— 这不是语法写错，是 ufw 不提供该能力。
-#
-#   也不需要加：/etc/ufw/before.rules 默认已放行关键 ICMP 类型
-#   （destination-unreachable 即 PMTU、time-exceeded、parameter-problem、
-#     echo-request 即 ping），所以大响应不会因 PMTU 探测失败而卡住，服务器也能被 ping。
-#   确认：grep -n 'icmp' /etc/ufw/before.rules
-#
-#   仅当需要"服务器主动 ping 外部"（default deny outgoing 会挡掉出站 ICMP）才加：
-#     sed -i '/# End custom rules/i -A ufw-before-output -p icmp -j ACCEPT' /etc/ufw/before.rules
-#     ufw reload
-
 ufw --force enable
 ufw status verbose
+# 期望：Default: deny (incoming), deny (outgoing), disabled (routed)
+#       2222/tcp ALLOW IN · 80/tcp ALLOW IN · 443/tcp ALLOW IN
 
-# 期望输出：Default: deny (incoming), deny (outgoing), disabled (routed)
-#          22/tcp（或 2222/tcp）ALLOW IN   80/tcp ALLOW IN   443/tcp ALLOW IN
-# 若要确认出站规则已生效：ufw status numbered | grep -E '53|123|443|587'
+# ============================================================
+# 5. 重载 sshd
+# ============================================================
+systemctl reload sshd
+sshd -T | grep -E '^port|passwordauthentication'
+# 期望：port 2222
+#       passwordauthentication yes
+
+# ============================================================
+# 6. 加 2G swap（2GB 内存机器必做，否则 next build 会 OOM）
+# ============================================================
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
+free -h
 ```
 
-> 想简化成「出站不限制」，把 `ufw default deny outgoing` 换成 `ufw default allow outgoing` 即可，
-> 下方的 `allow out` 规则留着也无害。
+#### 1.2.1 验证与自检（做完必查）
 
----
+> ★★★ **当前这个 PuTTY 会话不要关！** 下面第 1 项验证通过之前，关掉就可能再也连不上。
 
-#### 1.2.2 自检清单与救援
+1. **另开一个 PuTTY 窗口**，把 `Session → Port` 改成 **2222**，用第 1 步设的密码登录
+2. 登录成功后在新窗口里复核：
 
-- [ ] **另开一个终端**能重新登录（方案 A 用密钥 / 方案 B 用新端口 + 密码）
-- [ ] `sshd -T | grep -E 'passwordauthentication|port'` 输出符合所选方案
-- [ ] `ufw status` 里 SSH 端口（22 或 2222）是 ALLOW IN，80/443 也是
-- [ ] `fail2ban-client status sshd` 正常显示 `Jail: sshd`
-- [ ] 全部通过后，才可以关闭当前这个 PuTTY 会话
+```bash
+fail2ban-client status sshd
+ufw status verbose | head -8
+ss -tlnp | grep 2222          # 期望：LISTEN ... :2222
+free -h                        # 期望：Swap 一行有内容
+```
 
-> **被锁在外面的救援办法**：Vultr 控制台 → 该实例 → **View Console**（网页 VNC，可用密码直接登录），
-> 进去改回配置再 `systemctl reload sshd`：
-> ```bash
-> sed -i 's/^#\?Port .*/Port 22/' /etc/ssh/sshd_config     # 端口改回 22
-> sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-> systemctl reload sshd
-> ufw allow 22/tcp                                        # 防火墙补回 22
-> ```
-> VNC 登录不依赖 SSH，所以 SSH 配置坏掉也能进去——这条通道一定要留着。
+3. 全部正常后，**才可以**关闭旧的那个 22 端口会话
+
+自检清单：
+
+- [ ] 新 PuTTY 会话（端口 2222）能登录
+- [ ] `fail2ban-client get sshd banaction` 输出 `ufw`
+- [ ] `ufw status` 里 2222/80/443 都是 ALLOW IN
+- [ ] `ss -tlnp | grep 2222` 有 LISTEN
+- [ ] `free -h` 里 Swap 已启用
+- [ ] 以上都通过，才关闭旧会话
+
+#### 1.2.2 救援：万一被锁在外面
+
+Vultr 控制台 → 该实例 → **View Console**（网页 VNC，可用密码直接登录，不依赖 SSH）。
+进去后恢复：
+
+```bash
+sed -i 's/^#\?Port .*/Port 22/' /etc/ssh/sshd_config
+ufw allow 22/tcp
+ufw --force enable
+systemctl reload sshd
+```
+
+> VNC 这条通道一定要留着，它是 SSH 配置坏掉时唯一的救命入口。
+
+#### 1.2.3 日常查看
+
+```bash
+fail2ban-client status sshd              # 当前封禁了哪些 IP
+tail -50 /var/log/fail2ban.log           # 爆破记录
+ufw status numbered | grep -i f2b        # 封禁是否已进 ufw 规则
+```
+
+#### 1.2.4 可选：改用 SSH 密钥登录
+
+安全性更高（可关闭密码登录），适合多设备或需要脚本免密登录。**只需两条命令**：
+
+```bash
+# 1）在【本地 Windows PowerShell】执行，没有密钥对就先生成
+ssh-keygen -t ed25519 -C "b2b-server"
+ssh-copy-id -i $env:USERPROFILE\.ssh\id_ed25519.pub root@your-server-ip
+#    Windows 10+ 自带 OpenSSH，无需装 PuTTY 插件；也可手工把公钥内容粘到
+#    服务器的 /root/.ssh/authorized_keys
+
+# 2）确认能免密登录后，在服务器上关闭密码登录
+ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@your-server-ip
+```
+
+```bash
+# 3）服务器上关闭密码登录（务必先确认第 1 步能连上）
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+systemctl reload sshd
+sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
+# 期望：pubkeyauthentication yes / passwordauthentication no
+```
+
+之后连接用 `ssh root@your-server-ip`（若保留 2222 端口则加 `-p 2222`），无需密码。
+
 
 ---
 

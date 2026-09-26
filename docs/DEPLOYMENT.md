@@ -43,7 +43,7 @@
 
 ```bash
 # ========== 数据库 ==========
-# 非 Docker: postgresql://commerce_user:密码@localhost:5432/commerce_db?schema=public
+# 非 Docker: postgresql://b2b_user:密码@localhost:5432/b2b_independent_site?schema=public
 # Docker:    postgresql://b2b_user:b2b_password@db:5432/b2b_independent_site?schema=public
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB?schema=public"
 
@@ -132,14 +132,14 @@ openssl rand -base64 32   # 生成 NEXTAUTH_SECRET
 
 ```bash
 # 手动备份（非 Docker）
-pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m%d).sql
+pg_dump -U b2b_user b2b_independent_site > /backup/b2b-independent-site-$(date +%Y%m%d).sql
 
 # 自动备份脚本（非 Docker）
 cat > /usr/local/bin/backup-db.sh << 'EOF'
 #!/bin/bash
 BACKUP_DIR="/backup"
-DB_NAME="commerce_db"
-DB_USER="commerce_user"
+DB_NAME="b2b_independent_site"
+DB_USER="b2b_user"
 RETENTION_DAYS=30
 
 mkdir -p $BACKUP_DIR
@@ -307,7 +307,7 @@ cat ~/.ssh/authorized_keys
 sudo ufw deny out to any
 sudo ufw deny in to any
 # 备份数据
-pg_dump -U commerce_user commerce_db > /backup/emergency-$(date +%Y%m%d).sql
+pg_dump -U b2b_user b2b_independent_site > /backup/emergency-$(date +%Y%m%d).sql
 # 停止应用
 pm2 delete b2b-independent-site   # 或 docker compose down
 ```

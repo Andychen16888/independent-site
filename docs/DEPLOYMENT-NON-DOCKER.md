@@ -47,10 +47,11 @@
 | CPU | 1 核 | 2 核 |
 | 内存 | 2 GB（建议加 2G swap） | 4 GB |
 | 硬盘 | 20 GB SSD | 40 GB SSD |
-| 系统 | Ubuntu 22.04 | Ubuntu 22.04 LTS |
+| 系统 | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
 
 > 1 核 2G 小机器**必须**先加 swap，防止 `next build` 时 OOM。
 > 具体命令见 [§1.2 安全加固](#12-安全加固部署前必须完成) 的第 6 步（那里是一整段可直接粘贴的流程）。
+> Ubuntu 22.04 也验证可用，但 PostgreSQL 需自行加 PGDG 源（§2 已含该步骤）。
 
 ### 1.2 安全加固（部署前必须完成）
 
@@ -289,18 +290,22 @@ sudo systemctl enable redis
 sudo -u postgres psql
 ```
 
-在 psql 里执行（名称可自定义，后续 `.env` 保持一致）：
+在 psql 里执行（**库名/角色名与 [`.env.example`](../.env.example) 保持一致**，后续 `.env` 的
+`DATABASE_URL` 也要对应；密码请换成自己新生成的强密码）：
 
 ```sql
-CREATE USER commerce_user WITH PASSWORD 'your-strong-password';
-CREATE DATABASE commerce_db OWNER commerce_user;
-GRANT ALL PRIVILEGES ON DATABASE commerce_db TO commerce_user;
-\c commerce_db
-GRANT ALL ON SCHEMA public TO commerce_user;
+CREATE USER b2b_user WITH PASSWORD 'your-strong-password';
+CREATE DATABASE b2b_independent_site OWNER b2b_user;
+GRANT ALL PRIVILEGES ON DATABASE b2b_independent_site TO b2b_user;
+\c b2b_independent_site
+GRANT ALL ON SCHEMA public TO b2b_user;
 \q
 ```
 
+> 生成强密码：`openssl rand -base64 24`
+>
 > 数据库只需本地访问，**不要**开启远程连接（`listen_addresses` 保持 `localhost`）。
+> 确认端口没有暴露到公网：`ss -tlnp | grep 5432`，期望只看到 `127.0.0.1:5432`。
 
 ---
 
@@ -325,12 +330,15 @@ nano .env
 
 | 变量 | 说明 | 示例 |
 |------|------|------|
-| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://commerce_user:密码@localhost:5432/commerce_db?schema=public` |
+| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://b2b_user:密码@localhost:5432/b2b_independent_site?schema=public` |
 | `NEXTAUTH_SECRET` | 随机密钥 | `openssl rand -base64 32` 生成 |
 | `NEXTAUTH_URL` | 站点 https 地址 | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_NAME` | 站点名 | `Commodities From China` |
 
+> `.env` 里**不要**填写 `UPLOAD_DIR`：`ecosystem.config.js` 已把它固定到项目根目录的
+> `uploads/`，填错会让上传的图片在下次 `next build` 后全部丢失。
+>
 > 详细变量说明见 [DEPLOYMENT.md § 环境变量](./DEPLOYMENT.md#环境变量)。
 
 ---
@@ -352,7 +360,7 @@ npm run build:server
 
 > **说明**
 > - 必须用 `npm ci --legacy-peer-deps`：`@stripe/react-stripe-js@6.3.0` 要求 `@stripe/stripe-js >=9.3.1 <10.0.0` 而项目锁定 `6.1.0`，不带 flag 会报 `ERESOLVE` 直接失败。
-> - `next build` 时若 OOM，脚本已内置 `NODE_OPTIONS=--max-old-space-size=4096`；1 核 2G 机器请先加 swap（见 1.1）。
+> - `next build` 时若 OOM，脚本已内置 `NODE_OPTIONS=--max-old-space-size=4096`；1 核 2G 机器请先加 swap（见 [§1.2 第 6 步](#12-安全加固部署前必须完成)）。
 > - 构建产物在 `.next/standalone/`，**运行时必须用 `node .next/standalone/server.js`，不能用 `next start`**。
 
 **构建好之后立刻确认产物存在：**
@@ -378,7 +386,32 @@ npm run db:migrate
 npm run db:seed
 ```
 
-> **顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
+> 顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
+>
+> ⚠️ **`db:seed` 会写入页面 / 博客 / FAQ / 导航 / 站点设置的初始值，覆盖你在后台改过的内容。**
+> 从旧服务器迁移（已有备份 dump）时**不要跑 `db:seed`**，改用下面的「方式 B」。
+>
+> **方式 A：全新空库（第一次部署）** —— 用上面那两条命令（`db:migrate` → `db:seed`）。
+> 种子会创建管理员账号 `81570423@qq.com` / `Admin123!`，**上线后立刻在后台改掉密码**。
+>
+> **方式 B：从备份恢复（迁移旧服务器，推荐）** —— 跳过 `db:seed`：
+> ```bash
+> cd /var/www/b2b-independent-site
+>
+> # 恢复整库备份（dump 里已含商品、站点设置、图片槽位、你在后台的所有改动）
+> sudo -u postgres pg_restore -U postgres -d b2b_independent_site \
+>   --no-owner --role=b2b_user /root/incident/db.dump
+>
+> # 迁移是幂等的，跑一次确保 schema 与代码一致（已应用的自动跳过）
+> npm run db:migrate
+>
+> # 恢复用户上传的图片（必须在 pm2 start 之前）
+> tar xzf /root/incident/uploads.tar.gz
+> ls -la uploads/ public/images/ public/uploads/ 2>/dev/null
+> ```
+> 备份怎么做的见 [INCIDENT-RECOVERY.md §2 抢救数据](./INCIDENT-RECOVERY.md#2-阶段二抢救数据只救数据不救程序)。
+> **图片必须和数据库一起恢复** —— 磁盘上是 `uploads/` 里的文件，槽位配置在数据库 `images` 表，
+> 只恢复其一会导致「文件在但前台不显示」。
 >
 > **博客正文多语言翻译**：seed 只写入标题/摘要/SEO 的多语言，正文翻译需 AI 生成后写库（已在服务器配好 OPENAI_API_KEY 时执行）：
 > ```bash
@@ -390,8 +423,8 @@ npm run db:seed
 >
 > 历史遗留排错：若首次迁移报 `relation "categories" does not exist`，说明是旧版依赖 `db push` 的迁移残留，重置空库后重跑：
 > ```bash
-> sudo -u postgres psql -d postgres -c 'DROP DATABASE IF EXISTS commerce_db;'
-> sudo -u postgres psql -d postgres -c "CREATE DATABASE commerce_db OWNER commerce_user;"
+> sudo -u postgres psql -d postgres -c 'DROP DATABASE IF EXISTS b2b_independent_site;'
+> sudo -u postgres psql -d postgres -c "CREATE DATABASE b2b_independent_site OWNER b2b_user;"
 > npm run db:migrate
 > npm run db:seed
 > ```
@@ -512,6 +545,28 @@ curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
 curl -I https://commoditychina.com          # 期望 HTTP/2 200
 curl -I http://commoditychina.com           # 期望 301 → https
 ```
+
+**5. 图片缓存是否真的生效**（省 CPU 的关键，必须确认）：
+
+```bash
+# 找一个已上传商品的图片 URL
+IMG=$(grep -oP 'https://[^"]*uploads/[^"]*' public/uploads/*.json 2>/dev/null | head -1)
+# 或直接从浏览器复制任意商品图地址后：
+# curl -sI -H 'Accept: image/webp' "https://commoditychina.com/实际图片路径" | grep -iE 'X-Cache-Status|Hit'
+
+# 首次 MISS、上传后重复请求应 HIT，且 30 天内不再回源
+curl -sI "https://commoditychina.com/实际图片路径" | grep -i X-Cache-Status   # 期望 HIT
+```
+
+> 始终 `MISS` 说明磁盘缓存没写入或缓存目录被清空，见 §8 的 `mkdir -p /var/cache/nginx/b2b_img`。
+> `X-Cache-Status` 若是 `EXPIRED`，说明命中但已过新鲜期，会回源更新一次，仍算正常。
+
+**6. 管理后台监控页**（`/admin/monitoring`）：
+
+- 4 张卡片（CPU / 内存 / 存储 / 磁盘）状态应为绿色
+- **Top Processes 进程 CPU 占用**应有数据；空白仅发生在首次打开的那一次采样，
+  刷新（30 秒）后会出现 —— 若持续空白才是异常
+- 磁盘占用应显示项目根目录路径，不是 `.next/standalone`
 
 ---
 
@@ -671,9 +726,19 @@ pm2 startup && pm2 save                     # 开机自启
 tail -f /var/www/b2b-independent-site/logs/out.log
 tail -f /var/www/b2b-independent-site/logs/err.log
 
-# 数据库备份
-pg_dump -U commerce_user commerce_db > /backup/b2b-independent-site-$(date +%Y%m%d).sql
+# 数据库备份（迁移到新服务器时用自定义格式 -Fc，恢复更完整）
+mkdir -p /backup
+pg_dump -U b2b_user -Fc b2b_independent_site > /backup/b2b-$(date +%Y%m%d).dump
+
+# 恢复
+sudo -u postgres pg_restore -U postgres -d b2b_independent_site --no-owner --role=b2b_user /backup/b2b-YYYYMMDD.dump
+
+# 上传的图片必须一起备份，否则前台商品图全部 404
+tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site uploads
 ```
+
+> `.env` 里的 `DATABASE_URL` 也要一起备份（`cp .env /backup/env-$(date +%Y%m%d)`），
+> 新机部署时需要它里面的 `NEXTAUTH_SECRET` 才能让已登录会话和 OAuth 回调继续有效。
 
 > 完整监控、备份、安全 checklist 见 [DEPLOYMENT.md](./DEPLOYMENT.md)。
 

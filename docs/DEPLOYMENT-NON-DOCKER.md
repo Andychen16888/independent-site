@@ -360,6 +360,22 @@ nano .env
 | `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_NAME` | 站点名 | `Commodities From China` |
 
+> ⚠️ **`DATABASE_URL` 的主机名必须是 `localhost`，不能是 `db`。**
+> `db` 是 docker-compose 的服务名，只在 compose 自建的网络内能解析；
+> 非 Docker 部署用 `db` 会报：
+> ```
+> Error: P1001: Can't reach database server at `db:5432`
+> ```
+> 修正：
+> ```bash
+> sed -i 's|@db:5432|@localhost:5432|' .env
+> ```
+> `.env.example` 的默认值已是 `localhost`，照抄即可。
+> 反过来，走 Docker 时也**不用**把主机名改成 `db` —— `docker-compose.yml`
+> 会在容器内用 `POSTGRES_USER/PASSWORD/DB` 重新拼装连接串并强制主机名为 `db`。
+> 原因：容器内的 `localhost` 指向容器自身而非 PG，所以这两种模式的主机名天然不同，
+> 不能靠同一个 `.env` 同时满足。
+
 > ⚠️ **`.env` 里的 `DATABASE_URL` 不能被 `#` 注释掉**。项目使用 `prisma.config.ts`，
 > Prisma 6 检测到它就**不再自动加载 `.env`**（会打印
 > `Prisma config detected, skipping environment variable loading`），

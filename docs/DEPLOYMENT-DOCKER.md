@@ -116,7 +116,12 @@ nano .env
 
 > ⚠️ 重要：`NEXT_PUBLIC_*` 是**构建期变量**，必须在 `build.args` 传入（compose 已配置好，从 `.env` 自动读取）。改这几个值后必须**重新构建镜像**才生效，而不是 `restart`。
 
-> compose 文件中 `DATABASE_URL` 默认值为 `postgresql://b2b_user:b2b_password@db:5432/b2b_independent_site?schema=public`。如果你改动了 `POSTGRES_USER/PASSWORD/DB`，请同时把 `DATABASE_URL` 写到 `.env` 覆盖默认值（改成对应的用户名/密码/库名）。
+> 账号 / 密码 / 库名统一取自 `.env` 的 `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB`。
+> 改了其中任何一个，compose 会在容器内自动重新拼装连接串，**无需**再单独维护 `DATABASE_URL`。
+>
+> `.env` 里的 `DATABASE_URL`（默认 `@localhost:5432`）是给**非 Docker / PM2 部署**用的，
+> compose **不会**读它 —— 因为容器内的 `localhost` 指向容器自身而不是 PG，
+> 两种模式的主机名天然不同（`localhost` vs 服务名 `db`），无法共用同一个值。
 
 ---
 

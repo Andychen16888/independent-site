@@ -43,9 +43,10 @@
 
 ```bash
 # ========== 数据库 ==========
-# 非 Docker: postgresql://b2b_user:密码@localhost:5432/b2b_independent_site?schema=public
-# Docker:    postgresql://b2b_user:b2b_password@db:5432/b2b_independent_site?schema=public
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB?schema=public"
+# 主机名按部署方式二选一，抄错会报 P1001 Can't reach database server：
+#   非 Docker (PM2)：        @localhost:5432   ← 本教程默认
+#   Docker (compose 服务名)：@db:5432          （compose 会自动处理，别手填）
+DATABASE_URL="postgresql://b2b_user:密码@localhost:5432/b2b_independent_site?schema=public"
 
 # ========== NextAuth 认证 ==========
 NEXTAUTH_SECRET="$(openssl rand -base64 32)"  # 生成随机密钥

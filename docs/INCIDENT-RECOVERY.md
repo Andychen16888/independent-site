@@ -32,7 +32,7 @@
 | 工作目录 | `/var/www/b2b-independent-site/.next/standalone (deleted)`（重新部署后仍驻留） |
 | 持久化 1 | root crontab：9 条 `*/30 * * * * docker start amco_<hex>` |
 | 持久化 2 | root crontab：2 条 `*/30 * * * *` 创建用户 `pakchoi`（密码 `Kermit123@`）+ 写入 `/etc/sudoers.d/99-pakchoi`（NOPASSWD ALL） |
-| 其它 | 服务器装有 `dockerd`，与 [DEPLOYMENT-NON-DOCKER.md](./DEPLOYMENT-NON-DOCKER.md) 的 PM2 方案无关，属额外攻击面 |
+| 其它 | 服务器装有 `dockerd`，本项目 PM2 方案不需要它，属额外攻击面 |
 | 本站影响 | **代码库干净**（`git status` 无改动、全历史 `git log -S "v.json"` 为空、PM2 `cpu 0%`）。被篡改的只有系统层 |
 
 **结论**：本站代码无需修补；损失的是服务器信任度与全部凭据。
@@ -161,7 +161,7 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 
-# 2. SSH 登录方式二选一（完整可粘贴流程见 DEPLOYMENT-NON-DOCKER.md §1.2）
+# 2. SSH 登录方式二选一（完整可粘贴流程见 DEPLOYMENT.md §1.2）
 #    方案 A（推荐）SSH 密钥：本地 ssh-keygen + ssh-copy-id，验证可免密登录后
 #      sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 #
@@ -196,7 +196,7 @@ ls -l /root/.ssh/authorized_keys 2>/dev/null
 #    ICMP 不要用 ufw 命令添加（ufw CLI 不支持，会报
 #    ERROR: Need 'to' or 'from' clause）；before.rules 默认已放行
 #    echo-request / destination-unreachable(PMTU) 等关键类型，无需额外处理。
-#    详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
+#    详见 DEPLOYMENT.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -222,7 +222,7 @@ ufw status verbose | head -8
 
 ## 5. 阶段五：恢复站点
 
-> 完整步骤见 [DEPLOYMENT-NON-DOCKER.md](./DEPLOYMENT-NON-DOCKER.md)，
+> 完整步骤见 [DEPLOYMENT.md](./DEPLOYMENT.md)，
 > 下面只是带顺序的恢复视图，**变量值用阶段三轮换后的新值**。
 
 | 步骤 | 参考章节 | 动作 | 备注 |
@@ -370,6 +370,5 @@ ls -lh /var/log/*.log
 
 ## 相关文档
 
-- [DEPLOYMENT-NON-DOCKER.md](./DEPLOYMENT-NON-DOCKER.md) —— PM2 部署完整流程
-- [DEPLOYMENT-DOCKER.md](./DEPLOYMENT-DOCKER.md) —— Docker 部署（本项目生产环境未采用）
-- [DEPLOYMENT.md](./DEPLOYMENT.md) —— 环境变量与第三方服务配置
+- [DEPLOYMENT.md](./DEPLOYMENT.md) —— 部署完整流程（PM2 + 系统 Nginx + PostgreSQL）
+- [OPERATIONS.md](./OPERATIONS.md) —— 运维、环境变量与第三方服务配置

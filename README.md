@@ -32,9 +32,8 @@ cp .env.example .env.local
 
 ## Deployment
 
-Deployment has two independent guides (choose one, do not mix commands):
+Single supported path: system Node.js + PM2 + system Nginx + PostgreSQL. No Docker files are kept in this repo.
 
-- [Non-Docker (PM2/standalone)](docs/DEPLOYMENT-NON-DOCKER.md) — recommended, lowest footprint, currently in production
-- [Docker (docker compose)](docs/DEPLOYMENT-DOCKER.md)
-
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the overview, environment variables, payments, SEO/GEO, and admin setup.
+- [Deployment guide](docs/DEPLOYMENT.md) — the full production flow, currently in production
+- [Operations & reference](docs/OPERATIONS.md) — monitoring, backups, env vars, payments, SEO/GEO, admin setup
+- [Incident recovery](docs/INCIDENT-RECOVERY.md) — server compromise checklist

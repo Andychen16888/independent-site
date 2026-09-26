@@ -180,7 +180,12 @@ systemctl enable --now fail2ban
 #      enabled   = true
 #      EOF
 #      systemctl restart fail2ban
-#      fail2ban-client get sshd banaction     # 期望：ufw
+#      systemctl is-active fail2ban              # 期望：active
+#      fail2ban-client status sshd               # 期望：Status for the jail: sshd
+#      # 注意：不要用 `fail2ban-client get sshd banaction` 校验，
+#      #      该子命令仅新版本 fail2ban 支持，旧版报
+#      #      "Invalid command (no get action or not yet implemented)"。
+#      #      改用全版本通用的：fail2ban-client show sshd | tr ',' '\n' | grep -i banaction
 #      ufw allow 2222/tcp        # 防火墙同步放行新端口（在下面 ufw enable 之前执行）
 #      # 然后另开 PuTTY，端口填 2222，确认能登录再关掉当前会话
 #

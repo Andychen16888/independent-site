@@ -74,7 +74,7 @@ systemctl enable --now unattended-upgrades
 passwd root
 
 # ============================================================
-# 2. fail2ban 防爆破
+# 2. fail2ban 防爆破（SSH 失败 3 次 → 封 24 小时 → 由 UFW 执行封禁）
 #    banaction = ufw 是关键：缺了它 fail2ban 会直接改 iptables，
 #    与 ufw 打架，且一旦执行 ufw reload 封禁记录就被清空。
 # ============================================================
@@ -88,11 +88,19 @@ banaction = ufw
 
 [sshd]
 enabled   = true
+# 若改了 SSH 端口（下面第 3 步改成 2222），取消注释并填实际端口。
+# backend = systemd 时日志来自 journald、按 _SYSTEMD_UNIT=sshd.service 匹配，
+# 与端口无关，所以这一行填错也不会导致漏封，仅为语义清晰。
+# port      = 2222
 EOF
 systemctl restart fail2ban
 sleep 3
-fail2ban-client get sshd banaction        # 期望输出：ufw
-fail2ban-client status sshd               # 期望看到 Jail: sshd
+
+# 校验（全部使用全版本通用的命令）
+systemctl is-active fail2ban                # 期望：active
+fail2ban-client status sshd                 # 期望：Status for the jail: sshd
+# 确认 fail2ban 实际加载到的关键参数（不依赖 fail2ban-client get，该命令仅新版本可用）
+fail2ban-client show sshd | tr ',' '\n' | grep -iE '"?(banaction|maxretry|bantime|backend)"?'
 
 # ============================================================
 # 3. 改 SSH 端口 22 → 2222
@@ -164,18 +172,26 @@ free -h
 2. 登录成功后在新窗口里复核：
 
 ```bash
-fail2ban-client status sshd
+systemctl is-active fail2ban                # 期望：active
+fail2ban-client status sshd                 # 期望：Status for the jail: sshd
 ufw status verbose | head -8
 ss -tlnp | grep 2222          # 期望：LISTEN ... :2222
 free -h                        # 期望：Swap 一行有内容
 ```
+
+> 想确认 fail2ban 真的会自动封禁，可以做一次**安全自测**：另开一个窗口用
+> `ssh -p 2222 root@你的IP` 连续输错密码 4 次，然后用第三个窗口执行
+> `fail2ban-client status sshd`，应能看到 `Currently banned: 1`；
+> 同时 `ufw status numbered | grep -i f2b` 会出现对应的 F2B 封禁规则。
+> 测完记得解封：`fail2ban-client set sshd unbanip 你的本机IP`
 
 3. 全部正常后，**才可以**关闭旧的那个 22 端口会话
 
 自检清单：
 
 - [ ] 新 PuTTY 会话（端口 2222）能登录
-- [ ] `fail2ban-client get sshd banaction` 输出 `ufw`
+- [ ] `fail2ban-client show sshd` 输出里的 `banaction` 为 `ufw`（不要用
+      `fail2ban-client get sshd banaction`，该子命令仅新版本 fail2ban 才有）
 - [ ] `ufw status` 里 2222/80/443 都是 ALLOW IN
 - [ ] `ss -tlnp | grep 2222` 有 LISTEN
 - [ ] `free -h` 里 Swap 已启用

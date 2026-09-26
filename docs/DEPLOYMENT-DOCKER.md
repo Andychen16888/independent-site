@@ -47,25 +47,32 @@
 ### 1.2 安全加固
 
 > ⚠️ **不要一次性把 SSH 和防火墙全改完。** 顺序必须是
-> 「先确认密钥能登录 → 再关密码登录 → 最后开 UFW」，每一步都**另开一个终端**验证能登回来。
-> 详见 [DEPLOYMENT-NON-DOCKER.md §1.2](./DEPLOYMENT-NON-DOCKER.md#12-安全加固部署前必须完成) 的完整说明与自检清单。
+> 「先确认能登回来 → 再收紧限制 → 最后开 UFW」，每一步都**另开一个终端**验证。
+>
+> **登录方式二选一**：
+> - **方案 A（推荐）SSH 密钥**：完整步骤见
+>   [DEPLOYMENT-NON-DOCKER.md §1.2.A](./DEPLOYMENT-NON-DOCKER.md#12a-方案-a方案-a--ssh-密钥登录推荐)
+> - **方案 B 密码登录 + 改 SSH 端口到 2222 + 收紧 fail2ban**：见
+>   [DEPLOYMENT-NON-DOCKER.md §1.2.B](./DEPLOYMENT-NON-DOCKER.md#12b-方案-b方案-b--密码登录--端口加固)
+>   （公网密码登录是持续被爆破的目标，改端口 + fail2ban 是必须的补偿措施）
 
 ```bash
 ssh root@your-server-ip
 apt update && apt upgrade -y
 
-# 1. 先确认密钥登录可用（本地执行：ssh-copy-id 后用
-#    ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@IP 验证）
-sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
-ls -l /root/.ssh/authorized_keys
+# 1. 确认登录方式已就位
+#    方案 A：ls -l /root/.ssh/authorized_keys
+#    方案 B：passwd root  设强密码；sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
+sshd -T | grep -E 'passwordauthentication|port'
 
 # 2. fail2ban + 自动安全更新
 apt install -y fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 
 # 防火墙
+#    SSH 端口：方案 A 放行 22，方案 B 放行 2222（下面按方案 A 写，方案 B 请替换）
 #    ICMP 必须写 `ufw allow proto icmp`；`ufw allow in proto icmp` 会报
-#    ERROR: Need 'to' or 'from' clause。详见 DEPLOYMENT-NON-DOCKER.md §1.2。
+#    ERROR: Need 'to' or 'from' clause。详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing

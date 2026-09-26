@@ -157,23 +157,41 @@ scp root@<OLD_SERVER_IP>:/root/incident/auth.log .
 ```bash
 apt update && apt upgrade -y
 
-# 1. 先确认密钥登录可用（本地：ssh-copy-id 后用
-#    ssh -o PreferredAuthentications=publickey -o PasswordAuthentication=no root@IP 验证）
-sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
-ls -l /root/.ssh/authorized_keys
-
-# 2. fail2ban + 自动安全更新
-apt install -y fail2ban unattended-upgrades
+# 1. 装基础工具 + fail2ban + 自动安全更新
+apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 
-# 防火墙：入站只开 22/80/443；出站默认拒绝后逐条放行必需外连。
-# ICMP 必须写 `ufw allow proto icmp`（`ufw allow in proto icmp` 会报
-# ERROR: Need 'to' or 'from' clause）。详见 DEPLOYMENT-NON-DOCKER.md §1.2。
+# 2. SSH 登录方式二选一（详见 DEPLOYMENT-NON-DOCKER.md §1.2）
+#    方案 A（推荐）SSH 密钥：本地 ssh-copy-id 后，验证可免密登录，再
+#      sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+#
+#    方案 B 密码登录 —— 本次事件极可能就是密码爆破导致，务必做完这三步：
+#      passwd root                                                        # 1. 强密码
+#      sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config            # 2. 改端口
+#      cat > /etc/fail2ban/jail.local <<'EOF'                            # 3. 收紧 fail2ban
+#      [DEFAULT]
+#      bantime  = 1h
+#      findtime = 10m
+#      maxretry = 3
+#      backend  = systemd
+#      [sshd]
+#      enabled  = true
+#      EOF
+#      systemctl restart fail2ban
+#      ufw allow 2222/tcp        # 防火墙同步放行新端口（在下面 ufw enable 之前执行）
+#      # 然后另开 PuTTY，端口填 2222，确认能登录再关掉当前会话
+#
+#    复核：sshd -T | grep -E 'passwordauthentication|port'
+ls -l /root/.ssh/authorized_keys 2>/dev/null
+
+# 3. 防火墙：入站只开 SSH/80/443；出站默认拒绝后逐条放行必需外连。
+#    ICMP 必须写 `ufw allow proto icmp`（`ufw allow in proto icmp` 会报
+#    ERROR: Need 'to' or 'from' clause）。详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
 ufw allow in on lo && ufw allow out on lo
-ufw allow in 22/tcp && ufw allow out 22/tcp
+ufw allow in 22/tcp && ufw allow out 22/tcp      # 方案 B 若改端口，这里换成 2222
 ufw allow in 80/tcp && ufw allow out 80/tcp
 ufw allow in 443/tcp && ufw allow out 443/tcp
 ufw allow out 53/udp && ufw allow out 53/tcp
@@ -182,14 +200,10 @@ ufw allow out 587/tcp && ufw allow out 465/tcp && ufw allow out 25/tcp   # SMTP
 ufw allow proto icmp
 ufw --force enable && ufw status verbose
 
-# 3. 【最后】关闭密码登录。务必先用密钥成功登录一次，并保留当前会话，
-#    另开终端确认还能连上再关闭本会话。改端口可进一步降低爆破概率。
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-systemctl reload sshd
-sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'   # 期望 no
-
-apt install -y curl wget git vim
+# 4. 复核
+sshd -T | grep -E 'passwordauthentication|port'
+fail2ban-client status sshd
+ufw status verbose | head -8
 ```
 
 > **不要安装 Docker**。PM2 方案不需要它；本次事件中攻击者正是借助 dockerd + 容器名

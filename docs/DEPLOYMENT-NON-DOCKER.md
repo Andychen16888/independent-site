@@ -191,11 +191,18 @@ ufw allow out 587/tcp
 ufw allow out 465/tcp
 ufw allow out 25/tcp
 
-# ICMP（ping / PMTU）。必须写 `ufw allow proto icmp`：
-# `ufw allow in proto icmp` 会报 ERROR: Need 'to' or 'from' clause，
-# 因为 in/out 方向必须搭配 on <interface> 或 to/from 子句才合法。
-# 不放行 ICMP 的后果：ping 不通，且大响应/大包可能因 PMTU 探测失败而卡住。
-ufw allow proto icmp
+# ICMP：**不要**用 ufw 命令添加。ufw 的 CLI 不支持 ICMP 规则，
+#   `ufw allow proto icmp` 和 `ufw allow in proto icmp` 都会报
+#   ERROR: Need 'to' or 'from' clause —— 这不是语法写错，是 ufw 不提供该能力。
+#
+#   也不需要加：/etc/ufw/before.rules 默认已放行关键 ICMP 类型
+#   （destination-unreachable 即 PMTU、time-exceeded、parameter-problem、
+#     echo-request 即 ping），所以大响应不会因 PMTU 探测失败而卡住，服务器也能被 ping。
+#   确认：grep -n 'icmp' /etc/ufw/before.rules
+#
+#   仅当需要"服务器主动 ping 外部"（default deny outgoing 会挡掉出站 ICMP）才加：
+#     sed -i '/# End custom rules/i -A ufw-before-output -p icmp -j ACCEPT' /etc/ufw/before.rules
+#     ufw reload
 
 ufw --force enable
 ufw status verbose

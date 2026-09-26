@@ -71,8 +71,9 @@ systemctl enable --now fail2ban
 
 # 防火墙
 #    SSH 端口：方案 A 放行 22，方案 B 放行 2222（下面按方案 A 写，方案 B 请替换）
-#    ICMP 必须写 `ufw allow proto icmp`；`ufw allow in proto icmp` 会报
-#    ERROR: Need 'to' or 'from' clause。详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
+#    ICMP 不要用 ufw 命令添加（CLI 不支持，会报 ERROR: Need 'to' or 'from' clause）；
+#    before.rules 默认已放行 echo-request / destination-unreachable(PMTU) 等关键类型。
+#    详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -84,7 +85,6 @@ ufw allow in 443/tcp
 ufw allow out 22,80,443,587,465,25/tcp
 ufw allow out 53,123/udp
 ufw allow out 53/tcp
-ufw allow proto icmp
 ufw --force enable
 ufw status verbose
 

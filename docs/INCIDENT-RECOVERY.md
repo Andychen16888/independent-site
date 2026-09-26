@@ -185,8 +185,10 @@ systemctl enable --now fail2ban
 ls -l /root/.ssh/authorized_keys 2>/dev/null
 
 # 3. 防火墙：入站只开 SSH/80/443；出站默认拒绝后逐条放行必需外连。
-#    ICMP 必须写 `ufw allow proto icmp`（`ufw allow in proto icmp` 会报
-#    ERROR: Need 'to' or 'from' clause）。详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
+#    ICMP 不要用 ufw 命令添加（ufw CLI 不支持，会报
+#    ERROR: Need 'to' or 'from' clause）；before.rules 默认已放行
+#    echo-request / destination-unreachable(PMTU) 等关键类型，无需额外处理。
+#    详见 DEPLOYMENT-NON-DOCKER.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -197,7 +199,6 @@ ufw allow in 443/tcp && ufw allow out 443/tcp
 ufw allow out 53/udp && ufw allow out 53/tcp
 ufw allow out 123/udp          # NTP，证书/时间相关
 ufw allow out 587/tcp && ufw allow out 465/tcp && ufw allow out 25/tcp   # SMTP
-ufw allow proto icmp
 ufw --force enable && ufw status verbose
 
 # 4. 复核

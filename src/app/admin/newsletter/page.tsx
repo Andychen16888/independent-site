@@ -3,7 +3,8 @@ import { formatDateShort } from "@/lib/utils/format"
 import { bi } from "@/components/admin/bilingual"
 import { getCurrentUser } from "@/lib/auth/get-server-session"
 import DeleteNewsletterButton from "./DeleteNewsletterButton"
-import { NewsletterCampaignForm } from "./NewsletterCampaignForm"
+import { NewsletterComposer } from "./NewsletterComposer"
+import { NewsletterCampaignHistory } from "./NewsletterCampaignHistory"
 
 export const dynamic = "force-dynamic"
 
@@ -34,11 +35,12 @@ export default async function AdminNewsletterPage() {
         </div>
       </div>
 
+      <div className="mb-8 space-y-8">
+        <NewsletterComposer activeCount={activeCount} adminEmail={currentUser?.email} />
+      </div>
+
       <div className="mb-8">
-        <NewsletterCampaignForm
-          activeEmails={subscribers.filter((s) => s.isActive).map((s) => s.email)}
-          adminEmail={currentUser?.email}
-        />
+        <NewsletterCampaignHistory />
       </div>
 
       {subscribers.length === 0 ? (

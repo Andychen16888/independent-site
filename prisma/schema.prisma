@@ -660,6 +660,74 @@ model Newsletter {
   @@map("newsletters")
 }
 
+enum NewsletterCampaignStatus {
+  SENDING
+  COMPLETED
+  STOPPED
+  FAILED
+}
+
+enum NewsletterSendStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+/// One bulk send. The recipient list is snapshotted into NewsletterSend rows at
+/// creation so the run has a fixed audience and a durable per-recipient log.
+model NewsletterCampaign {
+  id            String                    @id @default(cuid())
+  subject       String
+  body          String
+  status        NewsletterCampaignStatus  @default(SENDING)
+  /// Pause between deliveries. Bulk mail sent back-to-back is what triggers
+  /// provider throttling, so this is a first-class knob rather than a constant.
+  delayMs       Int                       @default(2000)
+  totalCount    Int                       @default(0)
+  sentCount     Int                       @default(0)
+  failedCount   Int                       @default(0)
+  /// Cooperative stop flag: the runner checks it before each delivery.
+  stopRequested Boolean                   @default(false)
+  error         String?
+  startedAt     DateTime                  @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime                  @default(now())
+
+  recipients NewsletterSend[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("newsletter_campaigns")
+}
+
+model NewsletterSend {
+  id         String               @id @default(cuid())
+  campaignId String
+  campaign   NewsletterCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  email      String
+  status     NewsletterSendStatus @default(PENDING)
+  error      String?
+  sentAt     DateTime?
+  createdAt  DateTime             @default(now())
+
+  @@index([campaignId])
+  @@index([campaignId, status])
+  @@map("newsletter_sends")
+}
+
+/// Reusable subject/body pair so recurring mail does not get retyped.
+model NewsletterTemplate {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletter_templates")
+}
+
 model Banner {
   id          String   @id @default(cuid())
   title       String

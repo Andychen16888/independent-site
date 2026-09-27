@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db/prisma"
 import { formatDateShort } from "@/lib/utils/format"
 import { bi } from "@/components/admin/bilingual"
+import { getCurrentUser } from "@/lib/auth/get-server-session"
 import DeleteNewsletterButton from "./DeleteNewsletterButton"
+import { NewsletterCampaignForm } from "./NewsletterCampaignForm"
 
 export const dynamic = "force-dynamic"
 
@@ -19,6 +21,7 @@ async function getSubscribers() {
 export default async function AdminNewsletterPage() {
   const subscribers = await getSubscribers()
   const activeCount = subscribers.filter((s) => s.isActive).length
+  const currentUser = await getCurrentUser()
 
   return (
     <div>
@@ -29,6 +32,13 @@ export default async function AdminNewsletterPage() {
             {subscribers.length} {bi("total", "总计")}, {activeCount} {bi("active", "有效")}
           </p>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <NewsletterCampaignForm
+          activeEmails={subscribers.filter((s) => s.isActive).map((s) => s.email)}
+          adminEmail={currentUser?.email}
+        />
       </div>
 
       {subscribers.length === 0 ? (

@@ -12,6 +12,7 @@ import {
   HiOutlineDocument, HiOutlineBars3,
   HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt, HiOutlineLanguage,
   HiOutlineBuildingOffice2, HiOutlineChatBubbleOvalLeftEllipsis, HiOutlineHome,
+  HiOutlineEnvelope,
 } from "react-icons/hi2"
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { name: "Orders", nameZh: "订单", href: "/admin/orders", icon: HiOutlineShoppingBag },
   { name: "Customers", nameZh: "客户", href: "/admin/customers", icon: HiOutlineUsers },
   { name: "Marketing", nameZh: "营销", href: "/admin/marketing", icon: HiOutlineMegaphone },
+  { name: "Newsletter", nameZh: "邮件订阅", href: "/admin/newsletter", icon: HiOutlineEnvelope },
   { name: "Affiliates", nameZh: "联盟推广", href: "/admin/affiliates", icon: HiOutlineCurrencyDollar },
   { name: "Blog", nameZh: "博客", href: "/admin/blog", icon: HiOutlineDocumentText },
   { name: "FAQ", nameZh: "常见问题", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },

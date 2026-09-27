@@ -651,10 +651,11 @@ model BlogComment {
 }
 
 model Newsletter {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id               String   @id @default(cuid())
+  email            String   @unique
+  isActive         Boolean  @default(true)
+  unsubscribeToken String?  @unique
+  createdAt        DateTime @default(now())
 
   @@map("newsletters")
 }

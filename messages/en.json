@@ -685,5 +685,16 @@
     "title": "Wishlist",
     "empty": "Your wishlist is empty",
     "metaDescription": "Save your favorite products and shop them anytime."
+  },
+  "newsletter": {
+    "unsubscribed": {
+      "removedTitle": "You have been unsubscribed",
+      "removedBody": "You will no longer receive market updates or price lists from us. You can subscribe again at any time from the homepage.",
+      "alreadyTitle": "Already unsubscribed",
+      "alreadyBody": "This address was already removed from our list, so nothing has changed.",
+      "invalidTitle": "This link is not valid",
+      "invalidBody": "The unsubscribe link appears to be incomplete or out of date. If you still receive emails from us, contact us and we will remove your address manually.",
+      "browse": "Browse Products"
+    }
   }
 }

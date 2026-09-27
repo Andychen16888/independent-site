@@ -156,3 +156,58 @@ export async function sendAbandonedCartEmail(email: string, items: any[]) {
     `,
   })
 }
+
+/** Escape plain-text newsletter copy before it is dropped into the HTML shell. */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+/**
+ * Bulk marketing email. Takes plain text from the dashboard and wraps it in the
+ * same inline-styled shell as the transactional templates, so admins cannot
+ * accidentally ship markup that email clients strip out.
+ *
+ * The unsubscribe link is mandatory: bulk send without a working opt-out gets
+ * the domain throttled or blacklisted by receiving providers, and is not
+ * compliant in the markets this site sells into.
+ */
+export async function sendNewsletterEmail({
+  to,
+  subject,
+  body,
+  unsubscribeUrl,
+}: {
+  to: string
+  subject: string
+  body: string
+  unsubscribeUrl: string
+}) {
+  const brand = (await getSiteSeo()).siteName
+  const safeBody = escapeHtml(body).replace(/\r?\n/g, "<br />")
+  const safeUnsubscribe = escapeHtml(unsubscribeUrl)
+
+  await sendEmail({
+    to,
+    subject,
+    html: `
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 style="font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; font-weight: 300;">${escapeHtml(brand)}</h1>
+        </div>
+        <div style="font-size: 15px; line-height: 1.8; color: #333;">${safeBody}</div>
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
+          <p style="margin: 0 0 12px;">${escapeHtml(brand)} &mdash; Where East Meets West</p>
+          <p style="margin: 0;">
+            <a href="${safeUnsubscribe}" style="color: #999; text-decoration: underline;">Unsubscribe</a>
+            from these emails.
+          </p>
+        </div>
+      </div>
+    `,
+  })
+}

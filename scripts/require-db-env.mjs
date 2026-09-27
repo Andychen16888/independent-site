@@ -57,7 +57,7 @@ if (!fromFile && !fromProcess) {
       "  Then set this line (replace PASSWORD with the real one):",
       `    DATABASE_URL="postgresql://b2b_user:PASSWORD@localhost:5432/b2b_independent_site?schema=public"`,
       "",
-      `  Reminder: the database and role must exist first (${envFile ? "see DEPLOYMENT-NON-DOCKER.md" : "see DEPLOYMENT-NON-DOCKER.md"} section 3).`,
+      `  Reminder: the database and role must exist first (see DEPLOYMENT.md section 3).`,
       "",
     ].join("\n"),
   )
@@ -71,35 +71,6 @@ if (!value.includes("@")) {
       "",
       `[db] ERROR: DATABASE_URL looks malformed: ${value}`,
       '  Expected format: postgresql://USER:PASSWORD@HOST:5432/DB_NAME?schema=public',
-      "",
-    ].join("\n"),
-  )
-  process.exit(1)
-}
-
-// 抄 .env.example 时最容易犯的错：把 Docker 专用的服务名 db 带到了非 Docker 部署里。
-// 容器网络外 "db" 这个主机名永远解析不到，会报
-//   P1001: Can't reach database server at `db:5432`
-// 容器内 /.dockerenv 存在，此时 db 是正确的主机名，不做拦截。
-const COMPOSE_ONLY_HOSTS = new Set(["db", "postgres", "database", "pg"])
-let host = ""
-try {
-  host = new URL(value).hostname
-} catch {
-  // 不是标准 URL，交给 Prisma 自己去解析
-}
-
-if (COMPOSE_ONLY_HOSTS.has(host) && !existsSync("/.dockerenv")) {
-  console.error(
-    [
-      "",
-      `[db] ERROR: DATABASE_URL points at "${host}", a Docker Compose service name.`,
-      "  Outside a container that hostname never resolves.",
-      "",
-      "  Fix (non-Docker / PM2):",
-      `    sed -i 's|@${host}:5432|@localhost:5432|' .env`,
-      "",
-      "  Keep 'db' only when running via docker compose on this same machine.",
       "",
     ].join("\n"),
   )

@@ -21,6 +21,15 @@ interface SmartImageProps {
   sizes?: string
   priority?: boolean
   quality?: number
+  /**
+   * How the image fills its box.
+   * - `cover` (default): fills the box and crops the overflow — good for photos
+   *   where every box must look identical.
+   * - `contain`: scales the whole image down to fit inside the box, letterboxing
+   *   the remainder — required when the image must stay fully visible
+   *   (product photos, logos, diagrams, screenshots) whatever its dimensions.
+   */
+  fit?: "cover" | "contain"
   /** Classes applied to the underlying image element. */
   className?: string
   /** Adds a navy gradient scrim on top of the image (for text legibility). */
@@ -46,6 +55,7 @@ export function SmartImage({
   sizes = "100vw",
   priority = false,
   quality = 82,
+  fit = "cover",
   className,
   overlay = false,
   overlayClassName,
@@ -87,7 +97,7 @@ export function SmartImage({
       }}
       className={cn(
         "transition-opacity duration-700 ease-out",
-        fill && "object-cover",
+        fill && (fit === "contain" ? "object-contain" : "object-cover"),
         loaded ? "opacity-100" : "opacity-0",
         className,
       )}
@@ -101,7 +111,6 @@ export function SmartImage({
       {overlay && <span aria-hidden className={cn("img-overlay absolute inset-0", overlayClassName)} />}
     </>
   )
-
   if (fill) return layer
 
   return (

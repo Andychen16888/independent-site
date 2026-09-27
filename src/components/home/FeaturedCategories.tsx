@@ -51,12 +51,20 @@ export function FeaturedCategories({
                 href={category.href}
                 className="relative block aspect-[4/3] overflow-hidden rounded-lg"
               >
+                {/*
+                  fit="contain" scales the whole image to fit inside the frame, so a
+                  listing image of any dimensions stays fully visible instead of being
+                  cropped by the default object-cover. The leftover area shows the
+                  brand gradient underneath, which keeps mixed aspect ratios tidy.
+                  No hover zoom here: scaling a contained image would push it past the
+                  frame edge and bring the cropping back.
+                */}
                 <SmartImage
                   src={category.image}
                   alt={category.title}
                   tone={categoryFallbackTone(category.href)}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="transition-all duration-500 group-hover:scale-[1.05]"
+                  fit="contain"
                   overlay
                 />
 

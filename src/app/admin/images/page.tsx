@@ -13,7 +13,6 @@ import {
 const GROUP_ORDER: SiteImageGroup[] = [
   "hero",
   "supplyChain",
-  "process",
   "port",
   "global",
   "about",

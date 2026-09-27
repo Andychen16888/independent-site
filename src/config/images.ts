@@ -8,7 +8,7 @@
  *
  * Suggested (optional) default file locations, used only when no photo has
  * been uploaded for a slot:
- *   public/images/hero/…  commodities/…  supply-chain/…  process/…  port/…  global/…  about/…
+ *   public/images/hero/…  supply-chain/…  port/…  global/…  about/…
  */
 
 export interface ImageAsset {
@@ -23,7 +23,6 @@ export interface ImageAsset {
 export type SiteImageGroup =
   | "hero"
   | "supplyChain"
-  | "process"
   | "port"
   | "global"
   | "about"
@@ -83,14 +82,6 @@ export const SITE_IMAGE_SLOTS: SiteImageSlot[] = [
   { key: "supplyChain.2", group: "supplyChain", label: "Supply Chain — Quality Control", alt: "Quality control inspection of goods before shipment", tone: TONES.earth, defaultSrc: "/images/supply-chain/quality-control.jpg" },
   { key: "supplyChain.3", group: "supplyChain", label: "Supply Chain — Logistics", alt: "Freight containers being loaded for international shipping", tone: TONES.deep, defaultSrc: "/images/supply-chain/logistics.jpg" },
 
-  // Sourcing process
-  { key: "process.0", group: "process", label: "Process — Factory", alt: "Sourcing from the factory", tone: TONES.steel, defaultSrc: "/images/process/factory.jpg" },
-  { key: "process.1", group: "process", label: "Process — Inspection", alt: "Inspection and quality checks", tone: TONES.slate, defaultSrc: "/images/process/inspection.jpg" },
-  { key: "process.2", group: "process", label: "Process — Warehouse", alt: "Consolidation and warehousing", tone: TONES.earth, defaultSrc: "/images/process/warehouse.jpg" },
-  { key: "process.3", group: "process", label: "Process — Port", alt: "Export port handling", tone: TONES.deep, defaultSrc: "/images/process/port.jpg" },
-  { key: "process.4", group: "process", label: "Process — Shipping", alt: "International freight shipping", tone: TONES.slate, defaultSrc: "/images/process/shipping.jpg" },
-  { key: "process.5", group: "process", label: "Process — Buyer", alt: "Delivery to the overseas buyer", tone: TONES.warm, defaultSrc: "/images/process/buyer.jpg" },
-
   // Standalone banners
   { key: "port", group: "port", label: "Port Banner", alt: "Aerial view of a Chinese port handling global export cargo", tone: TONES.deep, defaultSrc: "/images/port/china-port-banner.jpg" },
   { key: "global", group: "global", label: "Global Network Map", alt: "Global trade routes connecting China with international markets", tone: TONES.steel, defaultSrc: "/images/global/world-network.png" },
@@ -105,7 +96,6 @@ export const SITE_IMAGE_SLOTS: SiteImageSlot[] = [
 export const SITE_IMAGE_GROUP_LABELS: Record<SiteImageGroup, string> = {
   hero: "Homepage Hero",
   supplyChain: "China Supply Chain",
-  process: "Sourcing Process",
   port: "Port Banner",
   global: "Global Network",
   about: "About & Story",
@@ -125,7 +115,6 @@ export function slotsForGroup(group: SiteImageGroup): SiteImageSlot[] {
 
 export const heroImages: ImageAsset[] = slotsForGroup("hero").map((s) => DEFAULT_SITE_IMAGES[s.key])
 export const supplyChainImages: ImageAsset[] = slotsForGroup("supplyChain").map((s) => DEFAULT_SITE_IMAGES[s.key])
-export const processImages: ImageAsset[] = slotsForGroup("process").map((s) => DEFAULT_SITE_IMAGES[s.key])
 export const aboutImages: ImageAsset[] = slotsForGroup("about").map((s) => DEFAULT_SITE_IMAGES[s.key])
 export const portImage: ImageAsset = DEFAULT_SITE_IMAGES["port"]
 export const globalImage: ImageAsset = DEFAULT_SITE_IMAGES["global"]

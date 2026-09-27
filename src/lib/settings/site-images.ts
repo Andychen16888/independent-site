@@ -75,7 +75,6 @@ export async function getGroupedSiteImages() {
   return {
     hero: groupImages(all, "hero"),
     supplyChain: groupImages(all, "supplyChain"),
-    process: groupImages(all, "process"),
     about: groupImages(all, "about"),
     port: imageByKey(all, "port"),
     global: imageByKey(all, "global"),

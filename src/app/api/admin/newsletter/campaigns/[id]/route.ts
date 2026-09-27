@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { prisma } from "@/lib/db/prisma"
 import { resumeStalledCampaigns } from "@/lib/newsletter/campaign-runner"
+import { ensureScheduler } from "@/lib/newsletter/scheduler"
 
 export const dynamic = "force-dynamic"
 
@@ -13,6 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const authError = await requireAdmin(req)
   if (authError) return authError
 
+  ensureScheduler()
   await resumeStalledCampaigns().catch(() => undefined)
 
   const { id } = await params
@@ -25,6 +27,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       body: true,
       status: true,
       delayMs: true,
+      dailyQuota: true,
+      nextRunAt: true,
       totalCount: true,
       sentCount: true,
       failedCount: true,
@@ -40,7 +44,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 })
   }
 
-  const [failed, pending, skippedCount, lastRecipients] = await Promise.all([
+  const startOfToday = new Date()
+  startOfToday.setHours(0, 0, 0, 0)
+
+  const [failed, pending, skippedCount, sentToday, lastRecipients] = await Promise.all([
     prisma.newsletterSend.findMany({
       where: { campaignId: id, status: "FAILED" },
       orderBy: { createdAt: "desc" },
@@ -49,6 +56,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }),
     prisma.newsletterSend.count({ where: { campaignId: id, status: "PENDING" } }),
     prisma.newsletterSend.count({ where: { campaignId: id, status: "SKIPPED" } }),
+    prisma.newsletterSend.count({
+      where: { campaignId: id, status: "SENT", sentAt: { gte: startOfToday } },
+    }),
     prisma.newsletterSend.findMany({
       where: { campaignId: id },
       orderBy: { createdAt: "desc" },
@@ -62,6 +72,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       ...campaign,
       pendingCount: pending,
       skippedCount,
+      sentToday,
     },
     failed,
     lastRecipients,

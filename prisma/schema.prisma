@@ -662,6 +662,8 @@ model Newsletter {
 
 enum NewsletterCampaignStatus {
   SENDING
+  /// Hit its daily quota. Picks itself back up at `nextRunAt`.
+  PAUSED
   COMPLETED
   STOPPED
   FAILED
@@ -684,6 +686,12 @@ model NewsletterCampaign {
   /// Pause between deliveries. Bulk mail sent back-to-back is what triggers
   /// provider throttling, so this is a first-class knob rather than a constant.
   delayMs       Int                       @default(2000)
+  /// Ceiling on deliveries per calendar day. 0 means send the whole audience in
+  /// one run; anything above 0 spreads the campaign over as many days as it
+  /// takes, which is the safer shape once a list gets large.
+  dailyQuota    Int                       @default(0)
+  /// When a PAUSED campaign becomes eligible again. Null unless paused.
+  nextRunAt     DateTime?
   totalCount    Int                       @default(0)
   sentCount     Int                       @default(0)
   failedCount   Int                       @default(0)
@@ -698,6 +706,7 @@ model NewsletterCampaign {
 
   @@index([status])
   @@index([createdAt])
+  @@index([status, nextRunAt])
   @@map("newsletter_campaigns")
 }
 

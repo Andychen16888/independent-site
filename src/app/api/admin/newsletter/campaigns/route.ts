@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { prisma } from "@/lib/db/prisma"
 import { resumeStalledCampaigns } from "@/lib/newsletter/campaign-runner"
+import { ensureScheduler } from "@/lib/newsletter/scheduler"
 
 export const dynamic = "force-dynamic"
 
@@ -10,9 +11,17 @@ export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
   if (authError) return authError
 
-  // A campaign left SENDING by a deploy or restart is picked up here, on the
-  // first poll after the process came back.
+  /*
+   * Starts the background ticker on first use, then checks for due work. The
+   * ticker is what resumes a daily-quota campaign at midnight without anyone
+   * having the dashboard open.
+   */
+  ensureScheduler()
   await resumeStalledCampaigns().catch(() => undefined)
+
+  const now = new Date()
+  const startOfToday = new Date(now)
+  startOfToday.setHours(0, 0, 0, 0)
 
   const campaigns = await prisma.newsletterCampaign.findMany({
     orderBy: { createdAt: "desc" },
@@ -22,6 +31,8 @@ export async function GET(req: NextRequest) {
       subject: true,
       status: true,
       delayMs: true,
+      dailyQuota: true,
+      nextRunAt: true,
       totalCount: true,
       sentCount: true,
       failedCount: true,
@@ -40,9 +51,31 @@ export async function GET(req: NextRequest) {
     },
   })
 
+  /*
+   * Today's deliveries for every listed campaign in one grouped query. Done as a
+   * second pass because it is an aggregate over the recipient table and cannot be
+   * expressed alongside the per-campaign pending count in a single select.
+   */
+  const todayByCampaign = new Map<string, number>()
+  if (campaigns.length > 0) {
+    const grouped = await prisma.newsletterSend.groupBy({
+      by: ["campaignId"],
+      where: {
+        status: "SENT",
+        sentAt: { gte: startOfToday },
+        campaignId: { in: campaigns.map((c) => c.id) },
+      },
+      _count: { _all: true },
+    })
+    for (const row of grouped) {
+      todayByCampaign.set(row.campaignId, row._count._all)
+    }
+  }
+
   return NextResponse.json({
     campaigns: campaigns.map((c) => ({
       ...c,
+      sentToday: todayByCampaign.get(c.id) ?? 0,
       pendingCount: c._count.recipients,
       skippedCount: Math.max(
         c.totalCount - c.sentCount - c.failedCount - c._count.recipients,

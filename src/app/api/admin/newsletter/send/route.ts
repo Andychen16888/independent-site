@@ -8,6 +8,7 @@ import {
   MAX_BODY,
   MAX_CAMPAIGN_RECIPIENTS,
   MAX_SUBJECT,
+  clampDailyQuota,
   clampDelay,
 } from "@/lib/newsletter/constants"
 
@@ -29,6 +30,7 @@ export async function POST(req: NextRequest) {
     subject?: unknown
     body?: unknown
     delayMs?: unknown
+    dailyQuota?: unknown
     test?: unknown
   } | null
 
@@ -112,10 +114,17 @@ export async function POST(req: NextRequest) {
   }
 
   const delayMs = clampDelay(body.delayMs)
+  const dailyQuota = clampDailyQuota(body.dailyQuota)
 
   const campaign = await prisma.$transaction(async (tx) => {
     const created = await tx.newsletterCampaign.create({
-      data: { subject, body: content, delayMs, totalCount: subscribers.length },
+      data: {
+        subject,
+        body: content,
+        delayMs,
+        dailyQuota,
+        totalCount: subscribers.length,
+      },
     })
     await tx.newsletterSend.createMany({
       data: subscribers.map((s) => ({ campaignId: created.id, email: s.email })),
@@ -126,5 +135,10 @@ export async function POST(req: NextRequest) {
   // Fire and forget. The dashboard polls for progress.
   startCampaign(campaign.id)
 
-  return NextResponse.json({ campaignId: campaign.id, total: subscribers.length, delayMs })
+  return NextResponse.json({
+    campaignId: campaign.id,
+    total: subscribers.length,
+    delayMs,
+    dailyQuota,
+  })
 }

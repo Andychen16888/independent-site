@@ -19,15 +19,27 @@ const DELAY_CHOICES = [
   { value: 30000, label: "30s" },
 ]
 
+const QUOTA_CHOICES = [
+  { value: 0, label: "No limit" },
+  { value: 50, label: "50" },
+  { value: 100, label: "100" },
+  { value: 200, label: "200" },
+  { value: 500, label: "500" },
+  { value: 1000, label: "1000" },
+]
+
 type Campaign = {
   id: string
   subject: string
-  status: "SENDING" | "COMPLETED" | "STOPPED" | "FAILED"
+  status: "SENDING" | "PAUSED" | "COMPLETED" | "STOPPED" | "FAILED"
   delayMs: number
+  dailyQuota: number
+  nextRunAt: string | null
   totalCount: number
   sentCount: number
   failedCount: number
   pendingCount: number
+  sentToday: number
   stopRequested: boolean
   error: string | null
 }
@@ -50,6 +62,7 @@ export function NewsletterCampaignForm({
   adminEmail?: string
 }) {
   const [delayMs, setDelayMs] = useState(2000)
+  const [dailyQuota, setDailyQuota] = useState(0)
 
   const [busy, setBusy] = useState(false)
   const [stopping, setStopping] = useState(false)
@@ -60,7 +73,6 @@ export function NewsletterCampaignForm({
   const inFlight = useRef(false)
 
   const running = campaign?.status === "SENDING"
-
   const poll = useCallback(
     async (id: string) => {
       if (inFlight.current) return
@@ -80,8 +92,12 @@ export function NewsletterCampaignForm({
     []
   )
 
+  /*
+   * A paused campaign is still worth polling: it resumes on its own the next
+   * day, and the admin should see that happen rather than have to reload.
+   */
   useEffect(() => {
-    if (!campaign || campaign.status !== "SENDING") return
+    if (!campaign || (campaign.status !== "SENDING" && campaign.status !== "PAUSED")) return
     const timer = setInterval(() => {
       void poll(campaign.id)
     }, POLL_MS)
@@ -136,11 +152,18 @@ export function NewsletterCampaignForm({
     }
 
     const seconds = Math.round(delayMs / 1000)
-    const minutes = Math.max(Math.round((activeCount * delayMs) / 60000), 1)
+    const days = dailyQuota > 0 ? Math.ceil(activeCount / dailyQuota) : 1
+    const perDay =
+      dailyQuota > 0
+        ? bi(
+            `${dailyQuota} per day over ${days} ${days === 1 ? "day" : "days"}`,
+            `每天 ${dailyQuota} 封，分 ${days} 天发送`
+          )
+        : bi("no daily limit", "不限制每日数量")
     const confirmed = window.confirm(
       bi(
-        `Send to ${activeCount} active subscribers, one at a time with ${seconds}s between each? Roughly ${minutes} min. You can stop it at any time.`,
-        `将以串行方式发送给 ${activeCount} 位有效订阅用户，每封间隔 ${seconds} 秒，预计约 ${minutes} 分钟。发送过程中可随时停止。`
+        `Send to ${activeCount} active subscribers, one at a time with ${seconds}s between each, ${perDay}? You can stop it at any time.`,
+        `将以串行方式发送给 ${activeCount} 位有效订阅用户，每封间隔 ${seconds} 秒，${perDay}。发送过程中可随时停止。`
       )
     )
     if (!confirmed) return
@@ -148,16 +171,19 @@ export function NewsletterCampaignForm({
     setBusy(true)
     setFailed([])
     try {
-      const data = await post({ delayMs })
+      const data = await post({ delayMs, dailyQuota })
       setCampaign({
         id: data.campaignId,
         subject: subject.trim(),
         status: "SENDING",
         delayMs: data.delayMs,
+        dailyQuota: data.dailyQuota,
+        nextRunAt: null,
         totalCount: data.total,
         sentCount: 0,
         failedCount: 0,
         pendingCount: data.total,
+        sentToday: 0,
         stopRequested: false,
         error: null,
       })
@@ -231,7 +257,7 @@ export function NewsletterCampaignForm({
         <div className="text-[11px] text-stone mt-1 text-right">{body.length} / 20000</div>
       </div>
 
-      <div className="border border-mist p-4 flex flex-wrap items-center gap-4">
+      <div className="border border-mist p-4 flex flex-wrap items-start gap-8">
         <div>
           <label className="block text-[11px] uppercase tracking-wider text-stone mb-2">
             {bi("Interval between emails", "每封邮件间隔")}
@@ -254,10 +280,34 @@ export function NewsletterCampaignForm({
             ))}
           </div>
         </div>
+
+        <div>
+          <label className="block text-[11px] uppercase tracking-wider text-stone mb-2">
+            {bi("Daily limit", "每日发送上限")}
+          </label>
+          <div className="flex gap-1">
+            {QUOTA_CHOICES.map((c) => (
+              <button
+                key={c.value}
+                type="button"
+                disabled={running}
+                onClick={() => setDailyQuota(c.value)}
+                className={
+                  dailyQuota === c.value
+                    ? "px-3 py-2 bg-charcoal text-white text-xs transition-colors"
+                    : "px-3 py-2 border border-mist text-stone text-xs transition-colors hover:border-charcoal disabled:opacity-50"
+                }
+              >
+                {bi(c.label, c.value === 0 ? "不限" : c.label)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <p className="text-[11px] text-stone flex-1 min-w-[240px]">
           {bi(
-            "Bursts of bulk mail from one IP are what get a sending domain throttled or blacklisted. A few seconds between messages is the cheapest protection; use a longer interval for large lists.",
-            "同一 IP 短时间密集群发是导致发件域名被限流或拉黑的主要原因。每封间隔几秒是最廉价的防护手段；订阅量大时请用更长的间隔。"
+            "Two controls, two different protections. The interval keeps a single moment from looking like a burst; the daily limit keeps any one day from looking like a flood. Once the daily limit is hit the campaign stops itself and resumes the next day, whether or not this page stays open.",
+            "两个控制，两种防护。间隔避免某一时刻看起来像突发流量；每日上限避免某一天看起来像洪水。达到每日上限后任务会自动停下，次日自动继续，不依赖本页面是否打开。"
           )}
         </p>
       </div>
@@ -336,8 +386,30 @@ export function NewsletterCampaignForm({
             <span>
               {bi("Interval", "间隔")} {Math.round(campaign.delayMs / 1000)}s
             </span>
+            {campaign.dailyQuota > 0 && (
+              <span>
+                {bi("Today", "今日")} {campaign.sentToday} / {campaign.dailyQuota}
+              </span>
+            )}
           </div>
 
+          {campaign.status === "PAUSED" && (
+            <p className="text-[11px] text-stone">
+              {campaign.nextRunAt
+                ? bi(
+                    `Daily limit reached. The next ${campaign.dailyQuota} go out after ${new Date(
+                        campaign.nextRunAt
+                      ).toLocaleString()}.`,
+                    `已达每日上限。下批 ${campaign.dailyQuota} 封将于 ${new Date(
+                      campaign.nextRunAt
+                    ).toLocaleString()} 之后发送。`
+                  )
+                : bi(
+                    "Daily limit reached. Waiting for the next day.",
+                    "已达每日上限，等待次日继续。"
+                  )}
+            </p>
+          )}
           {campaign.status === "STOPPED" && (
             <p className="text-[11px] text-stone">
               {bi(

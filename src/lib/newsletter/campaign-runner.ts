@@ -23,6 +23,59 @@ export function getActiveCampaignId(): string | null {
 }
 
 /**
+ * Start of the current calendar day in server-local time.
+ *
+ * Counting deliveries from here is what makes a daily quota self-healing: a run
+ * interrupted by a restart picks the count back up from the delivery timestamps
+ * already in the table rather than from any in-memory total, so a quota is
+ * never accidentally doubled by resuming.
+ */
+function startOfToday(): Date {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+/** Next local midnight, used as the resume time for a quota-exhausted run. */
+function nextMidnight(): Date {
+  const d = startOfToday()
+  d.setDate(d.getDate() + 1)
+  return d
+}
+
+/**
+ * Atomically move a campaign into SENDING, returning false if somebody else
+ * got there first.
+ *
+ * The in-memory lock above is enough for the current single-process PM2 setup,
+ * but this makes the claim correct at the database level too, so scaling out or
+ * a stray second process cannot produce two loops draining the same campaign.
+ */
+async function claimForSending(id: string): Promise<boolean> {
+  const claimed = await prisma.newsletterCampaign.updateMany({
+    where: { id, status: { in: ["PAUSED", "SENDING"] } },
+    data: { status: "SENDING", nextRunAt: null },
+  })
+  return claimed.count > 0
+}
+
+/**
+ * Stand a campaign down until tomorrow without calling it finished.
+ *
+ * Deliberately releases the process lock instead of sleeping until midnight: a
+ * multi-hour timer would pin the event loop, and the resume would die with the
+ * next deploy anyway. The scheduler picks the campaign back up.
+ */
+async function pauseUntilTomorrow(campaignId: string): Promise<void> {
+  await prisma.newsletterCampaign
+    .update({
+      where: { id: campaignId },
+      data: { status: "PAUSED", nextRunAt: nextMidnight() },
+    })
+    .catch((e) => console.error(`[newsletter] could not pause ${campaignId}:`, e))
+}
+
+/**
  * Drive one campaign to completion, strictly one message at a time.
  *
  * Delivery is serial on purpose. Batching the sends makes a provider see a burst
@@ -45,11 +98,25 @@ export async function runCampaign(campaignId: string): Promise<void> {
   try {
     const campaign = await prisma.newsletterCampaign.findUnique({
       where: { id: campaignId },
-      select: { subject: true, body: true, delayMs: true },
+      select: { subject: true, body: true, delayMs: true, dailyQuota: true },
     })
     if (!campaign) return
 
     const delay = Math.min(Math.max(campaign.delayMs, 0), MAX_DELAY_MS)
+    const quota = campaign.dailyQuota
+
+    /*
+     * Deliveries already made today, read back from the table rather than
+     * carried in memory, so a resumed or restarted run cannot overshoot the
+     * quota by starting the count from zero.
+     */
+    const countSentToday = () =>
+      prisma.newsletterSend.count({
+        where: { campaignId, status: "SENT", sentAt: { gte: startOfToday() } },
+      })
+
+    let sentToday = quota ? await countSentToday() : 0
+    let countedForDay = startOfToday().getTime()
 
     /*
      * At-least-once delivery. A crash between the SMTP handoff and the row
@@ -65,6 +132,25 @@ export async function runCampaign(campaignId: string): Promise<void> {
       })
       if (stop?.stopRequested) {
         await finish(campaignId, "STOPPED")
+        return
+      }
+
+      /*
+       * A run that is still going when the date rolls over must not carry
+       * yesterday's total into today, or the new day would start with the quota
+       * already partly spent. Recount once the day changes.
+       */
+      if (quota > 0) {
+        const currentDay = startOfToday().getTime()
+        if (currentDay !== countedForDay) {
+          sentToday = await countSentToday()
+          countedForDay = currentDay
+        }
+      }
+
+      // Daily ceiling reached: stand down until tomorrow rather than pushing on.
+      if (quota > 0 && sentToday >= quota) {
+        await pauseUntilTomorrow(campaignId)
         return
       }
 
@@ -88,13 +174,23 @@ export async function runCampaign(campaignId: string): Promise<void> {
         })
         if (stillRunning?.stopRequested) break
 
-        await deliver(
+        // Re-checked per message so the quota is honoured exactly, not up to a
+        // chunk boundary.
+        if (quota > 0 && sentToday >= quota) {
+          await pauseUntilTomorrow(campaignId)
+          return
+        }
+
+        const delivered = await deliver(
           campaignId,
           campaign.subject,
           campaign.body,
           chunk[i].id,
           chunk[i].email
         )
+        // Only real deliveries count against the quota. A skip or a failure did
+        // not reach a mailbox, so it must not eat into tomorrow's allowance.
+        if (delivered) sentToday += 1
 
         /*
          * Pace between messages but not after the last one. A short chunk means
@@ -139,7 +235,7 @@ async function deliver(
   body: string,
   sendId: string,
   email: string
-): Promise<void> {
+): Promise<boolean> {
   try {
     /*
      * Respect an opt-out that landed after the campaign was created but before
@@ -155,7 +251,7 @@ async function deliver(
         where: { id: sendId },
         data: { status: "SKIPPED", error: "Unsubscribed before delivery" },
       })
-      return
+      return false
     }
 
     // Backfill tokens for subscribers created before the column existed.
@@ -185,6 +281,8 @@ async function deliver(
         data: { sentCount: { increment: 1 } },
       }),
     ])
+
+    return true
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     /*
@@ -203,6 +301,9 @@ async function deliver(
         data: { failedCount: { increment: 1 } },
       }),
     ])
+
+    // Nothing reached a mailbox, so this does not count against the quota.
+    return false
   }
 }
 
@@ -216,30 +317,48 @@ async function finish(campaignId: string, status: "COMPLETED" | "STOPPED"): Prom
 }
 
 /**
- * Pick up campaigns that were mid-flight when the process restarted (a deploy,
- * an OOM, a manual `pm2 restart`). Called from the status endpoint the dashboard
- * already polls, so no extra scheduler or cron is needed.
+ * Start the oldest campaign that has work to do.
+ *
+ * Covers two cases: a run interrupted by a process restart (deploy, OOM, manual
+ * `pm2 restart`), and a run that paused itself at its daily quota and is now due
+ * again. Called from the status endpoint the dashboard already polls and from
+ * the in-process scheduler, so a daily batch resumes with or without anyone
+ * watching the dashboard.
  */
 export async function resumeStalledCampaigns(): Promise<void> {
   if (activeCampaignId) return
 
-  const stalled = await prisma.newsletterCampaign.findMany({
-    where: { status: "SENDING", stopRequested: false },
+  const now = new Date()
+
+  const due = await prisma.newsletterCampaign.findMany({
+    where: {
+      stopRequested: false,
+      status: { in: ["SENDING", "PAUSED"] },
+      // A paused campaign is only eligible once its resume time has passed.
+      OR: [{ nextRunAt: null }, { nextRunAt: { lte: now } }],
+    },
     orderBy: { createdAt: "asc" },
-    select: { id: true, _count: { select: { recipients: { where: { status: "PENDING" } } } } },
+    select: {
+      id: true,
+      _count: { select: { recipients: { where: { status: "PENDING" } } } },
+    },
   })
 
-  for (const campaign of stalled) {
+  for (const campaign of due) {
     if (campaign._count.recipients === 0) {
       await prisma.newsletterCampaign.update({
         where: { id: campaign.id },
-        data: { status: "COMPLETED", completedAt: new Date() },
+        data: { status: "COMPLETED", completedAt: new Date(), nextRunAt: null },
       })
       continue
     }
-    startCampaign(campaign.id)
-    // One at a time: the runner holds the in-process lock, and campaigns are
-    // picked up oldest-first on the next poll.
+
+    // Compare-and-set so a second process cannot start a duplicate loop.
+    if (!(await claimForSending(campaign.id))) continue
+
+    void runCampaign(campaign.id)
+    // One at a time: the runner holds the in-process lock, and the rest are
+    // picked up oldest-first on the next tick.
     return
   }
 }

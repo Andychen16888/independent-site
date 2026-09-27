@@ -7,12 +7,15 @@ import { bi } from "@/components/admin/bilingual"
 type CampaignRow = {
   id: string
   subject: string
-  status: "SENDING" | "COMPLETED" | "STOPPED" | "FAILED"
+  status: "SENDING" | "PAUSED" | "COMPLETED" | "STOPPED" | "FAILED"
   delayMs: number
+  dailyQuota: number
+  nextRunAt: string | null
   totalCount: number
   sentCount: number
   failedCount: number
   pendingCount: number
+  sentToday: number
   stopRequested: boolean
   startedAt: string
   completedAt: string | null
@@ -24,6 +27,7 @@ const POLL_MS = 3000
 
 const STATUS_STYLE: Record<CampaignRow["status"], string> = {
   SENDING: "border-charcoal text-charcoal",
+  PAUSED: "border-blue-700 text-blue-700",
   COMPLETED: "border-emerald-700 text-emerald-700",
   STOPPED: "border-amber-700 text-amber-700",
   FAILED: "border-red-700 text-red-700",
@@ -31,6 +35,7 @@ const STATUS_STYLE: Record<CampaignRow["status"], string> = {
 
 const STATUS_LABEL: Record<CampaignRow["status"], [string, string]> = {
   SENDING: ["Sending", "发送中"],
+  PAUSED: ["Paused", "已暂停"],
   COMPLETED: ["Completed", "已完成"],
   STOPPED: ["Stopped", "已停止"],
   FAILED: ["Failed", "异常"],
@@ -73,8 +78,11 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
     void load()
   }, [load, refreshKey])
 
-  // Keep polling only while something is actually in flight.
-  const anyRunning = rows.some((r) => r.status === "SENDING")
+  // Keep polling while something is in flight, and while a daily-quota campaign
+  // is waiting for tomorrow so its automatic resume shows up without a reload.
+  const anyRunning = rows.some(
+    (r) => r.status === "SENDING" || r.status === "PAUSED"
+  )
   useEffect(() => {
     if (!anyRunning) return
     const timer = setInterval(() => void load(), POLL_MS)
@@ -157,11 +165,21 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
                 const percent = r.totalCount > 0 ? Math.round((done / r.totalCount) * 100) : 0
                 return (
                   <tr key={r.id} className="border-b border-mist/60 align-top">
-                    <td className="py-3 pr-3 text-xs max-w-[280px]">
-                      <div className="truncate">{r.subject}</div>
-                      <div className="text-[10px] text-stone mt-0.5">
-                        {bi("every", "间隔")} {Math.round(r.delayMs / 1000)}s
+                    <td className="py-3 pr-3 text-xs">
+                      <div className="max-w-[280px]">
+                        <div className="truncate">{r.subject}</div>
+                        <div className="text-[10px] text-stone mt-0.5">
+                          {bi("every", "间隔")} {Math.round(r.delayMs / 1000)}s
+                          {r.dailyQuota > 0
+                            ? ` · ${bi("max", "上限")} ${r.dailyQuota}${bi("/day", "/天")}`
+                            : ""}
+                        </div>
                       </div>
+                      {r.status === "PAUSED" && r.nextRunAt && (
+                        <div className="text-[10px] text-blue-700 mt-1">
+                          {bi("Resumes", "下次")} {formatWhen(r.nextRunAt)}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 pr-3">
                       <span
@@ -174,6 +192,11 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
                       <div>
                         {r.sentCount} / {r.totalCount} ({percent}%)
                       </div>
+                      {r.dailyQuota > 0 && (
+                        <div className="text-[10px] text-stone mt-0.5">
+                          {bi("today", "今日")} {r.sentToday} / {r.dailyQuota}
+                        </div>
+                      )}
                       {r.failedCount > 0 && (
                         <div className="text-[10px] text-red-700 mt-0.5">
                           {bi("failed", "失败")} {r.failedCount}
@@ -203,9 +226,19 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
                             type="button"
                             onClick={() => act(r.id, "resume")}
                             disabled={busyId === r.id}
+                            title={
+                              r.status === "PAUSED"
+                                ? bi(
+                                    "Send the next batch now instead of waiting for tomorrow. Today's limit still applies.",
+                                    "立即发送下一批而不必等到明天。今日上限仍然生效。"
+                                  )
+                                : undefined
+                            }
                             className="px-3 py-1.5 border border-charcoal text-charcoal text-[10px] uppercase tracking-wider transition-colors hover:bg-charcoal hover:text-white disabled:opacity-50"
                           >
-                            {bi("Resume", "继续")}
+                            {r.status === "PAUSED"
+                              ? bi("Send now", "立即发送")
+                              : bi("Resume", "继续")}
                           </button>
                         )}
                         <button

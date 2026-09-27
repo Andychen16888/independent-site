@@ -49,9 +49,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     )
   }
 
+  /*
+   * Starting a paused campaign early keeps its daily quota: the runner recounts
+   * today's deliveries from the table, so resuming at 23:00 will stop again at
+   * the same ceiling rather than sending a second full batch.
+   */
   await prisma.newsletterCampaign.update({
     where: { id },
-    data: { status: "SENDING", stopRequested: false, completedAt: null, error: null },
+    data: {
+      status: "SENDING",
+      stopRequested: false,
+      completedAt: null,
+      error: null,
+      nextRunAt: null,
+    },
   })
 
   startCampaign(id)

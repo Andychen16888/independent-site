@@ -39,12 +39,21 @@ export function GlobalNetwork({
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative aspect-[4/3] rounded-lg overflow-hidden border border-mist"
           >
-            <SmartImage
-              src={asset.src}
-              alt={asset.alt}
-              tone={asset.tone}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
+            {/*
+              fit="contain" keeps the whole image visible inside the fixed aspect-[4/3]
+              box. A world-network map loses its meaning the moment an edge gets cropped,
+              so the letterbox area is trimmed back to 5% to keep the frame from reading
+              as empty bands; the brand gradient underneath fills whatever is left.
+            */}
+            <div className="absolute inset-[5%]">
+              <SmartImage
+                src={asset.src}
+                alt={asset.alt}
+                tone={asset.tone}
+                sizes="(max-width: 1024px) 90vw, 45vw"
+                fit="contain"
+              />
+            </div>
           </motion.div>
         </div>
       </Container>

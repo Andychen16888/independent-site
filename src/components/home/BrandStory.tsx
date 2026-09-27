@@ -47,12 +47,21 @@ export function BrandStory({
             transition={{ duration: 0.7, delay: 0.15 }}
             className="relative aspect-[4/5] overflow-hidden rounded-lg border border-mist"
           >
-            <SmartImage
-              src={safe.image || asset.src}
-              alt={asset.alt}
-              tone={asset.tone}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+            {/*
+              fit="contain" keeps the whole photo visible inside the fixed aspect-[4/5]
+              box. Because the box is portrait and most uploads are landscape, the
+              letterbox area is trimmed back to 5% so the frame does not read as two
+              large empty bands; the brand gradient underneath fills whatever is left.
+            */}
+            <div className="absolute inset-[5%]">
+              <SmartImage
+                src={safe.image || asset.src}
+                alt={asset.alt}
+                tone={asset.tone}
+                sizes="(max-width: 768px) 90vw, 45vw"
+                fit="contain"
+              />
+            </div>
           </motion.div>
         </div>
       </Container>

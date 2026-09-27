@@ -37,16 +37,22 @@ export function SupplyChain({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08, duration: 0.5 }}
-                className="group"
               >
                 <div className="relative aspect-video overflow-hidden rounded-lg mb-5">
-                  <SmartImage
-                    src={image?.src}
-                    alt={image?.alt || item.title}
-                    tone={image?.tone}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="transition-all duration-500 group-hover:scale-[1.05]"
-                  />
+                  {/*
+                    fit="contain" keeps the whole photo visible in the 16:9 card instead
+                    of cropping it. The hover zoom is dropped on purpose: scaling a
+                    contained image pushes it past the card edge and crops it again.
+                  */}
+                  <div className="absolute inset-[5%]">
+                    <SmartImage
+                      src={image?.src}
+                      alt={image?.alt || item.title}
+                      tone={image?.tone}
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
+                      fit="contain"
+                    />
+                  </div>
                 </div>
                 <h3 className="heading-sm mb-2">{item.title}</h3>
                 <p className="text-body text-sm">{item.description}</p>

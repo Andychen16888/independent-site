@@ -101,6 +101,7 @@ export async function Footer({
   const useDbContent = locale === "en"
   const t = await getTranslations("footer")
   const tnav = await getTranslations("navigation")
+  const tRfq = await getTranslations("rfq")
 
   const pageTranslations = useDbContent
     ? new Map<string, PageTranslation>()
@@ -134,7 +135,13 @@ export async function Footer({
       }))
     : DEFAULT_SHOP_LINKS
 
+  /*
+   * The RFQ link leads the column rather than trailing the CMS pages: for a
+   * wholesale buyer the enquiry form is the primary action, and burying it
+   * under whatever policy pages exist is why those forms go unused.
+   */
   const supportLinks = [
+    { name: tRfq("title"), href: "/quote" },
     { name: tnav("faq"), href: "/faq" },
     ...(pages.length
       ? pages.filter((p) => p.slug !== "faq").map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))

@@ -56,18 +56,39 @@ export async function POST(req: NextRequest) {
     if (!to) {
       return NextResponse.json({ error: "Admin account has no email address" }, { status: 400 })
     }
-    // Prefer the admin's real token when they are subscribed too, so the test
-    // exercises the working unsubscribe path rather than the invalid-link page.
+
+    /*
+     * The test copy should exercise the same unsubscribe path a subscriber
+     * would hit, so a real stored token is required. Backfill it when the admin
+     * is on the list but predates the column. If they are not on the list at
+     * all there is nothing to store a token against, and a random one would
+     * only produce a link that lands on the invalid-link page -- so the link is
+     * omitted and the caller is told, rather than shipping a test that
+     * cannot succeed.
+     */
     const own = await prisma.newsletter.findFirst({
-      where: { email: to, isActive: true },
-      select: { unsubscribeToken: true },
+      where: { email: to },
+      select: { isActive: true, unsubscribeToken: true },
     })
+
+    let unsubscribeUrl: string | undefined
+    if (own) {
+      const unsubscribeToken = own.unsubscribeToken || generateUnsubscribeToken()
+      if (!own.unsubscribeToken) {
+        await prisma.newsletter.update({
+          where: { email: to },
+          data: { unsubscribeToken },
+        })
+      }
+      unsubscribeUrl = buildUnsubscribeUrl(unsubscribeToken)
+    }
+
     try {
       await sendNewsletterEmail({
         to,
         subject,
         body: content,
-        unsubscribeUrl: buildUnsubscribeUrl(own?.unsubscribeToken || generateUnsubscribeToken()),
+        ...(unsubscribeUrl ? { unsubscribeUrl } : {}),
       })
     } catch (e) {
       return NextResponse.json(
@@ -75,7 +96,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       )
     }
-    return NextResponse.json({ test: true, to })
+    return NextResponse.json({ test: true, to, unsubscribeLinkWorks: Boolean(unsubscribeUrl) })
   }
 
   // Only one campaign may be in flight. Two interleaved runs from one IP is

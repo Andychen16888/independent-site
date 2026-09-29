@@ -67,6 +67,30 @@ enum Currency {
   GBP
   CAD
   AUD
+  /// The invoicing currency of the seller's own base.
+  CNY
+  JPY
+  SGD
+  AED
+  INR
+  CHF
+  HKD
+  KRW
+  MXN
+  THB
+  VND
+  IDR
+  MYR
+  PHP
+  NZD
+  SEK
+  NOK
+  DKK
+  PLN
+  TRY
+  BRL
+  ZAR
+  RUB
 }
 
 model User {
@@ -94,9 +118,10 @@ model User {
   wishlist        WishlistItem[]
   affiliate       Affiliate?
   referrals       AffiliateReferral[]  @relation("ReferredUser")
-  usedCoupons     UsedCoupon[]
-  cart            Cart?
-  blogComments    BlogComment[]
+    usedCoupons     UsedCoupon[]
+    cart            Cart?
+    blogComments    BlogComment[]
+    assignedInquiries Inquiry[] @relation("InquiryAssignee")
 
   @@map("users")
 }
@@ -218,6 +243,7 @@ model Product {
   relatedProducts ProductRelation[]        @relation("ProductRelationSource")
   relatedFrom     ProductRelation[]        @relation("ProductRelationTarget")
   translations    ProductTranslation[]
+  inquiries       Inquiry[]
 
   @@index([slug])
   @@index([sku])
@@ -735,6 +761,236 @@ model NewsletterTemplate {
   updatedAt DateTime @updatedAt
 
   @@map("newsletter_templates")
+}
+
+enum InquiryStatus {
+  NEW
+  PROCESSING
+  QUOTATION_SENT
+  CUSTOMER_REPLIED
+  NEGOTIATION
+  ORDER_CONFIRMED
+  LOST
+}
+
+enum InquirySource {
+  WEBSITE_RFQ
+  PRODUCT_PAGE
+  CAMPAIGN
+  AI_AGENT
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  EXPIRED
+  REJECTED
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+/// OUTBOUND goes to the customer, INTERNAL is a staff notification. Kept
+/// separate so the customer-facing thread stays readable.
+enum EmailDirection {
+  OUTBOUND
+  INTERNAL
+}
+
+enum EmailPurpose {
+  QUOTATION
+  FOLLOW_UP
+  GENERAL
+  NOTIFICATION
+}
+
+enum FollowUpStatus {
+  PENDING
+  DONE
+  CANCELLED
+}
+
+/// Daily counter behind the human-readable RFQ / QT document numbers.
+/// A row per scope and day, incremented atomically, so two concurrent
+/// submissions can never be handed the same number.
+model NumberSequence {
+  id        String @id @default(cuid())
+  /// "RFQ" for inquiries, "QT" for quotations, "EM" for email records.
+  scope     String
+  /// yyyyMMdd
+  periodDay String
+  counter   Int    @default(0)
+
+  @@unique([scope, periodDay])
+  @@map("number_sequences")
+}
+
+/// A sales enquiry from a prospective buyer.
+///
+/// The product fields are a deliberate snapshot taken at submission time rather
+/// than a live join: an enquiry is a record of what was asked for on that date,
+/// and must not change when the product is later renamed, re-priced or deleted.
+model Inquiry {
+  id           String        @id @default(cuid())
+  inquiryNo    String        @unique
+  customerName String
+  companyName  String?
+  country      String?
+  city         String?
+  address      String?       @db.Text
+  email        String
+  whatsapp     String?
+  phone        String?
+  website      String?
+  jobTitle     String?
+  linkedin     String?
+
+  source InquirySource @default(WEBSITE_RFQ)
+  locale String?
+
+  productId        String?
+  product          Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName      String?
+  productImage     String?
+  productCategory  String?
+  modelNumber      String?
+  /// Decimal, not Int: steel is quoted in fractional tons (12.5 t) and in
+  /// millimetres, and a whole-number column would force the sales team to round
+  /// a buyer's stated requirement.
+  quantity         Decimal?   @db.Decimal(20, 3)
+  unit             String?
+  targetPrice      Decimal?   @db.Decimal(12, 2)
+  currency         Currency   @default(USD)
+  application      String?    @db.Text
+  customerMessage  String?    @db.Text
+
+  status          InquiryStatus @default(NEW)
+  assignedUserId  String?
+  assignedUser    User?         @relation("InquiryAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  lostReason      String?
+  internalNote    String?       @db.Text
+
+  /// Reserved for the AI assistant: intent read off the message, a suggested
+  /// price, and a drafted reply. Stored as text so the raw model output stays
+  /// available for review instead of being applied automatically.
+  customerIntent   String?  @db.Text
+  recommendedPrice Decimal? @db.Decimal(12, 2)
+  aiReply          String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quotations   Quotation[]
+  emailRecords EmailRecord[]
+  followUps    FollowUp[]
+
+  @@index([status])
+  @@index([email])
+  @@index([country])
+  @@index([createdAt])
+  @@index([assignedUserId])
+  @@map("inquiries")
+}
+
+model Quotation {
+  id            String          @id @default(cuid())
+  quotationNo   String          @unique
+  inquiryId     String
+  inquiry       Inquiry         @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  status        QuotationStatus @default(DRAFT)
+  currency      Currency        @default(USD)
+
+  moq           String?
+  leadTime      String?
+  paymentTerms  String?
+  shippingTerms String?
+  /// Days the offer stays open; validUntil is derived from it at save time.
+  validityDays  Int             @default(30)
+  validUntil    DateTime?
+  note          String?         @db.Text
+
+  /// Persisted rather than derived so lists can sort and filter on money
+  /// without loading every line item.
+  totalAmount   Decimal         @default(0) @db.Decimal(14, 2)
+
+  sentAt        DateTime?
+  acceptedAt    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  items        QuotationItem[]
+  emailRecords EmailRecord[]
+
+  @@index([status])
+  @@index([inquiryId])
+  @@index([createdAt])
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id            String    @id @default(cuid())
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  productId     String?
+  productName   String
+  specification String?   @db.Text
+  quantity      Decimal  @db.Decimal(20, 3)
+  unit          String?
+  unitPrice     Decimal   @db.Decimal(12, 2)
+  /// quantity * unitPrice, stored so historical documents cannot change if a
+  /// line is later edited.
+  amount        Decimal   @db.Decimal(14, 2)
+  sortOrder     Int       @default(0)
+
+  @@index([quotationId])
+  @@map("quotation_items")
+}
+
+model EmailRecord {
+  id          String         @id @default(cuid())
+  emailNo     String         @unique
+  inquiryId   String?
+  inquiry     Inquiry?       @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  quotationId String?
+  quotation   Quotation?     @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+
+  direction   EmailDirection @default(OUTBOUND)
+  purpose     EmailPurpose   @default(GENERAL)
+  receiver    String
+  subject     String
+  content     String         @db.Text
+  attachment  String?
+  status      EmailStatus    @default(PENDING)
+  error       String?
+  sentAt      DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([inquiryId])
+  @@index([quotationId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_records")
+}
+
+model FollowUp {
+  id           String         @id @default(cuid())
+  inquiryId    String
+  inquiry      Inquiry        @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  followUpDate DateTime
+  note         String?        @db.Text
+  nextAction   String?
+  status       FollowUpStatus @default(PENDING)
+  completedAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([inquiryId])
+  @@index([status, followUpDate])
+  @@map("follow_ups")
 }
 
 model Banner {

@@ -12,8 +12,17 @@ export function generateUnsubscribeToken(): string {
   return randomBytes(32).toString("hex")
 }
 
-/** Absolute URL for the one-click unsubscribe endpoint. */
-export function buildUnsubscribeUrl(token: string): string {
+/**
+ * Absolute URL for the one-click unsubscribe endpoint.
+ *
+ * The locale is carried on the link so the confirmation page can answer in the
+ * reader's own language. It is the campaign language, not a stored subscriber
+ * preference -- the list has no locale column.
+ */
+export function buildUnsubscribeUrl(token: string, locale?: string): string {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com").replace(/\/+$/, "")
-  return `${base}/api/newsletter/unsubscribe?token=${encodeURIComponent(token)}`
+  const url = new URL(`${base}/api/newsletter/unsubscribe`)
+  url.searchParams.set("token", token)
+  if (locale) url.searchParams.set("locale", locale)
+  return url.toString()
 }

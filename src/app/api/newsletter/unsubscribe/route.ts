@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
+import { routing } from "@/i18n/routing"
 
 export const dynamic = "force-dynamic"
 
 const DEFAULT_LOCALE = "en"
+const SUPPORTED = new Set<string>(routing.locales)
 
 /**
  * One-click unsubscribe endpoint. Reached straight from an email client, so
@@ -33,7 +35,17 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const target = new URL(`/${DEFAULT_LOCALE}/newsletter/unsubscribed`, req.nextUrl.origin)
+  /*
+   * Land the reader in their own language. The confirmation page exists in all
+   * 12 locales, and a reassurance written in a language the reader cannot read
+   * is indistinguishable from an error. The parameter is checked against the
+   * routing config because it comes straight off the query string, and a
+   * rejected value falls back to English rather than 404ing.
+   */
+  const requested = req.nextUrl.searchParams.get("locale")
+  const locale = requested && SUPPORTED.has(requested) ? requested : DEFAULT_LOCALE
+
+  const target = new URL(`/${locale}/newsletter/unsubscribed`, req.nextUrl.origin)
   target.searchParams.set("status", status)
   return NextResponse.redirect(target)
 }

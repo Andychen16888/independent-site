@@ -132,11 +132,25 @@ export function NewsletterCampaignForm({
     setBusy(true)
     try {
       const data = await post({ test: true })
-      toast.success(
-        data.to
-          ? bi(`Test email sent to ${data.to}`, `测试邮件已发送至 ${data.to}`)
-          : bi("Test email sent", "测试邮件已发送")
-      )
+      if (data.to) {
+        toast.success(bi(`Test email sent to ${data.to}`, `测试邮件已发送至 ${data.to}`))
+      } else {
+        toast.success(bi("Test email sent", "测试邮件已发送"))
+      }
+      if (data.unsubscribeLinkWorks === false) {
+        /*
+         * Without a warning this reads as "unsubscribe is broken" later, when
+         * someone clicks the link in the test copy and lands on the invalid-link
+         * page. It is the tester not being on the list, not a defect.
+         */
+        toast(
+          bi(
+            "This address is not on the subscriber list, so the test copy has no unsubscribe link. Subscribe it first to test that path.",
+            "该邮箱不在订阅名单中，因此测试邮件未包含退订链接。如需测试退订流程，请先订阅该邮箱。"
+          ),
+          { icon: "⚠", duration: 8000 }
+        )
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : bi("Failed to send test email", "测试邮件发送失败"))
     } finally {

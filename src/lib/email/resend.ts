@@ -22,14 +22,24 @@ function getTransporter() {
   return transporter
 }
 
+export interface EmailAttachment {
+  /** File name as the recipient sees it, e.g. "QT-20260927001.pdf". */
+  filename: string
+  content: Buffer
+  contentType?: string
+}
+
 export async function sendEmail({
   to,
   subject,
   html,
+  attachments,
 }: {
   to: string
   subject: string
   html: string
+  /** Used by the quotation flow to attach the generated PDF offer. */
+  attachments?: EmailAttachment[]
 }) {
   const t = getTransporter()
   if (!t) {
@@ -41,6 +51,15 @@ export async function sendEmail({
     to,
     subject,
     html,
+    ...(attachments?.length
+      ? {
+          attachments: attachments.map((a) => ({
+            filename: a.filename,
+            content: a.content,
+            contentType: a.contentType ?? "application/octet-stream",
+          })),
+        }
+      : {}),
   })
 }
 
@@ -172,9 +191,12 @@ function escapeHtml(value: string): string {
  * same inline-styled shell as the transactional templates, so admins cannot
  * accidentally ship markup that email clients strip out.
  *
- * The unsubscribe link is mandatory: bulk send without a working opt-out gets
- * the domain throttled or blacklisted by receiving providers, and is not
- * compliant in the markets this site sells into.
+ * The unsubscribe link is mandatory for real campaigns: bulk send without a
+ * working opt-out gets the domain throttled or blacklisted by receiving
+ * providers, and is not compliant in the markets this site sells into. It is
+ * optional only for the admin test-send path, which omits the footer entirely
+ * when the tester is not on the subscriber list and therefore has no valid
+ * token to link to -- a random one would just look broken.
  */
 export async function sendNewsletterEmail({
   to,
@@ -185,11 +207,11 @@ export async function sendNewsletterEmail({
   to: string
   subject: string
   body: string
-  unsubscribeUrl: string
+  unsubscribeUrl?: string
 }) {
   const brand = (await getSiteSeo()).siteName
   const safeBody = escapeHtml(body).replace(/\r?\n/g, "<br />")
-  const safeUnsubscribe = escapeHtml(unsubscribeUrl)
+  const safeUnsubscribe = escapeHtml(unsubscribeUrl ?? "")
 
   await sendEmail({
     to,
@@ -202,10 +224,14 @@ export async function sendNewsletterEmail({
         <div style="font-size: 15px; line-height: 1.8; color: #333;">${safeBody}</div>
         <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px;">
           <p style="margin: 0 0 12px;">${escapeHtml(brand)} &mdash; Where East Meets West</p>
-          <p style="margin: 0;">
+          ${
+            unsubscribeUrl
+              ? `<p style="margin: 0;">
             <a href="${safeUnsubscribe}" style="color: #999; text-decoration: underline;">Unsubscribe</a>
             from these emails.
-          </p>
+          </p>`
+              : ""
+          }
         </div>
       </div>
     `,

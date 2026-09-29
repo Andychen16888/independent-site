@@ -60,9 +60,9 @@
     "language": "Select language",
     "currency": "Currency",
     "openChat": "Open chat",
-    "promoBar": "20 Years of China Export Experience \u2014 Request a Quote Today",
+    "promoBar": "20 Years of China Export Experience — Request a Quote Today",
     "slogan": "Chinese supply, connected to your market",
-    "description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers \u2014 exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years."
+    "description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers — exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years."
   },
   "footer": {
     "shop": "Shop",
@@ -98,7 +98,7 @@
         {
           "title": "Looking for a Commodity Not Listed?",
           "subtitle": "Tell Us Your Requirement",
-          "description": "Send your specs and destination \u2014 our team responds quickly with quality, cost-effective supply",
+          "description": "Send your specs and destination — our team responds quickly with quality, cost-effective supply",
           "cta": "Contact Us"
         }
       ],
@@ -134,19 +134,19 @@
       "eyebrow": "Our Story",
       "title": "20 Years Connecting Chinese Industry with Global Buyers",
       "paragraphs": [
-        "We are a Chinese trading house that bridges the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
-        "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed here, just send us your requirement \u2014 we respond fast with quality, cost-effective supply."
+        "We are a Chinese trading house that bridges the country's leading enterprises — state-owned groups, listed companies and large manufacturers — with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
+        "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed here, just send us your requirement — we respond fast with quality, cost-effective supply."
       ],
       "cta": "Read Our Story"
     },
     "promo": {
       "eyebrow": "Why Work With Us",
       "title": "Your Cost-Effective Sourcing Partner",
-      "body": "We connect Chinese SOEs, listed companies and large enterprises with overseas buyers \u2014 charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
+      "body": "We connect Chinese SOEs, listed companies and large enterprises with overseas buyers — charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
       "features": [
         {
           "title": "Cheap Service Fees",
-          "description": "Lean, transparent charges \u2014 you pay for the goods and freight, not inflated margins"
+          "description": "Lean, transparent charges — you pay for the goods and freight, not inflated margins"
         },
         {
           "title": "Factory Access at Scale",
@@ -216,7 +216,7 @@
         {
           "name": "Nguyen Thanh",
           "location": "Ho Chi Minh City, Vietnam",
-          "text": "I requested a commodity that wasn't on their site \u2014 cement clinker for our trading business. They responded fast and sourced it from a major Chinese supplier.",
+          "text": "I requested a commodity that wasn't on their site — cement clinker for our trading business. They responded fast and sourced it from a major Chinese supplier.",
           "product": "Cement Clinker"
         }
       ]
@@ -240,7 +240,7 @@
     "seo": {
       "heading": "Discover Our Commodities"
     },
-    "seoParagraph": "Discover the {siteName} commodity range: carbon black, PVC, PP, PE, titanium dioxide, industrial minerals, metals and building materials. Built for importers and distributors across Southeast Asia, Africa and Belt & Road markets \u2014 order in bulk or send us your requirement for any commodity not listed.",
+    "seoParagraph": "Discover the {siteName} commodity range: carbon black, PVC, PP, PE, titanium dioxide, industrial minerals, metals and building materials. Built for importers and distributors across Southeast Asia, Africa and Belt & Road markets — order in bulk or send us your requirement for any commodity not listed.",
     "links": {
       "allProducts": "All Products",
       "faq": "FAQ",
@@ -696,5 +696,54 @@
       "invalidBody": "The unsubscribe link appears to be incomplete or out of date. If you still receive emails from us, contact us and we will remove your address manually.",
       "browse": "Browse Products"
     }
+  },
+  "rfq": {
+    "title": "Request a Quotation",
+    "subtitle": "Tell us what you need and a sales engineer will come back with pricing, lead time and shipping options.",
+    "productSection": "Product and quantity",
+    "contactSection": "Your details",
+    "name": "Full name",
+    "email": "Business email",
+    "company": "Company",
+    "country": "Country / region",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "product": "Product",
+    "productPlaceholder": "Product name or model number",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "targetPrice": "Target price (optional)",
+    "currency": "Currency",
+    "application": "Application (optional)",
+    "applicationPlaceholder": "e.g. food-grade stainless steel pipe for a dairy line",
+    "message": "Requirements",
+    "messagePlaceholder": "Specification, grade, dimensions, packaging, destination port, target delivery date — anything that affects the price.",
+    "privacyNote": "We use your details only to answer this enquiry. Nothing is shared with third parties.",
+    "submit": "Send enquiry",
+    "sending": "Sending...",
+    "successTitle": "Enquiry received",
+    "successBody": "Thank you. Your enquiry is with our sales team and you will hear back within one business day.",
+    "reference": "Your reference",
+    "successHint": "Please quote this reference in any follow-up.",
+    "genericError": "Something went wrong. Please try again, or email us directly.",
+    "errRequired": "This field is required.",
+    "errEmail": "Please enter a valid email address.",
+    "errQuantity": "Please enter a quantity greater than zero.",
+    "errGeneric": "This value was not accepted. Please check and try again.",
+    "unit_pcs": "Pieces",
+    "unit_tons": "Tons",
+    "unit_sets": "Sets",
+    "unit_meters": "Meters",
+    "unit_boxes": "Boxes",
+    "unit_units": "Units",
+    "sidebarTitle": "Need a price?",
+    "sidebarBody": "Send us your specification and we will quote within one business day.",
+    "sidebarCta": "Request a quotation",
+    "jobTitle": "Job title",
+    "city": "City",
+    "address": "Address",
+    "website": "Website",
+    "linkedin": "LinkedIn",
+    "requestQuote": "Request a Quote"
   }
 }

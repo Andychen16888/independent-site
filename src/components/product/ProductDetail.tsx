@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
 import { ImageZoom } from "./ImageZoom"
@@ -12,7 +13,7 @@ import { useCartStore } from "@/stores/cart-store"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { formatPrice, getDiscountPercentage } from "@/lib/utils/format"
 import DOMPurify from "dompurify"
-import { HiOutlineMinus, HiOutlinePlus, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineArrowPath, HiHeart, HiOutlineHeart, HiPlay } from "react-icons/hi2"
+import { HiOutlineMinus, HiOutlinePlus, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineArrowPath, HiHeart, HiOutlineHeart, HiPlay, HiOutlineDocumentText, HiOutlineArrowRight } from "react-icons/hi2"
 
 interface ProductDetailProps {
   product: {
@@ -51,6 +52,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const toggleItem = useWishlistStore((s) => s.toggleItem)
   const wishlistItems = useWishlistStore((s) => s.items)
   const t = useTranslations("product")
+  const tr = useTranslations("rfq")
   const locale = useLocale()
 
   const hasPrice = product.unitPrice != null
@@ -206,6 +208,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {wishlistItems.includes(product.id) ? <HiHeart className="w-5 h-5" /> : <HiOutlineHeart className="w-5 h-5" />}
             </button>
           </div>
+
+          {/*
+            The B2B path. Bulk buyers need a negotiated price rather than the
+            unit price, so this is a first-class call to action rather than a
+            footnote: it carries the product id, which lets the API attach a
+            live snapshot to the lead instead of loose free text.
+          */}
+          <Link
+            href={{
+              pathname: "/quote",
+              query: { product: product.id, name: product.name },
+            }}
+            className="btn-outline w-full sm:w-auto mb-2 inline-flex items-center justify-center gap-2"
+          >
+            <HiOutlineDocumentText className="w-4 h-4" />
+            {tr("requestQuote")}
+            <HiOutlineArrowRight className="w-4 h-4" />
+          </Link>
 
           <div className="space-y-4 py-6 border-t border-mist text-sm text-stone">
             <div className="flex items-center gap-3">

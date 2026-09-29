@@ -5,7 +5,9 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  serverExternalPackages: ["geoip-lite"],
+  // pdfkit loads its standard fonts from disk at runtime, so it must stay an
+  // external require instead of being bundled into the server chunks.
+  serverExternalPackages: ["geoip-lite", "pdfkit"],
   outputFileTracingIncludes: {
     "/*": [
       "./messages/**/*.json",

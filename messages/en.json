@@ -171,30 +171,6 @@
       "title": "Top Commodity Lines",
       "subtitle": "The most-requested products by our buyers"
     },
-    "collections": {
-      "eyebrow": "Commodities We Export",
-      "title": "Bulk Products for Growing Markets",
-      "tagline": "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies",
-      "items": [
-        {
-          "title": "Chemical & Polymer",
-          "description": "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide"
-        },
-        {
-          "title": "Minerals & Powders",
-          "description": "Quartz sand, barite, talc, calcium carbonate and more"
-        },
-        {
-          "title": "Metals",
-          "description": "Copper, aluminum and steel for industry and construction"
-        },
-        {
-          "title": "Building Materials",
-          "description": "Cement clinker, float glass and building ceramics"
-        }
-      ],
-      "cta": "View All Products"
-    },
     "testimonials": {
       "eyebrow": "Buyer Reviews",
       "heading": "Trusted by Importers in Southeast Asia & Africa",

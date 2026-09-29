@@ -12,7 +12,6 @@ import { PortBanner } from "@/components/home/PortBanner"
 import { TrustQuality } from "@/components/home/TrustQuality"
 import { GlobalNetwork } from "@/components/home/GlobalNetwork"
 import { PromoFeatureSection } from "@/components/home/FactoryDirect"
-import { CollectionGallerySection } from "@/components/home/EssentialsGallery"
 import { Testimonials } from "@/components/home/Testimonials"
 import { InstagramFeed } from "@/components/home/InstagramFeed"
 import { NewsletterSection } from "@/components/home/NewsletterSection"
@@ -22,7 +21,6 @@ import { getSiteContent } from "@/config/site-content"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import {
   DEFAULT_FEATURED_CATEGORIES,
-  DEFAULT_COLLECTIONS,
   DEFAULT_HERO_SLIDES,
   DEFAULT_BRAND_STORY,
   DEFAULT_PROMO,
@@ -31,7 +29,6 @@ import {
   type HeroSlide,
   type FeaturedCategory,
   type PromoContent,
-  type CollectionContent,
   type BrandStoryContent,
   type Testimonial,
   type InstagramConfig,
@@ -151,7 +148,6 @@ export default async function HomePage({
     : undefined
 
   const promo1 = useDbContent ? parseJson<PromoContent | null>(settings["content.promo1"], null) : null
-  const promo2 = useDbContent ? parseJson<CollectionContent | null>(settings["content.promo2"], null) : null
   const brandStory = useDbContent ? parseJson<BrandStoryContent | null>(settings["content.brandStory"], null) : null
   const testimonials = useDbContent ? parseJson<Testimonial[] | null>(settings["content.testimonials"], null) : null
   const instagram = useDbContent ? parseJson<InstagramConfig | null>(settings["content.instagram"], null) : null
@@ -170,22 +166,6 @@ export default async function HomePage({
     ...(brandStoryRaw as object),
     ctaLabel: (brandStoryRaw.cta as string) || DEFAULT_BRAND_STORY.ctaLabel,
     ctaHref: DEFAULT_BRAND_STORY.ctaHref,
-  }
-
-  const coll = t.raw("collections") as Record<string, unknown> & {
-    items?: Record<string, string>[]
-  }
-  const collectionsFallback: CollectionContent = {
-    eyebrow: coll.eyebrow as string,
-    title: coll.title as string,
-    tagline: coll.tagline as string,
-    collections: (coll.items || []).map((item, i) => ({
-      title: item.title,
-      description: item.description,
-      href: DEFAULT_COLLECTIONS.collections?.[i]?.href || "/categories/home-kitchen",
-    })),
-    ctaLabel: coll.cta as string,
-    ctaHref: DEFAULT_COLLECTIONS.ctaHref,
   }
 
   const testimonialsFallback: Testimonial[] = (t.raw("testimonials.items") as Record<string, string>[]).map(
@@ -260,7 +240,6 @@ export default async function HomePage({
       <TrustQuality content={site.trust} />
       <GlobalNetwork content={site.global} image={siteImages.global} />
       <PromoFeatureSection promo={promo1 || promoFallback} image={siteImages.about[3]} />
-      <CollectionGallerySection content={promo2 || collectionsFallback} />
       <Testimonials
         items={testimonials || testimonialsFallback}
         eyebrow={t("testimonials.eyebrow")}

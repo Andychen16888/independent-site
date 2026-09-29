@@ -171,30 +171,6 @@
       "title": "Mais procuradas",
       "subtitle": "Commodities muito procuradas por compradores em todo o mundo"
     },
-    "collections": {
-      "eyebrow": "Commodities que exportamos",
-      "title": "Produtos a granel para mercados em crescimento",
-      "tagline": "Linhas de commodities em rápido crescimento para importadores e distribuidores do Sudeste Asiático, da África e das demais economias do Cinturão e Rota",
-      "items": [
-        {
-          "title": "Químicos e polímeros",
-          "description": "Negro de fumo, PVC, PP, PE, dióxido de titânio e óxido de zinco"
-        },
-        {
-          "title": "Minerais e pós",
-          "description": "Areia de quartzo, barita, talco, carbonato de cálcio e mais"
-        },
-        {
-          "title": "Metais",
-          "description": "Cobre, alumínio e aço para a indústria e a construção"
-        },
-        {
-          "title": "Materiais de construção",
-          "description": "Clínquer de cimento, vidro float e cerâmicas de construção"
-        }
-      ],
-      "cta": "Explorar casa e cozinha"
-    },
     "testimonials": {
       "eyebrow": "Avaliações de compradores",
       "heading": "Confiado por importadores do Sudeste Asiático e da África",

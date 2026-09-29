@@ -171,30 +171,6 @@
       "title": "Les plus demandées",
       "subtitle": "Des matières premières très recherchées par les acheteurs du monde entier"
     },
-    "collections": {
-      "eyebrow": "Les matières premières que nous exportons",
-      "title": "Produits en vrac pour marchés en croissance",
-      "tagline": "Des matières premières en forte croissance pour les importateurs et distributeurs d'Asie du Sud-Est, d'Afrique et des autres économies des Nouvelles routes de la soie",
-      "items": [
-        {
-          "title": "Produits chimiques & polymères",
-          "description": "Noir de carbone, PVC, PP, PE, dioxyde de titane et oxyde de zinc"
-        },
-        {
-          "title": "Minéraux & poudres",
-          "description": "Sable de quartz, baryte, talc, carbonate de calcium et plus"
-        },
-        {
-          "title": "Métaux",
-          "description": "Cuivre, aluminium et acier pour l'industrie et la construction"
-        },
-        {
-          "title": "Matériaux de construction",
-          "description": "Clinker de ciment, verre float et céramiques de construction"
-        }
-      ],
-      "cta": "Explorer maison & cuisine"
-    },
     "testimonials": {
       "eyebrow": "Avis d'acheteurs",
       "heading": "La confiance des importateurs d'Asie du Sud-Est et d'Afrique",

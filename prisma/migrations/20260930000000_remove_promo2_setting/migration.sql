@@ -1,0 +1,18 @@
+-- Data migration: drop the retired homepage "Collection Gallery Section".
+--
+-- That section rendered the eyebrow "Commodities We Export" and the heading
+-- "Bulk Products for Growing Markets" a second time, lower on the same page as
+-- the featuredCategories block, and re-listed the same four commodity lines
+-- with descriptions that contradicted the first list. Two identical H2s with
+-- near-identical body copy on one page is a duplicate-content problem, not a
+-- design choice.
+--
+-- The component, the settings registry entry, the admin form field, the seed
+-- value and the home.collections namespace in all 12 locales are already gone.
+-- This row is the last trace: unreachable in code and invisible in the admin
+-- UI, so it would only mislead whoever reads the settings table next.
+--
+-- No schema change, so the datamodel still matches after this runs.
+-- Deleting zero rows is not an error, so re-running is harmless and a fresh
+-- database that never had the setting is left alone.
+DELETE FROM "site_settings" WHERE "key" = 'content.promo2';

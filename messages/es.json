@@ -171,30 +171,6 @@
       "title": "Principales líneas de commodities",
       "subtitle": "Los productos más solicitados por nuestros compradores"
     },
-    "collections": {
-      "eyebrow": "Commodities que exportamos",
-      "title": "Productos a granel para mercados en crecimiento",
-      "tagline": "Líneas de commodities de rápido crecimiento para importadores y distribuidores de Asia Sudoriental, África y otras economías de la Franja y la Ruta",
-      "items": [
-        {
-          "title": "Químicos y polímeros",
-          "description": "Negro de humo, PVC, PP, PE, dióxido de titanio y óxido de zinc"
-        },
-        {
-          "title": "Minerales y polvos",
-          "description": "Arena de sílice, barita, talco, carbonato de calcio y más"
-        },
-        {
-          "title": "Metales",
-          "description": "Cobre, aluminio y acero para la industria y la construcción"
-        },
-        {
-          "title": "Materiales de construcción",
-          "description": "Clínker de cemento, vidrio flotado y cerámica de construcción"
-        }
-      ],
-      "cta": "Explorar hogar y cocina"
-    },
     "testimonials": {
       "eyebrow": "Reseñas de compradores",
       "heading": "La confianza de importadores de Asia Sudoriental y África",

@@ -171,30 +171,6 @@
       "title": "Được Tìm Kiếm Nhiều Nhất",
       "subtitle": "Hàng hóa có nhu cầu cao trong cộng đồng mua sắm toàn cầu"
     },
-    "collections": {
-      "eyebrow": "Hàng Hóa Chúng Tôi Xuất Khẩu",
-      "title": "Sản Phẩm Dạng Rời cho Các Thị Trường Tăng Trưởng",
-      "tagline": "Các dòng hàng hóa tăng trưởng nhanh cho nhà nhập khẩu và nhà phân phối ở Đông Nam Á, châu Phi và các nền kinh tế Vành đai và Con đường khác",
-      "items": [
-        {
-          "title": "Hóa Chất & Polyme",
-          "description": "Carbon black, PVC, PP, PE, titan dioxit và kẽm oxit"
-        },
-        {
-          "title": "Khoáng Sản & Bột",
-          "description": "Cát thạch anh, barit, talc, canxi cacbonat và nhiều loại khác"
-        },
-        {
-          "title": "Kim Loại",
-          "description": "Đồng, nhôm và thép cho công nghiệp và xây dựng"
-        },
-        {
-          "title": "Vật Liệu Xây Dựng",
-          "description": "Clinker xi măng, kính float và gốm sứ xây dựng"
-        }
-      ],
-      "cta": "Khám Phá Nhà & Bếp"
-    },
     "testimonials": {
       "eyebrow": "Đánh Giá Người Mua",
       "heading": "Được Các Nhà Nhập Khẩu Đông Nam Á & Châu Phi Tin Cậy",

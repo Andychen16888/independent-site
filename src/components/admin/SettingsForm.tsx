@@ -60,28 +60,6 @@ const STRUCTURED_FIELDS: Record<string, StructuredSchema> = {
       { key: "image", type: "image", label: "Image (optional)", labelZh: "图片（可选）" },
     ],
   },
-  "content.promo2": {
-    kind: "object",
-    fields: [
-      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题", placeholder: "e.g. Everyday Essentials" },
-      { key: "title", type: "text", label: "Title", labelZh: "标题", placeholder: "e.g. Home & Kitchen" },
-      { key: "tagline", type: "text", label: "Tagline", labelZh: "标语" },
-      {
-        key: "collections",
-        type: "array",
-        label: "Collections",
-        labelZh: "合集",
-        itemLabel: bi("Collection", "合集"),
-        fields: [
-          { key: "title", type: "text", label: "Title", labelZh: "标题", placeholder: "e.g. Kitchenware" },
-          { key: "description", type: "textarea", label: "Description", labelZh: "描述", rows: 2 },
-          { key: "href", type: "link", label: "Link", labelZh: "链接" },
-        ],
-      },
-      { key: "ctaLabel", type: "text", label: "Button Text", labelZh: "按钮文字", placeholder: "e.g. Explore All Collections" },
-      { key: "ctaHref", type: "link", label: "Button Link", labelZh: "按钮链接" },
-    ],
-  },
   "content.testimonials": {
     kind: "array",
     itemLabel: bi("Testimonial", "客户评价"),

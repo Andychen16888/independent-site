@@ -171,30 +171,6 @@
       "title": "热门大宗货盘",
       "subtitle": "买家咨询最多的产品"
     },
-    "collections": {
-      "eyebrow": "我们出口的商品",
-      "title": "面向新兴市场的大宗产品",
-      "tagline": "面向东南亚、非洲及其他一带一路经济体的进口商与分销商快速增长的大宗品类",
-      "items": [
-        {
-          "title": "化工与聚合物",
-          "description": "炭黑、PVC、PP、PE、钛白粉与氧化锌"
-        },
-        {
-          "title": "矿产与粉体",
-          "description": "石英砂、重晶石、滑石粉、碳酸钙等"
-        },
-        {
-          "title": "金属材料",
-          "description": "铜、铝与钢材，服务工业与建筑"
-        },
-        {
-          "title": "建材",
-          "description": "水泥熟料、玻璃原片与建筑陶瓷"
-        }
-      ],
-      "cta": "查看全部产品"
-    },
     "testimonials": {
       "eyebrow": "买家评价",
       "heading": "深受东南亚与非洲进口商信赖",

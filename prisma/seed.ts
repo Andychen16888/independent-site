@@ -120,19 +120,6 @@ async function seedSiteSettings() {
       ctaLabel: "View All Products",
       ctaHref: "/products",
     }),
-    "content.promo2": JSON.stringify({
-      eyebrow: "Commodities We Export",
-      title: "Bulk Products for Growing Markets",
-      tagline: "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies.",
-      collections: [
-        { title: "Chemical & Polymer", description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide", href: "/categories/chemical-products" },
-        { title: "Minerals & Powders", description: "Quartz sand, barite, talc, calcium carbonate and more", href: "/categories/minerals" },
-        { title: "Metals", description: "Copper, aluminum and steel for industry and construction", href: "/categories/metal-products" },
-        { title: "Building Materials", description: "Cement clinker, float glass and building ceramics", href: "/categories/building-materials" },
-      ],
-      ctaLabel: "View All Products",
-      ctaHref: "/products",
-    }),
     "content.testimonials": JSON.stringify([
       {
         name: "Siti Rahayu",
@@ -234,8 +221,6 @@ function isOldPositioningDefault(key: string, value: string): boolean {
       return jsonHas((o) => (o as { title?: string }).title === "From China to the World")
     case "content.promo1":
       return jsonHas((o) => (o as { title?: string }).title === "Quality Electronics")
-    case "content.promo2":
-      return jsonHas((o) => (o as { title?: string }).title === "Home & Kitchen")
     case "content.testimonials":
       return jsonHas((arr) => Array.isArray(arr) && (arr as { name?: string }[]).some((t) => t.name === "Sarah M."))
     case "content.faq":

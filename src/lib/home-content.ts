@@ -133,31 +133,6 @@ export const DEFAULT_PROMO: PromoContent = {
   ctaHref: "/products",
 }
 
-export interface CollectionItem { title: string; description?: string; href: string }
-
-export interface CollectionContent {
-  eyebrow?: string
-  title: string
-  tagline?: string
-  collections?: CollectionItem[]
-  ctaLabel?: string
-  ctaHref?: string
-}
-
-export const DEFAULT_COLLECTIONS: CollectionContent = {
-  eyebrow: "Commodities We Export",
-  title: "Bulk Products for Growing Markets",
-  tagline: "Fast-growing commodity lines for importers and distributors across Southeast Asia, Africa and other Belt & Road economies",
-  collections: [
-    { title: "Chemical & Polymer", description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide", href: "/categories/chemical-products" },
-    { title: "Minerals & Powders", description: "Quartz sand, barite, talc, calcium carbonate and more", href: "/categories/minerals" },
-    { title: "Metals", description: "Copper, aluminum and steel for industry and construction", href: "/categories/metal-products" },
-    { title: "Building Materials", description: "Cement clinker, float glass and building ceramics", href: "/categories/building-materials" },
-  ],
-  ctaLabel: "View All Products",
-  ctaHref: "/products",
-}
-
 export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
 
 export const DEFAULT_TESTIMONIALS: Testimonial[] = [

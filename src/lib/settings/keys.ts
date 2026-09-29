@@ -21,7 +21,6 @@ export const SETTING_KEYS: SettingMeta[] = [
   { key: "site.promoBar", group: "site", label: "Announcement Bar Text", labelZh: "公告栏文字", type: "text", placeholder: "e.g. Free shipping over $100" },
   { key: "content.brandStory", group: "content", label: "Brand Story Section", labelZh: "品牌故事板块", type: "textarea", placeholder: "Company story shown on the homepage" },
   { key: "content.promo1", group: "content", label: "Feature Promo Section", labelZh: "产品特色板块", type: "textarea", placeholder: "Feature block with benefits list and call-to-action" },
-  { key: "content.promo2", group: "content", label: "Collection Gallery Section", labelZh: "产品合集板块", type: "textarea", placeholder: "Gallery of product collections with links" },
   { key: "content.testimonials", group: "content", label: "Customer Testimonials", labelZh: "客户评价", type: "textarea", placeholder: "Buyer quotes shown in the testimonial area" },
   { key: "content.instagram", group: "content", label: "Instagram Section", labelZh: "Instagram 板块", type: "textarea", placeholder: "Instagram handle, link and featured post images" },
   { key: "content.featuredEyebrow", group: "content", label: "Featured Categories — Overline", labelZh: "精选分类 — 眉题", type: "text", placeholder: "Explore" },

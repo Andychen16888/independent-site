@@ -12,6 +12,21 @@ const nextConfig: NextConfig = {
     "/*": [
       "./messages/**/*.json",
       "./node_modules/geoip-lite/data/**",
+      // pdfkit resolves its standard fonts through its own package.json
+      // "imports" map and lazy require("#standard-fonts/Helvetica"), which
+      // file tracing cannot follow. Without these globs the standalone output
+      // ships 3 of pdfkit's 76 files and cannot even be require()d, so every
+      // quotation PDF 500s in production while `next build` still passes.
+      "./node_modules/pdfkit/**/*",
+      // fontkit reads its font tables through the same kind of dynamic path.
+      "./node_modules/fontkit/**/*",
+      "./node_modules/@noble/**/*",
+      "./node_modules/fflate/**/*",
+      "./node_modules/linebreak/**/*",
+      "./node_modules/png-js/**/*",
+      "./node_modules/restructure/**/*",
+      "./node_modules/is-stream/**/*",
+      "./node_modules/parse-utf8/**/*",
     ],
   },
   experimental: {

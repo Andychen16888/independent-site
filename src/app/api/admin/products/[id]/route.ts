@@ -47,17 +47,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const {
       name, slug, sku, brand, model, tags,
       description, shortDescription,
-      unitPrice, originalPrice, costPrice, stock, status,
+      unitPrice, originalPrice, costPrice, weight, stock, status,
       isFeatured, isBestSeller, isNew, isHomeFeatured, sortOrder,
       seoTitle, seoDescription, seoKeywords,
       images, categoryIds, parameters, translations,
       autoTranslate, overwriteTranslations,
     } = body
 
-    const parseOptionalPrice = (value: unknown): number | null => {
+    const parseOptionalDecimal = (value: unknown): number | null => {
       if (value === undefined || value === null || value === "") return null
       const parsed = parseFloat(String(value))
       return Number.isFinite(parsed) ? parsed : null
+    }
+
+    const parseOptionalText = (value: unknown): string | null => {
+      if (value === null || value === undefined) return null
+      const text = String(value).trim()
+      return text === "" ? null : text
     }
 
     const product = await prisma.product.update({
@@ -71,19 +77,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         ...(tags !== undefined && { tags: tags || null }),
         ...(description !== undefined && { description }),
         ...(shortDescription !== undefined && { shortDescription }),
-        ...(unitPrice !== undefined && { unitPrice: parseOptionalPrice(unitPrice) }),
-        ...(originalPrice !== undefined && { originalPrice: parseOptionalPrice(originalPrice) }),
-        ...(costPrice !== undefined && { costPrice: parseOptionalPrice(costPrice) }),
-        ...(stock !== undefined && { stock: parseInt(stock, 10) }),
+        ...(unitPrice !== undefined && { unitPrice: parseOptionalDecimal(unitPrice) }),
+        ...(originalPrice !== undefined && { originalPrice: parseOptionalDecimal(originalPrice) }),
+        ...(costPrice !== undefined && { costPrice: parseOptionalDecimal(costPrice) }),
+        ...(weight !== undefined && { weight: parseOptionalDecimal(weight) }),
+        ...(stock !== undefined && { stock: Number.isFinite(parseInt(String(stock), 10)) ? parseInt(String(stock), 10) : 0 }),
         ...(status !== undefined && { status }),
         ...(isFeatured !== undefined && { isFeatured }),
         ...(isBestSeller !== undefined && { isBestSeller }),
         ...(isNew !== undefined && { isNew }),
         ...(isHomeFeatured !== undefined && { isHomeFeatured }),
         ...(sortOrder !== undefined && sortOrder !== "" && { sortOrder: parseInt(sortOrder, 10) }),
-        ...(seoTitle !== undefined ? { seoTitle } : {}),
-        ...(seoDescription !== undefined ? { seoDescription } : {}),
-        ...(seoKeywords !== undefined ? { seoKeywords } : {}),
+        ...(seoTitle !== undefined && { seoTitle: parseOptionalText(seoTitle) }),
+        ...(seoDescription !== undefined && { seoDescription: parseOptionalText(seoDescription) }),
+        ...(seoKeywords !== undefined && { seoKeywords: parseOptionalText(seoKeywords) }),
         ...(images !== undefined && {
           images: {
             deleteMany: {},

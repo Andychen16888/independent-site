@@ -1,12 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
-import { readJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import ProductTranslationsEditor, { type ProductTranslationFields } from "@/components/admin/ProductTranslationsEditor"
@@ -41,8 +40,130 @@ export interface ProductFormData {
   seoKeywords: string
 }
 
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+const AUTOSAVE_INTERVAL_MS = 5000
+const NEW_PRODUCT_DRAFT_KEY = "admin-product-draft:new"
+
+const EMPTY_FORM: ProductFormData = {
+  name: "", slug: "", sku: "", brand: "", model: "", tags: "",
+  description: "", shortDescription: "",
+  unitPrice: "", originalPrice: "", costPrice: "", stock: "0", status: "ACTIVE", weight: "",
+  isFeatured: false, isBestSeller: false, isNew: false, isHomeFeatured: false, sortOrder: "",
+  seoTitle: "", seoDescription: "", seoKeywords: "",
+}
+
+interface ProductPayload extends Omit<ProductFormData, "id" | "shortDescription" | "unitPrice" | "originalPrice" | "costPrice" | "weight" | "sortOrder"> {
+  shortDescription: string | null
+  unitPrice: string | null
+  originalPrice: string | null
+  costPrice: string | null
+  weight: string | null
+  sortOrder: string | number
+  images?: ImageItem[]
+  categoryIds?: string[]
+  parameters?: Parameter[]
+  translations?: ProductTranslationFields[]
+  autoTranslate: boolean
+  overwriteTranslations: boolean
+}
+
+interface ProductSnapshot {
+  form: ProductFormData
+  images: ImageItem[]
+  parameters: Parameter[]
+  categoryIds: string[]
+  translations: ProductTranslationFields[]
+  autoTranslate: boolean
+  overwriteTranslations: boolean
+}
+
+/** Relations are rewritten wholesale by the API, so only send the ones that changed. */
+const RELATION_KEYS = ["images", "categoryIds", "parameters", "translations"] as const
+type RelationKey = (typeof RELATION_KEYS)[number]
+
+function buildProductPayload(snapshot: ProductSnapshot): ProductPayload {
+  const { form } = snapshot
+  return {
+    name: form.name,
+    slug: form.slug,
+    sku: form.sku,
+    brand: form.brand,
+    model: form.model,
+    tags: form.tags,
+    description: form.description,
+    shortDescription: form.shortDescription || null,
+    unitPrice: form.unitPrice !== "" ? form.unitPrice : null,
+    originalPrice: form.originalPrice || null,
+    costPrice: form.costPrice || null,
+    weight: form.weight || null,
+    stock: form.stock,
+    status: form.status,
+    isFeatured: form.isFeatured,
+    isBestSeller: form.isBestSeller,
+    isNew: form.isNew,
+    isHomeFeatured: form.isHomeFeatured,
+    sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
+    seoTitle: form.seoTitle,
+    seoDescription: form.seoDescription,
+    seoKeywords: form.seoKeywords,
+    images: snapshot.images.filter((img) => img.url.trim() !== ""),
+    categoryIds: snapshot.categoryIds,
+    parameters: snapshot.parameters.filter((p) => p.name.trim() !== ""),
+    translations: snapshot.translations.filter(
+      (t) => t.name.trim() !== "" || t.description.trim() !== ""
+    ),
+    autoTranslate: snapshot.autoTranslate,
+    overwriteTranslations: snapshot.autoTranslate && snapshot.overwriteTranslations,
+  }
+}
+
+/** Signature of the scalar fields only, used to detect whether anything is pending. */
+function coreSignature(payload: ProductPayload): string {
+  const scalars: Record<string, unknown> = { ...payload }
+  for (const key of RELATION_KEYS) delete scalars[key]
+  return JSON.stringify(scalars)
+}
+
+function relationSignatures(payload: ProductPayload): Record<RelationKey, string> {
+  return {
+    images: JSON.stringify(payload.images ?? []),
+    categoryIds: JSON.stringify(payload.categoryIds ?? []),
+    parameters: JSON.stringify(payload.parameters ?? []),
+    translations: JSON.stringify(payload.translations ?? []),
+  }
+}
+
+/** Only fields the admin actually filled in count; stock/status/flags always have a value. */
+function hasContent(payload: ProductPayload): boolean {
+  const filled = [
+    payload.name, payload.slug, payload.sku, payload.brand, payload.model, payload.tags,
+    payload.description, payload.shortDescription,
+    payload.seoTitle, payload.seoDescription, payload.seoKeywords,
+    payload.unitPrice, payload.originalPrice, payload.costPrice, payload.weight,
+  ]
+  if (filled.some((value) => typeof value === "string" && value.trim() !== "")) return true
+  return (
+    (payload.images?.length ?? 0) > 0 ||
+    (payload.parameters?.length ?? 0) > 0 ||
+    (payload.translations?.length ?? 0) > 0
+  )
+}
+
+function formatSavedTime(timestamp: number): string {
+  const date = new Date(timestamp)
+  if (Number.isNaN(date.getTime())) return ""
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+}
+
+const EMPTY_PAYLOAD = buildProductPayload({
+  form: EMPTY_FORM,
+  images: [],
+  parameters: [],
+  categoryIds: [],
+  translations: [],
+  autoTranslate: true,
+  overwriteTranslations: false,
+})
+const EMPTY_CORE_SIGNATURE = coreSignature(EMPTY_PAYLOAD)
 
 function translationsFromData(list: any[]): ProductTranslationFields[] {
   return (list || []).map((t) => ({
@@ -55,11 +176,40 @@ function translationsFromData(list: any[]): ProductTranslationFields[] {
   }))
 }
 
+function payloadToForm(payload: Partial<ProductPayload>): ProductFormData {
+  return {
+    ...EMPTY_FORM,
+    name: payload.name || "",
+    slug: payload.slug || "",
+    sku: payload.sku || "",
+    brand: payload.brand || "",
+    model: payload.model || "",
+    tags: payload.tags || "",
+    description: payload.description || "",
+    shortDescription: payload.shortDescription || "",
+    unitPrice: payload.unitPrice != null ? String(payload.unitPrice) : "",
+    originalPrice: payload.originalPrice != null ? String(payload.originalPrice) : "",
+    costPrice: payload.costPrice != null ? String(payload.costPrice) : "",
+    stock: payload.stock != null ? String(payload.stock) : "0",
+    status: payload.status || "ACTIVE",
+    weight: payload.weight != null ? String(payload.weight) : "",
+    isFeatured: Boolean(payload.isFeatured),
+    isBestSeller: Boolean(payload.isBestSeller),
+    isNew: Boolean(payload.isNew),
+    isHomeFeatured: Boolean(payload.isHomeFeatured),
+    sortOrder: payload.sortOrder != null && payload.sortOrder !== "" ? String(payload.sortOrder) : "",
+    seoTitle: payload.seoTitle || "",
+    seoDescription: payload.seoDescription || "",
+    seoKeywords: payload.seoKeywords || "",
+  }
+}
+
+type AutosaveStatus = "idle" | "saving" | "saved" | "error"
+
 export default function ProductForm({ mode, productId }: { mode: "new" | "edit"; productId?: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(mode === "edit")
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
   const [notFound, setNotFound] = useState(false)
   const [categories, setCategories] = useState<CategoryOption[]>([])
@@ -71,12 +221,24 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   const [overwriteTranslations, setOverwriteTranslations] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [translating, setTranslating] = useState(false)
-  const [form, setForm] = useState<ProductFormData>({
-    name: "", slug: "", sku: "", brand: "", model: "", tags: "",
-    description: "", shortDescription: "",
-    unitPrice: "", originalPrice: "", costPrice: "", stock: "0", status: "ACTIVE", weight: "",
-    isFeatured: false, isBestSeller: false, isNew: false, isHomeFeatured: false, sortOrder: "",
-    seoTitle: "", seoDescription: "", seoKeywords: "",
+  const [form, setForm] = useState<ProductFormData>({ ...EMPTY_FORM })
+  const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle")
+  const [autosaveError, setAutosaveError] = useState("")
+  const [savedAt, setSavedAt] = useState<number | null>(null)
+  const [restoredDraft, setRestoredDraft] = useState(false)
+
+  const latest = useRef<ProductSnapshot>({
+    form, images, parameters, categoryIds: selectedCategoryIds, translations, autoTranslate, overwriteTranslations,
+  })
+  latest.current = {
+    form, images, parameters, categoryIds: selectedCategoryIds, translations, autoTranslate, overwriteTranslations,
+  }
+
+  const busyRef = useRef(false)
+  const dirtyRef = useRef(false)
+  const savedCoreRef = useRef(EMPTY_CORE_SIGNATURE)
+  const savedRelationsRef = useRef<Record<RelationKey, string>>({
+    images: "[]", categoryIds: "[]", parameters: "[]", translations: "[]",
   })
 
   useEffect(() => {
@@ -91,13 +253,13 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 15000)
 
-    fetch(`/api/admin/products/${productId}`, { signal: controller.signal })
+    fetch(`/api/admin/products/${productId}`, { cache: "no-store", signal: controller.signal })
       .then(async (res) => {
         if (res.status === 404) { setNotFound(true); return }
         if (!res.ok) throw new Error(bi("Failed to load product", "加载产品失败"))
         const data = await res.json()
         const p = data.product
-        setForm({
+        const loadedForm: ProductFormData = {
           name: p.name, slug: p.slug, sku: p.sku, brand: p.brand || "", model: p.model || "",
           tags: p.tags || "", description: p.description, shortDescription: p.shortDescription || "",
           unitPrice: p.unitPrice != null ? String(p.unitPrice) : "",
@@ -107,15 +269,31 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
           isFeatured: p.isFeatured, isBestSeller: p.isBestSeller, isNew: p.isNew,
           isHomeFeatured: p.isHomeFeatured, sortOrder: String(p.sortOrder ?? 0),
           seoTitle: p.seoTitle || "", seoDescription: p.seoDescription || "", seoKeywords: p.seoKeywords || "",
+        }
+        const loadedImages: ImageItem[] = (p.images || []).map((img: any) => ({ url: img.url, alt: img.alt || "", isPrimary: img.isPrimary }))
+        const loadedCategoryIds: string[] = (p.categories || []).map((pc: any) => pc.category.id)
+        const loadedParameters: Parameter[] = (p.parameters || []).map((par: any) => ({ name: par.name, value: par.value }))
+        const loadedTranslations = p.translations ? translationsFromData(p.translations) : []
+
+        setForm(loadedForm)
+        setImages(loadedImages)
+        setSelectedCategoryIds(loadedCategoryIds)
+        setParameters(loadedParameters)
+        setTranslations(loadedTranslations)
+
+        // Everything on screen is already persisted, so autosave has nothing to send yet.
+        const loadedPayload = buildProductPayload({
+          form: loadedForm,
+          images: loadedImages,
+          parameters: loadedParameters,
+          categoryIds: loadedCategoryIds,
+          translations: loadedTranslations,
+          autoTranslate: true,
+          overwriteTranslations: false,
         })
-        if (p.images) setImages(p.images.map((img: any) => ({ url: img.url, alt: img.alt || "", isPrimary: img.isPrimary })))
-        if (p.categories) setSelectedCategoryIds(p.categories.map((pc: any) => pc.category.id))
-        if (p.parameters) {
-          setParameters(p.parameters.map((par: any) => ({ name: par.name, value: par.value })))
-        }
-        if (p.translations) {
-          setTranslations(translationsFromData(p.translations))
-        }
+        savedCoreRef.current = coreSignature(loadedPayload)
+        savedRelationsRef.current = relationSignatures(loadedPayload)
+        dirtyRef.current = false
       })
       .catch((err: any) => {
         if (err.name === "AbortError") setError(bi("Request timed out.", "请求超时。"))
@@ -124,6 +302,155 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       .finally(() => { clearTimeout(timeout); setLoading(false) })
     return () => { clearTimeout(timeout); controller.abort() }
   }, [mode, productId])
+
+  // --- Draft recovery for products that were never created ---
+  useEffect(() => {
+    if (mode !== "new") return
+    try {
+      const raw = window.localStorage.getItem(NEW_PRODUCT_DRAFT_KEY)
+      if (!raw) return
+      const draft = JSON.parse(raw)?.payload as ProductPayload | undefined
+      if (!draft || !hasContent(buildProductPayload({
+        form: payloadToForm(draft),
+        images: draft.images || [],
+        parameters: draft.parameters || [],
+        categoryIds: draft.categoryIds || [],
+        translations: draft.translations || [],
+        autoTranslate: true,
+        overwriteTranslations: false,
+      }))) {
+        window.localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY)
+        return
+      }
+      setForm(payloadToForm(draft))
+      setImages(draft.images || [])
+      setParameters(draft.parameters || [])
+      setSelectedCategoryIds(draft.categoryIds || [])
+      setTranslations(draft.translations || [])
+      setRestoredDraft(true)
+      dirtyRef.current = true
+    } catch {
+      /* unreadable draft — start from a blank form */
+    }
+  }, [mode])
+
+  const discardDraft = () => {
+    window.localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY)
+    setForm({ ...EMPTY_FORM })
+    setImages([])
+    setParameters([])
+    setSelectedCategoryIds([])
+    setTranslations([])
+    setRestoredDraft(false)
+    setAutosaveError("")
+    markSaved(EMPTY_PAYLOAD)
+    toast.success(bi("Draft discarded", "草稿已清除"))
+  }
+
+  const markSaved = (payload: ProductPayload) => {
+    savedCoreRef.current = coreSignature(payload)
+    savedRelationsRef.current = relationSignatures(payload)
+    dirtyRef.current = false
+    setSavedAt(Date.now())
+  }
+
+  const hasPendingChanges = (payload: ProductPayload) => {
+    const relations = relationSignatures(payload)
+    return (
+      coreSignature(payload) !== savedCoreRef.current ||
+      RELATION_KEYS.some((key) => relations[key] !== savedRelationsRef.current[key])
+    )
+  }
+
+  // Mirror the pending state into a ref on every render, so the unload guard
+  // stays accurate between two autosave ticks.
+  useEffect(() => {
+    dirtyRef.current = !loading && !notFound && hasPendingChanges(buildProductPayload(latest.current))
+  })
+
+  useEffect(() => {
+    if (loading || notFound) return
+
+    const timer = window.setInterval(() => {
+      void (async () => {
+        if (busyRef.current) return
+
+        const snapshot = latest.current
+        const payload = buildProductPayload(snapshot)
+        const relations = relationSignatures(payload)
+        const core = coreSignature(payload)
+        const relationsChanged = RELATION_KEYS.some(
+          (key) => relations[key] !== savedRelationsRef.current[key]
+        )
+
+        if (mode === "new") {
+          if (!hasContent(payload)) {
+            window.localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY)
+            markSaved(EMPTY_PAYLOAD)
+            setSavedAt(null)
+            setAutosaveStatus("idle")
+            return
+          }
+          window.localStorage.setItem(
+            NEW_PRODUCT_DRAFT_KEY,
+            JSON.stringify({ savedAt: Date.now(), payload })
+          )
+          markSaved(payload)
+          setAutosaveStatus("saved")
+          return
+        }
+
+        if (!productId) return
+        if (core === savedCoreRef.current && !relationsChanged) {
+          markSaved(payload)
+          setAutosaveStatus("idle")
+          return
+        }
+
+        const outgoing: ProductPayload = { ...payload }
+        for (const key of RELATION_KEYS) {
+          if (relations[key] === savedRelationsRef.current[key]) delete outgoing[key]
+        }
+        // Autosave never spends translation credits; that stays with the Save button.
+        outgoing.autoTranslate = false
+        outgoing.overwriteTranslations = false
+
+        busyRef.current = true
+        setAutosaveStatus("saving")
+        setAutosaveError("")
+        try {
+          const res = await fetch(`/api/admin/products/${productId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(outgoing),
+          })
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}))
+            throw new Error(data.error || bi("Autosave failed", "自动保存失败"))
+          }
+          markSaved(payload)
+          setAutosaveStatus("saved")
+        } catch (err: any) {
+          setAutosaveError(err?.message || bi("Autosave failed", "自动保存失败"))
+          setAutosaveStatus("error")
+        } finally {
+          busyRef.current = false
+        }
+      })()
+    }, AUTOSAVE_INTERVAL_MS)
+
+    return () => window.clearInterval(timer)
+  }, [loading, notFound, mode, productId])
+
+  useEffect(() => {
+    const handler = (event: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", handler)
+    return () => window.removeEventListener("beforeunload", handler)
+  }, [])
 
   const updateForm = (patch: Partial<ProductFormData>) => setForm((prev) => ({ ...prev, ...patch }))
 
@@ -140,27 +467,6 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   }
 
   // --- Images ---
-  async function handleFile(file: File | undefined | null) {
-    if (!file) return
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) { setError(bi("Invalid image type", "图片类型无效")); return }
-    if (file.size > MAX_IMAGE_SIZE) { setError(bi("File too large (max 5MB)", "文件过大（最大 5MB）")); return }
-    setUploading(true)
-    try {
-      const fd = new FormData()
-      fd.append("file", file)
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
-      const parsed = await readJsonResponse(res)
-      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Upload failed", "上传失败")))
-      const url = parsed.data?.url
-      if (typeof url !== "string") throw new Error(bi("Upload failed", "上传失败"))
-      setImages((prev) => [...prev, { url, alt: "", isPrimary: prev.length === 0 }])
-    } catch (e: any) {
-      setError(e.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
   const moveImage = (index: number, dir: -1 | 1) => {
     setImages((prev) => {
       const next = [...prev]
@@ -207,25 +513,11 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     e.preventDefault()
     setSaving(true)
     setError("")
-    const validImages = images.filter((img) => img.url.trim() !== "")
-    const validParams = parameters.filter((p) => p.name.trim() !== "")
+    const payload = buildProductPayload({
+      form, images, parameters, categoryIds: selectedCategoryIds, translations, autoTranslate, overwriteTranslations,
+    })
 
-    const payload = {
-      ...form,
-      unitPrice: form.unitPrice !== "" ? form.unitPrice : null,
-      originalPrice: form.originalPrice || null,
-      costPrice: form.costPrice || null,
-      weight: form.weight || null,
-      sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
-      shortDescription: form.shortDescription || null,
-      images: validImages,
-      categoryIds: selectedCategoryIds,
-      parameters: validParams,
-      translations: translations.filter((t) => t.name.trim() !== "" || t.description.trim() !== ""),
-      autoTranslate,
-      overwriteTranslations: autoTranslate && overwriteTranslations,
-    }
-
+    busyRef.current = true
     try {
       const url = mode === "edit" ? `/api/admin/products/${productId}` : "/api/admin/products"
       const res = await fetch(url, {
@@ -239,6 +531,18 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       if (Array.isArray(data.translations)) {
         setTranslations(translationsFromData(data.translations))
       }
+
+      markSaved(buildProductPayload({
+        form,
+        images,
+        parameters,
+        categoryIds: selectedCategoryIds,
+        translations: Array.isArray(data.translations) ? translationsFromData(data.translations) : translations,
+        autoTranslate,
+        overwriteTranslations,
+      }))
+      setAutosaveStatus("saved")
+      setAutosaveError("")
 
       if (data.translationError) {
         toast.error(bi(
@@ -258,12 +562,16 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       }
 
       if (mode === "new" && data.product?.id) {
+        // The product exists server-side now, so the local draft has done its job.
+        window.localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY)
+        setRestoredDraft(false)
         router.push(`/admin/products/${data.product.id}`)
       }
       router.refresh()
     } catch (err: any) {
       setError(err.message)
     } finally {
+      busyRef.current = false
       setSaving(false)
     }
   }
@@ -272,6 +580,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     if (!productId) return
     setTranslating(true)
     setError("")
+    busyRef.current = true
     try {
       const res = await fetch(`/api/admin/products/${productId}/translate`, {
         method: "POST",
@@ -296,6 +605,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     } catch (err: any) {
       setError(err.message)
     } finally {
+      busyRef.current = false
       setTranslating(false)
     }
   }
@@ -310,9 +620,54 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
 
+  const pendingChanges =
+    !loading &&
+    !notFound &&
+    hasPendingChanges(
+      buildProductPayload({
+        form, images, parameters, categoryIds: selectedCategoryIds, translations, autoTranslate, overwriteTranslations,
+      })
+    )
+
+  const autosaveLabel =
+    autosaveStatus === "saving"
+      ? bi("Autosaving...", "正在自动保存...")
+      : autosaveStatus === "error"
+      ? bi("Autosave failed", "自动保存失败")
+      : pendingChanges
+      ? bi("Unsaved changes", "有未保存的更改")
+      : autosaveStatus === "saved"
+      ? mode === "new"
+        ? bi("Draft saved in this browser", "草稿已保存在本浏览器")
+        : bi("All changes saved", "所有更改已保存")
+      : mode === "new"
+      ? bi("Draft autosaves every 5 seconds", "草稿每 5 秒自动保存")
+      : bi("Autosaves every 5 seconds", "每 5 秒自动保存")
+  const savedAtLabel = savedAt ? formatSavedTime(savedAt) : ""
+  const autosaveTone =
+    autosaveStatus === "error" || pendingChanges
+      ? "text-rosegold"
+      : autosaveStatus === "saving"
+      ? "text-charcoal"
+      : "text-stone"
+
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
       {error && <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3">{error}</div>}
+      {autosaveError && (
+        <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3">
+          {bi("Autosave failed", "自动保存失败")}: {autosaveError}{" "}
+          {bi("Your edits are still on this page — press Save to retry.", "您的修改仍保留在本页——点击“保存产品”重试。")}
+        </div>
+      )}
+      {restoredDraft && (
+        <div className="border border-mist bg-ivory/60 p-3 text-sm flex flex-wrap items-center justify-between gap-3">
+          <span>{bi("An unfinished draft was restored.", "已恢复上次未完成的草稿。")}</span>
+          <button type="button" onClick={discardDraft} className="text-xs text-rosegold hover:underline">
+            {bi("Discard draft and start over", "清除草稿并重新开始")}
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -467,7 +822,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
           </div>
         )}
         <div className="flex items-center gap-3">
-          <ImageUploader value={images.length ? images[images.length - 1].url : ""} onChange={(url) => { if (url) setImages((prev) => [...prev, { url, alt: "", isPrimary: prev.length === 0 }]) }} label={uploading ? "Uploading..." : "Upload Image"} />
+          <ImageUploader value={images.length ? images[images.length - 1].url : ""} onChange={(url) => { if (url) setImages((prev) => [...prev, { url, alt: "", isPrimary: prev.length === 0 }]) }} />
         </div>
         <p className="text-xs text-stone mt-2">Supported: JPEG, PNG, WebP, GIF, AVIF, TIFF — Max 5MB. Use ↑↓ buttons to reorder; first image is the primary.</p>
       </div>
@@ -570,7 +925,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         <ProductTranslationsEditor value={translations} onChange={setTranslations} />
       </div>
 
-      <div className="flex items-center gap-3 pt-4 border-t border-mist">
+      <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
           {saving
             ? autoTranslate
@@ -583,6 +938,10 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         <button type="button" onClick={() => router.push("/admin/products")} className="text-xs text-stone hover:text-charcoal transition-colors">
           {bi("Cancel", "取消")}
         </button>
+        <span className={`ml-auto text-[11px] ${autosaveTone}`}>
+          {autosaveLabel}
+          {savedAtLabel ? ` · ${bi("last saved", "最近保存")} ${savedAtLabel}` : ""}
+        </span>
       </div>
     </form>
   )

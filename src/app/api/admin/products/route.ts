@@ -102,9 +102,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const {
       name, description, shortDescription,
-      unitPrice, originalPrice, costPrice, stock, status,
+      unitPrice, originalPrice, costPrice, stock, status, weight,
       sku, slug, brand, model, tags,
       isFeatured, isBestSeller, isNew, isHomeFeatured, sortOrder,
+      seoTitle, seoDescription, seoKeywords,
       images, categoryIds, parameters, translations,
       autoTranslate, overwriteTranslations,
     } = body
@@ -113,10 +114,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name and description are required" }, { status: 400 })
     }
 
-    const parseOptionalPrice = (value: unknown): number | null => {
+    const parseOptionalDecimal = (value: unknown): number | null => {
       if (value === undefined || value === null || value === "") return null
       const parsed = parseFloat(String(value))
       return Number.isFinite(parsed) ? parsed : null
+    }
+
+    const parseOptionalText = (value: unknown): string | null => {
+      if (value === undefined || value === null) return null
+      const text = String(value).trim()
+      return text === "" ? null : text
     }
 
     let slugValue = slug
@@ -137,9 +144,10 @@ export async function POST(req: NextRequest) {
         ...(model !== undefined && model !== null ? { model } : {}),
         ...(tags !== undefined && tags !== null ? { tags } : {}),
         ...(shortDescription !== undefined ? { shortDescription } : {}),
-        unitPrice: parseOptionalPrice(unitPrice),
-        originalPrice: parseOptionalPrice(originalPrice),
-        costPrice: parseOptionalPrice(costPrice),
+        unitPrice: parseOptionalDecimal(unitPrice),
+        originalPrice: parseOptionalDecimal(originalPrice),
+        costPrice: parseOptionalDecimal(costPrice),
+        weight: parseOptionalDecimal(weight),
         stock: stock !== undefined && stock !== "" ? parseInt(stock, 10) : 0,
         status: status || "ACTIVE",
         ...(isFeatured !== undefined ? { isFeatured } : {}),
@@ -147,6 +155,9 @@ export async function POST(req: NextRequest) {
         ...(isNew !== undefined ? { isNew } : {}),
         ...(isHomeFeatured !== undefined ? { isHomeFeatured } : {}),
         ...(sortOrder !== undefined && sortOrder !== "" ? { sortOrder: parseInt(sortOrder, 10) } : {}),
+        seoTitle: parseOptionalText(seoTitle),
+        seoDescription: parseOptionalText(seoDescription),
+        seoKeywords: parseOptionalText(seoKeywords),
         ...(images && images.length > 0 && {
           images: {
             create: images.map((img: any, i: number) => ({

@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ClipboardEvent } from "react"
 import { localeNames } from "@/i18n/routing"
 import { bi } from "@/components/admin/bilingual"
+import { normalizePastedHtml } from "@/lib/editor/clipboard"
 
 export interface ProductTranslationFields {
   locale: string
@@ -41,6 +42,24 @@ export default function ProductTranslationsEditor({ value, onChange }: Props) {
 
   const remove = (locale: string) => {
     onChange(value.filter((t) => t.locale !== locale))
+  }
+
+  const handleDescriptionPaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    const html = event.clipboardData?.getData("text/html") || ""
+    if (!html.trim()) return
+    const normalized = normalizePastedHtml(html)
+    if (!normalized.trim()) return
+
+    event.preventDefault()
+    const target = event.currentTarget
+    const start = target.selectionStart
+    const end = target.selectionEnd
+    update(active, { description: `${target.value.slice(0, start)}${normalized}${target.value.slice(end)}` })
+
+    requestAnimationFrame(() => {
+      target.focus()
+      target.setSelectionRange(start + normalized.length, start + normalized.length)
+    })
   }
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
@@ -88,7 +107,13 @@ export default function ProductTranslationsEditor({ value, onChange }: Props) {
         </div>
         <div>
           <label className={label}>{bi("Description (HTML) — leave empty to keep the English body.", "产品描述（HTML）— 留空则使用英文正文。")}</label>
-          <textarea value={(value.find((t) => t.locale === active)?.description) || ""} onChange={(e) => update(active, { description: e.target.value })} rows={8} className={input} />
+          <textarea
+            value={(value.find((t) => t.locale === active)?.description) || ""}
+            onChange={(e) => update(active, { description: e.target.value })}
+            onPaste={handleDescriptionPaste}
+            rows={8}
+            className={input}
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-mist">
           <div>

@@ -29,13 +29,24 @@ export function formatDateShort(date: Date | string, locale: string = "en"): str
   }).format(d)
 }
 
+export const MAX_SLUG_LENGTH = 80
+
+/**
+ * Lowercase, ASCII-only, hyphen-separated slug.
+ *
+ * Anything that is not a URL-safe character becomes a hyphen, so a name like
+ * "Radar Sensor T8 LED Tube Light" can never end up stored as "Radar Sensor
+ * T8 LED Tube Light" (spaces in a slug break links and the sitemap).
+ */
 export function slugify(text: string): string {
-  return text
+  return String(text ?? "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, MAX_SLUG_LENGTH)
+    .replace(/-+$/g, "")
 }
 
 export function truncate(text: string, length: number): string {

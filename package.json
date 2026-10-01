@@ -14,6 +14,7 @@
     "db:migrate": "node scripts/require-db-env.mjs && prisma migrate deploy",
     "db:translate-blog": "tsx prisma/translate-blog-content.ts",
     "db:translate-products": "tsx prisma/translate-product-content.ts",
+    "db:fix-product-slugs": "tsx scripts/fix-product-slugs.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {

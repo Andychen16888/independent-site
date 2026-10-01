@@ -4,13 +4,10 @@ import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertProductTranslations } from "@/lib/i18n/product"
 import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
+import { buildProductSlug, ensureUniqueProductSlug } from "@/lib/products/slug"
 
 export const runtime = "nodejs"
 export const maxDuration = 300
-
-function generateSlug(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
-}
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
@@ -126,10 +123,9 @@ export async function POST(req: NextRequest) {
       return text === "" ? null : text
     }
 
-    let slugValue = slug
-    if (!slugValue) slugValue = generateSlug(name)
-    const existingSlug = await prisma.product.findUnique({ where: { slug: slugValue } })
-    if (existingSlug) slugValue = `${slugValue}-${Date.now().toString().slice(-4)}`
+    // The slug field is free text, so never trust it verbatim: a stored slug with
+    // spaces or capitals produces URLs that 404 and pollutes the sitemap.
+    const slugValue = await ensureUniqueProductSlug(buildProductSlug(slug, name))
 
     let skuValue = sku
     if (!skuValue) skuValue = `SKU-${Date.now()}`

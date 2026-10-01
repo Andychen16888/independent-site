@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
@@ -9,6 +9,7 @@ import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
 import { breadcrumbSchema, productSchema, videoObjectSchema, articleSchema, faqPageSchema } from "@/lib/seo/structured-data"
 import { fetchProductTranslations, applyProductLocalization, applyProductLocalizations } from "@/lib/i18n/product"
+import { isUrlSafeSlug } from "@/lib/products/slug"
 import type { Metadata } from "next"
 
 interface Props {
@@ -16,6 +17,24 @@ interface Props {
 }
 
 export const revalidate = 3600
+
+/**
+ * Rows created before slug normalization can still hold spaces or capitals, so
+ * their old links must keep working: resolve them case-insensitively (and by
+ * name) and send visitors to the canonical slug.
+ */
+async function findProductByAnySlug(slug: string) {
+  return prisma.product.findFirst({
+    where: {
+      OR: [
+        { slug },
+        ...(isUrlSafeSlug(slug) ? [] : [{ slug: { equals: slug, mode: "insensitive" as const } }]),
+        { name: slug },
+      ],
+    },
+    select: { id: true, slug: true },
+  })
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
@@ -60,7 +79,13 @@ export default async function ProductPage({ params }: Props) {
     },
   })
 
-  if (!product) notFound()
+  if (!product) {
+    // A legacy row whose slug was stored with spaces/capitals: keep the old
+    // link alive and forward the visitor to the canonical slug.
+    const legacy = await findProductByAnySlug(slug)
+    if (!legacy) notFound()
+    redirect(`/${locale}/products/${legacy.slug}`)
+  }
 
   const translationMap = await fetchProductTranslations([product.id], locale)
   const localizedProduct = applyProductLocalization(product, translationMap)

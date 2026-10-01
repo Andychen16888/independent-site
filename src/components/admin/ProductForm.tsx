@@ -466,6 +466,13 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     updateForm({ [name]: !form[name] } as Partial<ProductFormData>)
   }
 
+  // The slug is stored in the public URL, so tidy it when the field loses focus
+  // instead of letting "Radar Sensor T8 LED Tube Light" become the address.
+  const normalizeSlugField = () => {
+    const cleaned = form.slug.trim() === "" ? "" : slugify(form.slug)
+    if (cleaned !== form.slug) updateForm({ slug: cleaned })
+  }
+
   // --- Images ---
   const moveImage = (index: number, dir: -1 | 1) => {
     setImages((prev) => {
@@ -694,7 +701,7 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
       <div className="grid grid-cols-3 gap-4">
         <div>
           <label className={label}>{bi("Slug", "短链接")}</label>
-          <input name="slug" value={form.slug} onChange={handleChange} className={input} />
+          <input name="slug" value={form.slug} onChange={handleChange} onBlur={normalizeSlugField} placeholder={bi("auto from name", "留空则根据名称生成")} className={input} />
         </div>
         <div>
           <label className={label}>SKU</label>

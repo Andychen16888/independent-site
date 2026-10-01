@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertProductTranslations } from "@/lib/i18n/product"
 import { autoTranslateProduct, isAutoTranslateConfigured } from "@/lib/ai/translate-product"
+import { buildProductSlug, ensureUniqueProductSlug } from "@/lib/products/slug"
 
 export const runtime = "nodejs"
 export const maxDuration = 300
@@ -66,11 +67,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return text === "" ? null : text
     }
 
+    const current = await prisma.product.findUnique({ where: { id }, select: { id: true, slug: true, name: true } })
+    if (!current) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
+    }
+
+    // Keep the stored slug URL-safe. An unchanged slug is left alone so the
+    // public URL never churns; anything with spaces/capitals is rewritten.
+    let slugValue: string | undefined
+    if (slug !== undefined) {
+      const requested = buildProductSlug(slug, name ?? current.name)
+      slugValue = requested === current.slug ? current.slug : await ensureUniqueProductSlug(requested, id)
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: {
         ...(name !== undefined && name !== "" && { name }),
-        ...(slug !== undefined && slug !== "" && { slug }),
+        ...(slugValue !== undefined && { slug: slugValue }),
         ...(sku !== undefined && sku !== "" && { sku }),
         ...(brand !== undefined && { brand: brand || null }),
         ...(model !== undefined && { model: model || null }),

@@ -65,10 +65,28 @@ async function getStats() {
       where: { createdAt: { gte: weekAgo } },
       orderBy: { createdAt: "desc" },
       take: 2000,
+      select: {
+        id: true,
+        visitorId: true,
+        path: true,
+        title: true,
+        referrer: true,
+        ip: true,
+        country: true,
+        userAgent: true,
+        createdAt: true,
+      },
     }),
     prisma.pageView.findMany({
       where: { date: { gte: weekAgo } },
       orderBy: { date: "asc" },
+      select: {
+        id: true,
+        path: true,
+        title: true,
+        views: true,
+        date: true,
+      },
     }),
   ])
 

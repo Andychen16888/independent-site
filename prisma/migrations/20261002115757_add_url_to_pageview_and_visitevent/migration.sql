@@ -1,52 +1,35 @@
--- CreateEnum
 CREATE TYPE "ProductStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'DRAFT', 'ARCHIVED');
 
--- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED');
 
--- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED', 'PARTIALLY_REFUNDED');
 
--- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN', 'AFFILIATE', 'MODERATOR');
 
--- CreateEnum
 CREATE TYPE "DiscountType" AS ENUM ('PERCENTAGE', 'FIXED_AMOUNT', 'FREE_SHIPPING');
 
--- CreateEnum
 CREATE TYPE "CouponType" AS ENUM ('PUBLIC', 'PRIVATE', 'WELCOME', 'REFERRAL', 'ABANDONED_CART');
 
--- CreateEnum
 CREATE TYPE "AffiliateStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED');
 
--- CreateEnum
 CREATE TYPE "Currency" AS ENUM ('USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CNY', 'JPY', 'SGD', 'AED', 'INR', 'CHF', 'HKD', 'KRW', 'MXN', 'THB', 'VND', 'IDR', 'MYR', 'PHP', 'NZD', 'SEK', 'NOK', 'DKK', 'PLN', 'TRY', 'BRL', 'ZAR', 'RUB');
 
--- CreateEnum
 CREATE TYPE "NewsletterCampaignStatus" AS ENUM ('SENDING', 'PAUSED', 'COMPLETED', 'STOPPED', 'FAILED');
 
--- CreateEnum
 CREATE TYPE "NewsletterSendStatus" AS ENUM ('PENDING', 'SENT', 'FAILED', 'SKIPPED');
 
--- CreateEnum
 CREATE TYPE "InquiryStatus" AS ENUM ('NEW', 'PROCESSING', 'QUOTATION_SENT', 'CUSTOMER_REPLIED', 'NEGOTIATION', 'ORDER_CONFIRMED', 'LOST');
 
--- CreateEnum
 CREATE TYPE "InquirySource" AS ENUM ('WEBSITE_RFQ', 'PRODUCT_PAGE', 'CAMPAIGN', 'AI_AGENT');
 
--- CreateEnum
 CREATE TYPE "QuotationStatus" AS ENUM ('DRAFT', 'SENT', 'ACCEPTED', 'EXPIRED', 'REJECTED');
 
--- CreateEnum
 CREATE TYPE "EmailStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
 
--- CreateEnum
 CREATE TYPE "EmailDirection" AS ENUM ('OUTBOUND', 'INTERNAL');
 
--- CreateEnum
 CREATE TYPE "EmailPurpose" AS ENUM ('QUOTATION', 'FOLLOW_UP', 'GENERAL', 'NOTIFICATION');
 
--- CreateEnum
 CREATE TYPE "FollowUpStatus" AS ENUM ('PENDING', 'DONE', 'CANCELLED');
 
 -- CreateTable

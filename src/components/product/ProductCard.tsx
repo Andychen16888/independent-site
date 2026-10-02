@@ -44,14 +44,21 @@ export function ProductCard({ product, priority }: ProductCardProps) {
       className="group"
     >
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] bg-mist rounded-lg mb-4 overflow-hidden">
+        <div className="relative aspect-[3/4] rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-ivory via-mist to-white">
           {product.images?.[0]?.url ? (
-            <img
-              src={product.images[0].url}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              loading={priority ? "eager" : "lazy"}
-            />
+            <>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,255,255,0.75),transparent_55%),radial-gradient(circle_at_80%_85%,rgba(255,255,255,0.55),transparent_45%)]" />
+              <div className="absolute inset-0 p-2">
+                <div className="w-full h-full rounded-md bg-white/65 ring-1 ring-white/60 p-2">
+                  <img
+                    src={product.images[0].url}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                    loading={priority ? "eager" : "lazy"}
+                  />
+                </div>
+              </div>
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-stone/30 text-xs tracking-wider uppercase">
               {tc("imagePlaceholder")}

@@ -22,6 +22,7 @@ function timeLabel(d: Date): string {
 }
 
 const DESCRIPTION = "Visitor analytics: trails, pages and countries. 访客统计：访问轨迹、页面与国家分布。"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
 async function getStats() {
   const now = new Date()
@@ -250,7 +251,8 @@ export default async function AdminAnalyticsPage() {
                   const count = row._count._all
                   const path = row.path
                   const url = (row as any).url as string | null
-                  const fullUrl = url || (path?.startsWith("http") ? path : `${process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"}${path || ""}`)
+                  const normalizedPath = path ? (path.startsWith("/") ? path : `/${path}`) : "/"
+                  const fullUrl = url || (path?.startsWith("http") ? path : `${SITE_URL}${normalizedPath}`)
                   const display = fullUrl
                   return (
                     <tr key={idx} className="border-b border-mist/50">
@@ -337,24 +339,30 @@ export default async function AdminAnalyticsPage() {
                     </span>
                   </div>
                   <ol className="space-y-1.5">
-                    {events.map((event, i) => (
-                      <li key={event.id} className="flex items-baseline gap-2 text-xs">
-                        <span className="text-stone tabular-nums shrink-0">{timeLabel(event.createdAt)}</span>
-                        <span className="text-stone/70 shrink-0">{i + 1}.</span>
-                        <a
-                          href={(event as any).url || (event.path?.startsWith("http") ? event.path : `${process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"}${event.path || ""}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-[11px] text-blue-600 hover:underline break-all"
-                          title={(event as any).url || event.path}
-                        >
-                          {((event as any).url || event.path)?.replace(/^\/(en|zh)/, "") || "/"}
-                        </a>
-                        {event.title && (
-                          <span className="text-stone/70 text-[11px] truncate">— {event.title}</span>
-                        )}
-                      </li>
-                    ))}
+                    {events.map((event, i) => {
+                      const path = event.path || "/"
+                      const normalizedPath = path.startsWith("/") ? path : `/${path}`
+                      const fullUrl = path.startsWith("http") ? path : `${SITE_URL}${normalizedPath}`
+
+                      return (
+                        <li key={event.id} className="flex items-baseline gap-2 text-xs">
+                          <span className="text-stone tabular-nums shrink-0">{timeLabel(event.createdAt)}</span>
+                          <span className="text-stone/70 shrink-0">{i + 1}.</span>
+                          <a
+                            href={fullUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-[11px] text-blue-600 hover:underline break-all"
+                            title={fullUrl}
+                          >
+                            {fullUrl}
+                          </a>
+                          {event.title && (
+                            <span className="text-stone/70 text-[11px] truncate">— {event.title}</span>
+                          )}
+                        </li>
+                      )
+                    })}
                   </ol>
                 </div>
               ))}

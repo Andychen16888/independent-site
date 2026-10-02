@@ -651,6 +651,7 @@ async function seedSiteFaqs() {
   const allFaqs = [...faqTranslationsSeed, ...commodityFaqsSeed]
 
   let createdCount = 0
+  let updatedCount = 0
   for (let i = 0; i < allFaqs.length; i++) {
     const perLocale = allFaqs[i]
     const english = perLocale.en
@@ -660,23 +661,44 @@ async function seedSiteFaqs() {
       where: { locale: "en", question: english.q },
       select: { id: true },
     })
-    if (exists) continue
+    if (!exists) {
+      const faq = await prisma.siteFaq.create({
+        data: {
+          sortOrder: i,
+          isActive: true,
+        },
+      })
 
-    const faq = await prisma.siteFaq.create({
-      data: {
-        sortOrder: i,
-        isActive: true,
-      },
+      for (const [locale, data] of Object.entries(perLocale)) {
+        await prisma.siteFaqTranslation.create({
+          data: { siteFaqId: faq.id, locale, question: data.q, answer: data.a },
+        })
+      }
+      createdCount++
+      continue
+    }
+
+    const existingEn = await prisma.siteFaqTranslation.findFirst({
+      where: { locale: "en", question: english.q },
+      select: { siteFaqId: true },
     })
+    if (!existingEn) continue
 
     for (const [locale, data] of Object.entries(perLocale)) {
-      await prisma.siteFaqTranslation.create({
-        data: { siteFaqId: faq.id, locale, question: data.q, answer: data.a },
+      await prisma.siteFaqTranslation.upsert({
+        where: { siteFaqId_locale: { siteFaqId: existingEn.siteFaqId, locale } },
+        update: { question: data.q, answer: data.a },
+        create: {
+          siteFaqId: existingEn.siteFaqId,
+          locale,
+          question: data.q,
+          answer: data.a,
+        },
       })
+      if (locale !== "en") updatedCount++
     }
-    createdCount++
   }
-  console.log(`Site FAQs ensured. ${createdCount} new FAQ(s) created.`)
+  console.log(`Site FAQs ensured. ${createdCount} new FAQ(s) created, ${updatedCount} translation row(s) upserted.`)
 }
 
 main()

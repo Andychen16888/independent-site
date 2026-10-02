@@ -101,9 +101,9 @@ export async function POST(req: NextRequest) {
       },
     }),
     prisma.pageView.upsert({
-      where: { url_date: { url: fullUrl, date: dayStart } },
+      where: { url_date: { url: fullUrl, date: dayStart } } as any,
       create: { url: fullUrl, path: pathname, title, views: 1, date: dayStart },
-      update: { views: { increment: 1 } },
+      update: { views: { increment: 1 } } as any,
     }),
   ]).catch(() => {})
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertPageTranslations } from "@/lib/i18n/content"
+import { autoTranslatePage, isAutoTranslateConfigured } from "@/lib/ai/translate-page"
 
 /**
  * Looks up a page by its id first, then by slug.
@@ -32,7 +33,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { title, slug, excerpt, content, coverImage, isPublished, seoTitle, seoDescription, seoKeywords, translations } = body
+    const {
+      title,
+      slug,
+      excerpt,
+      content,
+      coverImage,
+      isPublished,
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      translations,
+      autoTranslate,
+      overwriteTranslations,
+    } = body
 
     const page = await resolvePage(id)
     if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 })
@@ -55,8 +69,44 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       await upsertPageTranslations(page.id, translations)
     }
 
+    const sourceChanged =
+      (title !== undefined && title !== page.title) ||
+      (excerpt !== undefined && excerpt !== page.excerpt) ||
+      (content !== undefined && content !== page.content) ||
+      (seoTitle !== undefined && seoTitle !== page.seoTitle) ||
+      (seoDescription !== undefined && seoDescription !== page.seoDescription) ||
+      (seoKeywords !== undefined && seoKeywords !== page.seoKeywords)
+
+    const forceOverwrite = updated.slug === "about" || updated.slug === "contact"
+
+    let translation = null
+    let translationError: string | null = null
+    if (autoTranslate !== false && (sourceChanged || forceOverwrite)) {
+      if (isAutoTranslateConfigured()) {
+        try {
+          translation = await autoTranslatePage(
+            updated.id,
+            {
+              title: updated.title,
+              excerpt: updated.excerpt,
+              content: updated.content,
+              seoTitle: updated.seoTitle,
+              seoDescription: updated.seoDescription,
+              seoKeywords: updated.seoKeywords,
+            },
+            { overwrite: overwriteTranslations === true || (overwriteTranslations === undefined && forceOverwrite) }
+          )
+        } catch (error) {
+          translationError = (error as Error).message
+          console.error("Auto-translate page (update) failed:", error)
+        }
+      } else {
+        translationError = "OPENAI_API_KEY is not configured"
+      }
+    }
+
     invalidateStorefront()
-    return NextResponse.json({ page: updated })
+    return NextResponse.json({ page: updated, translation, translationError })
   } catch (error) {
     console.error("Admin page update error:", error)
     return NextResponse.json({ error: "Failed to update page" }, { status: 500 })

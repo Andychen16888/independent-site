@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertPageTranslations } from "@/lib/i18n/content"
+import { autoTranslatePage, isAutoTranslateConfigured } from "@/lib/ai/translate-page"
 
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
@@ -27,7 +28,20 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { title, slug, excerpt, content, coverImage, isPublished, seoTitle, seoDescription, seoKeywords, translations } = body
+    const {
+      title,
+      slug,
+      excerpt,
+      content,
+      coverImage,
+      isPublished,
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      translations,
+      autoTranslate,
+      overwriteTranslations,
+    } = body
 
     if (!title || content === undefined) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 })
@@ -56,8 +70,35 @@ export async function POST(req: NextRequest) {
       await upsertPageTranslations(page.id, translations)
     }
 
+    let translation = null
+    let translationError: string | null = null
+    if (autoTranslate !== false) {
+      if (isAutoTranslateConfigured()) {
+        try {
+          const forceOverwrite = page.slug === "about" || page.slug === "contact"
+          translation = await autoTranslatePage(
+            page.id,
+            {
+              title: page.title,
+              excerpt: page.excerpt,
+              content: page.content,
+              seoTitle: page.seoTitle,
+              seoDescription: page.seoDescription,
+              seoKeywords: page.seoKeywords,
+            },
+            { overwrite: overwriteTranslations === true || (overwriteTranslations === undefined && forceOverwrite) }
+          )
+        } catch (error) {
+          translationError = (error as Error).message
+          console.error("Auto-translate page (create) failed:", error)
+        }
+      } else {
+        translationError = "OPENAI_API_KEY is not configured"
+      }
+    }
+
     invalidateStorefront()
-    return NextResponse.json({ page }, { status: 201 })
+    return NextResponse.json({ page, translation, translationError }, { status: 201 })
   } catch (error) {
     console.error("Admin page create error:", error)
     return NextResponse.json({ error: "Failed to create page" }, { status: 500 })

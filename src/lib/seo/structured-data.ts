@@ -221,6 +221,9 @@ export function localBusinessSchema(
     description?: string
     currency?: string
     priceRange?: string
+    address?: string
+    countryCode?: string
+    areaServed?: string[]
     openingHours?: {
       days?: string[]
       opens?: string
@@ -235,6 +238,23 @@ export function localBusinessSchema(
     name: data?.name || siteName,
     url: data?.url || siteUrl,
     description: data?.description || defaultDescription,
+    ...(data?.address
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: data.address,
+            addressCountry: data.countryCode || "CN",
+          },
+        }
+      : {}),
+    ...(data?.areaServed && data.areaServed.length > 0
+      ? {
+          areaServed: data.areaServed.map((region) => ({
+            "@type": "Country",
+            name: region,
+          })),
+        }
+      : {}),
     currencyAccepted: data?.currency || "USD",
     priceRange: data?.priceRange || "$$",
     openingHoursSpecification: {

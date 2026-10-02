@@ -2,6 +2,12 @@ import { prisma } from "@/lib/db/prisma"
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+const defaultLocale = "en"
+
+function localized(path: string): string {
+  const clean = path.startsWith("/") ? path : `/${path}`
+  return `${siteUrl}/${defaultLocale}${clean === "/" ? "" : clean}`
+}
 
 function stripHtml(html: string, max = 500): string {
   const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
@@ -83,12 +89,12 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
     lines.push(`- Social: ${social.map(([n, u]) => `${n} (${u})`).join(", ")}`)
   }
   lines.push("")
-  lines.push(`## Key Resources`)
-  lines.push(`- [Home](${siteUrl}/)`)
-  lines.push(`- [All Products](${siteUrl}/products)`)
-  lines.push(`- [Journal](${siteUrl}/blog)`)
-  lines.push(`- [FAQ](${siteUrl}/faq)`)
-  lines.push(`- [Affiliate Program](${siteUrl}/affiliate)`)
+  lines.push("## Key Resources")
+  lines.push(`- [Home](${localized("/")})`)
+  lines.push(`- [All Products](${localized("/products")})`)
+  lines.push(`- [Journal](${localized("/blog")})`)
+  lines.push(`- [FAQ](${localized("/faq")})`)
+  lines.push(`- [Affiliate Program](${localized("/affiliate")})`)
   lines.push("")
 
   if (categories.length) {
@@ -97,7 +103,7 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
       const count = c._count?.products ?? 0
       const desc = c.description ? `: ${stripHtml(c.description, 120)}` : ""
       lines.push(
-        `- [${c.name}](${siteUrl}/categories/${c.slug})${desc} (${count} product${count === 1 ? "" : "s"})`
+        `- [${c.name}](${localized(`/categories/${c.slug}`)})${desc} (${count} product${count === 1 ? "" : "s"})`
       )
     }
     lines.push("")
@@ -112,7 +118,7 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
       ? ` ${stripHtml(p.shortDescription || p.description, 300)}`
       : ` ${stripHtml(p.shortDescription || p.description, 100)}`
     const brand = p.brand ? ` — brand: ${p.brand}` : ""
-    lines.push(`- [${p.name}](${siteUrl}/products/${p.slug}) — ${price}${detail}${brand}`)
+    lines.push(`- [${p.name}](${localized(`/products/${p.slug}`)}) — ${price}${detail}${brand}`)
   }
   lines.push("")
 
@@ -120,7 +126,7 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
     lines.push("## Journal")
     for (const post of posts) {
       const ex = includeDetails ? stripHtml(post.excerpt || "", 300) : stripHtml(post.excerpt || "", 100)
-      lines.push(`- [${post.title}](${siteUrl}/blog/${post.slug})${ex ? `: ${ex}` : ""}`)
+      lines.push(`- [${post.title}](${localized(`/blog/${post.slug}`)})${ex ? `: ${ex}` : ""}`)
     }
     lines.push("")
   }
@@ -129,7 +135,7 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
     lines.push("## Pages")
     for (const page of pages) {
       const ex = includeDetails ? stripHtml(page.excerpt || "", 200) : ""
-      lines.push(`- [${page.title}](${siteUrl}/pages/${page.slug})${ex ? `: ${ex}` : ""}`)
+      lines.push(`- [${page.title}](${localized(`/pages/${page.slug}`)})${ex ? `: ${ex}` : ""}`)
     }
     lines.push("")
   }

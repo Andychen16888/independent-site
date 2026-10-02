@@ -10,7 +10,7 @@ import {
   localBusinessSchema,
   brandSchema,
 } from "@/lib/seo/structured-data"
-import { getSiteSeo } from "@/lib/settings/settings"
+import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 import { routing, rtlLocales } from "@/i18n/routing"
 import { ogLocaleMap } from "@/lib/seo/generate-metadata"
 import "./globals.css"
@@ -106,12 +106,20 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [seo, locale] = await Promise.all([
+  const [seo, locale, contactSettings] = await Promise.all([
     getSiteSeo(),
     getLocale(),
+    getSettingsForKeys(["company.address"]),
   ])
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   const dir = rtlLocales.has(locale) ? "rtl" : "ltr"
+  const servedMarkets =
+    process.env.NEXT_PUBLIC_SERVED_MARKETS?.split(",").map((s) => s.trim()).filter(Boolean) || [
+      "Southeast Asia",
+      "Africa",
+      "Middle East",
+    ]
+  const countryCode = process.env.NEXT_PUBLIC_BUSINESS_COUNTRY_CODE || "CN"
   const socialLinks = [
     seo.social.facebook,
     seo.social.instagram,
@@ -131,7 +139,14 @@ export default async function RootLayout({
       phone: seo.contactPhone || undefined,
     }),
     websiteSchema({ name: seo.siteName, url: baseUrl }),
-    localBusinessSchema({ name: seo.siteName, url: baseUrl, description: seo.siteDescription }),
+    localBusinessSchema({
+      name: seo.siteName,
+      url: baseUrl,
+      description: seo.siteDescription,
+      address: contactSettings["company.address"] || undefined,
+      countryCode,
+      areaServed: servedMarkets,
+    }),
     brandSchema({
       name: seo.siteName,
       description: seo.siteSlogan || seo.siteDescription,

@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
+import { upsertCategoryTranslations } from "@/lib/i18n/category"
+import { routing } from "@/i18n/routing"
+
+function parseCategoryTranslations(input: unknown): { locale: string; name?: string }[] {
+  if (!input || typeof input !== "object") return []
+  const allowed = new Set<string>(routing.locales.filter((loc) => loc !== "en"))
+  const out: { locale: string; name?: string }[] = []
+  for (const [locale, value] of Object.entries(input as Record<string, unknown>)) {
+    if (!allowed.has(locale)) continue
+    if (typeof value !== "string") continue
+    out.push({ locale, name: value })
+  }
+  return out
+}
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
@@ -17,7 +31,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
     if (!category) return NextResponse.json({ error: "Category not found" }, { status: 404 })
-    return NextResponse.json({ category })
+    const translationRows = await prisma.categoryTranslation.findMany({
+      where: { categoryId: id },
+      orderBy: { locale: "asc" },
+      select: { locale: true, name: true },
+    })
+    return NextResponse.json({ category: { ...category, translations: translationRows } })
   } catch (error) {
     console.error("Admin category get error:", error)
     return NextResponse.json({ error: "Failed to fetch category" }, { status: 500 })
@@ -31,7 +50,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords } = body
+    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords, translations } = body
 
     if (name !== undefined && !name.trim()) {
       return NextResponse.json({ error: "Name cannot be empty" }, { status: 400 })
@@ -57,6 +76,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const category = await prisma.category.update({ where: { id }, data })
+    await upsertCategoryTranslations(category.id, parseCategoryTranslations(translations))
     invalidateStorefront()
     return NextResponse.json({ category })
   } catch (error) {

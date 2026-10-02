@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/db/prisma"
 import { Container } from "@/components/ui/Container"
 import { fetchPageTranslations } from "@/lib/i18n/content"
+import { fetchCategoryTranslations } from "@/lib/i18n/category"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { PageTranslation } from "@prisma/client"
 import {
@@ -98,6 +99,10 @@ export async function Footer({
   ])
 
   const locale = await getLocale()
+  const categoryTranslations = await fetchCategoryTranslations(
+    categories.map((c) => c.id),
+    locale
+  )
   const useDbContent = locale === "en"
   const t = await getTranslations("footer")
   const tnav = await getTranslations("navigation")
@@ -130,7 +135,7 @@ export async function Footer({
 
   const shopLinks = categories.length
     ? categories.map((c) => ({
-        name: localizeCategoryName(locale, c.slug, c.name),
+        name: localizeCategoryName(locale, c.slug, c.name, categoryTranslations.get(c.id)),
         href: `/categories/${c.slug}`,
       }))
     : DEFAULT_SHOP_LINKS

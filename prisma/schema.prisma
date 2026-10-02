@@ -185,8 +185,22 @@ model Category {
   children     Category[]  @relation("CategoryParent")
   products     ProductCategory[]
   banner       CategoryBanner?
+  translations CategoryTranslation[]
 
   @@map("categories")
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  categoryId String
+  locale     String
+  name       String
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+  @@map("category_translations")
 }
 
 model CategoryBanner {

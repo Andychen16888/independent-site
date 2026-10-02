@@ -77,6 +77,32 @@ const CATEGORY_NAME_MAP: Record<string, Record<string, string>> = {
     th: "อิเล็กทรอนิกส์",
     ms: "Elektronik",
   },
+  "led-lighting": {
+    zh: "LED照明",
+    es: "Iluminación LED",
+    pt: "Iluminação LED",
+    fr: "Éclairage LED",
+    de: "LED-Beleuchtung",
+    ru: "LED-освещение",
+    ar: "إضاءة LED",
+    id: "Pencahayaan LED",
+    vi: "Đèn LED",
+    th: "ไฟ LED",
+    ms: "Pencahayaan LED",
+  },
+  "led-christmas-lights": {
+    zh: "LED圣诞灯",
+    es: "Luces navideñas LED",
+    pt: "Luzes de Natal LED",
+    fr: "Guirlandes LED de Noël",
+    de: "LED-Weihnachtsbeleuchtung",
+    ru: "LED рождественские огни",
+    ar: "أضواء عيد الميلاد LED",
+    id: "Lampu Natal LED",
+    vi: "Đèn Giáng Sinh LED",
+    th: "ไฟคริสต์มาส LED",
+    ms: "Lampu Krismas LED",
+  },
   "home-kitchen": {
     zh: "家居厨房",
     es: "Hogar y cocina",
@@ -117,6 +143,14 @@ const CATEGORY_NAME_ALIASES: Record<string, string> = {
   "agricultural-commodity": "agricultural-commodities",
   mineral: "minerals",
   electronic: "electronics",
+  "electronic-product": "electronics",
+  "electronic-products": "electronics",
+  "electronics-products": "electronics",
+  "led-light": "led-lighting",
+  "led-lights": "led-lighting",
+  "led-christmas-light": "led-christmas-lights",
+  "christmas-lights": "led-christmas-lights",
+  "christmas-light": "led-christmas-lights",
   building: "building-materials",
   construction: "building-materials",
   "construction-materials": "building-materials",
@@ -127,9 +161,19 @@ function normalizeCategorySlug(slug: string): string {
   return slug.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-")
 }
 
-export function localizeCategoryName(locale: string, slug: string, fallback: string): string {
+export function localizeCategoryName(
+  locale: string,
+  slug: string,
+  fallback: string,
+  dbTranslatedName?: string | null
+): string {
   if (locale === "en") return fallback
-  const normalized = normalizeCategorySlug(slug)
-  const key = CATEGORY_NAME_ALIASES[normalized] || normalized
+  if (dbTranslatedName && dbTranslatedName.trim()) return dbTranslatedName
+  const normalizedSlug = normalizeCategorySlug(slug)
+  const normalizedFallback = normalizeCategorySlug(fallback)
+  const key =
+    CATEGORY_NAME_ALIASES[normalizedSlug] ||
+    CATEGORY_NAME_ALIASES[normalizedFallback] ||
+    normalizedSlug
   return CATEGORY_NAME_MAP[key]?.[locale] || fallback
 }

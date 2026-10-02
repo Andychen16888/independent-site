@@ -9,6 +9,8 @@ import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { getSiteSeo } from "@/lib/settings/settings"
 import { breadcrumbSchema, productGroupSchema } from "@/lib/seo/structured-data"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
+import { fetchCategoryTranslations } from "@/lib/i18n/category"
+import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { Metadata } from "next"
 
 interface Props {
@@ -25,12 +27,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
   const category = await getCategoryWithSlug(slug)
   if (!category) return {}
+  const tr = await fetchCategoryTranslations([category.id], locale)
+  const categoryName = localizeCategoryName(locale, category.slug, category.name, tr.get(category.id))
   const seo = await getSiteSeo()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
   return genMeta({
-    title: category.seoTitle || `${category.name} | Products`,
-    description: category.seoDescription || category.description || `Shop ${category.name}`,
-    keywords: category.seoKeywords || category.name,
+    title: category.seoTitle || `${categoryName} | Products`,
+    description: category.seoDescription || category.description || `Shop ${categoryName}`,
+    keywords: category.seoKeywords || categoryName,
     ogImage: category.image || undefined,
     siteName: seo.siteName,
     siteDescription: seo.siteDescription,
@@ -45,12 +49,17 @@ export default async function CategoryPage({ params }: Props) {
   const tc = await getTranslations("common")
   const category = await getCategoryWithSlug(slug)
   if (!category) notFound()
-
-  // Include products from all descendant categories (multi-level support).
   const withParents = await prisma.category.findMany({
     where: { isActive: true },
     select: { id: true, parentId: true, name: true, slug: true },
   })
+  const catTranslations = await fetchCategoryTranslations(
+    [category.id, ...withParents.map((c) => c.id)],
+    locale
+  )
+  const categoryName = localizeCategoryName(locale, category.slug, category.name, catTranslations.get(category.id))
+
+  // Include products from all descendant categories (multi-level support).
   const roots = new Set<string>()
   roots.add(category.id)
   let changed = true
@@ -89,11 +98,11 @@ export default async function CategoryPage({ params }: Props) {
   const schemas = [
     breadcrumbSchema([
       { name: tc("home"), url: baseUrl },
-      { name: category.name, url: `${baseUrl}/categories/${slug}` },
+      { name: categoryName, url: `${baseUrl}/categories/${slug}` },
     ]),
     productGroupSchema({
-      name: category.name,
-      description: category.description || category.name,
+      name: categoryName,
+      description: category.description || categoryName,
       url: `${baseUrl}/categories/${slug}`,
       image: category.image || undefined,
       products: localizedProducts.map((p) => ({
@@ -118,11 +127,11 @@ export default async function CategoryPage({ params }: Props) {
             <Breadcrumb
               items={[
                 { label: tc("home"), href: "/" },
-                { label: category.name },
+                { label: categoryName },
               ]}
               className="mb-6"
             />
-            <h1 className="heading-xl mb-6">{category.name}</h1>
+            <h1 className="heading-xl mb-6">{categoryName}</h1>
             {category.description && (
               <p className="text-body max-w-2xl">{category.description}</p>
             )}
@@ -134,7 +143,7 @@ export default async function CategoryPage({ params }: Props) {
                     href={`/categories/${child.slug}`}
                     className="px-4 py-2 border border-mist text-xs tracking-widest uppercase text-stone hover:text-charcoal hover:border-charcoal transition-colors"
                   >
-                    {child.name}
+                    {localizeCategoryName(locale, child.slug, child.name, catTranslations.get(child.id))}
                   </Link>
                 ))}
               </div>

@@ -3,6 +3,7 @@ import { getSiteSettings, getSiteSeo } from "@/lib/settings/settings"
 import { getGroupedSiteImages } from "@/lib/settings/site-images"
 import { getTranslations } from "next-intl/server"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
+import { fetchCategoryTranslations } from "@/lib/i18n/category"
 import { HeroBanner } from "@/components/home/HeroBanner"
 import { BrandStory } from "@/components/home/BrandStory"
 import { FeaturedCategories } from "@/components/home/FeaturedCategories"
@@ -96,6 +97,10 @@ export default async function HomePage({
   )
   const localizedBestSellers = applyProductLocalizations(bestSellerMapped, translations)
   const localizedHomeFeatured = applyProductLocalizations(homeFeaturedMapped, translations)
+  const categoryTranslations = await fetchCategoryTranslations(
+    featuredCats.map((c) => c.id),
+    locale
+  )
 
   // Hero slides: DB banners provide images/links/alignment; text comes from
   // DB only on the default locale, otherwise from localized messages.
@@ -123,7 +128,7 @@ export default async function HomePage({
     : defaultSlides
 
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({
-    title: localizeCategoryName(locale, c.slug, c.name),
+    title: localizeCategoryName(locale, c.slug, c.name, categoryTranslations.get(c.id)),
     description: c.description || undefined,
     href: `/categories/${c.slug}`,
     image: c.image || undefined,

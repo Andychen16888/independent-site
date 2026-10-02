@@ -8,6 +8,7 @@ import { ProductGrid } from "@/components/product/ProductGrid"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
 import { breadcrumbSchema } from "@/lib/seo/structured-data"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
+import { fetchCategoryTranslations } from "@/lib/i18n/category"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import type { Metadata } from "next"
 
@@ -48,9 +49,14 @@ export default async function ProductsPage({ params, searchParams }: Props) {
     select: { id: true, name: true, slug: true },
   })
 
+  const categoryTranslations = await fetchCategoryTranslations(
+    categoriesRaw.map((c) => c.id),
+    locale
+  )
+
   const categories = categoriesRaw.map((cat) => ({
     ...cat,
-    displayName: localizeCategoryName(locale, cat.slug, cat.name),
+    displayName: localizeCategoryName(locale, cat.slug, cat.name, categoryTranslations.get(cat.id)),
   }))
 
   const activeCategory = category

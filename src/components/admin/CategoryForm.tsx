@@ -4,10 +4,12 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { localeNames } from "@/i18n/routing"
 import { slugify } from "@/lib/utils/format"
 import ImageUploader from "@/components/admin/ImageUploader"
 
 interface CatOption { id: string; name: string; slug: string; parentId: string | null }
+const TRANS_LOCALES = Object.keys(localeNames).filter((l) => l !== "en")
 
 export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit"; categoryId?: string }) {
   const router = useRouter()
@@ -22,6 +24,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
     image: "", description: "",
     seoTitle: "", seoDescription: "", seoKeywords: "",
   })
+  const [translations, setTranslations] = useState<Record<string, string>>({})
 
   useEffect(() => {
     fetch("/api/admin/categories", { cache: "no-store" })
@@ -45,6 +48,11 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
           image: c.image || "", description: c.description || "",
           seoTitle: c.seoTitle || "", seoDescription: c.seoDescription || "", seoKeywords: c.seoKeywords || "",
         })
+        const nextTranslations: Record<string, string> = {}
+        for (const t of c.translations || []) {
+          if (t?.locale) nextTranslations[t.locale] = t.name || ""
+        }
+        setTranslations(nextTranslations)
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
@@ -71,6 +79,7 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
           parentId: form.parentId || null,
           sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
           image: form.image || null,
+          translations,
         }),
       })
       const data = await res.json()
@@ -90,6 +99,9 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
 
   const input = "w-full border border-mist bg-white px-3 py-2 text-sm outline-none focus:border-charcoal transition-colors"
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
+  const setTranslation = (locale: string, value: string) => {
+    setTranslations((prev) => ({ ...prev, [locale]: value }))
+  }
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
@@ -139,6 +151,25 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
       <div>
           <label className={label}>{bi("Listing Image", "列表图片")}</label>
         <ImageUploader value={form.image} onChange={(url) => update({ image: url })} />
+      </div>
+
+      <div className="border-t border-mist pt-6 space-y-4">
+        <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">
+          {bi("Category Name Translations", "分类名称翻译")}
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {TRANS_LOCALES.map((loc) => (
+            <div key={loc}>
+              <label className={label}>{localeNames[loc]}</label>
+              <input
+                value={translations[loc] || ""}
+                onChange={(e) => setTranslation(loc, e.target.value)}
+                placeholder={bi("Optional localized category name", "可选：该语言分类名称")}
+                className={input}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="border-t border-mist pt-6 space-y-4">

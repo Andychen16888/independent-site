@@ -345,21 +345,32 @@ export default async function AdminAnalyticsPage() {
                       const fullUrl = path.startsWith("http") ? path : `${SITE_URL}${normalizedPath}`
 
                       return (
-                        <li key={event.id} className="flex items-baseline gap-2 text-xs">
+                        <li key={event.id} className="flex items-start gap-2 text-xs">
                           <span className="text-stone tabular-nums shrink-0">{timeLabel(event.createdAt)}</span>
                           <span className="text-stone/70 shrink-0">{i + 1}.</span>
-                          <a
-                            href={fullUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-[11px] text-blue-600 hover:underline break-all"
-                            title={fullUrl}
-                          >
-                            {fullUrl}
-                          </a>
-                          {event.title && (
-                            <span className="text-stone/70 text-[11px] truncate">— {event.title}</span>
-                          )}
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={fullUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block font-mono text-[11px] text-blue-600 hover:underline break-all"
+                              title={fullUrl}
+                            >
+                              {normalizedPath}
+                            </a>
+                            <a
+                              href={fullUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block font-mono text-[10px] text-stone hover:text-blue-600 truncate"
+                              title={fullUrl}
+                            >
+                              {fullUrl}
+                            </a>
+                            {event.title && (
+                              <span className="block text-stone/70 text-[11px] truncate">— {event.title}</span>
+                            )}
+                          </div>
                         </li>
                       )
                     })}

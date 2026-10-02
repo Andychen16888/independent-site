@@ -32,6 +32,7 @@ function isBurst(visitorId: string, path: string, now: number): boolean {
 const MAX_LEN = {
   visitorId: 64,
   path: 500,
+  url: 2000,
   title: 300,
   referrer: 500,
   userAgent: 300,
@@ -55,12 +56,17 @@ export async function POST(req: NextRequest) {
 
   const now = new Date()
   const path = clamp(body.path, MAX_LEN.path)
+  const urlRaw = clamp(body.url, MAX_LEN.url)
+
   if (!path || path.startsWith("/api/") || path.startsWith("/_next")) {
     return NextResponse.json({ ok: false })
   }
 
+  const fullUrl = urlRaw && (urlRaw.startsWith("http://") || urlRaw.startsWith("https://")) ? urlRaw : req.nextUrl.href
+  const pathname = path || req.nextUrl.pathname
+
   const visitorId = clamp(body.visitorId, MAX_LEN.visitorId) ?? `anon-${crypto.randomUUID()}`
-  if (isBurst(visitorId, path, now.getTime())) {
+  if (isBurst(visitorId, pathname, now.getTime())) {
     return NextResponse.json({ ok: true, deduped: true })
   }
 
@@ -73,7 +79,7 @@ export async function POST(req: NextRequest) {
 
   await Promise.all([
     prisma.visitEvent.create({
-      data: { visitorId, path, title, referrer, ip, country, userAgent, createdAt: now },
+      data: { visitorId, path: pathname, url: fullUrl, title, referrer, ip, country, userAgent, createdAt: now },
     }),
     prisma.visitorSession.upsert({
       where: { visitorId },
@@ -95,8 +101,8 @@ export async function POST(req: NextRequest) {
       },
     }),
     prisma.pageView.upsert({
-      where: { path_date: { path, date: dayStart } },
-      create: { path, title, views: 1, date: dayStart },
+      where: { url_date: { url: fullUrl, date: dayStart } },
+      create: { url: fullUrl, path: pathname, title, views: 1, date: dayStart },
       update: { views: { increment: 1 } },
     }),
   ]).catch(() => {})

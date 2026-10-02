@@ -32,20 +32,31 @@ export function VisitorBeacon() {
 
     const send = () => {
       if (pathname.startsWith("/api/") || pathname.startsWith("/_next")) return
-      fetch("/api/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      try {
+        const url = window.location.href
+        const data = {
           visitorId: visitorId.current,
           path: pathname,
+          url,
           title: document.title,
           referrer: document.referrer,
-        }),
-      }).catch(() => {})
+        }
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/api/track", new Blob([JSON.stringify(data)], { type: "application/json" }))
+        } else {
+          fetch("/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          }).catch(() => {})
+        }
+      } catch (error) {
+        // 静默忽略上报错误
+      }
     }
 
     if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(send, 800)
+    timer.current = setTimeout(send, 500)
     return () => {
       if (timer.current) clearTimeout(timer.current)
     }

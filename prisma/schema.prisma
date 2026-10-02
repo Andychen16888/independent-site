@@ -1106,12 +1106,21 @@ model SiteFaqTranslation {
 
 model PageView {
   id        String   @id @default(cuid())
-  path      String
+  url       String   // 完整页面 URL（包含 path/search/hash）
+  path      String   // 页面路径（兼容保留）
   title     String?
-  views     Int      @default(0)
+  views     Int      @default(1)
   date      DateTime @default(now())
+  country   String?
+  region    String?
+  userAgent String?  @db.Text
+  referrer  String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([path, date])
+  @@unique([url, date])
+  @@index([path, date])
+  @@index([date])
   @@map("page_views")
 }
 
@@ -1134,6 +1143,7 @@ model VisitEvent {
   id        String   @id @default(cuid())
   visitorId String
   path      String
+  url       String? // 完整页面 URL（包含 path/search/hash）
   title     String?
   referrer  String?
   ip        String?
@@ -1143,8 +1153,8 @@ model VisitEvent {
 
   @@index([visitorId, createdAt])
   @@index([path])
+  @@index([url])
   @@index([country])
-  @@index([createdAt])
   @@map("visit_events")
 }
 

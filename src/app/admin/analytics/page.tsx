@@ -228,15 +228,24 @@ export default async function AdminAnalyticsPage() {
                 </tr>
               </thead>
               <tbody>
-                {stats.pageStats.slice(0, 15).map((row) => {
+                {stats.pageStats.slice(0, 15).map((row, idx) => {
                   const count = row._count._all
                   const path = row.path
-                  const isLocale = path.includes("/en/") || path.includes("/zh/")
-                  const display = isLocale ? path.replace(/^\/(en|zh)(\/|$)/, "/.../").replace(/\?.*$/, "") : path
+                  const url = (row as any).url as string | null
+                  const fullUrl = url || (path?.startsWith("http") ? path : `${process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"}${path || ""}`)
+                  const display = fullUrl
                   return (
-                    <tr key={path} className="border-b border-mist/50">
+                    <tr key={idx} className="border-b border-mist/50">
                       <td className="py-2.5 pr-3 font-medium break-all">
-                        <span className="block text-xs">{display}</span>
+                        <a
+                          href={fullUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-xs text-blue-600 hover:underline"
+                          title={display}
+                        >
+                          {display}
+                        </a>
                         <span className="block h-1 bg-mist/60 mt-1 rounded-sm overflow-hidden">
                           <span
                             className="block h-full bg-gold/70"
@@ -314,9 +323,15 @@ export default async function AdminAnalyticsPage() {
                       <li key={event.id} className="flex items-baseline gap-2 text-xs">
                         <span className="text-stone tabular-nums shrink-0">{timeLabel(event.createdAt)}</span>
                         <span className="text-stone/70 shrink-0">{i + 1}.</span>
-                        <span className="font-mono text-[11px] text-charcoal break-all">
-                          {event.path.replace(/^\/(en|zh)/, "") || "/"}
-                        </span>
+                        <a
+                          href={(event as any).url || (event.path?.startsWith("http") ? event.path : `${process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"}${event.path || ""}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-[11px] text-blue-600 hover:underline break-all"
+                          title={(event as any).url || event.path}
+                        >
+                          {((event as any).url || event.path)?.replace(/^\/(en|zh)/, "") || "/"}
+                        </a>
                         {event.title && (
                           <span className="text-stone/70 text-[11px] truncate">— {event.title}</span>
                         )}

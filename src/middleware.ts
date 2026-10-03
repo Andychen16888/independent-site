@@ -7,6 +7,33 @@ const intlMiddleware = createIntlMiddleware(routing)
 
 const localeSet: Set<string> = new Set(routing.locales)
 
+function stripLocalePrefix(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean)
+  if (!segments.length) return "/"
+  if (localeSet.has(segments[0])) {
+    const rest = segments.slice(1).join("/")
+    return rest ? `/${rest}` : "/"
+  }
+  return pathname || "/"
+}
+
+function fixXDefaultAlternate(req: NextRequest, res: NextResponse): NextResponse {
+  const linkHeader = res.headers.get("link")
+  if (!linkHeader || !linkHeader.includes('hreflang="x-default"')) {
+    return res
+  }
+
+  const cleanPath = stripLocalePrefix(req.nextUrl.pathname)
+  const xDefaultPath = cleanPath === "/" ? "/en" : `/en${cleanPath}`
+  const xDefaultUrl = `${req.nextUrl.origin}${xDefaultPath}`
+  const updated = linkHeader.replace(
+    /<[^>]*>;\s*rel="alternate";\s*hreflang="x-default"/,
+    `<${xDefaultUrl}>; rel="alternate"; hreflang="x-default"`
+  )
+  res.headers.set("link", updated)
+  return res
+}
+
 function fixDoubleLocalePrefix(pathname: string): string | null {
   const segments = pathname.split("/").filter(Boolean)
   if (segments.length < 2) return null
@@ -51,7 +78,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return intlMiddleware(req)
+  const intlResponse = intlMiddleware(req)
+  return fixXDefaultAlternate(req, intlResponse)
 }
 
 export const config = {

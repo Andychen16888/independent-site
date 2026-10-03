@@ -5,14 +5,51 @@ import { countryName, countryFlag } from "@/lib/tracking/geo"
 
 export const dynamic = "force-dynamic"
 
-function startOfDay(d: Date): Date {
-  const copy = new Date(d)
-  copy.setHours(0, 0, 0, 0)
-  return copy
+const BIZ_TIMEZONE = process.env.BUSINESS_TIMEZONE || "Asia/Shanghai"
+
+function tzParts(d: Date, timeZone: string): { year: number; month: number; day: number; hour: number; minute: number; second: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(d)
+
+  const value = (type: string) => Number(parts.find((p) => p.type === type)?.value || "0")
+
+  return {
+    year: value("year"),
+    month: value("month"),
+    day: value("day"),
+    hour: value("hour"),
+    minute: value("minute"),
+    second: value("second"),
+  }
+}
+
+function startOfBusinessDay(d: Date): Date {
+  const day = tzParts(d, BIZ_TIMEZONE)
+  const utcMidnight = Date.UTC(day.year, day.month - 1, day.day, 0, 0, 0)
+  const offsetPoint = tzParts(new Date(utcMidnight), BIZ_TIMEZONE)
+  const offsetMs =
+    Date.UTC(
+      offsetPoint.year,
+      offsetPoint.month - 1,
+      offsetPoint.day,
+      offsetPoint.hour,
+      offsetPoint.minute,
+      offsetPoint.second
+    ) - utcMidnight
+  return new Date(utcMidnight - offsetMs)
 }
 
 function timeLabel(d: Date): string {
   return d.toLocaleString("en-US", {
+    timeZone: BIZ_TIMEZONE,
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -26,8 +63,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com
 
 async function getStats() {
   const now = new Date()
-  const today = startOfDay(now)
-  const weekAgo = startOfDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
+  const today = startOfBusinessDay(now)
+  const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
 
   // Get visitor IDs with events in last 7 days, ordered by most recent activity
   const activeVisitors = await prisma.visitEvent.groupBy({
@@ -166,12 +203,14 @@ export default async function AdminAnalyticsPage() {
   const weeklyMap = new Map<string, number>()
   const weekLabels: string[] = []
   for (let i = 6; i >= 0; i--) {
-    const day = startOfDay(new Date(Date.now() - i * 24 * 60 * 60 * 1000))
-    weekLabels.push(day.toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" }))
+    const day = startOfBusinessDay(new Date(Date.now() - i * 24 * 60 * 60 * 1000))
+    weekLabels.push(
+      day.toLocaleDateString("en-US", { timeZone: BIZ_TIMEZONE, weekday: "short", month: "numeric", day: "numeric" })
+    )
     weeklyMap.set(day.toISOString(), 0)
   }
   for (const pv of stats.weeklyPageViews) {
-    const key = startOfDay(pv.date).toISOString()
+    const key = startOfBusinessDay(pv.date).toISOString()
     if (weeklyMap.has(key)) weeklyMap.set(key, (weeklyMap.get(key) ?? 0) + pv.views)
   }
   const weekCounts = [...weeklyMap.values()]
@@ -195,10 +234,27 @@ export default async function AdminAnalyticsPage() {
       const events = (eventsByVisitor.get(visitorId) ?? []).sort(
         (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
       )
-      return session ? { session, events } : null
+      if (!events.length) return null
+      if (session) return { session, events }
+
+      const first = events[0]
+      const last = events[events.length - 1]
+      return {
+        session: {
+          id: `fallback-${visitorId}`,
+          visitorId,
+          ip: last.ip ?? first.ip,
+          country: last.country ?? first.country,
+          userAgent: last.userAgent ?? first.userAgent,
+          firstSeen: first.createdAt,
+          lastSeen: last.createdAt,
+          pageCount: events.length,
+        },
+        events,
+      }
     })
-    .filter((trail): trail is NonNullable<typeof trail> => trail !== null && trail.events.length > 0)
-    .slice(0, 15)
+    .filter((trail): trail is NonNullable<typeof trail> => trail !== null)
+    .slice(0, 30)
 
   function activeVisitorIdsFallback(events: typeof stats.recentEvents) {
     const map = new Map<string, Date>()
@@ -365,12 +421,17 @@ export default async function AdminAnalyticsPage() {
             <p className="text-sm text-stone">{bi("No visitor trails recorded yet.", "暂无访客轨迹。")}</p>
           ) : (
             <div className="space-y-5">
-              {trails.map(({ session, events }) => (
+              {trails.map(({ session, events }) => {
+                const latest = events[events.length - 1]
+                const displayCountry = session.country || latest?.country
+                const displayIp = session.ip || latest?.ip
+
+                return (
                 <div key={session.id} className="border border-mist/60 p-4">
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone mb-2">
-                    <span className="text-base">{countryFlag(session.country)}</span>
-                    <span className="font-medium text-charcoal">{countryName(session.country)}</span>
-                    {session.ip && <span className="font-mono">{session.ip}</span>}
+                    <span className="text-base">{countryFlag(displayCountry)}</span>
+                    <span className="font-medium text-charcoal">{countryName(displayCountry)}</span>
+                    {displayIp && <span className="font-mono">{displayIp}</span>}
                     <span className="ml-auto">
                       {events.length} {bi("steps", "步")} · {formatDateShort(session.firstSeen)}
                     </span>
@@ -413,7 +474,8 @@ export default async function AdminAnalyticsPage() {
                     })}
                   </ol>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </SectionCard>

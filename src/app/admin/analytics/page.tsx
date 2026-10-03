@@ -29,19 +29,34 @@ async function getStats() {
   const today = startOfDay(now)
   const weekAgo = startOfDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
 
+  // Get visitor IDs with events in last 7 days, ordered by most recent activity
+  const activeVisitors = await prisma.visitEvent.groupBy({
+    by: ["visitorId"],
+    where: { createdAt: { gte: weekAgo } },
+    _max: { createdAt: true },
+    orderBy: { _max: { createdAt: "desc" } },
+    take: 30,
+  })
+
+  const activeVisitorIds = activeVisitors.map((v) => v.visitorId)
+
   const [
-    visitorCount,
+    visitorCountDistinct7d,
     pageViewCount,
     todayViews,
     countryStats,
     pageStats,
     loginTotal,
     loginFailed,
-    recentSessions,
-    recentEvents,
+    recentSessionsForActive,
+    activeVisitorEvents,
     weeklyPageViews,
   ] = await Promise.all([
-    prisma.visitorSession.count(),
+    prisma.visitEvent.findMany({
+      where: { createdAt: { gte: weekAgo } },
+      select: { visitorId: true },
+      distinct: ["visitorId"],
+    }),
     prisma.visitEvent.count(),
     prisma.visitEvent.count({ where: { createdAt: { gte: today } } }),
     prisma.visitEvent.groupBy({
@@ -58,26 +73,28 @@ async function getStats() {
     }),
     prisma.loginRecord.count(),
     prisma.loginRecord.count({ where: { success: false } }),
-    prisma.visitorSession.findMany({
-      orderBy: { lastSeen: "desc" },
-      take: 25,
-    }),
-    prisma.visitEvent.findMany({
-      where: { createdAt: { gte: weekAgo } },
-      orderBy: { createdAt: "desc" },
-      take: 2000,
-      select: {
-        id: true,
-        visitorId: true,
-        path: true,
-        title: true,
-        referrer: true,
-        ip: true,
-        country: true,
-        userAgent: true,
-        createdAt: true,
-      },
-    }),
+    activeVisitorIds.length > 0
+      ? prisma.visitorSession.findMany({
+          where: { visitorId: { in: activeVisitorIds } },
+        })
+      : Promise.resolve([]),
+    activeVisitorIds.length > 0
+      ? prisma.visitEvent.findMany({
+          where: { visitorId: { in: activeVisitorIds } },
+          orderBy: { createdAt: "asc" },
+          select: {
+            id: true,
+            visitorId: true,
+            path: true,
+            title: true,
+            referrer: true,
+            ip: true,
+            country: true,
+            userAgent: true,
+            createdAt: true,
+          },
+        })
+      : Promise.resolve([]),
     prisma.pageView.findMany({
       where: { date: { gte: weekAgo } },
       orderBy: { date: "asc" },
@@ -92,17 +109,18 @@ async function getStats() {
   ])
 
   return {
-    visitorCount,
+    visitorCount: visitorCountDistinct7d.length,
     pageViewCount,
     todayViews,
     countryStats,
     pageStats,
     loginTotal,
     loginFailed,
-    recentSessions,
-    recentEvents,
+    recentSessions: recentSessionsForActive,
+    recentEvents: activeVisitorEvents,
     weeklyPageViews,
     weekAgo,
+    activeVisitorOrder: activeVisitorIds,
   }
 }
 
@@ -166,15 +184,34 @@ export default async function AdminAnalyticsPage() {
     eventsByVisitor.set(event.visitorId, list)
   }
 
-  const trails = stats.recentSessions
-    .map((session) => ({
-      session,
-      events: (eventsByVisitor.get(session.visitorId) ?? []).sort(
+  const sessionByVisitor = new Map<string, (typeof stats.recentSessions)[number]>()
+  for (const session of stats.recentSessions) {
+    sessionByVisitor.set(session.visitorId, session)
+  }
+
+  const trails = (stats.activeVisitorOrder ?? activeVisitorIdsFallback(stats.recentEvents))
+    .map((visitorId) => {
+      const session = sessionByVisitor.get(visitorId)
+      const events = (eventsByVisitor.get(visitorId) ?? []).sort(
         (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-      ),
-    }))
-    .filter((trail) => trail.events.length > 0)
+      )
+      return session ? { session, events } : null
+    })
+    .filter((trail): trail is NonNullable<typeof trail> => trail !== null && trail.events.length > 0)
     .slice(0, 15)
+
+  function activeVisitorIdsFallback(events: typeof stats.recentEvents) {
+    const map = new Map<string, Date>()
+    for (const e of events) {
+      const prev = map.get(e.visitorId)
+      if (!prev || e.createdAt > prev) {
+        map.set(e.visitorId, e.createdAt)
+      }
+    }
+    return Array.from(map.entries())
+      .sort((a, b) => b[1].getTime() - a[1].getTime())
+      .map(([id]) => id)
+  }
 
   const recentLogins = await prisma.loginRecord.findMany({
     orderBy: { createdAt: "desc" },

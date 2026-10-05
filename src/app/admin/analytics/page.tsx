@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { prisma } from "@/lib/db/prisma"
 import { bi } from "@/components/admin/bilingual"
 import { formatDateShort } from "@/lib/utils/format"
@@ -163,7 +164,6 @@ async function getStats() {
     recentEvents: activeVisitorEvents,
     weeklyPageViews,
     weekAgo,
-    activeVisitorOrder: activeVisitorIds,
     latestEventAt: latestEvent?.createdAt ?? null,
   }
 }
@@ -190,18 +190,38 @@ function StatCard({
   )
 }
 
-function SectionCard({ title, titleZh, children }: { title: string; titleZh: string; children: React.ReactNode }) {
+function SectionCard({
+  title,
+  titleZh,
+  action,
+  children,
+}: {
+  title: string
+  titleZh: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <section className="bg-white border border-mist p-6">
-      <h3 className="font-serif text-base mb-4">
-        {title} <span className="text-sm text-stone">{titleZh}</span>
-      </h3>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <h3 className="font-serif text-base">
+          {title} <span className="text-sm text-stone">{titleZh}</span>
+        </h3>
+        {action}
+      </div>
       {children}
     </section>
   )
 }
 
-export default async function AdminAnalyticsPage() {
+export default async function AdminAnalyticsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const params = await searchParams
+  // 轨迹步骤默认倒序（最新一步在最上面），?steps=asc 可切回时间正序
+  const stepsNewestFirst = params.steps !== "asc"
   const stats = await getStats()
 
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
@@ -243,26 +263,41 @@ export default async function AdminAnalyticsPage() {
     sessionByVisitor.set(session.visitorId, session)
   }
 
-  const trails = (stats.activeVisitorOrder ?? activeVisitorIdsFallback(stats.recentEvents))
+  // 访客按「最近一次访问时间」倒序：最近活跃的访客排在最前面。
+  // 不依赖 groupBy 的聚合排序，直接用已取回的事件时间戳算，避免数据库端排序
+  // 未生效时又静默退化成按插入顺序显示。
+  const lastSeenByVisitor = new Map<string, number>()
+  for (const event of stats.recentEvents) {
+    const time = event.createdAt.getTime()
+    const prev = lastSeenByVisitor.get(event.visitorId) ?? 0
+    if (time > prev) lastSeenByVisitor.set(event.visitorId, time)
+  }
+  const visitorIds = [...lastSeenByVisitor.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([visitorId]) => visitorId)
+
+  const trails = visitorIds
     .map((visitorId) => {
       const session = sessionByVisitor.get(visitorId)
-      const events = (eventsByVisitor.get(visitorId) ?? []).sort(
-        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      const events = [...(eventsByVisitor.get(visitorId) ?? [])].sort((a, b) =>
+        stepsNewestFirst
+          ? b.createdAt.getTime() - a.createdAt.getTime()
+          : a.createdAt.getTime() - b.createdAt.getTime()
       )
       if (!events.length) return null
       if (session) return { session, events }
 
-      const first = events[0]
-      const last = events[events.length - 1]
+      const newest = events[0]
+      const oldest = events[events.length - 1]
       return {
         session: {
           id: `fallback-${visitorId}`,
           visitorId,
-          ip: last.ip ?? first.ip,
-          country: last.country ?? first.country,
-          userAgent: last.userAgent ?? first.userAgent,
-          firstSeen: first.createdAt,
-          lastSeen: last.createdAt,
+          ip: newest.ip ?? oldest.ip,
+          country: newest.country ?? oldest.country,
+          userAgent: newest.userAgent ?? oldest.userAgent,
+          firstSeen: oldest.createdAt,
+          lastSeen: newest.createdAt,
           pageCount: events.length,
         },
         events,
@@ -270,19 +305,6 @@ export default async function AdminAnalyticsPage() {
     })
     .filter((trail): trail is NonNullable<typeof trail> => trail !== null)
     .slice(0, 30)
-
-  function activeVisitorIdsFallback(events: typeof stats.recentEvents) {
-    const map = new Map<string, Date>()
-    for (const e of events) {
-      const prev = map.get(e.visitorId)
-      if (!prev || e.createdAt > prev) {
-        map.set(e.visitorId, e.createdAt)
-      }
-    }
-    return Array.from(map.entries())
-      .sort((a, b) => b[1].getTime() - a[1].getTime())
-      .map(([id]) => id)
-  }
 
   const recentLogins = await prisma.loginRecord.findMany({
     orderBy: { createdAt: "desc" },
@@ -453,13 +475,26 @@ export default async function AdminAnalyticsPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <SectionCard title="Visitor Trails" titleZh="访客轨迹">
+        <SectionCard
+          title="Visitor Trails"
+          titleZh="访客轨迹"
+          action={
+            <Link
+              href={stepsNewestFirst ? "/admin/analytics?steps=asc" : "/admin/analytics"}
+              scroll={false}
+              className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+            >
+              {stepsNewestFirst ? bi("Oldest step first", "按最早一步在前") : bi("Newest step first", "按最近一步在前")}
+            </Link>
+          }
+        >
           {trails.length === 0 ? (
             <p className="text-sm text-stone">{bi("No visitor trails recorded yet.", "暂无访客轨迹。")}</p>
           ) : (
             <div className="space-y-5">
               {trails.map(({ session, events }) => {
-                const latest = events[events.length - 1]
+                // 事件已按所选顺序排好：倒序时第一行是最近一步，正序时是第一步
+                const latest = events[0]
                 const displayCountry = session.country || latest?.country
                 const displayIp = session.ip || latest?.ip
                 // 无 IP / 无国家通常来自服务器本机或内网访问（curl 自测、本机调试），
@@ -482,8 +517,11 @@ export default async function AdminAnalyticsPage() {
                         </span>
                       </span>
                     )}
-                    <span className="ml-auto">
-                      {events.length} {bi("steps", "步")} · {formatDateShort(session.firstSeen)}
+                    <span className="ml-auto text-right">
+                      {events.length} {bi("steps", "步")} ·{" "}
+                      {stepsNewestFirst
+                        ? bi("latest", "最近") + " " + timeLabel(session.lastSeen)
+                        : bi("first", "首次") + " " + formatDateShort(session.firstSeen)}
                     </span>
                   </div>
                   <ol className="space-y-1.5">

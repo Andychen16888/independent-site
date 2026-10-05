@@ -20,6 +20,7 @@ import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
 import { getSiteContent } from "@/config/site-content"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
+import { categoryPath } from "@/lib/categories/slug"
 import {
   DEFAULT_FEATURED_CATEGORIES,
   DEFAULT_HERO_SLIDES,
@@ -130,7 +131,7 @@ export default async function HomePage({
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({
     title: localizeCategoryName(locale, c.slug, c.name, categoryTranslations.get(c.id)),
     description: c.description || undefined,
-    href: `/categories/${c.slug}`,
+    href: categoryPath(c.slug, c.name),
     image: c.image || undefined,
   }))
 
@@ -199,7 +200,7 @@ export default async function HomePage({
     : [t("seoParagraph", { siteName: getSiteSeoResult.siteName })].filter(Boolean)
 
   const seoCategoryLinks: SEOLink[] = featuredCats.length > 0
-    ? featuredCats.map((c) => ({ label: c.name, href: `/categories/${c.slug}` }))
+    ? featuredCats.map((c) => ({ label: c.name, href: categoryPath(c.slug, c.name) }))
     : featuredFallback.map((f) => ({ label: f.title, href: f.href }))
 
   const featuredLinks: SEOLink[] = [

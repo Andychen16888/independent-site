@@ -2,6 +2,7 @@ import { MetadataRoute } from "next"
 import { prisma } from "@/lib/db/prisma"
 import { baseUrl, staticRoutes } from "@/lib/seo/sitemap-data"
 import { routing } from "@/i18n/routing"
+import { categoryPath } from "@/lib/categories/slug"
 
 type SitemapEntry = {
   url: string
@@ -70,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     prisma.category.findMany({
       where: { isActive: true },
-      select: { slug: true, updatedAt: true },
+      select: { slug: true, name: true, updatedAt: true },
     }),
     prisma.blogPost.findMany({
       where: { isPublished: true, publishedAt: { not: null } },
@@ -98,9 +99,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     for (const c of categories) {
-      const path = `/categories/${c.slug}`
+      // Legacy slugs (e.g. "led lighting") are 301'd to the canonical path, so
+      // only the canonical URL belongs in the sitemap.
+      const path = categoryPath(c.slug, c.name)
       entries.push({
-        url: `${baseUrl}${prefix}/categories/${c.slug}`,
+        url: `${baseUrl}${prefix}${path}`,
         lastModified: c.updatedAt,
         changeFrequency: "weekly",
         priority: 0.7,

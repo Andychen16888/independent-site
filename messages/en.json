@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "No products in this category yet."
+    "noProducts": "No products in this category yet.",
+    "productCount": "{count} products"
   },
   "blog": {
     "title": "Journal",

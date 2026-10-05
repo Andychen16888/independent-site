@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "Chưa có sản phẩm trong danh mục này."
+    "noProducts": "Chưa có sản phẩm trong danh mục này.",
+    "productCount": "{count} sản phẩm"
   },
   "blog": {
     "title": "Tạp Chí",

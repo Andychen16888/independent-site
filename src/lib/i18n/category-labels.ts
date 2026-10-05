@@ -1,3 +1,5 @@
+import { normalizeCategoryKey } from "@/lib/categories/slug"
+
 const CATEGORY_NAME_MAP: Record<string, Record<string, string>> = {
   "agricultural-commodities": {
     zh: "农产品",
@@ -131,7 +133,7 @@ const CATEGORY_NAME_MAP: Record<string, Record<string, string>> = {
   },
 }
 
-const CATEGORY_NAME_ALIASES: Record<string, string> = {
+export const CATEGORY_NAME_ALIASES: Record<string, string> = {
   chemicals: "chemical-products",
   chemical: "chemical-products",
   "chemical-product": "chemical-products",
@@ -158,7 +160,13 @@ const CATEGORY_NAME_ALIASES: Record<string, string> = {
 }
 
 function normalizeCategorySlug(slug: string): string {
-  return slug.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-")
+  return normalizeCategoryKey(slug)
+}
+
+/** Follows one alias hop, so `/categories/led-lights` reaches "led-lighting". */
+export function resolveCategoryAlias(slug: string): string {
+  const key = normalizeCategorySlug(slug)
+  return CATEGORY_NAME_ALIASES[key] || key
 }
 
 export function localizeCategoryName(

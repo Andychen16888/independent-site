@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "Aún no hay productos en esta categoría."
+    "noProducts": "Aún no hay productos en esta categoría.",
+    "productCount": "{count} productos"
   },
   "blog": {
     "title": "Revista",

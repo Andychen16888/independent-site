@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "Tiada produk dalam kategori ini lagi."
+    "noProducts": "Tiada produk dalam kategori ini lagi.",
+    "productCount": "{count} produk"
   },
   "blog": {
     "title": "Jurnal",

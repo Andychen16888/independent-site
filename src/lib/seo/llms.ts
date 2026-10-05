@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
+import { categoryPath } from "@/lib/categories/slug"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 const defaultLocale = "en"
@@ -103,7 +104,7 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
       const count = c._count?.products ?? 0
       const desc = c.description ? `: ${stripHtml(c.description, 120)}` : ""
       lines.push(
-        `- [${c.name}](${localized(`/categories/${c.slug}`)})${desc} (${count} product${count === 1 ? "" : "s"})`
+        `- [${c.name}](${localized(categoryPath(c.slug, c.name))})${desc} (${count} product${count === 1 ? "" : "s"})`
       )
     }
     lines.push("")

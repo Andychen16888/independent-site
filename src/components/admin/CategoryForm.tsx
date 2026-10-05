@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { localeNames } from "@/i18n/routing"
 import { slugify } from "@/lib/utils/format"
+import { canonicalCategorySlug } from "@/lib/categories/slug"
 import ImageUploader from "@/components/admin/ImageUploader"
 
 interface CatOption { id: string; name: string; slug: string; parentId: string | null }
@@ -65,6 +66,13 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
     update({ name: value, ...(form.slug === "" ? { slug: slugify(value) } : {}) })
   }
 
+  // Slug must stay URL-safe: "LED Lighting" would otherwise be stored verbatim
+  // and produce /categories/led%20lighting.
+  const handleSlugBlur = () => {
+    const canonical = canonicalCategorySlug(form.slug, form.name)
+    if (canonical !== form.slug) update({ slug: canonical })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -114,7 +122,12 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
         </div>
         <div>
           <label className={label}>Slug</label>
-          <input value={form.slug} onChange={(e) => update({ slug: e.target.value })} className={input} />
+          <input
+            value={form.slug}
+            onChange={(e) => update({ slug: e.target.value })}
+            onBlur={handleSlugBlur}
+            className={input}
+          />
         </div>
       </div>
 

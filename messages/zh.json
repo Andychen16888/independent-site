@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "此分类暂无产品。"
+    "noProducts": "此分类暂无产品。",
+    "productCount": "共 {count} 个产品"
   },
   "blog": {
     "title": "资讯",

@@ -4,6 +4,8 @@ import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertCategoryTranslations } from "@/lib/i18n/category"
 import { routing } from "@/i18n/routing"
+import { canonicalCategorySlug } from "@/lib/categories/slug"
+import { ensureUniqueCategorySlug } from "@/lib/categories/unique-slug"
 
 function parseCategoryTranslations(input: unknown): { locale: string; name?: string }[] {
   if (!input || typeof input !== "object") return []
@@ -34,10 +36,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function generateSlug(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
-}
-
 export async function POST(req: NextRequest) {
   const authError = await requireAdmin(req)
   if (authError) return authError
@@ -50,15 +48,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    let slugValue = slug
-    if (!slugValue) {
-      slugValue = generateSlug(name)
-    }
-
-    const existingSlug = await prisma.category.findUnique({ where: { slug: slugValue } })
-    if (existingSlug) {
-      slugValue = `${slugValue}-${Date.now().toString().slice(-4)}`
-    }
+    // The slug field is free text: "LED Lighting" must be stored as
+    // "led-lighting", otherwise the category URL breaks and splits into several
+    // indexed variants.
+    const slugValue = await ensureUniqueCategorySlug(canonicalCategorySlug(slug, name))
 
     const category = await prisma.category.create({
       data: {

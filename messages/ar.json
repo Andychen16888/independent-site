@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "لا توجد منتجات في هذه الفئة حالياً."
+    "noProducts": "لا توجد منتجات في هذه الفئة حالياً.",
+    "productCount": "{count} منتج"
   },
   "blog": {
     "title": "المجلة",

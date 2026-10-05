@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container"
 import { fetchPageTranslations } from "@/lib/i18n/content"
 import { fetchCategoryTranslations } from "@/lib/i18n/category"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
+import { categoryPath } from "@/lib/categories/slug"
 import type { PageTranslation } from "@prisma/client"
 import {
   HiOutlineEnvelope,
@@ -136,7 +137,7 @@ export async function Footer({
   const shopLinks = categories.length
     ? categories.map((c) => ({
         name: localizeCategoryName(locale, c.slug, c.name, categoryTranslations.get(c.id)),
-        href: `/categories/${c.slug}`,
+        href: categoryPath(c.slug, c.name),
       }))
     : DEFAULT_SHOP_LINKS
 

@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "ยังไม่มีสินค้าในหมวดหมู่นี้"
+    "noProducts": "ยังไม่มีสินค้าในหมวดหมู่นี้",
+    "productCount": "{count} รายการ"
   },
   "blog": {
     "title": "วารสาร",

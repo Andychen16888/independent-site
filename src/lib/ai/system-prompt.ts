@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
+import { categoryPath } from "@/lib/categories/slug"
 
 /**
  * Builds the AI assistant system prompt from live site settings and catalog data.
@@ -61,7 +62,7 @@ export async function buildSystemPrompt(): Promise<string> {
     .join("\n")
 
   const categoryLine = categories
-    .map((c) => `${c.name} (${siteUrl}/categories/${c.slug})`)
+    .map((c) => `${c.name} (${siteUrl}${categoryPath(c.slug, c.name)})`)
     .join(", ")
 
   let faqLines = ""

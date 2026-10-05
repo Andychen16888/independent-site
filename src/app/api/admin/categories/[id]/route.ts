@@ -4,6 +4,8 @@ import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertCategoryTranslations } from "@/lib/i18n/category"
 import { routing } from "@/i18n/routing"
+import { canonicalCategorySlug } from "@/lib/categories/slug"
+import { ensureUniqueCategorySlug } from "@/lib/categories/unique-slug"
 
 function parseCategoryTranslations(input: unknown): { locale: string; name?: string }[] {
   if (!input || typeof input !== "object") return []
@@ -61,9 +63,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "A category cannot be its own parent" }, { status: 400 })
     }
 
+    let nextSlug: string | undefined
+    if (slug !== undefined && slug !== "") {
+      // Stored slugs must stay URL-safe: "LED Lighting" becomes "led-lighting" so
+      // the category keeps one canonical URL.
+      const desired = canonicalCategorySlug(slug, name ?? "")
+      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true } })
+      if (!current || current.slug !== desired) {
+        nextSlug = await ensureUniqueCategorySlug(desired, id)
+      }
+    }
+
     const data: any = {
       ...(name !== undefined ? { name } : {}),
-      ...(slug !== undefined && slug !== "" ? { slug } : {}),
+      ...(nextSlug ? { slug: nextSlug } : {}),
       ...(description !== undefined ? { description } : {}),
       ...(image !== undefined ? { image } : {}),
       ...(parentId !== undefined ? { parentId: parentId || null } : {}),

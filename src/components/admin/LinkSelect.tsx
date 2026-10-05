@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { bi } from "@/components/admin/bilingual"
+import { categoryPath } from "@/lib/categories/slug"
 
 interface CategoryOption {
   slug: string
@@ -33,8 +34,8 @@ function isExternalUrl(v: string): boolean {
   return /^https?:\/\//i.test(v)
 }
 
-function categoryHref(slug: string): string {
-  return `/categories/${slug}`
+function categoryHref(slug: string, name?: string): string {
+  return categoryPath(slug, name)
 }
 
 export interface LinkSelectProps {
@@ -96,7 +97,7 @@ export default function LinkSelect({ value, onChange, allowExternal = false }: L
             {categories
               .filter((c) => c.slug)
               .map((c) => (
-                <option key={c.slug} value={categoryHref(c.slug)}>
+                <option key={c.slug} value={categoryHref(c.slug, c.name)}>
                   {c.name} — {bi("Category", "分类")}
                 </option>
               ))}
@@ -109,7 +110,7 @@ export default function LinkSelect({ value, onChange, allowExternal = false }: L
           value &&
           !isExternalUrl(value) &&
           !STATIC_LINKS.some((l) => l.value === value) &&
-          !categories.some((c) => c.slug && categoryHref(c.slug) === value) && (
+          !categories.some((c) => c.slug && categoryHref(c.slug, c.name) === value) && (
             <option value={value}>{bi("Custom link (keep current)", "自定义链接（保留当前）")} — {value}</option>
           )}
       </select>

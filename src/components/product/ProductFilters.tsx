@@ -5,7 +5,11 @@ import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils/cn"
 
-export function ProductFilters({ category }: { category?: string }) {
+export function ProductFilters({
+  basePath = "/products",
+}: {
+  basePath?: string
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations("products.filters")
@@ -31,7 +35,10 @@ export function ProductFilters({ category }: { category?: string }) {
     } else {
       params.set(key, value)
     }
-    router.push(`/products?${params.toString()}`)
+    const suffix = params.toString()
+    // Sorting/filtering must stay on the current listing: a category page keeps
+    // its own path instead of jumping back to /products.
+    router.push(suffix ? `${basePath}?${suffix}` : basePath)
   }
 
   return (

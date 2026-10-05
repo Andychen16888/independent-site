@@ -296,7 +296,8 @@
     }
   },
   "category": {
-    "noProducts": "In dieser Kategorie gibt es noch keine Produkte."
+    "noProducts": "In dieser Kategorie gibt es noch keine Produkte.",
+    "productCount": "{count} Produkte"
   },
   "blog": {
     "title": "Magazin",

@@ -12,7 +12,7 @@ import { ProductReviews } from "./ProductReviews"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlistStore } from "@/stores/wishlist-store"
 import { formatPrice, getDiscountPercentage } from "@/lib/utils/format"
-import DOMPurify from "dompurify"
+import DOMPurify from "isomorphic-dompurify"
 import { HiOutlineMinus, HiOutlinePlus, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineArrowPath, HiHeart, HiOutlineHeart, HiPlay, HiOutlineDocumentText, HiOutlineArrowRight } from "react-icons/hi2"
 
 interface ProductDetailProps {

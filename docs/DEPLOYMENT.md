@@ -891,6 +891,10 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 最新代码会在 `logs/err.log` 里打 `[track] ... write failed`，并在分析页顶部显示
 「最新访客数据」时间与陈旧告警。
 
+> 新版埋点会每小时探测一次 `visit_events.url` / `page_views.url` 是否存在，缺列时
+> 自动退回按 `path` 写入，**不会因为漏跑迁移而彻底丢数据**；但完整字段（页面完整
+> URL、国家分布）仍需把迁移补上。
+
 服务器上按顺序排查：
 
 ```bash

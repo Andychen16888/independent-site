@@ -597,29 +597,38 @@ sudo ls -l /etc/letsencrypt/live/commoditychina.com/
 ### 8.3 启用完整模板（含 HTTPS + 缓存）
 
 ```bash
-# 复制模板并替换 your-domain.com 为你的域名
-sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
-sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+cd /var/www/b2b-independent-site
 
 # 创建模板里 proxy_cache_path 需要的缓存父目录（必须！nginx 不会自动创建父目录）
 sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
 sudo chown -R www-data:www-data /var/cache/nginx
 
+# 安装模板：自动替换域名、备份旧配置、nginx -t 校验、失败自动还原
+bash scripts/install-nginx-conf.sh commoditychina.com
+
 # 断言：模板里的项目路径必须真实存在（大小写不一致时 nginx -t 不会报错，
 # 但运行期会 404/502，非常隐蔽）。目录名对不上时先回 §4 重命名。
-grep -o '/var/www/[^ /;]*' /etc/nginx/sites-available/b2b-independent-site | sort -u | while read -r p; do
+grep -o '/var/www/[^ /;]*' /etc/nginx/sites-enabled/b2b-independent-site | sort -u | while read -r p; do
   [ -e "$p" ] && echo "OK   $p" || echo "缺失 $p  ← 目录名大小写或路径不对"
 done
-
-sudo nginx -t && sudo systemctl reload nginx
 ```
 
 现在 `http` 会 301 跳到 `https`。
 
+> ⚠️ **不要手动 `cp` 模板。** 模板里的域名是占位符 `your-domain.com`，忘记替换时
+> `nginx -t` 会报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."`。
+> 此时 nginx 仍在用旧配置运行（reload 没执行），但**机器一重启就起不来**，站点全挂。
+> `scripts/install-nginx-conf.sh` 会替换域名并在校验失败时自动还原旧配置。
+> 万一已经手动 cp 过，就地修复：
+> ```bash
+> sudo sed -i 's/your-domain\.com/commoditychina.com/g' /etc/nginx/sites-enabled/b2b-independent-site
+> sudo nginx -t && sudo systemctl reload nginx
+> ```
+
 > **常见报错对照**
 > - `cannot load certificate .../fullchain.pem` → 证书还没签发，跳到 8.2
 > - `mkdir() "/var/cache/nginx/b2b" failed` → 8.3 的 `mkdir -p` 没跑，补跑
-> - `no "ssl_certificate" is defined for the "listen ... ssl"` → 证书路径与模板里的域名不一致，检查 `sed` 是否替换成功
+> - `no "ssl_certificate" is defined for the "listen ... ssl"` → 证书路径与模板里的域名不一致，用上面的脚本重装
 >
 > 该模板默认：80 跳 443；`/_next/static` 缓存 365d；`/static/`、`/uploads/` 直读本地文件并回退 Node；`/api` 代理超时 360s（AI 多语言翻译等长任务不报 504）。
 
@@ -879,6 +888,7 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 证书还没签发。必须按 §8.1 → §8.2 → §8.3 顺序：先用 HTTP-only 引导配置把 nginx 跑起来，再 `certbot certonly --webroot` 签发，最后才套含 443 块的完整模板。直接套模板必然报 `cannot load certificate .../fullchain.pem` |
+| `nginx -t` 报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."` | 手动 `cp` 模板时忘了替换域名占位符（`sed 's/your-domain\.com/你的域名/g'`）。此时 nginx 仍在跑旧配置，但**机器重启会起不来**。就地修复：`sudo sed -i 's/your-domain\.com/commoditychina.com/g' /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`，以后改用 `bash scripts/install-nginx-conf.sh commoditychina.com` |
 | `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | 后台数据分析里访客 IP 全是 Cloudflare 的 IP / 国家识别不出来 | nginx 没启用 Cloudflare 真实 IP（real_ip 模块）。按第 8.3 节重新部署最新模板：`sudo cp b2b-independent-site.nginx.conf /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`。模块确认：`nginx -V 2>&1 | grep realip`（应输出 `--with-http_realip_module`）。模板已内置 Cloudflare 全部 IPv4/IPv6 网段 + `real_ip_header CF-Connecting-IP` |

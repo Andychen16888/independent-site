@@ -6,7 +6,8 @@ import { getSetting } from "@/lib/settings/settings"
 export async function generateMetadata(): Promise<Metadata> {
   const siteName = (await getSetting("site.name")) || "Commerce"
   return {
-    title: `Admin | ${siteName}`,
+    // absolute：品牌名已拼在这里，避免被根布局的 title.template 再追加一次
+    title: { absolute: `Admin | ${siteName}` },
     robots: "noindex, nofollow",
   }
 }

@@ -62,7 +62,9 @@ export function generateMetadata(
     : [{ url: `${siteUrl}/og-default.jpg`, width: 1200, height: 630, alt: name }]
 
   return {
-    title: data.title ? `${data.title} | ${name}` : name,
+    // absolute：品牌名已在这里拼好，必须禁止根布局的 title.template 再拼一次，
+    // 否则每个页面都会变成「标题 | 品牌 | 品牌」。
+    title: { absolute: title },
     description,
     keywords: data.keywords,
     metadataBase: new URL(siteUrl),

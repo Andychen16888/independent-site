@@ -473,7 +473,15 @@ export default async function AdminAnalyticsPage() {
                     <span className="font-medium text-charcoal">
                       {unknownSource ? bi("Local / unknown source", "本机或内网访问") : countryName(displayCountry)}
                     </span>
-                    {displayIp && <span className="font-mono">{displayIp}</span>}
+                    {displayIp && (
+                      <span className="font-mono inline-flex items-center gap-1">
+                        {displayIp}
+                        {/* 访客走 IPv6 上网时会记录 IPv6 地址（国内宽带/移动很常见），标出来避免被当成脏数据 */}
+                        <span className="text-[9px] uppercase tracking-wider text-stone/70 border border-mist px-1 py-px">
+                          {displayIp.includes(":") ? "IPv6" : "IPv4"}
+                        </span>
+                      </span>
+                    )}
                     <span className="ml-auto">
                       {events.length} {bi("steps", "步")} · {formatDateShort(session.firstSeen)}
                     </span>

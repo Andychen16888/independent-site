@@ -1,10 +1,13 @@
 import geoip from "geoip-lite"
+import { isPrivateIp } from "@/lib/ai/rate-limit"
 
 const MAX_CACHE = 20000
 const cache = new Map<string, string | null>()
 
 export function countryFromIp(ip: string | null | undefined): string | null {
   if (!ip || ip.length < 7 || ip.length > 45) return null
+  // 内网 / 回环地址查不到国家，直接返回，省掉一次无意义的查表
+  if (isPrivateIp(ip)) return null
   const key = ip
   if (cache.has(key)) return cache.get(key) ?? null
 

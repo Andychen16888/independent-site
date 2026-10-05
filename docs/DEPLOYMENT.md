@@ -881,6 +881,7 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | `nginx -t` 报证书不存在 | 证书还没签发。必须按 §8.1 → §8.2 → §8.3 顺序：先用 HTTP-only 引导配置把 nginx 跑起来，再 `certbot certonly --webroot` 签发，最后才套含 443 块的完整模板。直接套模板必然报 `cannot load certificate .../fullchain.pem` |
 | `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
+| 后台数据分析里访客 IP 全是 Cloudflare 的 IP / 国家识别不出来 | nginx 没启用 Cloudflare 真实 IP（real_ip 模块）。按第 8.3 节重新部署最新模板：`sudo cp b2b-independent-site.nginx.conf /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`。模块确认：`nginx -V 2>&1 | grep realip`（应输出 `--with-http_realip_module`）。模板已内置 Cloudflare 全部 IPv4/IPv6 网段 + `real_ip_header CF-Connecting-IP` |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
 
 ### 13.1 访客埋点停止写入

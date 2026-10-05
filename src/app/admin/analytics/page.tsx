@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma"
 import { bi } from "@/components/admin/bilingual"
 import { formatDateShort } from "@/lib/utils/format"
 import { countryName, countryFlag } from "@/lib/tracking/geo"
+import { isPrivateIp } from "@/lib/ai/rate-limit"
 
 export const dynamic = "force-dynamic"
 
@@ -461,12 +462,17 @@ export default async function AdminAnalyticsPage() {
                 const latest = events[events.length - 1]
                 const displayCountry = session.country || latest?.country
                 const displayIp = session.ip || latest?.ip
+                // 无 IP / 无国家通常来自服务器本机或内网访问（curl 自测、本机调试），
+                // 直接显示「未知」会让人以为是国家识别失败，这里明确区分开。
+                const unknownSource = !displayCountry && (!displayIp || isPrivateIp(displayIp))
 
                 return (
                 <div key={session.id} className="border border-mist/60 p-4">
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone mb-2">
                     <span className="text-base">{countryFlag(displayCountry)}</span>
-                    <span className="font-medium text-charcoal">{countryName(displayCountry)}</span>
+                    <span className="font-medium text-charcoal">
+                      {unknownSource ? bi("Local / unknown source", "本机或内网访问") : countryName(displayCountry)}
+                    </span>
                     {displayIp && <span className="font-mono">{displayIp}</span>}
                     <span className="ml-auto">
                       {events.length} {bi("steps", "步")} · {formatDateShort(session.firstSeen)}

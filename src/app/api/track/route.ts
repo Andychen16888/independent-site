@@ -77,10 +77,10 @@ function reportWriteFailure(label: string, error: unknown): void {
 // ---- url 字段可用性探测 ----
 // 20261002115757 迁移给 visit_events / page_views 加了 url 字段。生产库漏跑这条
 // 迁移时 Prisma 会因为列不存在直接拒绝写入（P2022），访客数据从此全部丢失。
-// 这里每小时探测一次列是否存在：缺列就退回旧字段写入，埋点不再中断，补完迁移后
-// 自动恢复完整字段。
+// 这里每 10 分钟探测一次列是否存在：缺列就退回旧字段写入，埋点不再中断，
+// 补完迁移后自动恢复完整字段。
 type UrlColumns = { visitEvent: boolean; pageView: boolean }
-const URL_COLUMN_TTL_MS = 60 * 60 * 1000
+const URL_COLUMN_TTL_MS = 10 * 60 * 1000
 let urlColumnsCache: { at: number; value: UrlColumns } | null = null
 
 async function urlColumnAvailability(): Promise<UrlColumns> {

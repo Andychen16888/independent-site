@@ -891,38 +891,59 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 最新代码会在 `logs/err.log` 里打 `[track] ... write failed`，并在分析页顶部显示
 「最新访客数据」时间与陈旧告警。
 
-> 新版埋点会每小时探测一次 `visit_events.url` / `page_views.url` 是否存在，缺列时
+> 新版埋点会每 10 分钟探测一次 `visit_events.url` / `page_views.url` 是否存在，缺列时
 > 自动退回按 `path` 写入，**不会因为漏跑迁移而彻底丢数据**；但完整字段（页面完整
 > URL、国家分布）仍需把迁移补上。
+
+**先跑自检脚本**，它会直接告诉你缺什么：
+
+```bash
+cd /var/www/b2b-independent-site
+npm run db:check-analytics     # 正常退出码 0；有问题时列出缺失字段并给出修复命令
+```
+
+> ⚠️ **「No pending migrations to apply」不等于结构正确。**
+> `20261002115757_add_url_to_pageview_and_visitevent` 曾在只被登记、SQL 未真正执行的
+> 情况下标记为已应用，导致 `migrate deploy` 认为无事可做，缺列永远补不上
+> （自检脚本会报 `[FAIL] visit_events: 缺少字段 url`）。
+> 仓库已追加幂等的修复迁移 `20261006000000_repair_analytics_columns`：
+> `npm run db:migrate` 会真正执行它，把 `url` 等字段、(url, date) 唯一约束补齐。
 
 服务器上按顺序排查：
 
 ```bash
 cd /var/www/b2b-independent-site
 
-# 1. 埋点写入错误（[track] 开头）
+# 1. 自检（先看结论，再决定下一步）
+npm run db:check-analytics
+
+# 2. 埋点写入错误（[track] 开头）
 tail -n 50 logs/err.log
 
-# 2. visit_events 是否缺少 url 字段（埋点写入用得到）
+# 3. 手动 visit_events 是否缺少 url 字段（埋点写入用得到）
 sudo -u postgres psql -d b2b_independent_site -c "\d visit_events"
 
-# 3. 是否有失败的迁移：一条失败迁移会阻塞之后所有 migrate deploy
+# 4. 查看迁移登记情况（自检报缺列时重点看这几条）
 sudo -u postgres psql -d b2b_independent_site \
   -c "SELECT migration_name, finished_at, rolled_back_at FROM _prisma_migrations ORDER BY started_at DESC LIMIT 8;"
 
-# 4. 第 3 步里 finished_at 与 rolled_back_at 都为空的即失败迁移，
-#    先标记为已回滚再重跑（迁移名换成实际那条）
-npx prisma migrate resolve --rolled-back 20261002115757_add_url_to_pageview_and_visitevent
+# 5. finished_at 与 rolled_back_at 都为空的即失败迁移（它会阻塞之后所有 migrate deploy）：
+#    先标记为已回滚，再让修复迁移接管
+npx prisma migrate resolve --rolled-back <第 4 步查出的失败迁移名>
 npm run db:migrate
+npm run db:check-analytics
 
-# 5. 手工打一次埋点验证写入（应返回 {"ok":true}）
+# 6. 手工打一次埋点验证写入（应返回 {"ok":true}）
 curl -s -X POST http://localhost:3000/api/track \
   -H "Content-Type: application/json" \
   -d '{"visitorId":"verify-track","path":"/zh","url":"http://localhost:3000/zh","title":"verify"}'
 ```
 
-> 上面这条迁移全部使用 `IF NOT EXISTS`，重跑安全；迁移补齐后 `visit_events`
+> 修复迁移全部使用 `IF NOT EXISTS`，重跑安全；迁移补齐后 `visit_events`
 > 会在下一次真实访问时立刻出现新行。
+>
+> 部署时务必先 `git pull` 再 `npm ci && npm run build:server`：漏掉 pull 会用旧代码
+> 重新构建，修了也不会生效。可用 `git log -1 --oneline` 确认服务器代码已到最新提交。
 
 ---
 

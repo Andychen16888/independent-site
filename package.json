@@ -12,6 +12,7 @@
     "db:push": "node scripts/require-db-env.mjs && prisma db push",
     "db:seed": "prisma generate && node scripts/require-db-env.mjs && prisma db seed",
     "db:migrate": "node scripts/require-db-env.mjs && prisma migrate deploy",
+    "db:check-analytics": "node scripts/require-db-env.mjs && tsx scripts/check-analytics-schema.ts",
     "db:translate-blog": "tsx prisma/translate-blog-content.ts",
     "db:translate-products": "tsx prisma/translate-product-content.ts",
     "db:fix-product-slugs": "tsx scripts/fix-product-slugs.ts",

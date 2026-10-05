@@ -35,6 +35,7 @@
 11. [更新部署](#11-更新部署)
 12. [运维命令](#12-运维命令)
 13. [故障排查](#13-故障排查)
+    - [13.1 访客埋点停止写入](#131-访客埋点停止写入)
 14. [通用参考（支付/邮件/SEO/管理后台）](#14-通用参考支付邮件seo管理后台)
 
 > 🚨 服务器疑似被入侵（挖矿程序 / 后门账号 / CPU 满载）？不要在原机上修，
@@ -881,6 +882,43 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
+
+### 13.1 访客埋点停止写入
+
+后台「数据分析」页面的所有统计都来自 `/api/track` 写入的 `visit_events` 表。
+症状是**页面正常打开，但数字停在某个日期不再增长**——因为后台查询从不选 `url` 字段，
+所以即使服务器数据库漏跑了 `url` 字段迁移，页面也照常渲染，只是永远没有新数据。
+最新代码会在 `logs/err.log` 里打 `[track] ... write failed`，并在分析页顶部显示
+「最新访客数据」时间与陈旧告警。
+
+服务器上按顺序排查：
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 1. 埋点写入错误（[track] 开头）
+tail -n 50 logs/err.log
+
+# 2. visit_events 是否缺少 url 字段（埋点写入用得到）
+sudo -u postgres psql -d b2b_independent_site -c "\d visit_events"
+
+# 3. 是否有失败的迁移：一条失败迁移会阻塞之后所有 migrate deploy
+sudo -u postgres psql -d b2b_independent_site \
+  -c "SELECT migration_name, finished_at, rolled_back_at FROM _prisma_migrations ORDER BY started_at DESC LIMIT 8;"
+
+# 4. 第 3 步里 finished_at 与 rolled_back_at 都为空的即失败迁移，
+#    先标记为已回滚再重跑（迁移名换成实际那条）
+npx prisma migrate resolve --rolled-back 20261002115757_add_url_to_pageview_and_visitevent
+npm run db:migrate
+
+# 5. 手工打一次埋点验证写入（应返回 {"ok":true}）
+curl -s -X POST http://localhost:3000/api/track \
+  -H "Content-Type: application/json" \
+  -d '{"visitorId":"verify-track","path":"/zh","url":"http://localhost:3000/zh","title":"verify"}'
+```
+
+> 上面这条迁移全部使用 `IF NOT EXISTS`，重跑安全；迁移补齐后 `visit_events`
+> 会在下一次真实访问时立刻出现新行。
 
 ---
 

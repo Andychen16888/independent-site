@@ -88,6 +88,7 @@ async function getStats() {
     recentSessionsForActive,
     activeVisitorEvents,
     weeklyPageViews,
+    latestEvent,
   ] = await Promise.all([
     prisma.visitEvent.findMany({
       where: { createdAt: { gte: weekAgo } },
@@ -143,6 +144,10 @@ async function getStats() {
         date: true,
       },
     }),
+    prisma.visitEvent.findFirst({
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
   ])
 
   return {
@@ -158,6 +163,7 @@ async function getStats() {
     weeklyPageViews,
     weekAgo,
     activeVisitorOrder: activeVisitorIds,
+    latestEventAt: latestEvent?.createdAt ?? null,
   }
 }
 
@@ -196,6 +202,14 @@ function SectionCard({ title, titleZh, children }: { title: string; titleZh: str
 
 export default async function AdminAnalyticsPage() {
   const stats = await getStats()
+
+  // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
+  // 免得再出现「只有旧数据」却查不到原因的情况。
+  const latestEventAt = stats.latestEventAt
+  const staleHours = latestEventAt
+    ? Math.floor((Date.now() - latestEventAt.getTime()) / (60 * 60 * 1000))
+    : null
+  const isStale = staleHours === null || staleHours >= 6
 
   const maxPathViews = stats.pageStats[0]?._count._all ?? 0
   const maxCountryViews = stats.countryStats[0]?._count._all ?? 0
@@ -279,7 +293,29 @@ export default async function AdminAnalyticsPage() {
       <div className="mb-8">
         <h1 className="heading-md">{bi("Analytics", "数据分析")}</h1>
         <p className="text-body text-sm mt-1">{DESCRIPTION}</p>
+        <p className="text-xs text-stone mt-2">
+          {bi("Latest visitor data", "最新访客数据")}:{" "}
+          {latestEventAt ? timeLabel(latestEventAt) : bi("none", "无")}
+        </p>
       </div>
+
+      {isStale && (
+        <div className="mb-8 border border-rosegold/40 bg-rosegold/5 p-4 text-sm">
+          <p className="font-medium text-charcoal">
+            {bi("Visitor tracking looks stale", "访客埋点可能已停止写入")}
+          </p>
+          <p className="text-xs text-stone mt-1 leading-relaxed">
+            {latestEventAt
+              ? `${timeLabel(latestEventAt)} ${bi(`(${staleHours}h ago)`, `（${staleHours} 小时前）`)}`
+              : bi("No visitor event recorded yet.", "尚未记录到任何访客事件。")}
+            {" "}
+            {bi(
+              "On the server run \"npm run db:migrate\" (pending migration breaks all tracking writes) and check \"pm2 logs b2b-independent-site --lines 50\" for [track] errors.",
+              "请在服务器执行 \"npm run db:migrate\"（迁移未应用会导致所有埋点写入失败），并用 \"pm2 logs b2b-independent-site --lines 50\" 查看 [track] 错误。"
+            )}
+          </p>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <StatCard

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db/prisma"
 import { clientIp } from "@/lib/ai/rate-limit"
 import { countryFromIp } from "@/lib/tracking/geo"
@@ -46,6 +47,33 @@ function clamp(value: unknown, max: number): string | null {
   return v.slice(0, max)
 }
 
+// ---- 写入失败诊断 ----
+// 埋点写入失败时必须留下痕迹：之前这里整体 `.catch(() => {})`，任何一次数据库
+// 报错（例如生产库漏跑 url 字段迁移）都会被静默吞掉，后台只能看到「没有新数据」，
+// 完全没有线索。限流到 5 分钟一条，避免刷屏把 logs/err.log 冲垮。
+const LOG_THROTTLE_MS = 5 * 60 * 1000
+const lastLogAt = new Map<string, number>()
+
+function isMissingColumn(error: unknown): boolean {
+  return (
+    (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022") ||
+    /column .* does not exist/i.test(error instanceof Error ? error.message : String(error))
+  )
+}
+
+function reportWriteFailure(label: string, error: unknown): void {
+  const key = `${label}:${error instanceof Error ? error.message : String(error)}`
+  const now = Date.now()
+  const prev = lastLogAt.get(key)
+  if (prev !== undefined && now - prev < LOG_THROTTLE_MS) return
+  lastLogAt.set(key, now)
+
+  const hint = isMissingColumn(error)
+    ? ' Database schema is out of date: run "npm run db:migrate" (prisma migrate deploy) on the server.'
+    : ""
+  console.error(`[track] ${label} write failed.${hint}`, error)
+}
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown> = {}
   try {
@@ -77,35 +105,84 @@ export async function POST(req: NextRequest) {
   const referrer = clamp(body.referrer, MAX_LEN.referrer)
   const userAgent = clamp(req.headers.get("user-agent"), MAX_LEN.userAgent)
 
-  await Promise.all([
-    prisma.visitEvent.create({
-      data: { visitorId, path: pathname, url: fullUrl, title, referrer, ip, country, userAgent, createdAt: now },
-    }),
-    prisma.visitorSession.upsert({
-      where: { visitorId },
-      create: {
-        visitorId,
-        ip,
-        country,
-        userAgent,
-        firstSeen: now,
-        lastSeen: now,
-        pageCount: 1,
+  // 三路写入彼此独立：任何一路失败都不能连累另外两路（之前整体 Promise.all +
+  // catch，pageView 的 ON CONFLICT 报错会连带 visitEvent 一起消失）。
+  const writes: Array<{ label: string; run: () => Promise<unknown> }> = [
+    {
+      label: "visitEvent",
+      run: () =>
+        prisma.visitEvent.create({
+          data: { visitorId, path: pathname, url: fullUrl, title, referrer, ip, country, userAgent, createdAt: now },
+        }),
+    },
+    {
+      label: "visitorSession",
+      run: () =>
+        prisma.visitorSession.upsert({
+          where: { visitorId },
+          create: {
+            visitorId,
+            ip,
+            country,
+            userAgent,
+            firstSeen: now,
+            lastSeen: now,
+            pageCount: 1,
+          },
+          update: {
+            lastSeen: now,
+            pageCount: { increment: 1 },
+            ...(ip ? { ip } : {}),
+            ...(country ? { country } : {}),
+            ...(userAgent ? { userAgent } : {}),
+          },
+        }),
+    },
+    {
+      // 不用 upsert(where: url_date)：它依赖 (url, date) 唯一约束，约束缺失时
+      // ON CONFLICT 直接报错。改成 updateMany + create，并发撞车时回退成自增。
+      label: "pageView",
+      run: async () => {
+        const bumped = await prisma.pageView.updateMany({
+          where: { url: fullUrl, date: dayStart },
+          data: { views: { increment: 1 } },
+        })
+        if (bumped.count > 0) return
+        try {
+          await prisma.pageView.create({
+            data: {
+              url: fullUrl,
+              path: pathname,
+              title,
+              views: 1,
+              date: dayStart,
+              country,
+              userAgent,
+              referrer,
+            },
+          })
+        } catch (error) {
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+            await prisma.pageView.updateMany({
+              where: { url: fullUrl, date: dayStart },
+              data: { views: { increment: 1 } },
+            })
+            return
+          }
+          throw error
+        }
       },
-      update: {
-        lastSeen: now,
-        pageCount: { increment: 1 },
-        ...(ip ? { ip } : {}),
-        ...(country ? { country } : {}),
-        ...(userAgent ? { userAgent } : {}),
-      },
-    }),
-    prisma.pageView.upsert({
-      where: { url_date: { url: fullUrl, date: dayStart } } as any,
-      create: { url: fullUrl, path: pathname, title, views: 1, date: dayStart },
-      update: { views: { increment: 1 } } as any,
-    }),
-  ]).catch(() => {})
+    },
+  ]
 
-  return NextResponse.json({ ok: true })
+  const settled = await Promise.allSettled(writes.map((write) => write.run()))
+  const failed: string[] = []
+  settled.forEach((result, index) => {
+    if (result.status === "rejected") {
+      failed.push(writes[index].label)
+      reportWriteFailure(writes[index].label, result.reason)
+    }
+  })
+
+  return NextResponse.json(failed.length > 0 ? { ok: false, failed } : { ok: true })
 }

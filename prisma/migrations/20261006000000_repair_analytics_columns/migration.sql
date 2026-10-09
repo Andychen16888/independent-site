@@ -53,7 +53,23 @@ WHERE p."id" > other."id" AND p."url" = other."url" AND p."date" = other."date";
 
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'page_views_url_date_key') THEN
-    ALTER TABLE "public"."page_views" ADD CONSTRAINT "page_views_url_date_key" UNIQUE ("url", "date");
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'page_views_url_date_key'
+      AND conrelid = 'public.page_views'::regclass
+  ) THEN
+    IF EXISTS (
+      SELECT 1
+      FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE c.relname = 'page_views_url_date_key'
+        AND c.relkind = 'i'
+        AND n.nspname = 'public'
+    ) THEN
+      ALTER TABLE "public"."page_views" ADD CONSTRAINT "page_views_url_date_key" UNIQUE USING INDEX "page_views_url_date_key";
+    ELSE
+      ALTER TABLE "public"."page_views" ADD CONSTRAINT "page_views_url_date_key" UNIQUE ("url", "date");
+    END IF;
   END IF;
 END $$;

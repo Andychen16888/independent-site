@@ -432,6 +432,16 @@ test -f .next/standalone/server.js && echo "build ok, ready to start"
 
 ## 6. 数据库迁移与种子数据
 
+部署前先确定数据恢复方式：
+
+| 场景 | 推荐方式 | 说明 |
+|---|---|---|
+| **全新站点（无任何历史数据）** | **方式 A** | 只建表 + 创建初始数据 |
+| **已有内容（分类/产品/图片/页面/博客/横幅/菜单/设置），但不需要保留订单/用户/分析数据** | **方式 B（推荐）** | 用后台备份 `backup-*.zip`（`/admin/backup` 导出）恢复。此方式**在站点启动之后，在后台上传恢复**，不需要在服务器上跑 `pg_restore` |
+| **需要完整数据（含订单、用户、客户、订阅、分析等）** | **方式 C** | 用 PostgreSQL 全库备份 `db.dump`（`pg_dump -Fc`）在服务器端恢复 |
+
+### 方式 A：全新空库
+
 ```bash
 cd /var/www/b2b-independent-site
 
@@ -445,31 +455,55 @@ npm run db:seed
 
 > 顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
 >
-> ⚠️ **`db:seed` 会写入页面 / 博客 / FAQ / 导航 / 站点设置的初始值，覆盖你在后台改过的内容。**
-> 从旧服务器迁移（已有备份 dump）时**不要跑 `db:seed`**，改用下面的「方式 B」。
->
-> **方式 A：全新空库（第一次部署）** —— 用上面那两条命令（`db:migrate` → `db:seed`）。
 > 种子会创建管理员账号 `81570423@qq.com` / `Admin123!`，**上线后立刻在后台改掉密码**。
->
-> **方式 B：从备份恢复（迁移旧服务器，推荐）** —— 跳过 `db:seed`：
-> ```bash
-> cd /var/www/b2b-independent-site
->
-> # 恢复整库备份（dump 里已含商品、站点设置、图片槽位、你在后台的所有改动）
-> sudo -u postgres pg_restore -U postgres -d b2b_independent_site \
->   --no-owner --role=b2b_user /root/incident/db.dump
->
-> # 迁移是幂等的，跑一次确保 schema 与代码一致（已应用的自动跳过）
-> npm run db:migrate
->
-> # 恢复用户上传的图片（必须在 pm2 start 之前）
-> tar xzf /root/incident/uploads.tar.gz
-> ls -la uploads/ public/images/ public/uploads/ 2>/dev/null
-> ```
+
+### 方式 B：后台备份 zip 恢复（推荐，新站/内容迁移）
+
+此方式**不需要**在服务器上恢复数据库或解压图片。先建表和种子，再启动站点，最后在后台上传备份。
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 1. 建表 + 种子（创建管理员账号，用于登录后台）
+npm run db:migrate
+npm run db:seed
+```
+
+接着完成 [§7 启动应用](#7-启动应用-pm2)、[§8 Nginx 配置](#8-nginx-配置) 让站点能正常访问。站点上线后：
+
+1. 浏览器打开 `https://你的域名/admin/backup`
+2. 用管理员账号登录（`81570423@qq.com / Admin123!`，**登录后立刻改密码**）
+3. 点击「下载备份」可导出当前站点内容（也可直接上传之前导出的 `backup-*.zip`）
+4. 选择之前导出的 `backup-*.zip` → **建议勾选「覆盖模式」**（更干净）→ 点击「上传并恢复」
+5. 恢复完成后，商品、分类、页面、博客、横幅、菜单、站点设置以及已上传的图片都会一并恢复
+
+> **说明**：后台备份 zip **不包含**订单、用户、客户、订阅、联盟、分析数据（`visit_events/page_views/visitor_sessions`）。如果需要保留这些数据，请用方式 C。
+
+### 方式 C：全库备份恢复（含订单/用户/分析等完整数据）
+
+当你需要保留**全部**数据（包括订单、客户、用户、分析统计等）时，用 PostgreSQL 的 `pg_dump -Fc` 全库备份。
+
+```bash
+cd /var/www/b2b-independent-site
+
+# 1. 恢复整库备份（dump 里已含全部表数据）
+sudo -u postgres dropdb --if-exists b2b_independent_site
+sudo -u postgres createdb -O b2b_user b2b_independent_site
+sudo -u postgres pg_restore -U postgres -d b2b_independent_site \
+  --no-owner --role=b2b_user /root/incident/db.dump
+
+# 2. 补跑迁移，确保 schema 与最新代码一致（幂等，已应用的自动跳过）
+npm run db:migrate
+
+# 3. 恢复用户上传的图片（必须在 pm2 start 之前）
+tar xzf /root/incident/uploads.tar.gz
+ls -la uploads/ public/images/ public/uploads/ 2>/dev/null
+```
+
 > 备份怎么做的见 [INCIDENT-RECOVERY.md §2 抢救数据](./INCIDENT-RECOVERY.md#2-阶段二抢救数据只救数据不救程序)。
-> **图片必须和数据库一起恢复** —— 磁盘上是 `uploads/` 里的文件，槽位配置在数据库 `images` 表，
-> 只恢复其一会导致「文件在但前台不显示」。
+> **图片必须和数据库一起恢复** —— 磁盘上的 `uploads/` 文件与数据库 `productImage`/图片槽位是配套的，只恢复其一会导致图片无法正常显示。
 >
+> ⚠️ **方式 C 跳过 `db:seed`**，否则会覆盖后台改过的页面/博客/FAQ/导航/站点设置初始值。
 > **博客正文多语言翻译**：seed 只写入标题/摘要/SEO 的多语言，正文翻译需 AI 生成后写库（已在服务器配好 OPENAI_API_KEY 时执行）：
 > ```bash
 > # 为 6 篇文章 × 11 种语言生成正文翻译并写库（gpt-4o-mini，幂等：已有正文自动跳过，加 --force 强制重译）

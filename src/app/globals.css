@@ -202,13 +202,15 @@
     @apply bg-white border border-mist rounded-lg;
   }
 
-  /* Dark image overlay used by immersive hero / banner sections */
+  /* Light scrim over immersive hero / banner images: keeps white text legible
+     without dimming the photo much. Kept intentionally light so the image stays
+     close to its original brightness. */
   .img-overlay {
     background: linear-gradient(
       to top,
-      rgba(7, 26, 51, 0.85) 0%,
-      rgba(7, 26, 51, 0.55) 45%,
-      rgba(7, 26, 51, 0.30) 100%
+      rgba(7, 26, 51, 0.45) 0%,
+      rgba(7, 26, 51, 0.18) 45%,
+      rgba(7, 26, 51, 0.05) 100%
     );
   }
 

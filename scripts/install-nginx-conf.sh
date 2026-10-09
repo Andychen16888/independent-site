@@ -22,6 +22,11 @@ set -euo pipefail
 DOMAIN="${1:-}"
 TEMPLATE="b2b-independent-site.nginx.conf"
 TARGET="/etc/nginx/sites-enabled/b2b-independent-site"
+TARGET_DIR="/etc/nginx/sites-enabled"
+# 备份必须放到 nginx 不会 include 的目录。sites-enabled/* 会被 nginx 全部加载，
+# 若把 .bak 留在该目录，备份里的 proxy_cache_path 等指令会与生效配置重复，
+# 导致 “the same path name ... used in ... .bak” → nginx -t 永久失败、reload 失败。
+BACKUP_DIR="/etc/nginx/sites-backups"
 
 if [[ -z "$DOMAIN" ]]; then
   echo "用法: bash scripts/install-nginx-conf.sh <你的域名>" >&2
@@ -51,9 +56,20 @@ if grep -q "your-domain" "$TMP"; then
 fi
 echo "[1/5] 已按域名 $DOMAIN 生成配置"
 
+# 清理历史误留在 sites-enabled 里的备份文件（旧版本脚本会把 .bak 写在这里，
+# 会让 nginx -t 报 "the same path name ... used in ... .bak" 而无法 reload）。
+shopt -s nullglob
+for stale in "$TARGET_DIR"/*.bak*; do
+  sudo mkdir -p "$BACKUP_DIR"
+  echo "[i] 发现残留备份 $stale，移出 sites-enabled -> $BACKUP_DIR/"
+  sudo mv "$stale" "$BACKUP_DIR/"
+done
+shopt -u nullglob
+
 BACKUP=""
 if sudo test -f "$DEST"; then
-  BACKUP="$DEST.bak.$(date +%Y%m%d%H%M%S)"
+  sudo mkdir -p "$BACKUP_DIR"
+  BACKUP="$BACKUP_DIR/$(basename "$DEST").bak.$(date +%Y%m%d%H%M%S)"
   sudo cp "$DEST" "$BACKUP"
   echo "[2/5] 已备份旧配置 -> $BACKUP"
 else

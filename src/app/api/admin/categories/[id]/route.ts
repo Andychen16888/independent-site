@@ -6,6 +6,14 @@ import { upsertCategoryTranslations } from "@/lib/i18n/category"
 import { routing } from "@/i18n/routing"
 import { canonicalCategorySlug } from "@/lib/categories/slug"
 import { ensureUniqueCategorySlug } from "@/lib/categories/unique-slug"
+import { Prisma } from "@prisma/client"
+
+function isCategoryTranslationsTableMissing(error: unknown): boolean {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false
+  if (error.code !== "P2021") return false
+  const table = (error.meta as { table?: unknown } | undefined)?.table
+  return typeof table === "string" && table.includes("category_translations")
+}
 
 function parseCategoryTranslations(input: unknown): { locale: string; name?: string }[] {
   if (!input || typeof input !== "object") return []
@@ -33,11 +41,19 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
     if (!category) return NextResponse.json({ error: "Category not found" }, { status: 404 })
-    const translationRows = await prisma.categoryTranslation.findMany({
-      where: { categoryId: id },
-      orderBy: { locale: "asc" },
-      select: { locale: true, name: true },
-    })
+    let translationRows: { locale: string; name: string }[] = []
+    try {
+      translationRows = await prisma.categoryTranslation.findMany({
+        where: { categoryId: id },
+        orderBy: { locale: "asc" },
+        select: { locale: true, name: true },
+      })
+    } catch (error) {
+      if (!isCategoryTranslationsTableMissing(error)) throw error
+      console.warn(
+        `[i18n] category_translations table missing while fetching category ${id}; returning category without translations.`
+      )
+    }
     return NextResponse.json({ category: { ...category, translations: translationRows } })
   } catch (error) {
     console.error("Admin category get error:", error)

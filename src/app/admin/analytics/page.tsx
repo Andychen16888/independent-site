@@ -317,6 +317,7 @@ export default async function AdminAnalyticsPage({
     ? Math.floor((Date.now() - latestEventAt.getTime()) / (60 * 60 * 1000))
     : null
   const isStale = staleHours === null || staleHours >= 6
+  const showStaleWarning = schemaHealth.ok && isStale
 
   const maxPathViews = stats.pageStats[0]?._count._all ?? 0
   const maxCountryViews = stats.countryStats[0]?._count._all ?? 0
@@ -460,7 +461,7 @@ export default async function AdminAnalyticsPage({
         </div>
       )}
 
-      {isStale && (
+      {showStaleWarning && (
         <div className="mb-8 border border-rosegold/40 bg-rosegold/5 p-4 text-sm">
           <p className="font-medium text-charcoal">
             {bi("Visitor tracking looks stale", "访客埋点可能已停止写入")}

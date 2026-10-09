@@ -165,10 +165,9 @@ systemctl enable --now fail2ban
 #    方案 A（推荐）SSH 密钥：本地 ssh-keygen + ssh-copy-id，验证可免密登录后
 #      sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 #
-#    方案 B 密码登录 —— 本次事件极可能就是密码爆破导致，务必做完这三步：
+#    方案 B 密码登录 —— 本次事件极可能就是密码爆破导致，务必做完这两步：
 #      passwd root                                                        # 1. 强密码
-#      sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config            # 2. 改端口
-#      cat > /etc/fail2ban/jail.local <<'EOF'                            # 3. 收紧 fail2ban
+#      cat > /etc/fail2ban/jail.local <<'EOF'                            # 2. 收紧 fail2ban
 #      [DEFAULT]
 #      bantime   = 24h
 #      findtime  = 10m
@@ -186,8 +185,6 @@ systemctl enable --now fail2ban
 #      #      该子命令仅新版本 fail2ban 支持，旧版报
 #      #      "Invalid command (no get action or not yet implemented)"。
 #      #      改用全版本通用的：fail2ban-client show sshd | tr ',' '\n' | grep -i banaction
-#      ufw allow 2222/tcp        # 防火墙同步放行新端口（在下面 ufw enable 之前执行）
-#      # 然后另开 PuTTY，端口填 2222，确认能登录再关掉当前会话
 #
 #    复核：sshd -T | grep -E 'passwordauthentication|port'
 ls -l /root/.ssh/authorized_keys 2>/dev/null
@@ -201,7 +198,7 @@ ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
 ufw allow in on lo && ufw allow out on lo
-ufw allow in 22/tcp && ufw allow out 22/tcp      # 方案 B 若改端口，这里换成 2222
+ufw allow in 22/tcp && ufw allow out 22/tcp
 ufw allow in 80/tcp && ufw allow out 80/tcp
 ufw allow in 443/tcp && ufw allow out 443/tcp
 ufw allow out 53/udp && ufw allow out 53/tcp
@@ -292,7 +289,7 @@ grep 'Accepted' /root/incident/auth.log | grep -v 'for root' || echo "无 root �
 
 | 结论 | 处置 |
 |------|------|
-| 大量 `Failed password` + 一次陌生 `Accepted password` | 入口是 **SSH 弱密码爆破**。已通过阶段四禁用密码登录 + fail2ban 封堵；再考虑把 22 端口改到非默认端口 |
+| 大量 `Failed password` + 一次陌生 `Accepted password` | 入口是 **SSH 弱密码爆破**。已通过阶段四禁用密码登录 + fail2ban 封堵；如需进一步收紧，改用密钥登录并关闭密码登录（见 DEPLOYMENT.md §1.2.4） |
 | 陌生 `Accepted publickey` | 私钥泄露。已在阶段三作废全部密钥；检查本地私钥存放目录是否被同步到过公共仓库 |
 | 无任何陌生 SSH 登录 | 入口可能是 **Web 应用漏洞**或 **Docker API 暴露**。检查 `ss -tlnp` 是否有 0.0.0.0 监听的 3000/5432/2375；本项目务必保持 `HOST=127.0.0.1`、PostgreSQL 不开放远程 |
 

@@ -62,7 +62,7 @@
 
 > **原则**：新服务器在完成加固前，暴露时间越短越好。以下步骤在安装任何依赖 / 克隆代码**之前**完成。
 >
-> 本节是**一整段可直接粘贴执行**的加固流程（PuTTY / 密码登录 + SSH 端口改 2222）。
+> 本节是**一整段可直接粘贴执行**的加固流程（PuTTY / 密码登录，SSH 保持默认端口 22）。
 > 想改用 SSH 密钥登录见 [1.2.4 可选：改用密钥登录](#124-可选改用-ssh-密钥登录)。
 
 ```bash
@@ -94,10 +94,9 @@ banaction = ufw
 
 [sshd]
 enabled   = true
-# 若改了 SSH 端口（下面第 3 步改成 2222），取消注释并填实际端口。
 # backend = systemd 时日志来自 journald、按 _SYSTEMD_UNIT=sshd.service 匹配，
 # 与端口无关，所以这一行填错也不会导致漏封，仅为语义清晰。
-# port      = 2222
+port      = 22
 EOF
 systemctl restart fail2ban
 sleep 3
@@ -109,15 +108,16 @@ fail2ban-client status sshd                 # 期望：Status for the jail: sshd
 fail2ban-client show sshd | tr ',' '\n' | grep -iE '"?(banaction|maxretry|bantime|backend)"?'
 
 # ============================================================
-# 3. 改 SSH 端口 22 → 2222
-#    全网自动爆破脚本绝大多数只扫 22，改端口是性价比最高的一步。
+# 3. SSH 端口：保持默认 22
+#    本次部署不修改端口——fail2ban（失败 3 次封 24h）+ 强密码已足够；
+#    非标准端口只是「隐晦式安全」，反而容易把自己锁在外面。
+#    确认当前端口（无输出表示沿用默认 22）：
 # ============================================================
-sed -i 's/^#\?Port .*/Port 2222/' /etc/ssh/sshd_config
-grep -n '^Port' /etc/ssh/sshd_config       # 期望：Port 2222
+grep -n '^Port' /etc/ssh/sshd_config || echo "沿用默认端口 22"
 
 # ============================================================
 # 4. 防火墙 UFW
-#    · 先把 2222 放进去，再 enable，避免把自己挡在外面
+#    · 先把 SSH(22) / 80 / 443 放进去，再 enable，避免把自己挡在外面
 #    · ICMP 不需要手动加：ufw 命令行不支持 ICMP 规则
 #      （`ufw allow proto icmp` 会报 ERROR: Need 'to' or 'from' clause），
 #      而 /etc/ufw/before.rules 默认已放行 echo-request（可被 ping）、
@@ -130,8 +130,8 @@ ufw default deny outgoing
 ufw allow in on lo
 ufw allow out on lo
 
-# 入站：SSH(新端口) / HTTP / HTTPS
-ufw allow in 2222/tcp
+# 入站：SSH(22) / HTTP / HTTPS
+ufw allow in 22/tcp
 ufw allow in 80/tcp
 ufw allow in 443/tcp
 
@@ -149,14 +149,14 @@ ufw allow out 25/tcp
 ufw --force enable
 ufw status verbose
 # 期望：Default: deny (incoming), deny (outgoing), disabled (routed)
-#       2222/tcp ALLOW IN · 80/tcp ALLOW IN · 443/tcp ALLOW IN
+#       22/tcp ALLOW IN · 80/tcp ALLOW IN · 443/tcp ALLOW IN
 
 # ============================================================
 # 5. 重载 sshd
 # ============================================================
 systemctl reload sshd
 sshd -T | grep -E '^port|passwordauthentication'
-# 期望：port 2222
+# 期望：port 22
 #       passwordauthentication yes
 
 # ============================================================
@@ -172,36 +172,36 @@ free -h
 
 #### 1.2.1 验证与自检（做完必查）
 
-> ★★★ **当前这个 PuTTY 会话不要关！** 下面第 1 项验证通过之前，关掉就可能再也连不上。
+> ★★★ **当前这个 PuTTY 会话先不要关**，等下面复核通过再关，避免中途配置出错连不上。
 
-1. **另开一个 PuTTY 窗口**，把 `Session → Port` 改成 **2222**，用第 1 步设的密码登录
+1. **另开一个 PuTTY 窗口**，用默认端口 **22** + 第 1 步设的密码登录，确认能连上
 2. 登录成功后在新窗口里复核：
 
 ```bash
 systemctl is-active fail2ban                # 期望：active
 fail2ban-client status sshd                 # 期望：Status for the jail: sshd
 ufw status verbose | head -8
-ss -tlnp | grep 2222          # 期望：LISTEN ... :2222
+ss -tlnp | grep -E ':22\b'    # 期望：LISTEN ... :22
 free -h                        # 期望：Swap 一行有内容
 ```
 
 > 想确认 fail2ban 真的会自动封禁，可以做一次**安全自测**：另开一个窗口用
-> `ssh -p 2222 root@你的IP` 连续输错密码 4 次，然后用第三个窗口执行
+> `ssh root@你的IP` 连续输错密码 4 次，然后用第三个窗口执行
 > `fail2ban-client status sshd`，应能看到 `Currently banned: 1`；
 > 同时 `ufw status numbered | grep -i f2b` 会出现对应的 F2B 封禁规则。
 > 测完记得解封：`fail2ban-client set sshd unbanip 你的本机IP`
 
-3. 全部正常后，**才可以**关闭旧的那个 22 端口会话
+3. 全部正常后，关闭多余的会话
 
 自检清单：
 
-- [ ] 新 PuTTY 会话（端口 2222）能登录
+- [ ] 新 PuTTY 会话（默认端口 22）能登录
 - [ ] `fail2ban-client show sshd` 输出里的 `banaction` 为 `ufw`（不要用
       `fail2ban-client get sshd banaction`，该子命令仅新版本 fail2ban 才有）
-- [ ] `ufw status` 里 2222/80/443 都是 ALLOW IN
-- [ ] `ss -tlnp | grep 2222` 有 LISTEN
+- [ ] `ufw status` 里 22/80/443 都是 ALLOW IN
+- [ ] `ss -tlnp | grep -E ':22\b'` 有 LISTEN
 - [ ] `free -h` 里 Swap 已启用
-- [ ] 以上都通过，才关闭旧会话
+- [ ] 以上都通过，才关闭多余会话
 
 #### 1.2.2 救援：万一被锁在外面
 
@@ -249,7 +249,7 @@ sshd -T | grep -E 'pubkeyauthentication|passwordauthentication'
 # 期望：pubkeyauthentication yes / passwordauthentication no
 ```
 
-之后连接用 `ssh root@your-server-ip`（若保留 2222 端口则加 `-p 2222`），无需密码。
+之后连接用 `ssh root@your-server-ip`，无需密码。
 
 
 ---

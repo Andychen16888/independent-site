@@ -21,6 +21,7 @@
     "errorTitle": "Something Went Wrong",
     "errorDescription": "An unexpected error occurred. Please try again later.",
     "tryAgain": "Try Again",
+    "errorReference": "Reference code",
     "loading": "Loading...",
     "noProductsFound": "No products found",
     "noProductsInCategory": "No products in this category yet.",

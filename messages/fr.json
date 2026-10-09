@@ -21,6 +21,7 @@
     "errorTitle": "Une erreur est survenue",
     "errorDescription": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
     "tryAgain": "Réessayer",
+    "errorReference": "Code de référence",
     "loading": "Chargement...",
     "noProductsFound": "Aucun produit trouvé",
     "noProductsInCategory": "Aucun produit dans cette catégorie pour le moment.",

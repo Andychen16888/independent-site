@@ -21,6 +21,7 @@
     "errorTitle": "Etwas ist schief gelaufen",
     "errorDescription": "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
     "tryAgain": "Erneut versuchen",
+    "errorReference": "Referenzcode",
     "loading": "Laden...",
     "noProductsFound": "Keine Produkte gefunden",
     "noProductsInCategory": "In dieser Kategorie gibt es noch keine Produkte.",

@@ -63,10 +63,79 @@ function timeLabel(d: Date): string {
 const DESCRIPTION = "Visitor analytics: trails, pages and countries. 访客统计：访问轨迹、页面与国家分布。"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
+// Mirrors scripts/check-analytics-schema.ts. A migration that is recorded as
+// applied but whose SQL never actually ran leaves the columns missing, so the
+// page checks the live schema instead of trusting _prisma_migrations alone.
+const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
+  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "createdAt"],
+  page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
+}
+
+type SchemaHealth = {
+  ok: boolean
+  checkFailed: boolean
+  missingColumns: { table: string; columns: string[] }[]
+  missingConstraints: string[]
+  pendingMigrations: string[]
+}
+
+async function getSchemaHealth(): Promise<SchemaHealth> {
+  const missingColumns: { table: string; columns: string[] }[] = []
+  const missingConstraints: string[] = []
+  const pendingMigrations: string[] = []
+  let checkFailed = false
+
+  try {
+    for (const [table, required] of Object.entries(REQUIRED_ANALYTICS_COLUMNS)) {
+      const rows = await prisma.$queryRaw<{ column_name: string }[]>`
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = ${table}
+      `
+      const present = new Set(rows.map((row) => row.column_name))
+      const missing = required.filter((column) => !present.has(column))
+      if (missing.length > 0) missingColumns.push({ table, columns: missing })
+    }
+
+    const constraints = await prisma.$queryRaw<{ conname: string }[]>`
+      SELECT conname FROM pg_constraint
+      WHERE conrelid = 'public.page_views'::regclass AND contype = 'u'
+    `
+    if (!constraints.some((row) => row.conname === "page_views_url_date_key")) {
+      missingConstraints.push("page_views_url_date_key")
+    }
+
+    try {
+      const pending = await prisma.$queryRaw<{ migration_name: string }[]>`
+        SELECT migration_name FROM _prisma_migrations
+        WHERE finished_at IS NULL OR rolled_back_at IS NOT NULL
+      `
+      pendingMigrations.push(...pending.map((row) => row.migration_name))
+    } catch {
+      // _prisma_migrations does not exist until the first migration runs.
+    }
+  } catch {
+    // Never let the diagnostic itself 500 the analytics page.
+    checkFailed = true
+  }
+
+  return {
+    ok:
+      !checkFailed &&
+      missingColumns.length === 0 &&
+      missingConstraints.length === 0 &&
+      pendingMigrations.length === 0,
+    checkFailed,
+    missingColumns,
+    missingConstraints,
+    pendingMigrations,
+  }
+}
+
 async function getStats() {
   const now = new Date()
   const today = startOfBusinessDay(now)
   const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
+  const schemaHealth = await getSchemaHealth()
 
   // Get visitor IDs with events in last 7 days, ordered by most recent activity
   const activeVisitors = await prisma.visitEvent.groupBy({
@@ -165,6 +234,7 @@ async function getStats() {
     weeklyPageViews,
     weekAgo,
     latestEventAt: latestEvent?.createdAt ?? null,
+    schemaHealth,
   }
 }
 
@@ -223,6 +293,7 @@ export default async function AdminAnalyticsPage({
   // 轨迹步骤默认倒序（最新一步在最上面），?steps=asc 可切回时间正序
   const stepsNewestFirst = params.steps !== "asc"
   const stats = await getStats()
+  const schemaHealth = stats.schemaHealth
 
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
   // 免得再出现「只有旧数据」却查不到原因的情况。
@@ -319,8 +390,52 @@ export default async function AdminAnalyticsPage({
         <p className="text-xs text-stone mt-2">
           {bi("Latest visitor data", "最新访客数据")}:{" "}
           {latestEventAt ? timeLabel(latestEventAt) : bi("none", "无")}
+          {!schemaHealth.checkFailed &&
+            (schemaHealth.ok
+              ? bi(" · schema ok", " · 表结构正常")
+              : bi(" · schema mismatch", " · 表结构异常"))}
         </p>
       </div>
+
+      {!schemaHealth.ok && (
+        <div className="mb-8 border border-red-300 bg-red-50 p-4 text-sm">
+          <p className="font-medium text-charcoal">
+            {bi("Database schema is out of date", "数据库表结构未同步")}
+          </p>
+          <ul className="text-xs text-stone mt-1 space-y-1 list-disc pl-5">
+            {schemaHealth.checkFailed && (
+              <li>
+                {bi(
+                  "Could not read the schema health; see the server logs.",
+                  "无法读取表结构自检结果，请查看服务器日志。"
+                )}
+              </li>
+            )}
+            {schemaHealth.missingColumns.map((item) => (
+              <li key={item.table}>
+                {bi(
+                  `${item.table} is missing column(s): ${item.columns.join(", ")}`,
+                  `数据表 ${item.table} 缺少字段：${item.columns.join("、")}`
+                )}
+              </li>
+            ))}
+            {schemaHealth.missingConstraints.map((constraint) => (
+              <li key={constraint}>
+                {bi(`Missing unique constraint: ${constraint}`, `缺少唯一约束：${constraint}`)}
+              </li>
+            ))}
+            {schemaHealth.pendingMigrations.map((migration) => (
+              <li key={migration}>
+                {bi(
+                  `Pending or failed migration: ${migration}`,
+                  `未完成或失败的迁移：${migration}`
+                )}
+              </li>
+            ))}
+            <li>{bi('Fix: run "npm run db:migrate" on the server.', '修复：在服务器执行 "npm run db:migrate"。')}</li>
+          </ul>
+        </div>
+      )}
 
       {isStale && (
         <div className="mb-8 border border-rosegold/40 bg-rosegold/5 p-4 text-sm">
@@ -333,8 +448,8 @@ export default async function AdminAnalyticsPage({
               : bi("No visitor event recorded yet.", "尚未记录到任何访客事件。")}
             {" "}
             {bi(
-              "On the server run \"npm run db:migrate\" (pending migration breaks all tracking writes) and check \"pm2 logs b2b-independent-site --lines 50\" for [track] errors.",
-              "请在服务器执行 \"npm run db:migrate\"（迁移未应用会导致所有埋点写入失败），并用 \"pm2 logs b2b-independent-site --lines 50\" 查看 [track] 错误。"
+              "Tracking writes may be failing, or the server may have been unreachable (down, out of memory, or under attack). Check \"pm2 logs b2b-independent-site --lines 100\" for [track] or 500 errors. If a schema problem is shown above, run \"npm run db:migrate\" first.",
+              "可能是埋点写入失败，或服务器一度不可达（宕机、内存耗尽或遭受攻击）。请查看 \"pm2 logs b2b-independent-site --lines 100\" 是否有 [track] 或 500 错误；如上方提示表结构异常，请先执行 \"npm run db:migrate\"。"
             )}
           </p>
         </div>

@@ -21,6 +21,7 @@
     "errorTitle": "Algo deu errado",
     "errorDescription": "Ocorreu um erro inesperado. Tente novamente mais tarde.",
     "tryAgain": "Tentar novamente",
+    "errorReference": "Código de referência",
     "loading": "Carregando...",
     "noProductsFound": "Nenhum produto encontrado",
     "noProductsInCategory": "Ainda não há produtos nesta categoria.",

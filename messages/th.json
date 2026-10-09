@@ -21,6 +21,7 @@
     "errorTitle": "เกิดข้อผิดพลาด",
     "errorDescription": "เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้งในภายหลัง",
     "tryAgain": "ลองอีกครั้ง",
+    "errorReference": "รหัสอ้างอิง",
     "loading": "กำลังโหลด...",
     "noProductsFound": "ไม่พบสินค้า",
     "noProductsInCategory": "ยังไม่มีสินค้าในหมวดหมู่นี้",

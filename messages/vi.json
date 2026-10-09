@@ -21,6 +21,7 @@
     "errorTitle": "Đã xảy ra lỗi",
     "errorDescription": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
     "tryAgain": "Thử lại",
+    "errorReference": "Mã lỗi",
     "loading": "Đang tải...",
     "noProductsFound": "Không tìm thấy sản phẩm nào",
     "noProductsInCategory": "Chưa có sản phẩm trong danh mục này.",

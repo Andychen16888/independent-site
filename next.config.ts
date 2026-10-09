@@ -7,7 +7,13 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // pdfkit loads its standard fonts from disk at runtime, so it must stay an
   // external require instead of being bundled into the server chunks.
-  serverExternalPackages: ["geoip-lite", "pdfkit"],
+  // isomorphic-dompurify builds its DOMPurify instance from a jsdom window on
+  // the server. If webpack bundles it into the server chunk, jsdom/window can't
+  // initialize and the export degrades to the un-called DOMPurify factory, so
+  // `DOMPurify.sanitize` throws "sanitize is not a function" during SSR of any
+  // page rendering sanitized HTML (product/blog/chat) and the error boundary
+  // fires. Keeping it external lets Node require the real package + jsdom.
+  serverExternalPackages: ["geoip-lite", "pdfkit", "isomorphic-dompurify"],
   outputFileTracingIncludes: {
     "/*": [
       "./messages/**/*.json",
@@ -27,6 +33,12 @@ const nextConfig: NextConfig = {
       "./node_modules/restructure/**/*",
       "./node_modules/is-stream/**/*",
       "./node_modules/parse-utf8/**/*",
+      // isomorphic-dompurify is external (see serverExternalPackages): make sure
+      // the real package and its dompurify dependency are copied into the
+      // standalone output so the runtime require() resolves. jsdom is already
+      // traced as a dependency.
+      "./node_modules/isomorphic-dompurify/**/*",
+      "./node_modules/dompurify/**/*",
     ],
   },
   experimental: {

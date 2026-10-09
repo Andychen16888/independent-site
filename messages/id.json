@@ -21,6 +21,7 @@
     "errorTitle": "Terjadi Kesalahan",
     "errorDescription": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi nanti.",
     "tryAgain": "Coba Lagi",
+    "errorReference": "Kode referensi",
     "loading": "Memuat...",
     "noProductsFound": "Produk tidak ditemukan",
     "noProductsInCategory": "Belum ada produk dalam kategori ini.",

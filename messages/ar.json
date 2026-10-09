@@ -21,6 +21,7 @@
     "errorTitle": "حدث خطأ ما",
     "errorDescription": "حدث خطأ غير متوقع. يرجى المحاولة لاحقاً.",
     "tryAgain": "إعادة المحاولة",
+    "errorReference": "رمز الخطأ",
     "loading": "جارٍ التحميل...",
     "noProductsFound": "لم يتم العثور على منتجات",
     "noProductsInCategory": "لا توجد منتجات في هذه الفئة حالياً.",

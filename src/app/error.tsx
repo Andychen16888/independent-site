@@ -28,6 +28,11 @@ export default function Error({
               {t("backToHome")}
             </Link>
           </div>
+          {error.digest && (
+            <p className="text-xs text-stone mt-6">
+              {t("errorReference")}: <span className="font-mono">{error.digest}</span>
+            </p>
+          )}
         </div>
       </Container>
     </div>

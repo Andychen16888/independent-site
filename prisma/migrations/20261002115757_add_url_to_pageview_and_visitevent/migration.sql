@@ -20,8 +20,6 @@ BEGIN
 END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS "page_views_url_date_key" ON "public"."page_views"("url", "date");
-ALTER TABLE "public"."page_views" DROP CONSTRAINT IF EXISTS "page_views_url_date_key";
-ALTER TABLE "public"."page_views" ADD CONSTRAINT "page_views_url_date_key" UNIQUE ("url", "date");
 
 CREATE INDEX IF NOT EXISTS "page_views_path_date_idx" ON "public"."page_views"("path", "date");
 CREATE INDEX IF NOT EXISTS "page_views_date_idx" ON "public"."page_views"("date");

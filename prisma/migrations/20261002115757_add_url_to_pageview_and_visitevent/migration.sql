@@ -19,7 +19,8 @@ BEGIN
   END IF;
 END $$;
 
-CREATE UNIQUE INDEX IF NOT EXISTS "page_views_url_date_key" ON "public"."page_views"("url", "date");
+DROP INDEX IF EXISTS "page_views_url_date_key";
+CREATE UNIQUE INDEX "page_views_url_date_key" ON "public"."page_views"("url", "date");
 
 CREATE INDEX IF NOT EXISTS "page_views_path_date_idx" ON "public"."page_views"("path", "date");
 CREATE INDEX IF NOT EXISTS "page_views_date_idx" ON "public"."page_views"("date");

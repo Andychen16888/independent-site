@@ -3,6 +3,8 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db/prisma"
 import { clientIp } from "@/lib/ai/rate-limit"
 import { countryFromIp } from "@/lib/tracking/geo"
+import { isBotUserAgent } from "@/lib/tracking/bot"
+import { analyticsColumns } from "@/lib/tracking/schema"
 
 export const dynamic = "force-dynamic"
 
@@ -74,44 +76,6 @@ function reportWriteFailure(label: string, error: unknown): void {
   console.error(`[track] ${label} write failed.${hint}`, error)
 }
 
-// ---- url 字段可用性探测 ----
-// 20261002115757 迁移给 visit_events / page_views 加了 url 字段。生产库漏跑这条
-// 迁移时 Prisma 会因为列不存在直接拒绝写入（P2022），访客数据从此全部丢失。
-// 这里每 10 分钟探测一次列是否存在：缺列就退回旧字段写入，埋点不再中断，
-// 补完迁移后自动恢复完整字段。
-type UrlColumns = { visitEvent: boolean; pageView: boolean }
-const URL_COLUMN_TTL_MS = 10 * 60 * 1000
-let urlColumnsCache: { at: number; value: UrlColumns } | null = null
-
-async function urlColumnAvailability(): Promise<UrlColumns> {
-  if (urlColumnsCache && Date.now() - urlColumnsCache.at < URL_COLUMN_TTL_MS) return urlColumnsCache.value
-
-  let value: UrlColumns = { visitEvent: true, pageView: true }
-  try {
-    const rows = await prisma.$queryRaw<{ table_name: string }[]>`
-      SELECT table_name
-      FROM information_schema.columns
-      WHERE table_schema = 'public'
-        AND column_name = 'url'
-        AND table_name IN ('visit_events', 'page_views')
-    `
-    const names = new Set(rows.map((row) => row.table_name))
-    value = { visitEvent: names.has("visit_events"), pageView: names.has("page_views") }
-  } catch (error) {
-    reportWriteFailure("schemaProbe", error)
-  }
-
-  if (!value.visitEvent || !value.pageView) {
-    console.warn(
-      '[track] visit_events/page_views are missing the "url" column; falling back to path-based writes until "npm run db:migrate" is applied.',
-      value
-    )
-  }
-
-  urlColumnsCache = { at: Date.now(), value }
-  return value
-}
-
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown> = {}
   try {
@@ -142,10 +106,13 @@ export async function POST(req: NextRequest) {
   const title = clamp(body.title, MAX_LEN.title)
   const referrer = clamp(body.referrer, MAX_LEN.referrer)
   const userAgent = clamp(req.headers.get("user-agent"), MAX_LEN.userAgent)
+  // 爬虫 / 监控 / 无头浏览器：仍写一条 visitEvent 并打上 isBot 标记（便于排查），
+  // 但不计入访客会话与页面浏览聚合，避免污染后台的真人统计。
+  const isBot = isBotUserAgent(userAgent)
 
-  const columns = await urlColumnAvailability()
+  const columns = await analyticsColumns()
 
-  // 三路写入彼此独立：任何一路失败都不能连累另外两路（之前整体 Promise.all +
+  // 各路写入彼此独立：任何一路失败都不能连累其他路（之前整体 Promise.all +
   // catch，pageView 的 ON CONFLICT 报错会连带 visitEvent 一起消失）。
   const writes: Array<{ label: string; run: () => Promise<unknown> }> = [
     {
@@ -161,78 +128,85 @@ export async function POST(req: NextRequest) {
             country,
             userAgent,
             createdAt: now,
-            ...(columns.visitEvent ? { url: fullUrl } : {}),
+            ...(columns.visitEventUrl ? { url: fullUrl } : {}),
+            // isBot 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
+            ...(columns.visitEventIsBot ? { isBot } : {}),
           },
         }),
-    },
-    {
-      label: "visitorSession",
-      run: () =>
-        prisma.visitorSession.upsert({
-          where: { visitorId },
-          create: {
-            visitorId,
-            ip,
-            country,
-            userAgent,
-            firstSeen: now,
-            lastSeen: now,
-            pageCount: 1,
-          },
-          update: {
-            lastSeen: now,
-            pageCount: { increment: 1 },
-            ...(ip ? { ip } : {}),
-            ...(country ? { country } : {}),
-            ...(userAgent ? { userAgent } : {}),
-          },
-        }),
-    },
-    {
-      // 不用 upsert(where: url_date)：它依赖 (url, date) 唯一约束，约束缺失时
-      // ON CONFLICT 直接报错。改成 updateMany + create，并发撞车时回退成自增。
-      // 缺 url 列时退回旧的 (path, date) 计数口径。
-      label: "pageView",
-      run: async () => {
-        const where: Prisma.PageViewWhereInput = columns.pageView
-          ? { url: fullUrl, date: dayStart }
-          : { path: pathname, date: dayStart }
-
-        const bumped = await prisma.pageView.updateMany({
-          where,
-          data: { views: { increment: 1 } },
-        })
-        if (bumped.count > 0) return
-
-        try {
-          await prisma.pageView.create({
-            // 生成的类型按「目标 schema」要求 url 必填，缺列时的降级分支只能断言一次。
-            data: (columns.pageView
-              ? {
-                  url: fullUrl,
-                  path: pathname,
-                  title,
-                  views: 1,
-                  date: dayStart,
-                  country,
-                  userAgent,
-                  referrer,
-                }
-              : { path: pathname, title, views: 1, date: dayStart }) as Prisma.PageViewUncheckedCreateInput,
-          })
-        } catch (error) {
-          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-            await prisma.pageView.updateMany({
-              where,
-              data: { views: { increment: 1 } },
-            })
-            return
-          }
-          throw error
-        }
-      },
     },
   ]
+
+  if (!isBot) {
+    writes.push(
+      {
+        label: "visitorSession",
+        run: () =>
+          prisma.visitorSession.upsert({
+            where: { visitorId },
+            create: {
+              visitorId,
+              ip,
+              country,
+              userAgent,
+              firstSeen: now,
+              lastSeen: now,
+              pageCount: 1,
+            },
+            update: {
+              lastSeen: now,
+              pageCount: { increment: 1 },
+              ...(ip ? { ip } : {}),
+              ...(country ? { country } : {}),
+              ...(userAgent ? { userAgent } : {}),
+            },
+          }),
+      },
+      {
+        // 不用 upsert(where: url_date)：它依赖 (url, date) 唯一约束，约束缺失时
+        // ON CONFLICT 直接报错。改成 updateMany + create，并发撞车时回退成自增。
+        // 缺 url 列时退回旧的 (path, date) 计数口径。
+        label: "pageView",
+        run: async () => {
+          const where: Prisma.PageViewWhereInput = columns.pageViewUrl
+            ? { url: fullUrl, date: dayStart }
+            : { path: pathname, date: dayStart }
+
+          const bumped = await prisma.pageView.updateMany({
+            where,
+            data: { views: { increment: 1 } },
+          })
+          if (bumped.count > 0) return
+
+          try {
+            await prisma.pageView.create({
+              // 生成的类型按「目标 schema」要求 url 必填，缺列时的降级分支只能断言一次。
+              data: (columns.pageViewUrl
+                ? {
+                    url: fullUrl,
+                    path: pathname,
+                    title,
+                    views: 1,
+                    date: dayStart,
+                    country,
+                    userAgent,
+                    referrer,
+                  }
+                : { path: pathname, title, views: 1, date: dayStart }) as Prisma.PageViewUncheckedCreateInput,
+            })
+          } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+              await prisma.pageView.updateMany({
+                where,
+                data: { views: { increment: 1 } },
+              })
+              return
+            }
+            throw error
+          }
+        },
+      }
+    )
+  }
 
   const settled = await Promise.allSettled(writes.map((write) => write.run()))
   const failed: string[] = []

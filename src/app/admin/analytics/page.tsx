@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma"
 import { bi } from "@/components/admin/bilingual"
 import { formatDateShort } from "@/lib/utils/format"
 import { countryName, countryFlag } from "@/lib/tracking/geo"
+import { analyticsColumns } from "@/lib/tracking/schema"
 import { isPrivateIp } from "@/lib/ai/rate-limit"
 
 export const dynamic = "force-dynamic"
@@ -67,7 +68,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com
 // applied but whose SQL never actually ran leaves the columns missing, so the
 // page checks the live schema instead of trusting _prisma_migrations alone.
 const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "createdAt"],
+  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "isBot", "createdAt"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
 
@@ -140,11 +141,14 @@ async function getStats() {
   const today = startOfBusinessDay(now)
   const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
   const schemaHealth = await getSchemaHealth()
+  // 只有 isBot 列存在时才过滤爬虫；列缺失（迁移未跑）时退回不过滤，避免整页 500。
+  const columns = await analyticsColumns()
+  const human: { isBot?: boolean } = columns.visitEventIsBot ? { isBot: false } : {}
 
   // Get visitor IDs with events in last 7 days, ordered by most recent activity
   const activeVisitors = await prisma.visitEvent.groupBy({
     by: ["visitorId"],
-    where: { createdAt: { gte: weekAgo } },
+    where: { createdAt: { gte: weekAgo }, ...human },
     _max: { createdAt: true },
     orderBy: { _max: { createdAt: "desc" } },
     take: 30,
@@ -158,6 +162,7 @@ async function getStats() {
     todayViews,
     countryStats,
     pageStats,
+    botEventCount,
     loginTotal,
     loginFailed,
     recentSessionsForActive,
@@ -166,24 +171,29 @@ async function getStats() {
     latestEvent,
   ] = await Promise.all([
     prisma.visitEvent.findMany({
-      where: { createdAt: { gte: weekAgo } },
+      where: { createdAt: { gte: weekAgo }, ...human },
       select: { visitorId: true },
       distinct: ["visitorId"],
     }),
-    prisma.visitEvent.count(),
-    prisma.visitEvent.count({ where: { createdAt: { gte: today } } }),
+    prisma.visitEvent.count({ where: human }),
+    prisma.visitEvent.count({ where: { createdAt: { gte: today }, ...human } }),
     prisma.visitEvent.groupBy({
       by: ["country"],
+      where: human,
       _count: { _all: true },
       orderBy: { _count: { country: "desc" } },
       take: 40,
     }),
     prisma.visitEvent.groupBy({
       by: ["path"],
+      where: human,
       _count: { _all: true },
       orderBy: { _count: { path: "desc" } },
       take: 30,
     }),
+    columns.visitEventIsBot
+      ? prisma.visitEvent.count({ where: { isBot: true } })
+      : Promise.resolve(0),
     prisma.loginRecord.count(),
     prisma.loginRecord.count({ where: { success: false } }),
     activeVisitorIds.length > 0
@@ -193,7 +203,7 @@ async function getStats() {
       : Promise.resolve([]),
     activeVisitorIds.length > 0
       ? prisma.visitEvent.findMany({
-          where: { visitorId: { in: activeVisitorIds } },
+          where: { visitorId: { in: activeVisitorIds }, ...human },
           orderBy: { createdAt: "asc" },
           select: {
             id: true,
@@ -231,6 +241,7 @@ async function getStats() {
     todayViews,
     countryStats,
     pageStats,
+    botEventCount,
     loginTotal,
     loginFailed,
     recentSessions: recentSessionsForActive,
@@ -399,6 +410,14 @@ export default async function AdminAnalyticsPage({
               ? bi(" · schema ok", " · 表结构正常")
               : bi(" · schema mismatch", " · 表结构异常"))}
         </p>
+        {stats.botEventCount > 0 && (
+          <p className="text-xs text-stone mt-1">
+            {bi(
+              `${stats.botEventCount} crawler/monitor event(s) hidden from the figures below.`,
+              `已从下列统计中过滤 ${stats.botEventCount} 条爬虫/监控事件。`
+            )}
+          </p>
+        )}
       </div>
 
       {!schemaHealth.ok && (

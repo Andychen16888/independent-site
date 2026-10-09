@@ -1163,12 +1163,14 @@ model VisitEvent {
   ip        String?
   country   String?
   userAgent String?
+  isBot     Boolean  @default(false) // 爬虫/监控 UA；后台默认只统计 isBot=false 的真人
   createdAt DateTime @default(now())
 
   @@index([visitorId, createdAt])
   @@index([path])
   @@index([url])
   @@index([country])
+  @@index([isBot, createdAt])
   @@map("visit_events")
 }
 

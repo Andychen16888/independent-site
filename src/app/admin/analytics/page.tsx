@@ -105,9 +105,13 @@ async function getSchemaHealth(): Promise<SchemaHealth> {
     }
 
     try {
+      // 失败/未完成的迁移：Prisma 只在 finished_at 为 NULL 且未被显式回滚时才会
+      // 阻塞后续 migrate deploy（P3009）。已应用（finished_at 非空）的迁移即使历史
+      // 上被 --rolled-back 过（rolled_back_at 仍留值），也是正常的，不能判为失败——
+      // 否则会对「回滚后重新应用」的迁移产生假阳性。与 docs/DEPLOYMENT.md 保持一致。
       const pending = await prisma.$queryRaw<{ migration_name: string }[]>`
         SELECT migration_name FROM _prisma_migrations
-        WHERE finished_at IS NULL OR rolled_back_at IS NOT NULL
+        WHERE finished_at IS NULL AND rolled_back_at IS NULL
       `
       pendingMigrations.push(...pending.map((row) => row.migration_name))
     } catch {

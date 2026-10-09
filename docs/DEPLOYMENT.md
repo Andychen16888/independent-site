@@ -351,20 +351,25 @@ ls -ld /var/www/b2b-independent-site        # 期望：drwxr-xr-x ... root root 
 创建 `.env`：
 
 ```bash
+# 先生成密钥
+echo "DB_PWD=$(openssl rand -base64 24)"
+echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
+```
+
+```bash
 cd /var/www/b2b-independent-site
 cp .env.example .env
 nano .env
 ```
 
-**必填项**（其余可留空）：
+按需修改以下几项（其余可保留 `.env.example` 默认值）：
 
 | 变量 | 说明 | 示例 |
 |------|------|------|
-| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://b2b_user:密码@localhost:5432/b2b_independent_site?schema=public` |
-| `NEXTAUTH_SECRET` | 随机密钥 | `openssl rand -base64 32` 生成 |
+| `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://b2b_user:【DB_PWD】@localhost:5432/b2b_independent_site?schema=public` |
+| `NEXTAUTH_SECRET` | 随机密钥 | `【NEXTAUTH_SECRET】` |
 | `NEXTAUTH_URL` | 站点 https 地址 | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
-| `NEXT_PUBLIC_SITE_NAME` | 站点名 | `Commodities From China` |
 
 > ⚠️ **`DATABASE_URL` 的主机名必须是 `localhost`。**
 > 本项目只用主机直装的 PostgreSQL，不存在容器网络。若误填容器服务名 `db` 会报：

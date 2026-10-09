@@ -178,7 +178,17 @@ GRANT ALL ON SCHEMA public TO b2b_user;
 
 ---
 
-## 阶段 4 · 拉代码 + 新 `.env`（DEPLOYMENT §4）
+## 阶段 4 · 拉代码 + 配置 `.env`（DEPLOYMENT §4）
+
+先**生成必需的密钥**再写入 `.env`：
+
+```bash
+# 生成数据库密码和 NextAuth Secret
+echo "DB_PWD=$(openssl rand -base64 24)"
+echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
+```
+
+把上面生成的值复制备用。
 
 ```bash
 cd /var/www
@@ -192,15 +202,14 @@ cp .env.example .env
 nano .env
 ```
 
-必填项（其余可留空，值全部用阶段 0 轮换后的**新值**）：
+按需修改以下几项（其余保持 `.env.example` 默认即可）：
 
 | 变量 | 说明 |
 |------|------|
-| `DATABASE_URL` | `postgresql://b2b_user:新密码@localhost:5432/b2b_independent_site?schema=public` |
-| `NEXTAUTH_SECRET` | `openssl rand -base64 32` |
+| `DATABASE_URL` | `postgresql://b2b_user:【DB_PWD】@localhost:5432/b2b_independent_site?schema=public` |
+| `NEXTAUTH_SECRET` | `【NEXTAUTH_SECRET】` |
 | `NEXTAUTH_URL` | `https://commoditychina.com` |
 | `NEXT_PUBLIC_SITE_URL` | `https://commoditychina.com` |
-| `NEXT_PUBLIC_SITE_NAME` | `Commodities From China` |
 
 - [ ] `grep '^DATABASE_URL' .env` 有输出且行首不是 `#`
 - [ ] `DATABASE_URL` 主机名是 `localhost`（不是 `db`）

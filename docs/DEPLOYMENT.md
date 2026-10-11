@@ -932,6 +932,7 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | 后台数据分析里访客 IP 全是 Cloudflare 的 IP / 国家识别不出来 | nginx 没启用 Cloudflare 真实 IP（real_ip 模块）。按第 8.3 节重新部署最新模板：`sudo cp b2b-independent-site.nginx.conf /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`。模块确认：`nginx -V 2>&1 | grep realip`（应输出 `--with-http_realip_module`）。模板已内置 Cloudflare 全部 IPv4/IPv6 网段 + `real_ip_header CF-Connecting-IP` |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
+| 重新部署 / 重构后首页打不开、报 500 或「Something Went Wrong」，但 `curl -I https://你的域名/en` 返回 200 | **Cloudflare 缓存了旧 HTML**：旧 HTML 引用的 `/_next/static/chunks/app/.../layout-<旧哈希>.js` 已被新构建删除（404），浏览器加载失败触发前端错误边界。验证：`curl -s https://你的域名/en` 里的 layout chunk 哈希与 `curl -s "https://你的域名/en?cb=$RANDOM"`（回源）不一致，且旧哈希 `curl -I` 返回 404。修复：① 立即 Caching → Configuration → **Purge Everything**；② 按 `docs/OPERATIONS.md` §12「缓存规则」只缓存 `/_next/static/`、`/static/`，**不要**缓存 HTML（删除任何「Cache Everything」/「HTML → N 分钟」规则）；③ 以后每次部署后清一次缓存 |
 
 ### 13.1 访客埋点停止写入
 

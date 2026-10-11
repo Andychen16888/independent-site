@@ -389,12 +389,32 @@ curl https://your-domain.com/robots.txt
 1. 添加域名到 Cloudflare，改 Nameservers
 2. DNS: `A` 记录 `@` / `www` → 服务器 IP，**开启橙色云朵（Proxy）**
 3. SSL/TLS: `Full (strict)`（服务器需有 Let's Encrypt 证书）
-4. Caching → Cache Rules：
-   - `/_next/static/` → 365 days
-   - `/static/` → 30 days
-   - HTML 页面 → 10 minutes（或 No cache）
+4. Caching → Cache Rules（**只缓存静态资源，绝不缓存 HTML / RSC**，见下方「缓存规则」）
 5. Speed → 开启 Auto Minify / Brotli / Early Hints / HTTP2+HTTP3
 6. Security → WAF / Bot Fight Mode / 速率限制（`/api/auth/*` 5次/60s）
+
+### 缓存规则（重要：配错会导致部署后首页打不开）
+
+Next.js 的 HTML 里引用 `/_next/static/chunks/**.js`，文件名带构建哈希；每次 `npm run build`
+哈希都会变。**若让 Cloudflare 缓存 HTML，构建后边缘仍返回旧 HTML，里面引用的是已被删除的
+旧 chunk（404），浏览器加载 JS 失败 → 组件树报错 → 前端错误边界（表现为「首页 500 / Something
+Went Wrong」）。** nginx 模板（`b2b-independent-site.nginx.conf`）已对 RSC 请求
+`proxy_no_cache` 并下发 `Vary`，但 **CDN 层不认 `Vary` 自定义头**，必须在 Cloudflare 侧处理。
+
+只加下面两条规则，**不要**再给「HTML 页面」加任何缓存规则：
+
+| # | 匹配（When incoming requests match） | 动作 |
+|---|--------------------------------------|------|
+| 1 | `starts_with(http.request.uri.path, "/_next/static/")` 或 `"/static/"` | Cache eligibility: **Eligible**，Edge TTL **365 days**（`/static/` 30 days） |
+| 2 | `any(http.request.headers["rsc"][*] ne "")`（即携带 `RSC` 头的软导航请求） | Cache eligibility: **Bypass cache** |
+
+> 其它所有路径（HTML、`/api`、RSC 之外的页面请求）默认 **不命中缓存**，直接回源。
+> 若你曾在 Page Rules / Cache Rules 里配过「HTML → 10 minutes」「Cache Everything」，
+> **请删除**——`Cache Everything` 会忽略源站的 `Cache-Control: private`，正是本次故障原因。
+
+**每次部署后必须清缓存**：Cloudflare 控制台 → Caching → Configuration → **Purge Everything**
+（或只 Purge 首页/对应 URL）。否则边缘最长会继续返回旧 HTML 到 TTL 到期。
+> 命令行清缓存（可选）：`curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" --data '{"purge_everything":true}'`
 
 ### Nginx 配合
 

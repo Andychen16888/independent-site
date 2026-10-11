@@ -34,8 +34,9 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
 
   const siteName = settings["site.name"] || "Commodities From China"
   const siteSlogan = useDbContent ? settings["site.slogan"] || th("slogan") : th("slogan")
-  const siteDescription = useDbContent ? settings["site.description"] || th("description") : th("description")
   const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
+  const brandBarText = settings["site.brandBarText"] || siteName
+  const brandBarTagline = settings["site.brandBarTagline"] || siteSlogan
 
   const seenHrefs = new Set<string>()
   const navItems: { name: string; href: string }[] = []
@@ -62,11 +63,12 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         navItems={navItems}
         siteName={siteName}
         siteSlogan={siteSlogan}
-        siteDescription={siteDescription}
+        brandBarText={brandBarText}
+        brandBarTagline={brandBarTagline}
         logo={settings["site.logo"]}
         promoBar={promoBar}
       />
-      <div className="h-[92px] md:h-[141px]" />
+      <div className="h-[160px] md:h-[232px]" />
       <main className="min-h-screen">{children}</main>
       <Footer
         siteName={siteName}

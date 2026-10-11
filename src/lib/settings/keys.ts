@@ -19,8 +19,6 @@ export const SETTING_KEYS: SettingMeta[] = [
   { key: "site.language", group: "site", label: "Default Language", labelZh: "默认语言", type: "language" },
   { key: "site.currency", group: "site", label: "Default Currency", labelZh: "默认货币", type: "currency" },
   { key: "site.promoBar", group: "site", label: "Announcement Bar Text", labelZh: "公告栏文字", type: "text", placeholder: "e.g. Free shipping over $100" },
-  { key: "site.brandBarText", group: "site", label: "Top Brand Bar — Company Name", labelZh: "顶部品牌栏 — 公司名称", type: "text", placeholder: "e.g. Commodities From China" },
-  { key: "site.brandBarTagline", group: "site", label: "Top Brand Bar — Tagline", labelZh: "顶部品牌栏 — 标语", type: "text", placeholder: "e.g. Chinese supply, connected to your market" },
   { key: "content.brandStory", group: "content", label: "Brand Story Section", labelZh: "品牌故事板块", type: "textarea", placeholder: "Company story shown on the homepage" },
   { key: "content.promo1", group: "content", label: "Feature Promo Section", labelZh: "产品特色板块", type: "textarea", placeholder: "Feature block with benefits list and call-to-action" },
   { key: "content.testimonials", group: "content", label: "Customer Testimonials", labelZh: "客户评价", type: "textarea", placeholder: "Buyer quotes shown in the testimonial area" },

@@ -51,27 +51,6 @@ function getNavKey(href: string): string | null {
   }
 }
 
-function BrandBar({ text, tagline }: { text?: string; tagline?: string }) {
-  if (!text) return null
-
-  return (
-    <div className="w-full bg-navy text-white">
-      <Container className="py-3 md:py-4 text-center">
-        <Link href="/" className="inline-block max-w-full">
-          <span className="block font-serif text-xl md:text-3xl leading-tight tracking-[0.04em] text-white truncate">
-            {text}
-          </span>
-          {tagline && (
-            <span className="mt-1 block text-[10px] md:text-xs uppercase tracking-[0.22em] text-sand truncate">
-              {tagline}
-            </span>
-          )}
-        </Link>
-      </Container>
-    </div>
-  )
-}
-
 function PromoBar({ text }: { text: string }) {
   const [isVisible, setIsVisible] = useState(true)
   const [dismissed, setDismissed] = useState(false)
@@ -130,16 +109,14 @@ export function Header({
   navItems = DEFAULT_NAV,
   siteName = "Commodities From China",
   siteSlogan = "Sourced from China",
-  brandBarText = "",
-  brandBarTagline = "",
+  siteDescription = "",
   logo = "",
   promoBar = "Wholesale & retail pricing available worldwide",
 }: {
   navItems?: { name: string; href: string }[]
   siteName?: string
   siteSlogan?: string
-  brandBarText?: string
-  brandBarTagline?: string
+  siteDescription?: string
   logo?: string
   promoBar?: string
 }) {
@@ -190,7 +167,6 @@ export function Header({
         isScrolled ? "shadow-sm border-b border-mist" : "border-b border-transparent"
       )}
     >
-      <BrandBar text={brandBarText || siteName} tagline={brandBarTagline || siteSlogan} />
       <PromoBar text={promoBar} />
       <Container>
         <div className="flex items-center justify-between gap-4 h-14 md:h-16">
@@ -212,9 +188,18 @@ export function Header({
                   onError={() => setLogoFailed(true)}
                   className="h-8 md:h-10 w-auto object-contain shrink-0"
                 />
-              ) : (
-                <span className="font-sans font-semibold text-base md:text-xl tracking-[0.02em] text-navy whitespace-nowrap truncate max-w-[46vw] md:max-w-[280px] text-left">
-                  {siteName}
+              ) : null}
+              <span className="font-sans font-semibold text-base md:text-xl tracking-[0.02em] text-navy whitespace-nowrap truncate max-w-[46vw] md:max-w-[280px] text-left">
+                {siteName}
+              </span>
+              {siteSlogan && (
+                <span className="text-[10px] md:text-xs tracking-[0.08em] text-stone truncate max-w-[36vw] sm:max-w-[220px] md:max-w-[280px]">
+                  {siteSlogan}
+                </span>
+              )}
+              {siteDescription && (
+                <span className="hidden 2xl:inline text-[11px] md:text-xs text-stone/90 truncate max-w-[440px]">
+                  {siteDescription}
                 </span>
               )}
             </Link>

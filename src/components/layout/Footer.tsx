@@ -49,7 +49,6 @@ const FOOTER_KEYS = new Set([
 
 export async function Footer({
   siteName = "Commodities From China",
-  siteSlogan = "Sourced from China",
   logo = "",
   about = "Direct from China to the world. We supply quality electronics, LED lighting, kitchenware, and everyday household commodities for retail and wholesale B2B buyers.",
   companyName = "",
@@ -68,7 +67,6 @@ export async function Footer({
   twitter = "",
 }: {
   siteName?: string
-  siteSlogan?: string
   logo?: string
   about?: string
   companyName?: string
@@ -177,16 +175,9 @@ export async function Footer({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logo} alt={siteName} className="max-h-16 w-auto" />
               ) : (
-                <>
-                  <span className="font-sans font-semibold text-xl tracking-[0.02em] text-ivory">
-                    {siteName}
-                  </span>
-                  {siteSlogan && (
-                    <span className="block text-[10px] tracking-[0.5em] text-ivory/65">
-                      {siteSlogan}
-                    </span>
-                  )}
-                </>
+                <span className="font-sans font-semibold text-xl tracking-[0.02em] text-ivory">
+                  {siteName}
+                </span>
               )}
             </Link>
             {companyName && <p className="text-sm text-ivory/80 font-medium mb-1">{companyName}</p>}

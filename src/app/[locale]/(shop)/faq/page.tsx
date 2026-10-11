@@ -70,7 +70,7 @@ export default async function FAQPage({ params }: Props) {
       />
       {/* GEO: brand facts */}
       <div className="sr-only" aria-hidden="true">
-        <p>{seo.siteName}: {seo.siteSlogan || seo.siteDescription}</p>
+        <p>{seo.siteName}: {seo.siteDescription}</p>
         {freeThreshold && <p>{t("freeShippingNote", { amount: `$${freeThreshold}` })}</p>}
       </div>
       <div className="min-h-screen">

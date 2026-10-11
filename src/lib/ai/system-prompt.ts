@@ -10,7 +10,7 @@ import { categoryPath } from "@/lib/categories/slug"
 export async function buildSystemPrompt(): Promise<string> {
   const seo = await getSiteSeo()
   const siteName = seo.siteName
-  const siteDescription = seo.siteSlogan || seo.siteDescription
+  const siteDescription = seo.siteDescription
 
   const settings = await getSettingsForKeys([
     "site.currency",

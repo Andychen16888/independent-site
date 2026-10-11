@@ -67,7 +67,6 @@ export async function buildLlmsContent(includeDetails: boolean): Promise<string>
   lines.push(`# ${seo.siteName}`)
   lines.push("")
   const blurb =
-    seo.siteSlogan ||
     seo.siteDescription ||
     `${seo.siteName} — premium products for everyday living.`
   lines.push(`> ${blurb}`)

@@ -84,7 +84,6 @@ async function main() {
 async function seedSiteSettings() {
   const settings: Record<string, string> = {
     "site.name": "Commodities From China",
-    "site.slogan": "Chinese supply, connected to your market",
     "site.description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers \u2014 exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years.",
     "site.logo": "",
     "site.favicon": "",
@@ -199,8 +198,6 @@ function isOldPositioningDefault(key: string, value: string): boolean {
     }
   }
   switch (key) {
-    case "site.slogan":
-      return value === "Sourced from China, delivered worldwide"
     case "site.description":
       return value.startsWith("Direct sourcing from trusted Chinese factories. Quality electronics")
     case "site.promoBar":

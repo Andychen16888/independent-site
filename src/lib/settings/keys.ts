@@ -11,7 +11,6 @@ export interface SettingMeta {
 
 export const SETTING_KEYS: SettingMeta[] = [
   { key: "site.name", group: "site", label: "Site Name", labelZh: "站点名称", type: "text", placeholder: "e.g. Global Trade Store" },
-  { key: "site.slogan", group: "site", label: "Site Slogan / Subtitle", labelZh: "站点标语 / 副标题", type: "text", placeholder: "e.g. Wholesale & Retail Online" },
   { key: "site.description", group: "site", label: "Site Description", labelZh: "站点描述", type: "textarea" },
   { key: "site.logo", group: "site", label: "Logo URL", labelZh: "Logo 图片地址", type: "url" },
   { key: "site.logoCompany", group: "site", label: "Company Logo URL", labelZh: "公司 Logo 地址", type: "url" },

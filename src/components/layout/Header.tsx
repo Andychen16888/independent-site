@@ -108,15 +108,11 @@ function PromoBar({ text }: { text: string }) {
 export function Header({
   navItems = DEFAULT_NAV,
   siteName = "Commodities From China",
-  siteSlogan = "Sourced from China",
-  siteDescription = "",
   logo = "",
   promoBar = "Wholesale & retail pricing available worldwide",
 }: {
   navItems?: { name: string; href: string }[]
   siteName?: string
-  siteSlogan?: string
-  siteDescription?: string
   logo?: string
   promoBar?: string
 }) {
@@ -170,7 +166,7 @@ export function Header({
       <PromoBar text={promoBar} />
       <Container>
         <div className="flex items-center justify-between gap-4 h-14 md:h-16">
-          <div className="flex items-center min-w-0">
+          <div className="flex items-center min-w-0 flex-1">
             <button
               className="md:hidden p-2 -ml-2 shrink-0"
               onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -179,7 +175,7 @@ export function Header({
               {isMobileOpen ? <HiOutlineXMark className="w-6 h-6" /> : <HiOutlineBars3 className="w-6 h-6" />}
             </button>
 
-            <Link href="/" className="flex items-center gap-2.5 md:gap-3 min-w-0 text-left">
+            <Link href="/" className="flex items-center gap-2.5 md:gap-3 min-w-0 flex-1 text-left">
               {showLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -189,19 +185,9 @@ export function Header({
                   className="h-8 md:h-10 w-auto object-contain shrink-0"
                 />
               ) : null}
-              <span className="font-sans font-semibold text-base md:text-xl tracking-[0.02em] text-navy whitespace-nowrap truncate max-w-[46vw] md:max-w-[280px] text-left">
+              <span className="font-sans font-semibold text-base md:text-xl tracking-[0.02em] text-navy whitespace-nowrap truncate text-left">
                 {siteName}
               </span>
-              {siteSlogan && (
-                <span className="text-[10px] md:text-xs tracking-[0.08em] text-stone truncate max-w-[36vw] sm:max-w-[220px] md:max-w-[280px]">
-                  {siteSlogan}
-                </span>
-              )}
-              {siteDescription && (
-                <span className="hidden 2xl:inline text-[11px] md:text-xs text-stone/90 truncate max-w-[440px]">
-                  {siteDescription}
-                </span>
-              )}
             </Link>
           </div>
 

@@ -149,7 +149,7 @@ export default async function RootLayout({
     }),
     brandSchema({
       name: seo.siteName,
-      description: seo.siteSlogan || seo.siteDescription,
+      description: seo.siteDescription,
       url: baseUrl,
       logo: seo.logo || undefined,
       sameAs: socialLinks,

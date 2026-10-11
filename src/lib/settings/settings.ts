@@ -46,7 +46,6 @@ export async function updateSiteSettings(input: Record<string, string>) {
 
 export const SITE_DEFAULTS: Record<string, string> = {
   "site.name": "Commodities From China",
-  "site.slogan": "",
   "site.description": "",
 }
 
@@ -57,7 +56,6 @@ export function siteNameValue(s: SiteSettings): string {
 export interface SiteSeo {
   siteName: string
   siteDescription: string
-  siteSlogan: string
   logo: string
   favicon: string
   homepageTitle: string
@@ -82,7 +80,6 @@ export const getSiteSeo = cache(async (): Promise<SiteSeo> => {
   return {
     siteName,
     siteDescription: s["site.description"] || siteName,
-    siteSlogan: s["site.slogan"] || "",
     logo: s["site.logo"] || "",
     favicon: s["site.favicon"] || "",
     homepageTitle: s["seo.homeTitle"] || siteName,

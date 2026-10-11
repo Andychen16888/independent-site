@@ -24,7 +24,7 @@ export default function HomeManager() {
         <div className="mb-4">
           <h2 className="font-serif text-lg">{bi("Site Identity & Homepage Content", "站点信息与首页内容")}</h2>
           <p className="text-sm text-stone mt-1">
-            {bi("Site name, logo, slogan, description, and the homepage sections.", "站点名称、LOGO、标语、描述及首页各版块内容。")}
+            {bi("Site name, logo, description, and the homepage sections.", "站点名称、LOGO、描述及首页各版块内容。")}
           </p>
         </div>
         <SettingsForm groups={["site", "content"]} />

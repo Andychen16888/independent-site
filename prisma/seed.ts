@@ -148,24 +148,6 @@ async function seedSiteSettings() {
       tagline: "Tag us @commoditychina for a chance to be featured",
       posts: [],
     }),
-    "content.faq": JSON.stringify([
-      {
-        q: "Are you a manufacturer or a trading company?",
-        a: "We are a China trading house, not a manufacturer. We connect Chinese state-owned enterprises, listed companies and large manufacturers with overseas buyers \u2014 especially small and mid-sized importers \u2014 and handle sourcing, contracts, inspection and export documentation for you.",
-      },
-      {
-        q: "What are your service fees?",
-        a: "Our service fees are deliberately low. You pay for the goods and the freight; trading fees are lean, transparent and quoted up front, so there are no surprise margins hidden in the price.",
-      },
-      {
-        q: "The commodity I need isn't listed on your site. Can you still supply it?",
-        a: "Yes. Send us the product name, grade, specification, quantity and destination port. Our supply relationships are much wider than the online catalog and we will confirm availability and pricing quickly.",
-      },
-      {
-        q: "Do you work with small buyers?",
-        a: "Absolutely. Our focus is connecting China's large enterprises with overseas small and mid-sized customers. No minimum importer size \u2014 we adapt volumes to your needs.",
-      },
-    ]),
   }
 
   for (const [key, value] of Object.entries(settings)) {
@@ -220,8 +202,6 @@ function isOldPositioningDefault(key: string, value: string): boolean {
       return jsonHas((o) => (o as { title?: string }).title === "Quality Electronics")
     case "content.testimonials":
       return jsonHas((arr) => Array.isArray(arr) && (arr as { name?: string }[]).some((t) => t.name === "Sarah M."))
-    case "content.faq":
-      return jsonHas((arr) => Array.isArray(arr) && (arr as { q?: string }[]).some((f) => (f.q || "").includes("minimum order quantity")))
     default:
       return false
   }

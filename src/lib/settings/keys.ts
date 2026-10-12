@@ -25,7 +25,6 @@ export const SETTING_KEYS: SettingMeta[] = [
   { key: "content.featuredEyebrow", group: "content", label: "Featured Categories — Overline", labelZh: "精选分类 — 眉题", type: "text", placeholder: "Explore" },
   { key: "content.featuredHeading", group: "content", label: "Featured Categories — Heading", labelZh: "精选分类 — 标题", type: "text", placeholder: "Our Collections" },
   { key: "content.featuredTagline", group: "content", label: "Featured Categories — Tagline", labelZh: "精选分类 — 标语", type: "text" },
-  { key: "content.faq", group: "content", label: "FAQ", labelZh: "常见问题", type: "textarea", placeholder: "Frequently asked questions and answers" },
   { key: "company.name", group: "contact", label: "Company Name", labelZh: "公司名称", type: "text" },
   { key: "company.address", group: "contact", label: "Company Address", labelZh: "公司地址", type: "textarea" },
   { key: "company.brief", group: "contact", label: "About / Company Intro", labelZh: "公司简介", type: "textarea" },

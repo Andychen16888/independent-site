@@ -359,8 +359,8 @@ curl https://your-domain.com/robots.txt
 
 | 数据源 | 后台位置 | 用途 |
 |--------|---------|------|
-| 站点名称/描述/标语/Logo | `/admin/settings` → SEO | 全局 Organization/WebSite/Brand schema |
-| FAQ 问答 | `/admin/settings` → `content.faq` | 每个问答生成独立 `QAPage` schema |
+| 站点名称/描述/Logo | `/admin/settings` → SEO | 全局 Organization/WebSite/Brand schema |
+| FAQ 问答 | `/admin/faq` | 每个问答生成独立 `QAPage` schema |
 | 商品/分类/页面/博客 | 后台管理 | Product / ProductGroup / Article / BlogPosting |
 
 ### 验证

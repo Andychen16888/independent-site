@@ -88,14 +88,6 @@ const STRUCTURED_FIELDS: Record<string, StructuredSchema> = {
       },
     ],
   },
-  "content.faq": {
-    kind: "array",
-    itemLabel: bi("Question", "问题"),
-    fields: [
-      { key: "q", type: "textarea", label: "Question", labelZh: "问题", rows: 2 },
-      { key: "a", type: "textarea", label: "Answer", labelZh: "答案", rows: 3 },
-    ],
-  },
 }
 
 function isImageKey(key: string): boolean {

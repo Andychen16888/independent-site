@@ -38,16 +38,8 @@ export default async function FAQPage({ params }: Props) {
   const seo = await getSiteSeo()
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
 
-  // FAQ content is now stored per-locale via SiteFaq + SiteFaqTranslation tables.
-  // Fall back to the legacy "content.faq" setting (English JSON) until the table is seeded.
-  let faqs: FaqItem[] = (await fetchLocalizedFaqs(locale)).map((f) => ({ q: f.question, a: f.answer }))
-  if (faqs.length === 0) {
-    const raw = await getSetting("content.faq", "[]")
-    try {
-      const legacy = JSON.parse(raw)
-      if (Array.isArray(legacy)) faqs = legacy
-    } catch {}
-  }
+  // FAQ content is stored per-locale via SiteFaq + SiteFaqTranslation tables.
+  const faqs: FaqItem[] = (await fetchLocalizedFaqs(locale)).map((f) => ({ q: f.question, a: f.answer }))
 
   const freeThreshold = (await getSetting("shipping.freeThreshold", "")) || undefined
   const t = await getTranslations("faq")

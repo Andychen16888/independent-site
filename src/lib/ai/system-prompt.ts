@@ -21,7 +21,6 @@ export async function buildSystemPrompt(): Promise<string> {
     "shipping.expressDays",
     "shipping.returnWindow",
     "contact.hours",
-    "content.faq",
   ])
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
@@ -79,13 +78,6 @@ export async function buildSystemPrompt(): Promise<string> {
         return { q: en?.question || any?.question || "", a: en?.answer || any?.answer || "" }
       })
       .filter((f) => f.q)
-    if (faqs.length === 0) {
-      const legacy = JSON.parse(settings["content.faq"] || "[]") as { q: string; a: string }[]
-      if (Array.isArray(legacy)) {
-        faqs.length = 0
-        faqs.push(...legacy)
-      }
-    }
     if (faqs.length > 0) {
       faqLines = faqs
         .slice(0, 5)

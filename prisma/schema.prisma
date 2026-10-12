@@ -1022,7 +1022,27 @@ model Banner {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  translations BannerTranslation[]
+
   @@map("banners")
+}
+
+model BannerTranslation {
+  id          String   @id @default(cuid())
+  bannerId    String
+  locale      String
+  eyebrow     String?
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+  ctaText     String?
+  link        String?
+
+  banner Banner @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+
+  @@unique([bannerId, locale])
+  @@index([locale])
+  @@map("banner_translations")
 }
 
 model Menu {

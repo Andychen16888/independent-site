@@ -4,7 +4,19 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import ImageUploader from "@/components/admin/ImageUploader"
+import BannerTranslationsEditor, { type BannerTranslationFields } from "@/components/admin/BannerTranslationsEditor"
 import { bi } from "@/components/admin/bilingual"
+
+function translationsFromData(list: any[]): BannerTranslationFields[] {
+  return (list || []).map((t) => ({
+    locale: t.locale,
+    title: t.title || "",
+    eyebrow: t.eyebrow || "",
+    subtitle: t.subtitle || "",
+    description: t.description || "",
+    ctaText: t.ctaText || "",
+  }))
+}
 
 export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; bannerId?: string }) {
   const router = useRouter()
@@ -12,6 +24,7 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
   const [notFound, setNotFound] = useState(false)
+  const [translations, setTranslations] = useState<BannerTranslationFields[]>([])
   const [form, setForm] = useState({
     title: "", subtitle: "", eyebrow: "", description: "",
     ctaText: "", alignment: "left", image: "", link: "",
@@ -32,6 +45,7 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
           alignment: b.alignment || "left", image: b.image, link: b.link || "",
           sortOrder: String(b.sortOrder ?? 0), isActive: b.isActive !== false,
         })
+        setTranslations(translationsFromData(b.translations))
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
@@ -48,7 +62,7 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
       const res = await fetch(url, {
         method: mode === "edit" ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0 }),
+        body: JSON.stringify({ ...form, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0, translations }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || bi("Failed to save banner", "保存横幅失败"))
@@ -69,7 +83,7 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
   const label = "block text-xs uppercase tracking-wider text-stone font-medium mb-1.5"
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
       {error && <div className="bg-rosegold/10 border border-rosegold/20 text-sm p-3">{error}</div>}
 
       <div>
@@ -122,6 +136,21 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
       <div>
         <label className={label}>{bi("Background Image *", "背景图 *")}</label>
         <ImageUploader value={form.image} onChange={(url) => update({ image: url })} />
+      </div>
+
+      <div className="border-t border-mist pt-6">
+        <label className={label}>{bi("Translations", "多语言翻译")}</label>
+        <BannerTranslationsEditor
+          value={translations}
+          onChange={setTranslations}
+          source={{
+            title: form.title,
+            eyebrow: form.eyebrow,
+            subtitle: form.subtitle,
+            description: form.description,
+            ctaText: form.ctaText,
+          }}
+        />
       </div>
 
       <label className="flex items-center gap-2 text-sm cursor-pointer">

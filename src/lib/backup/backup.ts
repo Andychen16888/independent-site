@@ -28,6 +28,7 @@ export type BackupData = {
   productTranslations: Prisma.ProductTranslationUncheckedCreateInput[]
   siteSettings: Prisma.SiteSettingUncheckedCreateInput[]
   banners: Prisma.BannerUncheckedCreateInput[]
+  bannerTranslations: Prisma.BannerTranslationUncheckedCreateInput[]
   menus: Prisma.MenuUncheckedCreateInput[]
   pages: Prisma.PageUncheckedCreateInput[]
   pageTranslations: Prisma.PageTranslationUncheckedCreateInput[]
@@ -67,6 +68,7 @@ async function collectCatalogData(): Promise<BackupData> {
     productTranslations,
     siteSettings,
     banners,
+    bannerTranslations,
     menus,
     pages,
     pageTranslations,
@@ -88,6 +90,7 @@ async function collectCatalogData(): Promise<BackupData> {
     prisma.productTranslation.findMany(),
     prisma.siteSetting.findMany(),
     prisma.banner.findMany(),
+    prisma.bannerTranslation.findMany(),
     prisma.menu.findMany(),
     prisma.page.findMany(),
     prisma.pageTranslation.findMany(),
@@ -111,6 +114,7 @@ async function collectCatalogData(): Promise<BackupData> {
     productTranslations,
     siteSettings,
     banners,
+    bannerTranslations,
     menus,
     pages,
     pageTranslations,
@@ -293,6 +297,7 @@ async function wipeData(summary: RestoreSummary): Promise<void> {
     ["blogPost", () => prisma.blogPost.deleteMany()],
     ["siteFaqTranslation", () => prisma.siteFaqTranslation.deleteMany()],
     ["siteFaq", () => prisma.siteFaq.deleteMany()],
+    ["bannerTranslation", () => prisma.bannerTranslation.deleteMany()],
     ["banner", () => prisma.banner.deleteMany()],
     ["siteSetting", () => prisma.siteSetting.deleteMany()],
   ]
@@ -533,6 +538,20 @@ export async function restoreBackup(
         where: { id: row.id as string },
         create: row,
         update: row as Prisma.BannerUncheckedUpdateInput,
+      }),
+  )
+
+  await runTable(
+    summary,
+    "bannerTranslations",
+    rows<Prisma.BannerTranslationUncheckedCreateInput>(data.bannerTranslations),
+    (row) =>
+      prisma.bannerTranslation.upsert({
+        where: {
+          bannerId_locale: { bannerId: row.bannerId as string, locale: row.locale as string },
+        },
+        create: row,
+        update: row as Prisma.BannerTranslationUncheckedUpdateInput,
       }),
   )
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
+import { upsertBannerTranslations } from "@/lib/i18n/banner"
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { title, subtitle, eyebrow, description, ctaText, alignment, image, link, sortOrder, isActive } = body
+    const { title, subtitle, eyebrow, description, ctaText, alignment, image, link, sortOrder, isActive, translations } = body
 
     if (!title || !image) {
       return NextResponse.json({ error: "Title and image are required" }, { status: 400 })
@@ -44,6 +45,10 @@ export async function POST(req: NextRequest) {
         isActive: isActive !== undefined ? isActive : true,
       },
     })
+
+    if (Array.isArray(translations)) {
+      await upsertBannerTranslations(banner.id, translations)
+    }
 
     invalidateStorefront()
     return NextResponse.json({ banner }, { status: 201 })

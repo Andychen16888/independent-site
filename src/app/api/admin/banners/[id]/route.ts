@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
+import { upsertBannerTranslations } from "@/lib/i18n/banner"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireAdmin(req)
   if (authError) return authError
 
   const { id } = await params
-  const banner = await prisma.banner.findUnique({ where: { id } })
+  const banner = await prisma.banner.findUnique({ where: { id }, include: { translations: true } })
   if (!banner) return NextResponse.json({ error: "Banner not found" }, { status: 404 })
   return NextResponse.json({ banner })
 }
@@ -20,7 +21,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { title, subtitle, eyebrow, description, ctaText, alignment, image, link, sortOrder, isActive } = body
+    const { title, subtitle, eyebrow, description, ctaText, alignment, image, link, sortOrder, isActive, translations } = body
 
     const banner = await prisma.banner.update({
       where: { id },
@@ -38,7 +39,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
 
-invalidateStorefront()
+    if (Array.isArray(translations)) {
+      await upsertBannerTranslations(banner.id, translations)
+    }
+
+    invalidateStorefront()
     return NextResponse.json({ banner })
   } catch (error) {
     console.error("Admin banner update error:", error)

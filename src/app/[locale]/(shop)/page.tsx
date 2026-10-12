@@ -4,6 +4,7 @@ import { getGroupedSiteImages } from "@/lib/settings/site-images"
 import { getTranslations } from "next-intl/server"
 import { fetchProductTranslations, applyProductLocalizations } from "@/lib/i18n/product"
 import { fetchCategoryTranslations } from "@/lib/i18n/category"
+import { fetchBannerTranslations } from "@/lib/i18n/banner"
 import { HeroBanner } from "@/components/home/HeroBanner"
 import { BrandStory } from "@/components/home/BrandStory"
 import { FeaturedCategories } from "@/components/home/FeaturedCategories"
@@ -102,9 +103,14 @@ export default async function HomePage({
     featuredCats.map((c) => c.id),
     locale
   )
+  const bannerTranslations = await fetchBannerTranslations(
+    banners.map((b) => b.id),
+    locale
+  )
 
-  // Hero slides: DB banners provide images/links/alignment; text comes from
-  // DB only on the default locale, otherwise from localized messages.
+  // Hero slides: DB banners provide text/images/links/alignment. On the default
+  // locale the English DB text wins; on other locales a DB translation wins,
+  // then the localized messages, then the English DB text.
   const defaultSlides = (t.raw("hero.slides") as Record<string, string>[]).map((s, i) => ({
     title: s.title,
     subtitle: s.subtitle,
@@ -117,15 +123,30 @@ export default async function HomePage({
   }))
 
   const heroSlides: HeroSlide[] = banners.length
-    ? banners.map((b, i) => ({
-        title: useDbContent ? b.title : defaultSlides[i]?.title || b.title,
-        subtitle: useDbContent ? b.eyebrow || b.subtitle || undefined : defaultSlides[i]?.subtitle || b.subtitle || undefined,
-        description: useDbContent ? b.description || undefined : defaultSlides[i]?.description || b.description || undefined,
-        cta: useDbContent ? b.ctaText || undefined : defaultSlides[i]?.cta || b.ctaText || undefined,
-        href: b.link || undefined,
-        image: b.image || defaultSlides[i]?.image || undefined,
-        align: b.alignment || "left",
-      }))
+    ? banners.map((b, i) => {
+        const tr = bannerTranslations.get(b.id)
+        const fb = defaultSlides[i]
+        if (useDbContent) {
+          return {
+            title: b.title,
+            subtitle: b.eyebrow || b.subtitle || undefined,
+            description: b.description || undefined,
+            cta: b.ctaText || undefined,
+            href: b.link || undefined,
+            image: b.image || fb?.image || undefined,
+            align: b.alignment || "left",
+          }
+        }
+        return {
+          title: tr?.title || fb?.title || b.title,
+          subtitle: tr?.eyebrow || tr?.subtitle || fb?.subtitle || b.eyebrow || b.subtitle || undefined,
+          description: tr?.description || fb?.description || b.description || undefined,
+          cta: tr?.ctaText || fb?.cta || b.ctaText || undefined,
+          href: tr?.link || b.link || undefined,
+          image: b.image || fb?.image || undefined,
+          align: b.alignment || "left",
+        }
+      })
     : defaultSlides
 
   const featured: FeaturedCategory[] = featuredCats.map((c) => ({

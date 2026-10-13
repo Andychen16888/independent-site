@@ -125,6 +125,96 @@
     @apply bg-mist px-1 py-0.5 text-xs rounded-sm break-all;
   }
 
+  /* Rich text authored in the admin editor and rendered on the storefront.
+     Tailwind's preflight zeroes paragraph margins and browsers collapse runs
+     of whitespace, so the paragraphs, line breaks and repeated spaces the
+     admin typed would otherwise be lost on the client. These rules keep the
+     authored layout exactly as entered. */
+  .rich-text {
+    overflow-wrap: anywhere;
+  }
+
+  .rich-text > *:first-child {
+    margin-top: 0;
+  }
+
+  .rich-text > *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Preserve repeated spaces and line breaks inside text blocks. */
+  .rich-text :where(p, li, blockquote, h1, h2, h3, h4, h5, h6, td, th) {
+    white-space: pre-wrap;
+  }
+
+  .rich-text p {
+    margin: 0 0 0.85em;
+    line-height: 1.7;
+  }
+
+  .rich-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Blank paragraphs are how the editor stores empty lines: keep their height. */
+  .rich-text p:empty,
+  .rich-text p:has(> br:only-child) {
+    margin: 0;
+    min-height: 1.7em;
+  }
+
+  .rich-text h1,
+  .rich-text h2,
+  .rich-text h3,
+  .rich-text h4,
+  .rich-text h5,
+  .rich-text h6 {
+    margin: 1.4em 0 0.6em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .rich-text h1 { font-size: 1.6em; }
+  .rich-text h2 { font-size: 1.4em; }
+  .rich-text h3 { font-size: 1.2em; }
+
+  .rich-text ul,
+  .rich-text ol {
+    margin: 0 0 0.85em;
+    padding-left: 1.5em;
+  }
+
+  .rich-text ul { list-style: disc; }
+  .rich-text ol { list-style: decimal; }
+  .rich-text li { margin: 0.25em 0; }
+
+  .rich-text blockquote {
+    margin: 0 0 0.85em;
+    padding-left: 1em;
+    border-left: 3px solid var(--color-mist);
+    color: var(--color-steel);
+    font-style: italic;
+  }
+
+  .rich-text hr {
+    margin: 1.5em 0;
+    border: 0;
+    border-top: 1px solid var(--color-mist);
+  }
+
+  .rich-text a {
+    color: var(--color-navy);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .rich-text strong { font-weight: 600; }
+  .rich-text em { font-style: italic; }
+  .rich-text u { text-decoration: underline; }
+  .rich-text s { text-decoration: line-through; }
+  .rich-text sup { font-size: 0.75em; vertical-align: super; }
+  .rich-text sub { font-size: 0.75em; vertical-align: sub; }
+
   /* Layout rhythm: 56px mobile -> 96/128px desktop */
   .section-padding {
     @apply py-14 md:py-24 lg:py-32;

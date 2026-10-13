@@ -147,7 +147,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
           {product.shortDescription && (
             <div
-              className="text-body mb-6 prose prose-stone max-w-none"
+              className="text-body mb-6 rich-text"
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.shortDescription) }}
             />
           )}
@@ -251,7 +251,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {t("description")}
             </summary>
             <div
-              className="text-body mt-4 leading-relaxed prose prose-stone max-w-none"
+              className="text-body mt-4 leading-relaxed rich-text"
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
             />
           </details>

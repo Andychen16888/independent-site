@@ -262,7 +262,7 @@ export default function RichEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-stone max-w-none focus:outline-none px-3 py-2 text-sm",
+          "rich-text prose prose-stone max-w-none focus:outline-none px-3 py-2 text-sm",
         style: `min-height: ${minHeight}px`,
       },
     },

@@ -208,7 +208,13 @@ function collectTextNodes(root: HTMLElement): Text[] {
 function cleanTextNodes(root: HTMLElement): void {
   for (const node of collectTextNodes(root)) {
     if (!node.parentElement || isInsidePre(node.parentElement)) continue
-    node.data = node.data.replace(INVISIBLE_CHARACTERS, "").replace(BLANK_SPACES, " ")
+    // Source-formatting newlines (e.g. pretty-printed HTML) are not real line
+    // breaks — intentional breaks are <br> or separate blocks. Collapse them
+    // to a space so preserved whitespace doesn't render spurious line breaks.
+    node.data = node.data
+      .replace(INVISIBLE_CHARACTERS, "")
+      .replace(/[ \t]*\r?\n[ \t]*/g, " ")
+      .replace(BLANK_SPACES, " ")
   }
 }
 

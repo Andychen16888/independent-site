@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma"
 import { clientIp } from "@/lib/ai/rate-limit"
 import { countryFromIp } from "@/lib/tracking/geo"
 import { isBotUserAgent } from "@/lib/tracking/bot"
+import { detectDeviceType, isKnownDeviceType } from "@/lib/tracking/device"
 import { analyticsColumns } from "@/lib/tracking/schema"
 
 export const dynamic = "force-dynamic"
@@ -110,6 +111,14 @@ export async function POST(req: NextRequest) {
   // 但不计入访客会话与页面浏览聚合，避免污染后台的真人统计。
   const isBot = isBotUserAgent(userAgent)
 
+  // 设备类型优先用客户端上报值（iPadOS 等 UA 识别不出的平板也能正确区分），
+  // 客户端缺失时退回服务器端 UA 识别；两者都无留空，读侧会再次兜底。
+  const reportedDeviceType = clamp(body.deviceType, 16)
+  const uaDeviceType = detectDeviceType(userAgent)
+  const deviceType = isKnownDeviceType(reportedDeviceType)
+    ? reportedDeviceType
+    : (uaDeviceType === "unknown" ? null : uaDeviceType)
+
   const columns = await analyticsColumns()
 
   // 各路写入彼此独立：任何一路失败都不能连累其他路（之前整体 Promise.all +
@@ -129,8 +138,9 @@ export async function POST(req: NextRequest) {
             userAgent,
             createdAt: now,
             ...(columns.visitEventUrl ? { url: fullUrl } : {}),
-            // isBot 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
+            // isBot/deviceType 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
             ...(columns.visitEventIsBot ? { isBot } : {}),
+            ...(columns.visitEventDeviceType ? { deviceType } : {}),
           },
         }),
     },
@@ -151,6 +161,7 @@ export async function POST(req: NextRequest) {
               firstSeen: now,
               lastSeen: now,
               pageCount: 1,
+              ...(columns.visitorSessionDeviceType ? { deviceType } : {}),
             },
             update: {
               lastSeen: now,
@@ -158,6 +169,8 @@ export async function POST(req: NextRequest) {
               ...(ip ? { ip } : {}),
               ...(country ? { country } : {}),
               ...(userAgent ? { userAgent } : {}),
+              // 设备类型以最新一次请求为准：桌面/平板/手机切换时更新到其实设备。
+              ...(columns.visitorSessionDeviceType && deviceType ? { deviceType } : {}),
             },
           }),
       },

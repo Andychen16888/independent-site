@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
+import { detectClientDeviceType } from "@/lib/tracking/device"
 
 const COOKIE_NAME = "visitor_id"
 const DAYS = 365
@@ -40,6 +41,8 @@ export function VisitorBeacon() {
           url,
           title: document.title,
           referrer: document.referrer,
+          // 客户端识别设备类型（比 UA 更准，可识别 iPadOS 等平板）上报给 /api/track
+          deviceType: detectClientDeviceType(),
         }
         if (navigator.sendBeacon) {
           navigator.sendBeacon("/api/track", new Blob([JSON.stringify(data)], { type: "application/json" }))

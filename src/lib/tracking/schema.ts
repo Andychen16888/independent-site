@@ -14,12 +14,20 @@ export type AnalyticsColumns = {
   visitEventUrl: boolean
   pageViewUrl: boolean
   visitEventIsBot: boolean
+  visitEventDeviceType: boolean
+  visitorSessionDeviceType: boolean
 }
 
 const TTL_MS = 10 * 60 * 1000
 let cache: { at: number; value: AnalyticsColumns } | null = null
 
-const OPTIMISTIC: AnalyticsColumns = { visitEventUrl: true, pageViewUrl: true, visitEventIsBot: true }
+const OPTIMISTIC: AnalyticsColumns = {
+  visitEventUrl: true,
+  pageViewUrl: true,
+  visitEventIsBot: true,
+  visitEventDeviceType: true,
+  visitorSessionDeviceType: true,
+}
 
 export async function analyticsColumns(): Promise<AnalyticsColumns> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.value
@@ -33,25 +41,36 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
         AND (
           (column_name = 'url' AND table_name IN ('visit_events', 'page_views'))
           OR (column_name = 'isBot' AND table_name = 'visit_events')
+          OR (column_name = 'deviceType' AND table_name IN ('visit_events', 'visitor_sessions'))
         )
     `
     const visitEvents = new Set<string>()
     const pageViews = new Set<string>()
+    const visitorSessions = new Set<string>()
     for (const row of rows) {
       if (row.table_name === "visit_events") visitEvents.add(row.column_name)
       if (row.table_name === "page_views") pageViews.add(row.column_name)
+      if (row.table_name === "visitor_sessions") visitorSessions.add(row.column_name)
     }
     value = {
       visitEventUrl: visitEvents.has("url"),
       pageViewUrl: pageViews.has("url"),
       visitEventIsBot: visitEvents.has("isBot"),
+      visitEventDeviceType: visitEvents.has("deviceType"),
+      visitorSessionDeviceType: visitorSessions.has("deviceType"),
     }
   } catch (error) {
     console.error("[track] analytics schema probe failed; assuming current schema.", error)
     return (cache = { at: Date.now(), value: OPTIMISTIC }).value
   }
 
-  if (!value.visitEventUrl || !value.pageViewUrl || !value.visitEventIsBot) {
+  if (
+    !value.visitEventUrl ||
+    !value.pageViewUrl ||
+    !value.visitEventIsBot ||
+    !value.visitEventDeviceType ||
+    !value.visitorSessionDeviceType
+  ) {
     console.warn(
       '[track] analytics schema is behind; run "npm run db:migrate". Falling back where possible.',
       value

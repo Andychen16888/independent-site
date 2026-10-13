@@ -5,6 +5,13 @@ import { formatDateShort } from "@/lib/utils/format"
 import { countryName, countryFlag } from "@/lib/tracking/geo"
 import { analyticsColumns } from "@/lib/tracking/schema"
 import { isPrivateIp } from "@/lib/ai/rate-limit"
+import { detectDeviceType, isKnownDeviceType, type DeviceType } from "@/lib/tracking/device"
+import {
+  HiOutlineComputerDesktop,
+  HiOutlineDevicePhoneMobile,
+  HiOutlineDeviceTablet,
+  HiOutlineQuestionMarkCircle,
+} from "react-icons/hi2"
 
 export const dynamic = "force-dynamic"
 
@@ -68,7 +75,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com
 // applied but whose SQL never actually ran leaves the columns missing, so the
 // page checks the live schema instead of trusting _prisma_migrations alone.
 const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "isBot", "createdAt"],
+  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "createdAt"],
+  visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "firstSeen", "lastSeen", "pageCount"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
 
@@ -169,6 +177,7 @@ async function getStats() {
     activeVisitorEvents,
     weeklyPageViews,
     latestEvent,
+    rawDeviceRows,
   ] = await Promise.all([
     prisma.visitEvent.findMany({
       where: { createdAt: { gte: weekAgo }, ...human },
@@ -215,6 +224,7 @@ async function getStats() {
             country: true,
             userAgent: true,
             createdAt: true,
+            ...(columns.visitEventDeviceType ? { deviceType: true } : {}),
           },
         })
       : Promise.resolve([]),
@@ -233,7 +243,34 @@ async function getStats() {
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
+    // 每个访客取最近一次事件的设备信息：按时间倒序取回后在前端去重（首个即最新）。
+    // deviceType 列缺失（迁移未跑）时退回按 userAgent 读取。
+    prisma.visitEvent.findMany({
+      where: { createdAt: { gte: weekAgo }, ...human },
+      orderBy: { createdAt: "desc" },
+      take: 3000,
+      select: {
+        visitorId: true,
+        userAgent: true,
+        ...(columns.visitEventDeviceType ? { deviceType: true } : {}),
+      },
+    }),
   ])
+
+  const seenVisitorIds = new Set<string>()
+  const deviceVisitorRows: Array<{ visitorId: string; userAgent: string | null; deviceType?: string | null }> = []
+  for (const row of rawDeviceRows) {
+    if (seenVisitorIds.has(row.visitorId)) continue
+    seenVisitorIds.add(row.visitorId)
+    deviceVisitorRows.push(row)
+  }
+
+  const deviceCounts: Record<DeviceType, number> = { desktop: 0, mobile: 0, tablet: 0, unknown: 0 }
+  for (const row of deviceVisitorRows) {
+    const device = resolveDevice(row.deviceType, row.userAgent)
+    deviceCounts[device] += 1
+  }
+  const deviceTotal = deviceCounts.desktop + deviceCounts.mobile + deviceCounts.tablet
 
   return {
     visitorCount: visitorCountDistinct7d.length,
@@ -249,6 +286,8 @@ async function getStats() {
     weeklyPageViews,
     weekAgo,
     latestEventAt: latestEvent?.createdAt ?? null,
+    deviceCounts,
+    deviceTotal,
     schemaHealth,
   }
 }
@@ -296,6 +335,30 @@ function SectionCard({
       </div>
       {children}
     </section>
+  )
+}
+
+function resolveDevice(deviceType: string | null | undefined, userAgent: string | null | undefined): DeviceType {
+  return isKnownDeviceType(deviceType) ? deviceType : detectDeviceType(userAgent)
+}
+
+const DEVICE_LABELS: Record<DeviceType, { en: string; zh: string; Icon: React.ComponentType<{ className?: string }> }> = {
+  desktop: { en: "Desktop", zh: "电脑", Icon: HiOutlineComputerDesktop },
+  mobile: { en: "Mobile", zh: "手机", Icon: HiOutlineDevicePhoneMobile },
+  tablet: { en: "Tablet", zh: "平板", Icon: HiOutlineDeviceTablet },
+  unknown: { en: "Unknown", zh: "未知", Icon: HiOutlineQuestionMarkCircle },
+}
+const DEVICE_ORDER: DeviceType[] = ["desktop", "mobile", "tablet", "unknown"]
+
+function DeviceBadge({ device }: { device: DeviceType }) {
+  const { en, zh, Icon } = DEVICE_LABELS[device]
+  return (
+    <span className="inline-flex items-center gap-1 border border-mist px-1 py-px">
+      <Icon className="w-3.5 h-3.5 text-stone" />
+      <span className="text-[9px] uppercase tracking-wider text-stone/80">
+        {bi(en, zh)}
+      </span>
+    </span>
   )
 }
 
@@ -383,6 +446,7 @@ export default async function AdminAnalyticsPage({
           ip: newest.ip ?? oldest.ip,
           country: newest.country ?? oldest.country,
           userAgent: newest.userAgent ?? oldest.userAgent,
+          deviceType: newest.deviceType ?? null,
           firstSeen: oldest.createdAt,
           lastSeen: newest.createdAt,
           pageCount: events.length,
@@ -505,6 +569,47 @@ export default async function AdminAnalyticsPage({
           sub={`${stats.loginFailed} ${bi("failed", "失败")}`}
         />
       </div>
+
+      <SectionCard
+        title="Devices 7d"
+        titleZh="设备类型（近7天·按访客）"
+        action={
+          <span className="text-[11px] text-stone">
+            {stats.deviceTotal} {bi("visitors with device detected", "位可识别设备的访客")}
+            {stats.deviceCounts.unknown > 0
+              ? ` · ${stats.deviceCounts.unknown} ${bi("unknown", "未知")}`
+              : ""}
+          </span>
+        }
+      >
+        {stats.deviceTotal === 0 ? (
+          <p className="text-sm text-stone">{bi("No device data yet.", "暂无设备数据。")}</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {DEVICE_ORDER.filter((device) => device !== "unknown").map((device) => {
+              const count = stats.deviceCounts[device]
+              const percent = Math.round((count / stats.deviceTotal) * 100)
+              const { en, zh, Icon } = DEVICE_LABELS[device]
+              return (
+                <div key={device} className="border border-mist/60 p-4">
+                  <p className="flex items-center gap-2 text-xs text-stone">
+                    <Icon className="w-4 h-4" />
+                    {bi(en, zh)}
+                  </p>
+                  <p className="mt-2 text-3xl font-light tabular-nums">{count}</p>
+                  <span className="block h-1 bg-mist/60 mt-3 rounded-sm overflow-hidden">
+                    <span
+                      className="block h-full bg-navy/70"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </span>
+                  <p className="mt-1 text-[10px] uppercase tracking-wider text-stone">{percent}%</p>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </SectionCard>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <SectionCard title="Visited Pages 7d" titleZh="访问页面（近7天）">
@@ -639,6 +744,7 @@ export default async function AdminAnalyticsPage({
                 // 无 IP / 无国家通常来自服务器本机或内网访问（curl 自测、本机调试），
                 // 直接显示「未知」会让人以为是国家识别失败，这里明确区分开。
                 const unknownSource = !displayCountry && (!displayIp || isPrivateIp(displayIp))
+                const displayDevice = resolveDevice(session.deviceType, session.userAgent)
 
                 return (
                 <div key={session.id} className="border border-mist/60 p-4">
@@ -647,6 +753,7 @@ export default async function AdminAnalyticsPage({
                     <span className="font-medium text-charcoal">
                       {unknownSource ? bi("Local / unknown source", "本机或内网访问") : countryName(displayCountry)}
                     </span>
+                    <DeviceBadge device={displayDevice} />
                     {displayIp && (
                       <span className="font-mono inline-flex items-center gap-1">
                         {displayIp}

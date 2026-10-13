@@ -27,7 +27,8 @@ for (const line of envFile.split("\n")) {
 const prisma = new PrismaClient()
 
 const REQUIRED_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "isBot", "createdAt"],
+  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "createdAt"],
+  visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "firstSeen", "lastSeen", "pageCount"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
 

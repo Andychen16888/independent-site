@@ -7,6 +7,37 @@ const intlMiddleware = createIntlMiddleware(routing)
 
 const localeSet: Set<string> = new Set(routing.locales)
 
+// Keep the variant list in sync with the nginx template so every hop keys
+// HTML and RSC separately.
+const RSC_VARY =
+  "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch, Next-Url, Accept-Encoding"
+
+function isRscRequest(req: NextRequest): boolean {
+  return (
+    req.headers.get("rsc") === "1" ||
+    req.headers.has("next-router-state-tree") ||
+    req.headers.has("next-router-prefetch") ||
+    req.headers.has("next-router-segment-prefetch")
+  )
+}
+
+// Cloudflare (and other CDNs) ignore the custom `Vary: RSC` header and key the
+// cache only by URL. A client-side navigation fetches the RSC payload for the
+// same URL a browser later visits, so the CDN can cache that `text/x-component`
+// body and serve it to normal page loads — the raw flight data users see as
+// "乱码". `CDN-Cache-Control` is honoured by the edge independently of the
+// browser-facing `Cache-Control`, so it stops the poisoning without disabling
+// browser caching. RSC bodies themselves must never be stored anywhere.
+function preventCdnCache(req: NextRequest, res: NextResponse): NextResponse {
+  res.headers.set("CDN-Cache-Control", "no-store")
+  res.headers.set("Cloudflare-CDN-Cache-Control", "no-store")
+  res.headers.set("Vary", RSC_VARY)
+  if (isRscRequest(req)) {
+    res.headers.set("Cache-Control", "no-store")
+  }
+  return res
+}
+
 function stripLocalePrefix(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean)
   if (!segments.length) return "/"
@@ -79,7 +110,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const intlResponse = intlMiddleware(req)
-  return fixXDefaultAlternate(req, intlResponse)
+  return preventCdnCache(req, fixXDefaultAlternate(req, intlResponse))
 }
 
 export const config = {

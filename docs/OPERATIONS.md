@@ -398,8 +398,21 @@ curl https://your-domain.com/robots.txt
 Next.js 的 HTML 里引用 `/_next/static/chunks/**.js`，文件名带构建哈希；每次 `npm run build`
 哈希都会变。**若让 Cloudflare 缓存 HTML，构建后边缘仍返回旧 HTML，里面引用的是已被删除的
 旧 chunk（404），浏览器加载 JS 失败 → 组件树报错 → 前端错误边界（表现为「首页 500 / Something
-Went Wrong」）。** nginx 模板（`b2b-independent-site.nginx.conf`）已对 RSC 请求
-`proxy_no_cache` 并下发 `Vary`，但 **CDN 层不认 `Vary` 自定义头**，必须在 Cloudflare 侧处理。
+Went Wrong」）。**
+
+还有第二种更隐蔽的故障：软导航（点链接）会用**同一个 URL** 拉取 RSC payload
+（`Content-Type: text/x-component`），只是多带一个 `RSC` 请求头。CSS/普通请求按 URL 缓存，
+**CDN 层不认自定义 `Vary` 头**，于是这份 flight 数据被按 HTML 的 URL 缓存下来，之后
+`https://你的域名/en` 直接访问就返回 flight 文本（**页面显示乱码**）。两种故障的根因都是
+「让 CDN 缓存了页面 HTML/RSC」。
+
+源站已做加固，但**最终仍需在 Cloudflare 侧确认**：
+
+- `src/middleware.ts` 与 nginx 模板对页面响应统一下发 `CDN-Cache-Control: no-store`
+  （RSC 请求额外下发 `Cache-Control: no-store`）。Cloudflare 对 Cache Rules 会优先读
+  `CDN-Cache-Control`，据此 **BYPASS**，不再缓存。
+- **但 Page Rules 的「Cache Everything」会连 `CDN-Cache-Control` 一起忽略**，必须删除；
+  否则源站下发什么都没用。
 
 只加下面两条规则，**不要**再给「HTML 页面」加任何缓存规则：
 
@@ -410,7 +423,8 @@ Went Wrong」）。** nginx 模板（`b2b-independent-site.nginx.conf`）已对 
 
 > 其它所有路径（HTML、`/api`、RSC 之外的页面请求）默认 **不命中缓存**，直接回源。
 > 若你曾在 Page Rules / Cache Rules 里配过「HTML → 10 minutes」「Cache Everything」，
-> **请删除**——`Cache Everything` 会忽略源站的 `Cache-Control: private`，正是本次故障原因。
+> **请删除**——`Cache Everything` 会忽略源站的 `Cache-Control` / `CDN-Cache-Control`，
+> 正是本次「首页乱码 / 旧 HTML」故障原因。修复后必须 Purge Everything 清掉已被污染的条目。
 
 **每次部署后必须清缓存**：Cloudflare 控制台 → Caching → Configuration → **Purge Everything**
 （或只 Purge 首页/对应 URL）。否则边缘最长会继续返回旧 HTML 到 TTL 到期。

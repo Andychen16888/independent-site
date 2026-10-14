@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { SEOData } from "@/types"
 import { routing } from "@/i18n/routing"
+import { getSiteSeo } from "@/lib/settings/settings"
 
 export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
@@ -49,17 +50,19 @@ export function buildHreflang(locale: string, path?: string): Record<string, str
   return languages
 }
 
-export function generateMetadata(
+export async function generateMetadata(
   data: SEOData & { siteName?: string; siteDescription?: string; locale?: string } = { title: "", description: "" }
-): Metadata {
+): Promise<Metadata> {
   const name = data.siteName || siteName
   const locale = data.locale || "en"
   const title = data.title ? `${data.title} | ${name}` : name
   const description = data.description || data.siteDescription || defaultDescription
   const canonical = data.canonical ? localizedUrl(locale, data.canonical) : undefined
-  const ogImage = data.ogImage
-    ? [{ url: absoluteUrl(data.ogImage), width: 1200, height: 630, alt: title }]
-    : [{ url: `${siteUrl}/og-default.jpg`, width: 1200, height: 630, alt: name }]
+  // Fall back to the admin-configured social image, then the bundled default.
+  const fallbackOgImage = data.ogImage || (await getSiteSeo()).ogImage || "/og-default.jpg"
+  const ogImage = [
+    { url: absoluteUrl(fallbackOgImage), width: 1200, height: 630, alt: title },
+  ]
 
   return {
     // absolute：品牌名已在这里拼好，必须禁止根布局的 title.template 再拼一次，
@@ -98,7 +101,7 @@ export function generateMetadata(
       card: "summary_large_image",
       title,
       description,
-      images: [absoluteUrl(data.ogImage || "/og-default.jpg")],
+      images: [absoluteUrl(fallbackOgImage)],
       site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "",
     },
     robots: {

@@ -58,6 +58,7 @@ export interface SiteSeo {
   siteDescription: string
   logo: string
   favicon: string
+  ogImage: string
   homepageTitle: string
   homepageDescription: string
   defaultKeywords: string
@@ -82,6 +83,7 @@ export const getSiteSeo = cache(async (): Promise<SiteSeo> => {
     siteDescription: s["site.description"] || siteName,
     logo: s["site.logo"] || "",
     favicon: s["site.favicon"] || "",
+    ogImage: s["seo.ogImage"] || "",
     homepageTitle: s["seo.homeTitle"] || siteName,
     homepageDescription: s["seo.homeDescription"] || s["site.description"] || siteName,
     defaultKeywords: s["seo.defaultKeywords"] || "",

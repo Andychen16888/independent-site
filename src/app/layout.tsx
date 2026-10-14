@@ -46,9 +46,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSiteSeo()
   const locale = await getLocale()
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
-  const ogImage = seo.logo && /^https?:\/\//.test(seo.logo)
-    ? { url: seo.logo, width: 1200, height: 630, alt: seo.siteName }
-    : { url: "/og-default.jpg", width: 1200, height: 630, alt: seo.siteName }
+  const ogImage = {
+    url:
+      seo.ogImage ||
+      (seo.logo && /^https?:\/\//.test(seo.logo) ? seo.logo : "/og-default.jpg"),
+    width: 1200,
+    height: 630,
+    alt: seo.siteName,
+  }
   const keywords = (seo.defaultKeywords || "").split(",").map((k) => k.trim()).filter(Boolean)
 
   return {

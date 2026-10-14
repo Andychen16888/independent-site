@@ -39,6 +39,7 @@ export const SETTING_KEYS: SettingMeta[] = [
   { key: "social.linkedin", group: "social", label: "LinkedIn URL", labelZh: "LinkedIn 链接", type: "url" },
   { key: "social.youtube", group: "social", label: "YouTube URL", labelZh: "YouTube 链接", type: "url" },
   { key: "social.twitter", group: "social", label: "X / Twitter URL", labelZh: "X / Twitter 链接", type: "url" },
+  { key: "seo.ogImage", group: "seo", label: "Social Share Image (OG)", labelZh: "社交分享图（OG）", type: "url", placeholder: "1200×630 image shown when the site is shared" },
   { key: "seo.homeTitle", group: "seo", label: "Homepage SEO Title", labelZh: "首页 SEO 标题", type: "text" },
   { key: "seo.homeDescription", group: "seo", label: "Homepage SEO Description", labelZh: "首页 SEO 描述", type: "textarea" },
   { key: "seo.defaultKeywords", group: "seo", label: "Default SEO Keywords", labelZh: "默认 SEO 关键词", type: "textarea" },

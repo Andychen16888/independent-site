@@ -90,6 +90,7 @@ async function seedSiteSettings() {
     "site.language": "en",
     "site.currency": "USD",
     "site.promoBar": "20 Years of China Export Experience \u2014 Request a Quote Today",
+    "seo.ogImage": "",
     "seo.homeTitle": "Commodities From China | Bulk Commodities, Metals & Building Materials",
     "seo.homeDescription": "Chinese trading house exporting bulk commodities and building materials to Southeast Asia, Africa and Belt & Road markets. Carbon black, PVC, PP, PE, titanium dioxide, minerals, copper, aluminum, steel, cement clinker, glass and ceramics. 20 years of export experience, AAA credit, cheap service fees. Request a quote.",
     "seo.defaultKeywords": "bulk commodities china, commodity trading house, pvc resin wholesale, carbon black export, titanium dioxide, industrial minerals, cement clinker, steel export, b2b commodity supplier, belt and road trade",

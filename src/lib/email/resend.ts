@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer"
 import { getSiteSeo } from "@/lib/settings/settings"
+import { appendUtmParams } from "@/lib/tracking/source"
 
 let transporter: nodemailer.Transporter | null = null
 
@@ -186,6 +187,49 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;")
 }
 
+/** Matches bare http(s) URLs inside the plain-text body. */
+const URL_PATTERN = /https?:\/\/[^\s<>"']+/gi
+
+/**
+ * Render plain-text campaign copy to HTML, turning any URL the operator typed into
+ * a link tagged with UTM parameters.
+ *
+ * The tagging is what makes email promotion attributable in the admin analytics:
+ * a click lands on the site with `utm_source=newsletter&utm_medium=email`, which
+ * `/api/track` classifies as an "Email" source. A URL typed straight into the
+ * browser after reading the mail is indistinguishable from direct traffic -- no
+ * web analytics can recover that -- so the guidance to operators is to always
+ * include a clickable link.
+ */
+function renderNewsletterBody(
+  body: string,
+  utm?: { source: string; medium: string; campaign?: string | null }
+): string {
+  const parts: string[] = []
+  let last = 0
+  for (const match of body.matchAll(URL_PATTERN)) {
+    const index = match.index ?? 0
+    const raw = match[0]
+    // Punctuation that just happens to follow the URL ("visit https://x.com.") is
+    // not part of the link; strip it so the anchor does not swallow the period.
+    const trailing = raw.match(/[.,;:!?'")\]}]+$/)?.[0] ?? ""
+    const url = trailing ? raw.slice(0, -trailing.length) : raw
+    parts.push(escapeHtml(body.slice(last, index)))
+    if (utm) {
+      const tagged = appendUtmParams(url, utm)
+      parts.push(
+        `<a href="${escapeHtml(tagged)}" style="color:#333; text-decoration:underline;">${escapeHtml(url)}</a>`
+      )
+    } else {
+      parts.push(escapeHtml(url))
+    }
+    if (trailing) parts.push(escapeHtml(trailing))
+    last = index + raw.length
+  }
+  parts.push(escapeHtml(body.slice(last)))
+  return parts.join("").replace(/\r?\n/g, "<br />")
+}
+
 /**
  * Bulk marketing email. Takes plain text from the dashboard and wraps it in the
  * same inline-styled shell as the transactional templates, so admins cannot
@@ -203,14 +247,17 @@ export async function sendNewsletterEmail({
   subject,
   body,
   unsubscribeUrl,
+  utm,
 }: {
   to: string
   subject: string
   body: string
   unsubscribeUrl?: string
+  /** UTM applied to links in the body so arrivals are attributed to email. */
+  utm?: { source: string; medium: string; campaign?: string | null }
 }) {
   const brand = (await getSiteSeo()).siteName
-  const safeBody = escapeHtml(body).replace(/\r?\n/g, "<br />")
+  const safeBody = renderNewsletterBody(body, utm)
   const safeUnsubscribe = escapeHtml(unsubscribeUrl ?? "")
 
   await sendEmail({

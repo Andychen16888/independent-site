@@ -6,6 +6,7 @@ import { countryFromIp } from "@/lib/tracking/geo"
 import { isBotUserAgent } from "@/lib/tracking/bot"
 import { detectDeviceType, isKnownDeviceType } from "@/lib/tracking/device"
 import { analyticsColumns } from "@/lib/tracking/schema"
+import { classifySource, utmFromUrl } from "@/lib/tracking/source"
 
 export const dynamic = "force-dynamic"
 
@@ -41,6 +42,7 @@ const MAX_LEN = {
   referrer: 500,
   userAgent: 300,
   ip: 45,
+  utm: 128,
 } as const
 
 function clamp(value: unknown, max: number): string | null {
@@ -111,6 +113,20 @@ export async function POST(req: NextRequest) {
   // 但不计入访客会话与页面浏览聚合，避免污染后台的真人统计。
   const isBot = isBotUserAgent(userAgent)
 
+  // 访客来源：优先用客户端上报的 utm 参数（邮件/广告链接），缺省时从落地 URL 兜底解析，
+  // 再结合 Referer 主机名归类。站内跳转的 Referer 会被判为 direct。
+  const urlUtm = utmFromUrl(fullUrl)
+  const utmSource = clamp(body.utmSource, MAX_LEN.utm) ?? clamp(urlUtm.utmSource, MAX_LEN.utm)
+  const utmMedium = clamp(body.utmMedium, MAX_LEN.utm) ?? clamp(urlUtm.utmMedium, MAX_LEN.utm)
+  const utmCampaign = clamp(body.utmCampaign, MAX_LEN.utm) ?? clamp(urlUtm.utmCampaign, MAX_LEN.utm)
+  let siteHost: string | null = null
+  try {
+    siteHost = new URL(fullUrl).hostname
+  } catch {
+    siteHost = req.headers.get("host")
+  }
+  const source = classifySource({ referrer, utmSource, utmMedium, siteHost })
+
   // 设备类型优先用客户端上报值（iPadOS 等 UA 识别不出的平板也能正确区分），
   // 客户端缺失时退回服务器端 UA 识别；两者都无留空，读侧会再次兜底。
   const reportedDeviceType = clamp(body.deviceType, 16)
@@ -138,9 +154,11 @@ export async function POST(req: NextRequest) {
             userAgent,
             createdAt: now,
             ...(columns.visitEventUrl ? { url: fullUrl } : {}),
-            // isBot/deviceType 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
+            // isBot/deviceType/source 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
             ...(columns.visitEventIsBot ? { isBot } : {}),
             ...(columns.visitEventDeviceType ? { deviceType } : {}),
+            ...(columns.visitEventSource ? { source } : {}),
+            ...(columns.visitEventUtm ? { utmSource, utmMedium, utmCampaign } : {}),
           },
         }),
     },
@@ -162,6 +180,9 @@ export async function POST(req: NextRequest) {
               lastSeen: now,
               pageCount: 1,
               ...(columns.visitorSessionDeviceType ? { deviceType } : {}),
+              // 来源采用「首次触达」归因：只在新建会话时写入，后续访问不覆盖。
+              ...(columns.visitorSessionSource ? { source } : {}),
+              ...(columns.visitorSessionUtm ? { utmSource, utmMedium, utmCampaign } : {}),
             },
             update: {
               lastSeen: now,

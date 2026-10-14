@@ -945,7 +945,17 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 
 > 新版埋点会每 10 分钟探测一次 `visit_events.url` / `page_views.url` 是否存在，缺列时
 > 自动退回按 `path` 写入，**不会因为漏跑迁移而彻底丢数据**；但完整字段（页面完整
-> URL、国家分布）仍需把迁移补上。
+> URL、国家分布、访客来源）仍需把迁移补上。
+
+> **访客来源（Traffic source）**：`20261014000000_add_traffic_source` 迁移给
+> `visit_events` / `visitor_sessions` 增加 `source` / `utmSource` / `utmMedium` /
+> `utmCampaign` 字段，按 UTM 参数与 Referer 把访客归类为
+> google / bing / baidu / search / direct / email / social / referral，后台「数据分析」
+> 会显示「访客来源」模块，访客轨迹上也会标注来源。缺列时埋点与后台都会自动降级
+> （不写入、模块显示「来源字段缺失」），补跑 `npm run db:migrate` 即可。
+> 推广邮件（`Newsletter`）里的链接会自动加上 `utm_source=newsletter&utm_medium=email`
+> 参数，方便按来源统计邮件推广效果；邮件里只写纯文本网址、或客户看完邮件后手动输入
+> 网址访问的，无法归因（任何网页分析都做不到），建议邮件中始终放可点击链接。
 
 **先跑自检脚本**，它会直接告诉你缺什么：
 

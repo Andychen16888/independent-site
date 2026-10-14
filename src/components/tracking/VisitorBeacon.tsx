@@ -35,12 +35,18 @@ export function VisitorBeacon() {
       if (pathname.startsWith("/api/") || pathname.startsWith("/_next")) return
       try {
         const url = window.location.href
+        // 落地 URL 上的 UTM 参数是邮件/广告推广归因的关键，客户端直接读取上报，
+        // 避免服务端从完整 URL 再解析时因缺列降级而丢失来源。
+        const params = new URLSearchParams(window.location.search)
         const data = {
           visitorId: visitorId.current,
           path: pathname,
           url,
           title: document.title,
           referrer: document.referrer,
+          utmSource: params.get("utm_source"),
+          utmMedium: params.get("utm_medium"),
+          utmCampaign: params.get("utm_campaign"),
           // 客户端识别设备类型（比 UA 更准，可识别 iPadOS 等平板）上报给 /api/track
           deviceType: detectClientDeviceType(),
         }

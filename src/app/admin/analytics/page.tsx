@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db/prisma"
 import { bi } from "@/components/admin/bilingual"
 import { formatDateShort } from "@/lib/utils/format"
@@ -6,6 +7,12 @@ import { countryName, countryFlag } from "@/lib/tracking/geo"
 import { analyticsColumns } from "@/lib/tracking/schema"
 import { isPrivateIp } from "@/lib/ai/rate-limit"
 import { detectDeviceType, isKnownDeviceType, type DeviceType } from "@/lib/tracking/device"
+import {
+  classifySource,
+  isTrafficSource,
+  SOURCE_META,
+  type TrafficSource,
+} from "@/lib/tracking/source"
 import {
   HiOutlineComputerDesktop,
   HiOutlineDevicePhoneMobile,
@@ -70,13 +77,38 @@ function timeLabel(d: Date): string {
 
 const DESCRIPTION = "Visitor analytics: trails, pages and countries. 访客统计：访问轨迹、页面与国家分布。"
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+const SITE_HOST = (() => {
+  try {
+    return new URL(SITE_URL).hostname
+  } catch {
+    return null
+  }
+})()
+
+/**
+ * 会话没有存来源（旧会话）时，用该访客最近一次事件的 Referer / UTM 现算，保证轨迹上仍能显示来源。
+ */
+function classifyEventSource(event: {
+  referrer?: string | null
+  source?: unknown
+  utmSource?: unknown
+  utmMedium?: unknown
+}): TrafficSource {
+  if (isTrafficSource(event.source)) return event.source
+  return classifySource({
+    referrer: event.referrer ?? null,
+    utmSource: typeof event.utmSource === "string" ? event.utmSource : null,
+    utmMedium: typeof event.utmMedium === "string" ? event.utmMedium : null,
+    siteHost: SITE_HOST,
+  })
+}
 
 // Mirrors scripts/check-analytics-schema.ts. A migration that is recorded as
 // applied but whose SQL never actually ran leaves the columns missing, so the
 // page checks the live schema instead of trusting _prisma_migrations alone.
 const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "createdAt"],
-  visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "firstSeen", "lastSeen", "pageCount"],
+  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "source", "utmSource", "createdAt"],
+  visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "source", "utmSource", "firstSeen", "lastSeen", "pageCount"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
 
@@ -144,7 +176,7 @@ async function getSchemaHealth(): Promise<SchemaHealth> {
   }
 }
 
-async function getStats() {
+async function getStats(sourceStart: Date | null) {
   const now = new Date()
   const today = startOfBusinessDay(now)
   const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
@@ -208,6 +240,23 @@ async function getStats() {
     activeVisitorIds.length > 0
       ? prisma.visitorSession.findMany({
           where: { visitorId: { in: activeVisitorIds } },
+          // 显式列出字段并按探针降级：迁移未跑（缺 deviceType / source 列）时
+          // 仍能渲染轨迹，而不是整页 P2022 报错。
+          select: {
+            id: true,
+            visitorId: true,
+            ip: true,
+            country: true,
+            userAgent: true,
+            firstSeen: true,
+            lastSeen: true,
+            pageCount: true,
+            ...(columns.visitorSessionDeviceType ? { deviceType: true } : {}),
+            ...(columns.visitorSessionSource ? { source: true } : {}),
+            ...(columns.visitorSessionUtm
+              ? { utmSource: true, utmMedium: true, utmCampaign: true }
+              : {}),
+          },
         })
       : Promise.resolve([]),
     activeVisitorIds.length > 0
@@ -225,6 +274,10 @@ async function getStats() {
             userAgent: true,
             createdAt: true,
             ...(columns.visitEventDeviceType ? { deviceType: true } : {}),
+            ...(columns.visitEventSource ? { source: true } : {}),
+            ...(columns.visitEventUtm
+              ? { utmSource: true, utmMedium: true, utmCampaign: true }
+              : {}),
           },
         })
       : Promise.resolve([]),
@@ -256,6 +309,33 @@ async function getStats() {
       },
     }),
   ])
+
+  // 访客来源统计：按来源分组，分别统计「独立访客数」与「访问量」。
+  // source 列缺失（迁移未跑）时整块留空，页面其余部分照常渲染。
+  let sourceStats: SourceStat[] = []
+  if (columns.visitEventSource) {
+    const conditions: Prisma.Sql[] = []
+    if (sourceStart) conditions.push(Prisma.sql`"createdAt" >= ${sourceStart}`)
+    if (columns.visitEventIsBot) conditions.push(Prisma.sql`"isBot" = false`)
+    const whereSql = conditions.length
+      ? Prisma.sql`WHERE ${Prisma.join(conditions, " AND ")}`
+      : Prisma.empty
+    const sourceRows = await prisma.$queryRaw<
+      { source: string | null; visitors: bigint; views: bigint }[]
+    >(Prisma.sql`
+      SELECT "source" AS source,
+             COUNT(DISTINCT "visitorId") AS visitors,
+             COUNT(*) AS views
+      FROM "visit_events"
+      ${whereSql}
+      GROUP BY "source"
+    `)
+    sourceStats = sourceRows.map((row) => ({
+      source: normalizeSource(row.source),
+      visitors: Number(row.visitors),
+      views: Number(row.views),
+    }))
+  }
 
   const seenVisitorIds = new Set<string>()
   const deviceVisitorRows: Array<{ visitorId: string; userAgent: string | null; deviceType?: string | null }> = []
@@ -289,8 +369,22 @@ async function getStats() {
     deviceCounts,
     deviceTotal,
     schemaHealth,
+    sourceStats,
+    sourceAvailable: columns.visitEventSource,
   }
 }
+
+type SourceStat = { source: TrafficSource; visitors: number; views: number }
+
+function normalizeSource(value: string | null | undefined): TrafficSource {
+  return isTrafficSource(value) ? value : "direct"
+}
+
+// 与「国际芯片交易网」一致的两组来源：SEO 组（含直接访问作为自然流量基线）与其它来源组。
+const SOURCE_GROUPS: { en: string; zh: string; sources: TrafficSource[] }[] = [
+  { en: "SEO Sources", zh: "SEO来源", sources: ["google", "bing", "baidu", "search", "direct"] },
+  { en: "Other Sources", zh: "其它来源", sources: ["email", "social", "referral"] },
+]
 
 function StatCard({
   label,
@@ -362,6 +456,16 @@ function DeviceBadge({ device }: { device: DeviceType }) {
   )
 }
 
+function SourceBadge({ source }: { source: TrafficSource }) {
+  const { en, zh } = SOURCE_META[source]
+  return (
+    <span className="inline-flex items-center gap-1 border border-navy/30 bg-navy/5 px-1.5 py-px">
+      <span className="text-[9px] uppercase tracking-wider text-navy/80">{en}</span>
+      {zh !== en && <span className="text-[9px] text-stone/80">{zh}</span>}
+    </span>
+  )
+}
+
 export default async function AdminAnalyticsPage({
   searchParams,
 }: {
@@ -370,7 +474,12 @@ export default async function AdminAnalyticsPage({
   const params = await searchParams
   // 轨迹步骤默认倒序（最新一步在最上面），?steps=asc 可切回时间正序
   const stepsNewestFirst = params.steps !== "asc"
-  const stats = await getStats()
+  // 访客来源统计窗口：默认近 30 天，?sourceRange=7 / all 可切换。推广看短期效果用 7 天，看全量用 all。
+  const sourceRangeParam = typeof params.sourceRange === "string" ? params.sourceRange : "30"
+  const sourceDays = sourceRangeParam === "7" ? 7 : sourceRangeParam === "all" ? null : 30
+  const sourceStart =
+    sourceDays === null ? null : startOfBusinessDay(new Date(Date.now() - sourceDays * 24 * 60 * 60 * 1000))
+  const stats = await getStats(sourceStart)
   const schemaHealth = stats.schemaHealth
 
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
@@ -384,6 +493,16 @@ export default async function AdminAnalyticsPage({
 
   const maxPathViews = stats.pageStats[0]?._count._all ?? 0
   const maxCountryViews = stats.countryStats[0]?._count._all ?? 0
+
+  const sourceTotals = new Map<TrafficSource, SourceStat>()
+  for (const row of stats.sourceStats) sourceTotals.set(row.source, row)
+  const sourceTotalVisitors = stats.sourceStats.reduce((sum, row) => sum + row.visitors, 0)
+  const maxSourceVisitors = Math.max(
+    1,
+    ...SOURCE_GROUPS.flatMap((group) =>
+      group.sources.map((source) => sourceTotals.get(source)?.visitors ?? 0)
+    )
+  )
 
   const weeklyMap = new Map<string, number>()
   const weekLabels: string[] = []
@@ -447,6 +566,10 @@ export default async function AdminAnalyticsPage({
           country: newest.country ?? oldest.country,
           userAgent: newest.userAgent ?? oldest.userAgent,
           deviceType: newest.deviceType ?? null,
+          source: classifyEventSource(newest),
+          utmSource: typeof newest.utmSource === "string" ? newest.utmSource : null,
+          utmMedium: typeof newest.utmMedium === "string" ? newest.utmMedium : null,
+          utmCampaign: typeof newest.utmCampaign === "string" ? newest.utmCampaign : null,
           firstSeen: oldest.createdAt,
           lastSeen: newest.createdAt,
           pageCount: events.length,
@@ -611,6 +734,89 @@ export default async function AdminAnalyticsPage({
         )}
       </SectionCard>
 
+      <SectionCard
+        title="Traffic Sources"
+        titleZh="访客来源"
+        action={
+          <div className="flex items-center gap-1">
+            {[
+              { value: "7", label: bi("7d", "近7天") },
+              { value: "30", label: bi("30d", "近30天") },
+              { value: "all", label: bi("All", "全部") },
+            ].map((option) => (
+              <Link
+                key={option.value}
+                href={`/admin/analytics?sourceRange=${option.value}${stepsNewestFirst ? "" : "&steps=asc"}`}
+                scroll={false}
+                className={
+                  sourceRangeParam === option.value
+                    ? "px-2 py-1 bg-charcoal text-white text-[10px] uppercase tracking-wider"
+                    : "px-2 py-1 border border-mist text-stone text-[10px] uppercase tracking-wider hover:border-charcoal"
+                }
+              >
+                {option.label}
+              </Link>
+            ))}
+          </div>
+        }
+      >
+        {!stats.sourceAvailable ? (
+          <p className="text-sm text-stone">
+            {bi(
+              'Source column is missing; run "npm run db:migrate" to enable traffic-source tracking.',
+              "来源字段缺失，请执行 \"npm run db:migrate\" 以启用访客来源统计。"
+            )}
+          </p>
+        ) : stats.sourceStats.length === 0 ? (
+          <p className="text-sm text-stone">{bi("No source data yet.", "暂无来源数据。")}</p>
+        ) : (
+          <>
+            <p className="text-[11px] text-stone mb-4">
+              {sourceTotalVisitors}{" "}
+              {bi(
+                "visitor-source pairs (each visitor counted once per source). Email = arrivals through a UTM-tagged link in a marketing email.",
+                "访客-来源记录（同一访客按来源分别去重）。邮件 = 通过推广邮件内带 UTM 参数的链接进入。"
+              )}
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              {SOURCE_GROUPS.map((group) => (
+                <div key={group.en}>
+                  <h4 className="text-[10px] uppercase tracking-wider text-stone mb-3 border-b border-mist pb-2">
+                    {bi(group.en, group.zh)}
+                  </h4>
+                  <div className="space-y-3">
+                    {group.sources.map((source) => {
+                      const stat = sourceTotals.get(source)
+                      const visitors = stat?.visitors ?? 0
+                      const meta = SOURCE_META[source]
+                      return (
+                        <div key={source}>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-charcoal">
+                              {meta.en}
+                              {meta.zh !== meta.en && (
+                                <span className="text-stone"> / {meta.zh}</span>
+                              )}
+                            </span>
+                            <span className="tabular-nums">{visitors}</span>
+                          </div>
+                          <span className="block h-1 bg-mist/60 mt-1.5 rounded-sm overflow-hidden">
+                            <span
+                              className="block h-full bg-navy/70"
+                              style={{ width: `${(visitors / maxSourceVisitors) * 100}%` }}
+                            />
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </SectionCard>
+
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <SectionCard title="Visited Pages 7d" titleZh="访问页面（近7天）">
           <div className="flex items-end gap-1 h-24 mb-6">
@@ -745,6 +951,11 @@ export default async function AdminAnalyticsPage({
                 // 直接显示「未知」会让人以为是国家识别失败，这里明确区分开。
                 const unknownSource = !displayCountry && (!displayIp || isPrivateIp(displayIp))
                 const displayDevice = resolveDevice(session.deviceType, session.userAgent)
+                const displaySource = isTrafficSource(session.source)
+                  ? session.source
+                  : latest
+                    ? classifyEventSource(latest)
+                    : "direct"
 
                 return (
                 <div key={session.id} className="border border-mist/60 p-4">
@@ -754,6 +965,12 @@ export default async function AdminAnalyticsPage({
                       {unknownSource ? bi("Local / unknown source", "本机或内网访问") : countryName(displayCountry)}
                     </span>
                     <DeviceBadge device={displayDevice} />
+                    <SourceBadge source={displaySource} />
+                    {displaySource === "email" && session.utmCampaign && (
+                      <span className="text-[10px] text-stone break-all" title={session.utmCampaign}>
+                        · {session.utmCampaign}
+                      </span>
+                    )}
                     {displayIp && (
                       <span className="font-mono inline-flex items-center gap-1">
                         {displayIp}

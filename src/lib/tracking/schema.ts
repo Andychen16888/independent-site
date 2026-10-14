@@ -16,6 +16,10 @@ export type AnalyticsColumns = {
   visitEventIsBot: boolean
   visitEventDeviceType: boolean
   visitorSessionDeviceType: boolean
+  visitEventSource: boolean
+  visitEventUtm: boolean
+  visitorSessionSource: boolean
+  visitorSessionUtm: boolean
 }
 
 const TTL_MS = 10 * 60 * 1000
@@ -27,6 +31,10 @@ const OPTIMISTIC: AnalyticsColumns = {
   visitEventIsBot: true,
   visitEventDeviceType: true,
   visitorSessionDeviceType: true,
+  visitEventSource: true,
+  visitEventUtm: true,
+  visitorSessionSource: true,
+  visitorSessionUtm: true,
 }
 
 export async function analyticsColumns(): Promise<AnalyticsColumns> {
@@ -42,6 +50,8 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
           (column_name = 'url' AND table_name IN ('visit_events', 'page_views'))
           OR (column_name = 'isBot' AND table_name = 'visit_events')
           OR (column_name = 'deviceType' AND table_name IN ('visit_events', 'visitor_sessions'))
+          OR (column_name = 'source' AND table_name IN ('visit_events', 'visitor_sessions'))
+          OR (column_name = 'utmSource' AND table_name IN ('visit_events', 'visitor_sessions'))
         )
     `
     const visitEvents = new Set<string>()
@@ -58,6 +68,10 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
       visitEventIsBot: visitEvents.has("isBot"),
       visitEventDeviceType: visitEvents.has("deviceType"),
       visitorSessionDeviceType: visitorSessions.has("deviceType"),
+      visitEventSource: visitEvents.has("source"),
+      visitEventUtm: visitEvents.has("utmSource"),
+      visitorSessionSource: visitorSessions.has("source"),
+      visitorSessionUtm: visitorSessions.has("utmSource"),
     }
   } catch (error) {
     console.error("[track] analytics schema probe failed; assuming current schema.", error)
@@ -69,7 +83,11 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
     !value.pageViewUrl ||
     !value.visitEventIsBot ||
     !value.visitEventDeviceType ||
-    !value.visitorSessionDeviceType
+    !value.visitorSessionDeviceType ||
+    !value.visitEventSource ||
+    !value.visitEventUtm ||
+    !value.visitorSessionSource ||
+    !value.visitorSessionUtm
   ) {
     console.warn(
       '[track] analytics schema is behind; run "npm run db:migrate". Falling back where possible.',

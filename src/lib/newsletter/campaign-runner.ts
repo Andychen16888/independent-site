@@ -269,6 +269,9 @@ async function deliver(
       subject,
       body,
       unsubscribeUrl: buildUnsubscribeUrl(token),
+      // Tag links with the campaign id so the analytics "Email" source can be
+      // broken down per campaign.
+      utm: { source: "newsletter", medium: "email", campaign: campaignId },
     })
 
     await prisma.$transaction([

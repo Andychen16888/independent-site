@@ -89,6 +89,9 @@ export async function POST(req: NextRequest) {
         subject,
         body: content,
         ...(unsubscribeUrl ? { unsubscribeUrl } : {}),
+        // Mirror the tagging real subscribers get, so the test copy exercises
+        // the same email-attributed links.
+        utm: { source: "newsletter", medium: "email", campaign: "test" },
       })
     } catch (e) {
       return NextResponse.json(

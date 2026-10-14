@@ -1159,41 +1159,51 @@ model PageView {
 }
 
 model VisitorSession {
-  id         String   @id @default(cuid())
-  visitorId  String   @unique
-  ip         String?
-  country    String?
-  userAgent  String?
-  deviceType String? // desktop / mobile / tablet，客户端上报，UA 识别兜底
-  firstSeen  DateTime @default(now())
-  lastSeen   DateTime @default(now())
-  pageCount  Int      @default(0)
+  id          String   @id @default(cuid())
+  visitorId   String   @unique
+  ip          String?
+  country     String?
+  userAgent   String?
+  deviceType  String? // desktop / mobile / tablet，客户端上报，UA 识别兜底
+  source      String? // 首次落地来源：google/bing/baidu/search/direct/email/social/referral
+  utmSource   String? // 首次落地时的 utm_source
+  utmMedium   String? // 首次落地时的 utm_medium
+  utmCampaign String? // 首次落地时的 utm_campaign（邮件推广归因用）
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @default(now())
+  pageCount   Int      @default(0)
 
   @@index([country])
   @@index([deviceType])
+  @@index([source])
   @@index([lastSeen])
   @@map("visitor_sessions")
 }
 
 model VisitEvent {
-  id         String   @id @default(cuid())
-  visitorId  String
-  path       String
-  url        String? // 完整页面 URL（包含 path/search/hash）
-  title      String?
-  referrer   String?
-  ip         String?
-  country    String?
-  userAgent  String?
-  deviceType String? // desktop / mobile / tablet，客户端上报，UA 识别兜底
-  isBot      Boolean  @default(false) // 爬虫/监控 UA；后台默认只统计 isBot=false 的真人
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  visitorId   String
+  path        String
+  url         String? // 完整页面 URL（包含 path/search/hash）
+  title       String?
+  referrer    String?
+  ip          String?
+  country     String?
+  userAgent   String?
+  deviceType  String? // desktop / mobile / tablet，客户端上报，UA 识别兜底
+  source      String? // 本次访问来源：google/bing/baidu/search/direct/email/social/referral
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  isBot       Boolean  @default(false) // 爬虫/监控 UA；后台默认只统计 isBot=false 的真人
+  createdAt   DateTime @default(now())
 
   @@index([visitorId, createdAt])
   @@index([path])
   @@index([url])
   @@index([country])
   @@index([deviceType])
+  @@index([source, createdAt])
   @@index([isBot, createdAt])
   @@map("visit_events")
 }

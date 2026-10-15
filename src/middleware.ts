@@ -21,6 +21,15 @@ function isRscRequest(req: NextRequest): boolean {
   )
 }
 
+// 本站在整个代码库里没有定义任何 Server Action（没有 "use server"）。因此任何带
+// Next-Action 头的请求都只可能是伪造的——正是 CVE-2025-55182（React2Shell）
+// 的利用方式：攻击者伪造 RSC action 元数据，诱导 Next 反序列化并 require 内部 Node
+// 模块（如 child_process.execSync）实现未授权 RCE。即便将来升级遗漏，这里也能在
+// Next 处理请求体之前直接拒绝，作为纵深防御。
+function isServerActionRequest(req: NextRequest): boolean {
+  return req.headers.has("next-action") || req.headers.has("next-router-action")
+}
+
 // Cloudflare (and other CDNs) ignore the custom `Vary: RSC` header and key the
 // cache only by URL. A client-side navigation fetches the RSC payload for the
 // same URL a browser later visits, so the CDN can cache that `text/x-component`
@@ -77,6 +86,17 @@ function fixDoubleLocalePrefix(pathname: string): string | null {
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
 
+  // 在 Next 反序列化请求体之前拒绝伪造的 Server Action 调用（见上方注释）。
+  if (isServerActionRequest(req)) {
+    return new NextResponse("Not Found", { status: 404 })
+  }
+
+  // /api 与 /_next/data 只是为了让上面的 action 拦截覆盖到它们才纳入 matcher；
+  // 这里放行，交给各自的路由处理（locale / HTML 处理不适用于它们）。
+  if (path.startsWith("/api") || path.startsWith("/_next")) {
+    return NextResponse.next()
+  }
+
   const fixed = fixDoubleLocalePrefix(path)
   if (fixed) {
     const url = req.nextUrl.clone()
@@ -114,5 +134,11 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // /api 与 /_next/data 也纳入 matcher 以覆盖 Server Action 拦截；文档类路由沿用
+  // 原有的排除规则（静态资源、_vercel、带扩展名的文件）。
+  matcher: [
+    "/api/:path*",
+    "/_next/data/:path*",
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
 }

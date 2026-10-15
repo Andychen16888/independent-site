@@ -210,6 +210,7 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
     activeVisitorEvents,
     weeklyPageViews,
     latestEvent,
+    latestAnyEvent,
     rawDeviceRows,
   ] = await Promise.all([
     prisma.visitEvent.findMany({
@@ -307,6 +308,15 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
+    // 写健康信号：最近一次「任意」埋点事件（含 isBot=true 与管理员之外的所有写入）。
+    // 判定「埋点是否还在写」只能看有没有任何一行落库，而不是有没有「真人」来访——
+    // 本站唯一固定访客（管理员）被排除、机器人又被 human 过滤掉时，只看真人事件会
+    // 把「本时段没有真人访问」误报成「埋点停止写入」。机器人/扫描器同样会写
+    // visit_events，所以只要这条时间在推进，就说明写入链路是通的。
+    prisma.visitEvent.findFirst({
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
     // 每个访客取最近一次事件的设备信息：按时间倒序取回后在前端去重（首个即最新）。
     // deviceType 列缺失（迁移未跑）时退回按 userAgent 读取。
     prisma.visitEvent.findMany({
@@ -377,6 +387,7 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
     weeklyPageViews,
     weekAgo,
     latestEventAt: latestEvent?.createdAt ?? null,
+    latestAnyEventAt: latestAnyEvent?.createdAt ?? null,
     deviceCounts,
     deviceTotal,
     schemaHealth,
@@ -515,9 +526,15 @@ export default async function AdminAnalyticsPage({
 
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
   // 免得再出现「只有旧数据」却查不到原因的情况。
+  //
+  // 关键口径：判断「写入是否停滞」看的是「任意埋点事件」的最新时间（含被标记为 bot 的
+  // 写入），而不是「最新真人访客」——机器人/扫描器也会写 visit_events，它们仍在写入就
+  // 说明链路正常。否则当本时段只有机器人、或唯一真人（管理员）被排除后，会误报「埋点
+  // 停止写入」。下面的 latestEventAt（真人）只用于展示「最新访客数据」。
   const latestEventAt = stats.latestEventAt
-  const staleHours = latestEventAt
-    ? Math.floor((Date.now() - latestEventAt.getTime()) / (60 * 60 * 1000))
+  const latestWriteAt = stats.latestAnyEventAt ?? stats.latestEventAt
+  const staleHours = latestWriteAt
+    ? Math.floor((Date.now() - latestWriteAt.getTime()) / (60 * 60 * 1000))
     : null
   const isStale = staleHours === null || staleHours >= 6
   const showStaleWarning = schemaHealth.ok && isStale
@@ -640,6 +657,16 @@ export default async function AdminAnalyticsPage({
               ? bi(" · schema ok", " · 表结构正常")
               : bi(" · schema mismatch", " · 表结构异常"))}
         </p>
+        {latestWriteAt && (
+          <p className="text-xs text-stone mt-1">
+            {bi("Latest tracking write", "最近一次埋点写入")}: {timeLabel(latestWriteAt)}
+            {" "}
+            {bi(
+              "(any event, incl. bots/crawlers)",
+              "（任意事件，含爬虫/监控）"
+            )}
+          </p>
+        )}
         {stats.botEventCount > 0 && (
           <p className="text-xs text-stone mt-1">
             {bi(
@@ -696,9 +723,9 @@ export default async function AdminAnalyticsPage({
             {bi("Visitor tracking looks stale", "访客埋点可能已停止写入")}
           </p>
           <p className="text-xs text-stone mt-1 leading-relaxed">
-            {latestEventAt
-              ? `${timeLabel(latestEventAt)} ${bi(`(${staleHours}h ago)`, `（${staleHours} 小时前）`)}`
-              : bi("No visitor event recorded yet.", "尚未记录到任何访客事件。")}
+            {latestWriteAt
+              ? `${timeLabel(latestWriteAt)} ${bi(`(${staleHours}h ago)`, `（${staleHours} 小时前）`)}`
+              : bi("No tracking event recorded yet.", "尚未记录到任何埋点事件。")}
             {" "}
             {bi(
               "Tracking writes may be failing, or the server may have been unreachable (down, out of memory, or under attack). Check \"pm2 logs b2b-independent-site --lines 100\" for [track] or 500 errors. If a schema problem is shown above, run \"npm run db:migrate\" first.",

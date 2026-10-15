@@ -21,6 +21,7 @@ export type AnalyticsColumns = {
   visitorSessionSource: boolean
   visitorSessionUtm: boolean
   visitEventSessionId: boolean
+  visitEventIsAdmin: boolean
 }
 
 const TTL_MS = 10 * 60 * 1000
@@ -37,6 +38,7 @@ const OPTIMISTIC: AnalyticsColumns = {
   visitorSessionSource: true,
   visitorSessionUtm: true,
   visitEventSessionId: true,
+  visitEventIsAdmin: true,
 }
 
 export async function analyticsColumns(): Promise<AnalyticsColumns> {
@@ -55,6 +57,7 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
           OR           (column_name = 'source' AND table_name IN ('visit_events', 'visitor_sessions'))
           OR (column_name = 'utmSource' AND table_name IN ('visit_events', 'visitor_sessions'))
           OR (column_name = 'sessionId' AND table_name = 'visit_events')
+          OR (column_name = 'isAdmin' AND table_name = 'visit_events')
         )
     `
     const visitEvents = new Set<string>()
@@ -76,6 +79,7 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
       visitorSessionSource: visitorSessions.has("source"),
       visitorSessionUtm: visitorSessions.has("utmSource"),
       visitEventSessionId: visitEvents.has("sessionId"),
+      visitEventIsAdmin: visitEvents.has("isAdmin"),
     }
   } catch (error) {
     console.error("[track] analytics schema probe failed; assuming current schema.", error)
@@ -92,7 +96,8 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
     !value.visitEventUtm ||
     !value.visitorSessionSource ||
     !value.visitorSessionUtm ||
-    !value.visitEventSessionId
+    !value.visitEventSessionId ||
+    !value.visitEventIsAdmin
   ) {
     console.warn(
       '[track] analytics schema is behind; run "npm run db:migrate". Falling back where possible.',

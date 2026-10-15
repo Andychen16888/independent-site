@@ -37,21 +37,15 @@ function ensureVisitorId(): string {
 
 export function VisitorBeacon() {
   const pathname = usePathname()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const visitorId = useRef<string | null>(null)
   const schedulerRef = useRef<ReturnType<typeof createVisitScheduler> | null>(null)
 
-  // 服务端已验证的管理员会在会话上带 analyticsExcluded 标记（见 lib/auth/auth.ts）。
-  // 前端据此跳过上报只是「减少无用请求」，最终排除以服务端 /api/track 为准。
-  const analyticsExcluded = session?.user?.analyticsExcluded === true
-
+  // 管理员也正常上报：服务端会把它打成 isAdmin=true 的「写入心跳」，既不进真人统计，
+  // 又能让后台的「埋点写入是否停滞」判断在只有管理员用站点的时段也有真实信号。
+  // 最终是否计入统计以服务端 /api/track 为准，前端不再自行跳过。
   useEffect(() => {
     if (status === "loading") return
-    if (analyticsExcluded) {
-      schedulerRef.current?.reset()
-      schedulerRef.current = null
-      return
-    }
     if (schedulerRef.current) return
 
     const scheduler = createVisitScheduler({
@@ -94,11 +88,11 @@ export function VisitorBeacon() {
       document.removeEventListener("visibilitychange", flushOnHidden)
       scheduler.flush()
     }
-  }, [status, analyticsExcluded])
+  }, [status])
 
   // 路由变化：记录一次页面访问。首次挂载也会触发一次（首页）。
   useEffect(() => {
-    if (status === "loading" || analyticsExcluded) return
+    if (status === "loading") return
     if (!isTrackablePath(pathname)) return
     const scheduler = schedulerRef.current
     if (!scheduler) return
@@ -125,7 +119,7 @@ export function VisitorBeacon() {
         }
       },
     })
-  }, [pathname, status, analyticsExcluded])
+  }, [pathname, status])
 
   return null
 }

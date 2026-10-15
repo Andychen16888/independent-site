@@ -125,14 +125,14 @@ export async function POST(req: NextRequest) {
   const botByDatacenterIp = isDatacenterIp(ip)
   const isBot = botByUserAgent || botByDatacenterIp
 
-  // 管理员排除：只相信 getToken 校验过的会话邮箱（admin.ts），绝不看请求体自报的
-  // email / isAdmin / role。命中管理员时立即返回，不写 visit_events / visitor_sessions /
-  // page_views 中的任何一处，因此后台所有普通访客指标天然都不含管理员流量。
+  // 管理员判定：只相信 getToken 校验过的会话邮箱（admin.ts），绝不看请求体自报的
+  // email / isAdmin / role。管理员不再完全跳过写入，而是写一条 isAdmin=true 的「心跳」
+  // 事件（只进 visit_events，不进 visitor_sessions / page_views，读侧再统一过滤）。
+  // 这样后台判断「埋点写入是否停滞」时，只有管理员用站点的时段也有真实落库信号，
+  // 不会再把「本时段没有普通访客」误报成「埋点停止写入」。
   const sessionEmail = await getVerifiedSessionEmail(req)
   const subject = classifyTrackingSubject({ email: sessionEmail, isBot })
-  if (subject === "admin") {
-    return NextResponse.json({ ok: true, excluded: true })
-  }
+  const isAdmin = subject === "admin"
 
   // 访客来源：优先用客户端上报的 utm 参数（邮件/广告链接），缺省时从落地 URL 兜底解析，
   // 再结合 Referer 主机名归类。站内跳转的 Referer 会被判为 direct。
@@ -158,6 +158,11 @@ export async function POST(req: NextRequest) {
 
   const columns = await analyticsColumns()
 
+  // 管理员心跳依赖 isAdmin 列。列缺失（迁移未跑）时退回旧的「完全不写」行为，避免写出
+  // 一条没有标签的管理员事件、被读侧当成真人访客计入统计。列恢复后自动回到心跳模式。
+  const writeVisitEvent =
+    shouldWriteVisitEvent(subject) && (!isAdmin || columns.visitEventIsAdmin)
+
   // 会话切分：为普通访客分配 sessionId。相邻两次事件空闲超过 SESSION_IDLE_MS 即视为
   // 新会话，避免一条 visitorId 的轨迹无限累积、跨越多个访问日。列缺失或查询失败时
   // 降级为 null（轨迹回退为按访客分组），不破坏写入容错。
@@ -181,10 +186,11 @@ export async function POST(req: NextRequest) {
 
   // 各路写入彼此独立：任何一路失败都不能连累其他路（之前整体 Promise.all +
   // catch，pageView 的 ON CONFLICT 报错会连带 visitEvent 一起消失）。
-  // 主体分类：机器人只写带 isBot 标记的 visitEvent；普通访客写全部；管理员已在上面返回。
+  // 主体分类：机器人写带 isBot 标记的事件；管理员写带 isAdmin 标记的心跳事件；
+  // 普通访客写全部（visitEvent + 两路聚合）。
   const writes: Array<{ label: string; run: () => Promise<unknown> }> = []
 
-  if (shouldWriteVisitEvent(subject)) {
+  if (writeVisitEvent) {
     writes.push({
       label: "visitEvent",
       run: () =>
@@ -199,8 +205,9 @@ export async function POST(req: NextRequest) {
             userAgent,
             createdAt: now,
             ...(columns.visitEventUrl ? { url: fullUrl } : {}),
-            // isBot/deviceType/source 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
+            // isBot/isAdmin/deviceType/source 列缺失（迁移未跑）时降级为不写，避免 P2022 连累整条埋点。
             ...(columns.visitEventIsBot ? { isBot } : {}),
+            ...(columns.visitEventIsAdmin ? { isAdmin } : {}),
             ...(columns.visitEventDeviceType ? { deviceType } : {}),
             ...(columns.visitEventSource ? { source } : {}),
             ...(columns.visitEventUtm ? { utmSource, utmMedium, utmCampaign } : {}),

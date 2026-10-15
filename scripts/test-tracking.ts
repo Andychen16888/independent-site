@@ -1,5 +1,6 @@
 /**
- * Unit checks for the tracking modules: admin exclusion, subjects, session
+ * Unit checks for the tracking modules: subject classification (admin heartbeat,
+ * bots, visitors), session
  * splitting and the no-drop visit scheduler. No database and no browser needed,
  * so these run in CI.
  *
@@ -68,7 +69,7 @@ check("admin wins over bot", classifyTrackingSubject({ email: ADMIN_TRACKING_EMA
 check("bot classified as bot", classifyTrackingSubject({ email: null, isBot: true }) === "bot")
 check("normal visitor", classifyTrackingSubject({ email: null, isBot: false }) === "visitor")
 check("logged-in non-admin is a visitor", classifyTrackingSubject({ email: "user@example.com", isBot: false }) === "visitor")
-check("admin writes no visit event", !shouldWriteVisitEvent("admin"))
+check("admin writes a heartbeat visit event", shouldWriteVisitEvent("admin"))
 check("bot still writes a visit event (for diagnosis)", shouldWriteVisitEvent("bot"))
 check("visitor writes a visit event", shouldWriteVisitEvent("visitor"))
 check("admin writes no aggregates", !shouldWriteVisitorAggregates("admin"))
@@ -178,17 +179,21 @@ console.log("\napi/track policy simulation")
   const decide = (email: string | null, isBot: boolean) => {
     const subject = classifyTrackingSubject({ email, isBot })
     return {
-      excluded: subject === "admin",
+      subject,
       visitEvent: shouldWriteVisitEvent(subject),
       aggregates: shouldWriteVisitorAggregates(subject),
     }
   }
   const admin = decide(ADMIN_TRACKING_EMAIL, false)
-  check("admin request excluded entirely", admin.excluded && !admin.visitEvent && !admin.aggregates, admin)
+  check(
+    "admin writes a tagged heartbeat event but no aggregates",
+    admin.subject === "admin" && admin.visitEvent && !admin.aggregates,
+    admin
+  )
   const bot = decide(null, true)
-  check("bot request writes only a visit event", !bot.excluded && bot.visitEvent && !bot.aggregates, bot)
+  check("bot request writes only a visit event", bot.subject === "bot" && bot.visitEvent && !bot.aggregates, bot)
   const visitor = decide(null, false)
-  check("visitor request writes everything", !visitor.excluded && visitor.visitEvent && visitor.aggregates, visitor)
+  check("visitor request writes everything", visitor.subject === "visitor" && visitor.visitEvent && visitor.aggregates, visitor)
 }
 
 console.log(`\n${passed} passed, ${failed} failed`)

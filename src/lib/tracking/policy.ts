@@ -2,7 +2,8 @@ import { isAdminTrackingEmail } from "./identity"
 
 /**
  * 一次埋点请求的主体分类。
- * - admin   管理员（服务端已验证登录邮箱等于固定管理员邮箱）：不写任何普通访客统计。
+ * - admin   管理员（服务端已验证登录邮箱等于固定管理员邮箱）：只写一条 isAdmin=true 的
+ *           「写入心跳」事件，不进任何真人访客聚合。
  * - bot     机器人（UA 命中 bot.ts 规则）：只写一条带 isBot 标记的 visitEvent 供排查，
  *           不计入 visitor_sessions / page_views 聚合，也不出现在后台真人统计里。
  * - visitor 普通访客（含普通登录用户）：正常记录全部统计。
@@ -21,9 +22,13 @@ export function classifyTrackingSubject(input: {
   return input.isBot ? "bot" : "visitor"
 }
 
-/** visit_events 原始事件：机器人仍写（带 isBot 标记），管理员不写。 */
+/**
+ * visit_events 原始事件：三种主体都写。管理员写的是 isAdmin=true 的「写入心跳」，
+ * 读侧（数据分析页）统一过滤掉，不进真人统计——但它保证了「本时段只有管理员在用
+ * 站点」时依然有一次落库写入，让「埋点是否停止写入」的判断有真实信号。
+ */
 export function shouldWriteVisitEvent(subject: TrackingSubject): boolean {
-  return subject !== "admin"
+  return subject === "admin" || subject === "bot" || subject === "visitor"
 }
 
 /** visitor_sessions / page_views 聚合：只有普通访客写，机器人和管理员都不写。 */

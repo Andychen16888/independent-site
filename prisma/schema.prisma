@@ -1197,6 +1197,7 @@ model VisitEvent {
   utmMedium   String?
   utmCampaign String?
   isBot       Boolean  @default(false) // 爬虫/监控 UA；后台默认只统计 isBot=false 的真人
+  isAdmin     Boolean  @default(false) // 管理员自己的浏览（写入心跳），读侧过滤，不计入真人统计
   createdAt   DateTime @default(now())
 
   @@index([visitorId, createdAt])

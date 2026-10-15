@@ -108,7 +108,7 @@ function classifyEventSource(event: {
 // applied but whose SQL never actually ran leaves the columns missing, so the
 // page checks the live schema instead of trusting _prisma_migrations alone.
 const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "sessionId", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "source", "utmSource", "createdAt"],
+  visit_events: ["visitorId", "path", "sessionId", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "isAdmin", "source", "utmSource", "createdAt"],
   visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "source", "utmSource", "firstSeen", "lastSeen", "pageCount"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
@@ -182,9 +182,13 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
   const today = startOfBusinessDay(now)
   const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
   const schemaHealth = await getSchemaHealth()
-  // 只有 isBot 列存在时才过滤爬虫；列缺失（迁移未跑）时退回不过滤，避免整页 500。
+  // 只有对应列存在时才过滤；列缺失（迁移未跑）时退回不过滤，避免整页 500。
+  // isAdmin 过滤掉管理员自己的「写入心跳」事件，保证真人统计口径与之前完全一致。
   const columns = await analyticsColumns()
-  const human: { isBot?: boolean } = columns.visitEventIsBot ? { isBot: false } : {}
+  const human: { isBot?: boolean; isAdmin?: boolean } = {
+    ...(columns.visitEventIsBot ? { isBot: false } : {}),
+    ...(columns.visitEventIsAdmin ? { isAdmin: false } : {}),
+  }
 
   // Get visitor IDs with events in last 7 days, ordered by most recent activity
   const activeVisitors = await prisma.visitEvent.groupBy({
@@ -308,11 +312,11 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
-    // 写健康信号：最近一次「任意」埋点事件（含 isBot=true 与管理员之外的所有写入）。
-    // 判定「埋点是否还在写」只能看有没有任何一行落库，而不是有没有「真人」来访——
-    // 本站唯一固定访客（管理员）被排除、机器人又被 human 过滤掉时，只看真人事件会
-    // 把「本时段没有真人访问」误报成「埋点停止写入」。机器人/扫描器同样会写
-    // visit_events，所以只要这条时间在推进，就说明写入链路是通的。
+    // 写健康信号：最近一次「任意」埋点事件（含 isBot=true 的爬虫与 isAdmin=true 的管理员心跳，
+    // 即完全不带过滤）。判定「埋点是否还在写」只能看有没有任何一行落库，而不是有没有「真人」
+    // 来访——本时段没有真人访问时，只看真人事件会把「没人来访」误报成「埋点停止写入」。
+    // 爬虫/扫描器会写 visit_events，管理员自己的浏览也写 isAdmin=true 的心跳事件，所以只要
+    // 这条时间在推进，就说明写入链路是通的。
     prisma.visitEvent.findFirst({
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
@@ -338,6 +342,7 @@ async function getStats(sourceStart: Date | null, trailStart: Date | null) {
     const conditions: Prisma.Sql[] = []
     if (sourceStart) conditions.push(Prisma.sql`"createdAt" >= ${sourceStart}`)
     if (columns.visitEventIsBot) conditions.push(Prisma.sql`"isBot" = false`)
+    if (columns.visitEventIsAdmin) conditions.push(Prisma.sql`"isAdmin" = false`)
     const whereSql = conditions.length
       ? Prisma.sql`WHERE ${Prisma.join(conditions, " AND ")}`
       : Prisma.empty
@@ -527,16 +532,17 @@ export default async function AdminAnalyticsPage({
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
   // 免得再出现「只有旧数据」却查不到原因的情况。
   //
-  // 关键口径：判断「写入是否停滞」看的是「任意埋点事件」的最新时间（含被标记为 bot 的
-  // 写入），而不是「最新真人访客」——机器人/扫描器也会写 visit_events，它们仍在写入就
-  // 说明链路正常。否则当本时段只有机器人、或唯一真人（管理员）被排除后，会误报「埋点
-  // 停止写入」。下面的 latestEventAt（真人）只用于展示「最新访客数据」。
+  // 关键口径：判断「写入是否停滞」看的是「任意埋点事件」的最新时间（含 isBot=true 的爬虫
+  // 与 isAdmin=true 的管理员心跳），而不是「最新真人访客」——本时段没有真人来访是低流量
+  // 站点的常态，拿它当信号会天天误报。只有整整一天没有任何一行落库时才提示，因为那才
+  // 意味着「连爬虫和管理员自己都没写进来」，写入链路基本可以判定有问题。
+  // 下面的 latestEventAt（真人）只用于展示「最新访客数据」。
   const latestEventAt = stats.latestEventAt
   const latestWriteAt = stats.latestAnyEventAt ?? stats.latestEventAt
   const staleHours = latestWriteAt
     ? Math.floor((Date.now() - latestWriteAt.getTime()) / (60 * 60 * 1000))
     : null
-  const isStale = staleHours === null || staleHours >= 6
+  const isStale = staleHours === null || staleHours >= 24
   const showStaleWarning = schemaHealth.ok && isStale
 
   const maxPathViews = stats.pageStats[0]?._count._all ?? 0
@@ -662,8 +668,8 @@ export default async function AdminAnalyticsPage({
             {bi("Latest tracking write", "最近一次埋点写入")}: {timeLabel(latestWriteAt)}
             {" "}
             {bi(
-              "(any event, incl. bots/crawlers)",
-              "（任意事件，含爬虫/监控）"
+              "(any event, incl. bots and your own admin heartbeat)",
+              "（任意事件，含爬虫/监控与管理员自己的心跳）"
             )}
           </p>
         )}
@@ -720,7 +726,7 @@ export default async function AdminAnalyticsPage({
       {showStaleWarning && (
         <div className="mb-8 border border-rosegold/40 bg-rosegold/5 p-4 text-sm">
           <p className="font-medium text-charcoal">
-            {bi("Visitor tracking looks stale", "访客埋点可能已停止写入")}
+            {bi("No tracking writes in the last 24h", "最近 24 小时没有任何埋点写入")}
           </p>
           <p className="text-xs text-stone mt-1 leading-relaxed">
             {latestWriteAt
@@ -728,8 +734,8 @@ export default async function AdminAnalyticsPage({
               : bi("No tracking event recorded yet.", "尚未记录到任何埋点事件。")}
             {" "}
             {bi(
-              "Tracking writes may be failing, or the server may have been unreachable (down, out of memory, or under attack). Check \"pm2 logs b2b-independent-site --lines 100\" for [track] or 500 errors. If a schema problem is shown above, run \"npm run db:migrate\" first.",
-              "可能是埋点写入失败，或服务器一度不可达（宕机、内存耗尽或遭受攻击）。请查看 \"pm2 logs b2b-independent-site --lines 100\" 是否有 [track] 或 500 错误；如上方提示表结构异常，请先执行 \"npm run db:migrate\"。"
+              "This can simply mean a quiet period with no traffic at all. If you have been using the site (including this admin panel) and still see nothing here, writes may be failing or the server was unreachable. Check \"pm2 logs b2b-independent-site --lines 100\" for [track] or 500 errors; if a schema problem is shown above, run \"npm run db:migrate\" first.",
+              "这可能只是这段时间完全没人访问（低流量时段的正常现象）。如果你自己一直在用站点（包括这个后台），这里却仍然没有更新，才可能是埋点写入失败或服务器一度不可达。请查看 \"pm2 logs b2b-independent-site --lines 100\" 是否有 [track] 或 500 错误；如上方提示表结构异常，请先执行 \"npm run db:migrate\"。"
             )}
           </p>
         </div>

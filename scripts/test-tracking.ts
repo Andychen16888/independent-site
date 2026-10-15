@@ -14,6 +14,7 @@ import {
 } from "@/lib/tracking/policy"
 import { SESSION_IDLE_MS, shouldStartNewSession, sessionGroupKey } from "@/lib/tracking/session"
 import { isTrackablePath } from "@/lib/tracking/beacon"
+import { isDatacenterIp } from "@/lib/tracking/datacenter-ip"
 import { createVisitScheduler } from "@/lib/tracking/visit-scheduler"
 
 let passed = 0
@@ -90,6 +91,29 @@ check("/_next is not tracked", !isTrackablePath("/_next/static/chunk.js"))
 check("home is tracked", isTrackablePath("/"))
 check("product page is tracked", isTrackablePath("/products/widget"))
 check("null path is not tracked", !isTrackablePath(null))
+
+console.log("\ndatacenter / crawler IPs")
+check("Meta IPv6 (observed 2a03:2880:*) is datacenter", isDatacenterIp("2a03:2880::1"))
+check("Meta IPv6 /40 is datacenter", isDatacenterIp("2620:0:1c00::5"))
+check("Meta IPv4 is datacenter", isDatacenterIp("157.240.10.5"))
+check("AWS IPv4 (observed 16.145.79.163) is datacenter", isDatacenterIp("16.145.79.163"))
+check("AWS 3.0.0.0/8 is datacenter", isDatacenterIp("3.5.1.1"))
+check("AWS 52.0.0.0/8 is datacenter", isDatacenterIp("52.94.1.1"))
+check("GCP 34.0.0.0/8 is datacenter", isDatacenterIp("34.64.1.1"))
+check("Azure 20.0.0.0/8 is datacenter", isDatacenterIp("20.42.10.176"))
+check("DigitalOcean 159.65.0.0/16 is datacenter", isDatacenterIp("159.65.1.1"))
+check("Hetzner 5.9.0.0/16 is datacenter", isDatacenterIp("5.9.1.1"))
+check("IPv4-mapped IPv6 is classified as IPv4", isDatacenterIp("::ffff:16.145.79.163"))
+check("AWS IPv6 is datacenter", isDatacenterIp("2600:1f00::1"))
+check("public DNS (8.8.8.8) is not datacenter", !isDatacenterIp("8.8.8.8"))
+check("Google public DNS IPv6 is not datacenter", !isDatacenterIp("2001:4860:4860::8888"))
+check("China residential-looking IP is not datacenter", !isDatacenterIp("114.114.114.114"))
+check("loopback is not datacenter", !isDatacenterIp("127.0.0.1"))
+check("private 10/8 is not datacenter", !isDatacenterIp("10.0.0.5"))
+check("unknown sentinel is not datacenter", !isDatacenterIp("unknown"))
+check("null / empty is not datacenter", !isDatacenterIp(null) && !isDatacenterIp(""))
+check("invalid IPv4 is not datacenter", !isDatacenterIp("999.1.1.1"))
+check("garbage string is not datacenter", !isDatacenterIp("not-an-ip"))
 
 console.log("\nvisit scheduler: no-drop")
 {

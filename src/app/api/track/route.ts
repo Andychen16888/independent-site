@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma"
 import { clientIp } from "@/lib/ai/rate-limit"
 import { countryFromIp } from "@/lib/tracking/geo"
 import { isBotUserAgent } from "@/lib/tracking/bot"
+import { isDatacenterIp } from "@/lib/tracking/datacenter-ip"
 import { detectDeviceType, isKnownDeviceType } from "@/lib/tracking/device"
 import { analyticsColumns } from "@/lib/tracking/schema"
 import { classifySource, utmFromUrl } from "@/lib/tracking/source"
@@ -118,7 +119,11 @@ export async function POST(req: NextRequest) {
   const userAgent = clamp(req.headers.get("user-agent"), MAX_LEN.userAgent)
   // 爬虫 / 监控 / 无头浏览器：仍写一条 visitEvent 并打上 isBot 标记（便于排查），
   // 但不计入访客会话与页面浏览聚合，避免污染后台的真人统计。
-  const isBot = isBotUserAgent(userAgent)
+  // 命中规则取并集：UA 命中已知爬虫，或来源 IP 属于数据中心 / 云主机网段
+  // （很多抓取器伪装成浏览器 UA 却从云主机出网，只有 IP 能识别）。
+  const botByUserAgent = isBotUserAgent(userAgent)
+  const botByDatacenterIp = isDatacenterIp(ip)
+  const isBot = botByUserAgent || botByDatacenterIp
 
   // 管理员排除：只相信 getToken 校验过的会话邮箱（admin.ts），绝不看请求体自报的
   // email / isAdmin / role。命中管理员时立即返回，不写 visit_events / visitor_sessions /

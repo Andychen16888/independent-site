@@ -7,6 +7,13 @@ import { isBotUserAgent } from "@/lib/tracking/bot"
 import { detectDeviceType, isKnownDeviceType } from "@/lib/tracking/device"
 import { analyticsColumns } from "@/lib/tracking/schema"
 import { classifySource, utmFromUrl } from "@/lib/tracking/source"
+import { getVerifiedSessionEmail } from "@/lib/tracking/admin"
+import {
+  classifyTrackingSubject,
+  shouldWriteVisitEvent,
+  shouldWriteVisitorAggregates,
+} from "@/lib/tracking/policy"
+import { shouldStartNewSession } from "@/lib/tracking/session"
 
 export const dynamic = "force-dynamic"
 
@@ -113,6 +120,15 @@ export async function POST(req: NextRequest) {
   // 但不计入访客会话与页面浏览聚合，避免污染后台的真人统计。
   const isBot = isBotUserAgent(userAgent)
 
+  // 管理员排除：只相信 getToken 校验过的会话邮箱（admin.ts），绝不看请求体自报的
+  // email / isAdmin / role。命中管理员时立即返回，不写 visit_events / visitor_sessions /
+  // page_views 中的任何一处，因此后台所有普通访客指标天然都不含管理员流量。
+  const sessionEmail = await getVerifiedSessionEmail(req)
+  const subject = classifyTrackingSubject({ email: sessionEmail, isBot })
+  if (subject === "admin") {
+    return NextResponse.json({ ok: true, excluded: true })
+  }
+
   // 访客来源：优先用客户端上报的 utm 参数（邮件/广告链接），缺省时从落地 URL 兜底解析，
   // 再结合 Referer 主机名归类。站内跳转的 Referer 会被判为 direct。
   const urlUtm = utmFromUrl(fullUrl)
@@ -137,10 +153,34 @@ export async function POST(req: NextRequest) {
 
   const columns = await analyticsColumns()
 
+  // 会话切分：为普通访客分配 sessionId。相邻两次事件空闲超过 SESSION_IDLE_MS 即视为
+  // 新会话，避免一条 visitorId 的轨迹无限累积、跨越多个访问日。列缺失或查询失败时
+  // 降级为 null（轨迹回退为按访客分组），不破坏写入容错。
+  let sessionId: string | null = null
+  if (shouldWriteVisitorAggregates(subject) && columns.visitEventSessionId) {
+    const lastWhere: Prisma.VisitEventWhereInput = columns.visitEventIsBot
+      ? { visitorId, isBot: false }
+      : { visitorId }
+    const lastEvent = await prisma.visitEvent
+      .findFirst({
+        where: lastWhere,
+        orderBy: { createdAt: "desc" },
+        select: { sessionId: true, createdAt: true },
+      })
+      .catch(() => null)
+    sessionId =
+      lastEvent && lastEvent.sessionId && !shouldStartNewSession(lastEvent.createdAt, now)
+        ? lastEvent.sessionId
+        : crypto.randomUUID()
+  }
+
   // 各路写入彼此独立：任何一路失败都不能连累其他路（之前整体 Promise.all +
   // catch，pageView 的 ON CONFLICT 报错会连带 visitEvent 一起消失）。
-  const writes: Array<{ label: string; run: () => Promise<unknown> }> = [
-    {
+  // 主体分类：机器人只写带 isBot 标记的 visitEvent；普通访客写全部；管理员已在上面返回。
+  const writes: Array<{ label: string; run: () => Promise<unknown> }> = []
+
+  if (shouldWriteVisitEvent(subject)) {
+    writes.push({
       label: "visitEvent",
       run: () =>
         prisma.visitEvent.create({
@@ -159,12 +199,13 @@ export async function POST(req: NextRequest) {
             ...(columns.visitEventDeviceType ? { deviceType } : {}),
             ...(columns.visitEventSource ? { source } : {}),
             ...(columns.visitEventUtm ? { utmSource, utmMedium, utmCampaign } : {}),
+            ...(columns.visitEventSessionId && sessionId ? { sessionId } : {}),
           },
         }),
-    },
-  ]
+    })
+  }
 
-  if (!isBot) {
+  if (shouldWriteVisitorAggregates(subject)) {
     writes.push(
       {
         label: "visitorSession",

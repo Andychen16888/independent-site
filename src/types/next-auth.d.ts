@@ -13,6 +13,8 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       role?: UserRole
+      /** 服务端验证为需排除 Analytics 的管理员时为 true（仅布尔标记，不暴露邮箱）。 */
+      analyticsExcluded?: boolean
     }
   }
 }

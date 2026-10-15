@@ -1184,6 +1184,7 @@ model VisitEvent {
   id          String   @id @default(cuid())
   visitorId   String
   path        String
+  sessionId   String? // 访问会话 ID（相邻事件空闲 30 分钟即切分），用于访客轨迹按会话分组；迁移前历史行为 NULL
   url         String? // 完整页面 URL（包含 path/search/hash）
   title       String?
   referrer    String?

@@ -20,6 +20,7 @@ export type AnalyticsColumns = {
   visitEventUtm: boolean
   visitorSessionSource: boolean
   visitorSessionUtm: boolean
+  visitEventSessionId: boolean
 }
 
 const TTL_MS = 10 * 60 * 1000
@@ -35,6 +36,7 @@ const OPTIMISTIC: AnalyticsColumns = {
   visitEventUtm: true,
   visitorSessionSource: true,
   visitorSessionUtm: true,
+  visitEventSessionId: true,
 }
 
 export async function analyticsColumns(): Promise<AnalyticsColumns> {
@@ -50,8 +52,9 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
           (column_name = 'url' AND table_name IN ('visit_events', 'page_views'))
           OR (column_name = 'isBot' AND table_name = 'visit_events')
           OR (column_name = 'deviceType' AND table_name IN ('visit_events', 'visitor_sessions'))
-          OR (column_name = 'source' AND table_name IN ('visit_events', 'visitor_sessions'))
+          OR           (column_name = 'source' AND table_name IN ('visit_events', 'visitor_sessions'))
           OR (column_name = 'utmSource' AND table_name IN ('visit_events', 'visitor_sessions'))
+          OR (column_name = 'sessionId' AND table_name = 'visit_events')
         )
     `
     const visitEvents = new Set<string>()
@@ -72,6 +75,7 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
       visitEventUtm: visitEvents.has("utmSource"),
       visitorSessionSource: visitorSessions.has("source"),
       visitorSessionUtm: visitorSessions.has("utmSource"),
+      visitEventSessionId: visitEvents.has("sessionId"),
     }
   } catch (error) {
     console.error("[track] analytics schema probe failed; assuming current schema.", error)
@@ -87,7 +91,8 @@ export async function analyticsColumns(): Promise<AnalyticsColumns> {
     !value.visitEventSource ||
     !value.visitEventUtm ||
     !value.visitorSessionSource ||
-    !value.visitorSessionUtm
+    !value.visitorSessionUtm ||
+    !value.visitEventSessionId
   ) {
     console.warn(
       '[track] analytics schema is behind; run "npm run db:migrate". Falling back where possible.',

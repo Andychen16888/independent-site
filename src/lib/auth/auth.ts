@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db/prisma"
 import { getRequestMeta } from "@/lib/auth/request-context"
 import { countryFromIp } from "@/lib/tracking/geo"
+import { isAdminTrackingEmail } from "@/lib/tracking/identity"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -93,8 +94,14 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id
-        ;(session.user as any).role = token.role
+        session.user.id = token.id
+        session.user.role = token.role
+        // 仅对「服务端验证过的固定管理员邮箱」置灰前端埋点（前端据此跳过上报）。
+        // 服务端 /api/track 仍会独立用 getToken 复核，前端只用于减少无用上报；
+        // 这里只是布尔标记，不向客户端暴露邮箱本身。
+        session.user.analyticsExcluded = isAdminTrackingEmail(
+          typeof token.email === "string" ? token.email : null
+        )
       }
       return session
     },

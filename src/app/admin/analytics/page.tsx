@@ -13,6 +13,7 @@ import {
   SOURCE_META,
   type TrafficSource,
 } from "@/lib/tracking/source"
+import { sessionGroupKey } from "@/lib/tracking/session"
 import {
   HiOutlineComputerDesktop,
   HiOutlineDevicePhoneMobile,
@@ -107,7 +108,7 @@ function classifyEventSource(event: {
 // applied but whose SQL never actually ran leaves the columns missing, so the
 // page checks the live schema instead of trusting _prisma_migrations alone.
 const REQUIRED_ANALYTICS_COLUMNS: Record<string, string[]> = {
-  visit_events: ["visitorId", "path", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "source", "utmSource", "createdAt"],
+  visit_events: ["visitorId", "path", "sessionId", "url", "title", "referrer", "ip", "country", "userAgent", "deviceType", "isBot", "source", "utmSource", "createdAt"],
   visitor_sessions: ["visitorId", "ip", "country", "userAgent", "deviceType", "source", "utmSource", "firstSeen", "lastSeen", "pageCount"],
   page_views: ["url", "path", "title", "views", "date", "country", "userAgent", "referrer", "createdAt", "updatedAt"],
 }
@@ -176,7 +177,7 @@ async function getSchemaHealth(): Promise<SchemaHealth> {
   }
 }
 
-async function getStats(sourceStart: Date | null) {
+async function getStats(sourceStart: Date | null, trailStart: Date | null) {
   const now = new Date()
   const today = startOfBusinessDay(now)
   const weekAgo = startOfBusinessDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
@@ -261,7 +262,13 @@ async function getStats(sourceStart: Date | null) {
       : Promise.resolve([]),
     activeVisitorIds.length > 0
       ? prisma.visitEvent.findMany({
-          where: { visitorId: { in: activeVisitorIds }, ...human },
+          // 只取「近期会话窗口」内的事件；trailStart 为 null（?trailRange=all）时才取全部历史。
+          // 每个访客的事件再按 sessionId 分组，避免一个长期 visitorId 把历史访问累积成一条超长轨迹。
+          where: {
+            visitorId: { in: activeVisitorIds },
+            ...human,
+            ...(trailStart ? { createdAt: { gte: trailStart } } : {}),
+          },
           orderBy: { createdAt: "asc" },
           select: {
             id: true,
@@ -273,6 +280,7 @@ async function getStats(sourceStart: Date | null) {
             country: true,
             userAgent: true,
             createdAt: true,
+            ...(columns.visitEventSessionId ? { sessionId: true } : {}),
             ...(columns.visitEventDeviceType ? { deviceType: true } : {}),
             ...(columns.visitEventSource ? { source: true } : {}),
             ...(columns.visitEventUtm
@@ -292,7 +300,10 @@ async function getStats(sourceStart: Date | null) {
         date: true,
       },
     }),
+    // 「最新访客数据」与其它指标口径一致：同样排除机器人（此前漏加 human 过滤，
+    // 会把机器人事件误当成最新访客时间）。
     prisma.visitEvent.findFirst({
+      where: { ...human },
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
@@ -479,8 +490,28 @@ export default async function AdminAnalyticsPage({
   const sourceDays = sourceRangeParam === "7" ? 7 : sourceRangeParam === "all" ? null : 30
   const sourceStart =
     sourceDays === null ? null : startOfBusinessDay(new Date(Date.now() - sourceDays * 24 * 60 * 60 * 1000))
-  const stats = await getStats(sourceStart)
+  // 访客轨迹窗口：默认近 7 天（只展示近期会话），?trailRange=all 可查看全部历史会话。
+  const trailRangeParam = typeof params.trailRange === "string" ? params.trailRange : "7"
+  const trailAll = trailRangeParam === "all"
+  const trailStart = trailAll
+    ? null
+    : startOfBusinessDay(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+  const stats = await getStats(sourceStart, trailStart)
   const schemaHealth = stats.schemaHealth
+
+  // 保留其它筛选参数构造链接，避免切换某一个筛选时丢掉其它筛选。
+  const buildHref = (overrides: Record<string, string | null>) => {
+    const sp = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (typeof value === "string" && value) sp.set(key, value)
+    }
+    for (const [key, value] of Object.entries(overrides)) {
+      if (value === null) sp.delete(key)
+      else sp.set(key, value)
+    }
+    const qs = sp.toString()
+    return `/admin/analytics${qs ? `?${qs}` : ""}`
+  }
 
   // 埋点写入失败时页面不会报错，只会「看起来很久没人访问」。这里显式暴露数据新鲜度，
   // 免得再出现「只有旧数据」却查不到原因的情况。
@@ -520,6 +551,13 @@ export default async function AdminAnalyticsPage({
   const weekCounts = [...weeklyMap.values()]
   const maxWeekViews = Math.max(1, ...weekCounts)
 
+  // ---- 访客轨迹：按「会话」而非「访客」分组 ----
+  // 一个 visitorId（365 天 Cookie）可能包含多次访问；按 sessionId 拆分，缺 sessionId 的
+  // 历史事件回退成一条 legacy 组。这样既能看到同一访客的多次会话，也不会让一个长期访客
+  // 的历史访问累积成一条超长轨迹。
+  const MAX_TRAILS = 30
+  const MAX_EVENTS_PER_TRAIL = 40
+
   const eventsByVisitor = new Map<string, (typeof stats.recentEvents)[number][]>()
   for (const event of stats.recentEvents) {
     const list = eventsByVisitor.get(event.visitorId) ?? []
@@ -532,53 +570,57 @@ export default async function AdminAnalyticsPage({
     sessionByVisitor.set(session.visitorId, session)
   }
 
-  // 访客按「最近一次访问时间」倒序：最近活跃的访客排在最前面。
-  // 不依赖 groupBy 的聚合排序，直接用已取回的事件时间戳算，避免数据库端排序
-  // 未生效时又静默退化成按插入顺序显示。
-  const lastSeenByVisitor = new Map<string, number>()
-  for (const event of stats.recentEvents) {
-    const time = event.createdAt.getTime()
-    const prev = lastSeenByVisitor.get(event.visitorId) ?? 0
-    if (time > prev) lastSeenByVisitor.set(event.visitorId, time)
+  type TrailEvent = (typeof stats.recentEvents)[number]
+  type Trail = { key: string; visitorId: string; events: TrailEvent[] }
+
+  const allTrails: Trail[] = []
+  for (const [visitorId, events] of eventsByVisitor) {
+    const groups = new Map<string, TrailEvent[]>()
+    for (const event of events) {
+      const sessionId = (event as { sessionId?: string | null }).sessionId ?? null
+      const groupKey = sessionGroupKey(visitorId, sessionId)
+      const list = groups.get(groupKey) ?? []
+      list.push(event)
+      groups.set(groupKey, list)
+    }
+    for (const [key, groupEvents] of groups) {
+      allTrails.push({ key, visitorId, events: groupEvents })
+    }
   }
-  const visitorIds = [...lastSeenByVisitor.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([visitorId]) => visitorId)
 
-  const trails = visitorIds
-    .map((visitorId) => {
-      const session = sessionByVisitor.get(visitorId)
-      const events = [...(eventsByVisitor.get(visitorId) ?? [])].sort((a, b) =>
-        stepsNewestFirst
-          ? b.createdAt.getTime() - a.createdAt.getTime()
-          : a.createdAt.getTime() - b.createdAt.getTime()
-      )
-      if (!events.length) return null
-      if (session) return { session, events }
+  // 会话按「最近一步时间」倒序：最近活跃的会话排在最前面。
+  const lastEventTime = (trail: Trail) =>
+    trail.events[trail.events.length - 1]?.createdAt.getTime() ?? 0
+  allTrails.sort((a, b) => lastEventTime(b) - lastEventTime(a))
 
-      const newest = events[0]
-      const oldest = events[events.length - 1]
-      return {
-        session: {
-          id: `fallback-${visitorId}`,
-          visitorId,
-          ip: newest.ip ?? oldest.ip,
-          country: newest.country ?? oldest.country,
-          userAgent: newest.userAgent ?? oldest.userAgent,
-          deviceType: newest.deviceType ?? null,
-          source: classifyEventSource(newest),
-          utmSource: typeof newest.utmSource === "string" ? newest.utmSource : null,
-          utmMedium: typeof newest.utmMedium === "string" ? newest.utmMedium : null,
-          utmCampaign: typeof newest.utmCampaign === "string" ? newest.utmCampaign : null,
-          firstSeen: oldest.createdAt,
-          lastSeen: newest.createdAt,
-          pageCount: events.length,
-        },
-        events,
-      }
-    })
-    .filter((trail): trail is NonNullable<typeof trail> => trail !== null)
-    .slice(0, 30)
+  const trails = allTrails.slice(0, MAX_TRAILS).map((trail) => {
+    const visitorSession = sessionByVisitor.get(trail.visitorId)
+    const events = trail.events
+    const oldest = events[0]
+    const newest = events[events.length - 1]
+    const hiddenSteps = Math.max(0, events.length - MAX_EVENTS_PER_TRAIL)
+    const visible = hiddenSteps > 0 ? events.slice(events.length - MAX_EVENTS_PER_TRAIL) : events
+    const ordered = stepsNewestFirst ? [...visible].reverse() : visible
+
+    const session = {
+      id: trail.key,
+      visitorId: trail.visitorId,
+      ip: newest.ip ?? oldest.ip,
+      country: newest.country ?? oldest.country,
+      userAgent: newest.userAgent ?? oldest.userAgent,
+      deviceType: newest.deviceType ?? visitorSession?.deviceType ?? null,
+      source: isTrafficSource(visitorSession?.source)
+        ? visitorSession!.source
+        : classifyEventSource(newest),
+      utmSource: typeof newest.utmSource === "string" ? newest.utmSource : (visitorSession?.utmSource ?? null),
+      utmMedium: typeof newest.utmMedium === "string" ? newest.utmMedium : (visitorSession?.utmMedium ?? null),
+      utmCampaign: typeof newest.utmCampaign === "string" ? newest.utmCampaign : (visitorSession?.utmCampaign ?? null),
+      firstSeen: oldest.createdAt,
+      lastSeen: newest.createdAt,
+      pageCount: events.length,
+    }
+    return { session, events: ordered, hiddenSteps }
+  })
 
   const recentLogins = await prisma.loginRecord.findMany({
     orderBy: { createdAt: "desc" },
@@ -929,20 +971,29 @@ export default async function AdminAnalyticsPage({
           title="Visitor Trails"
           titleZh="访客轨迹"
           action={
-            <Link
-              href={stepsNewestFirst ? "/admin/analytics?steps=asc" : "/admin/analytics"}
-              scroll={false}
-              className="text-xs text-blue-600 hover:underline whitespace-nowrap"
-            >
-              {stepsNewestFirst ? bi("Oldest step first", "按最早一步在前") : bi("Newest step first", "按最近一步在前")}
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href={buildHref({ trailRange: trailAll ? null : "all" })}
+                scroll={false}
+                className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+              >
+                {trailAll ? bi("Last 7 days", "仅近 7 天") : bi("All history", "全部历史")}
+              </Link>
+              <Link
+                href={buildHref({ steps: stepsNewestFirst ? "asc" : null })}
+                scroll={false}
+                className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+              >
+                {stepsNewestFirst ? bi("Oldest step first", "按最早一步在前") : bi("Newest step first", "按最近一步在前")}
+              </Link>
+            </div>
           }
         >
           {trails.length === 0 ? (
             <p className="text-sm text-stone">{bi("No visitor trails recorded yet.", "暂无访客轨迹。")}</p>
           ) : (
             <div className="space-y-5">
-              {trails.map(({ session, events }) => {
+              {trails.map(({ session, events, hiddenSteps }) => {
                 // 事件已按所选顺序排好：倒序时第一行是最近一步，正序时是第一步
                 const latest = events[0]
                 const displayCountry = session.country || latest?.country
@@ -981,7 +1032,14 @@ export default async function AdminAnalyticsPage({
                       </span>
                     )}
                     <span className="ml-auto text-right">
-                      {events.length} {bi("steps", "步")} ·{" "}
+                      {session.pageCount} {bi("steps", "步")}
+                      {hiddenSteps > 0 && (
+                        <span className="text-stone/70">
+                          {" "}
+                          ({bi(`showing latest ${events.length}`, `显示最近 ${events.length} 步`)})
+                        </span>
+                      )}{" "}
+                      ·{" "}
                       {stepsNewestFirst
                         ? bi("latest", "最近") + " " + timeLabel(session.lastSeen)
                         : bi("first", "首次") + " " + formatDateShort(session.firstSeen)}

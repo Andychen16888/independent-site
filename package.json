@@ -17,6 +17,7 @@
     "test:tracking": "tsx scripts/test-tracking.ts",
     "db:translate-blog": "tsx prisma/translate-blog-content.ts",
     "db:translate-products": "tsx prisma/translate-product-content.ts",
+    "db:translate-pages": "tsx prisma/translate-page-content.ts",
     "db:fix-product-slugs": "tsx scripts/fix-product-slugs.ts",
     "db:fix-category-slugs": "tsx scripts/fix-category-slugs.ts",
     "db:studio": "prisma studio"

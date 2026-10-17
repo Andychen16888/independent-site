@@ -97,8 +97,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const freshTranslations = await prisma.pageTranslation.findMany({
+      where: { pageId: page.id },
+      orderBy: { locale: "asc" },
+    })
+
     invalidateStorefront()
-    return NextResponse.json({ page, translation, translationError }, { status: 201 })
+    return NextResponse.json({ page, translations: freshTranslations, translation, translationError }, { status: 201 })
   } catch (error) {
     console.error("Admin page create error:", error)
     return NextResponse.json({ error: "Failed to create page" }, { status: 500 })

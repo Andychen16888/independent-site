@@ -31,6 +31,24 @@ export interface PageFormInitialData {
   }[]
 }
 
+// "about" and "contact" always refresh their translations on save, so their
+// overwrite option starts checked and visible to the admin.
+function overwriteByDefault(slug: string | null | undefined): boolean {
+  return slug === "about" || slug === "contact"
+}
+
+function toTranslationFields(rows: any[]): TranslationFields[] {
+  return (rows || []).map((t) => ({
+    locale: t.locale,
+    title: t.title || "",
+    excerpt: t.excerpt || "",
+    content: t.content || "",
+    seoTitle: t.seoTitle || "",
+    seoDescription: t.seoDescription || "",
+    seoKeywords: t.seoKeywords || "",
+  }))
+}
+
 export default function PageForm({
   mode,
   pageId,
@@ -79,6 +97,10 @@ export default function PageForm({
       seoKeywords: t.seoKeywords || "",
     }))
   )
+  const [autoTranslate, setAutoTranslate] = useState(true)
+  const [overwriteTranslations, setOverwriteTranslations] = useState(() =>
+    overwriteByDefault(initialData?.slug)
+  )
 
   useEffect(() => {
     if (mode !== "edit" || !pageId || initialData) return
@@ -105,6 +127,7 @@ export default function PageForm({
             seoKeywords: t.seoKeywords || "",
           }))
         )
+        setOverwriteTranslations(overwriteByDefault(p.slug))
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
@@ -126,11 +149,45 @@ export default function PageForm({
       const res = await fetch(url, {
         method: mode === "edit" ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, coverImage: form.coverImage || null, translations }),
+        body: JSON.stringify({
+          ...form,
+          coverImage: form.coverImage || null,
+          translations,
+          autoTranslate,
+          overwriteTranslations,
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || bi("Failed to save page", "保存页面失败"))
-      toast.success(mode === "edit" ? bi("Page updated", "页面已更新") : bi("Page created", "页面已创建"))
+
+      if (Array.isArray(data.translations)) {
+        setTranslations(toTranslationFields(data.translations))
+      }
+
+      const t = data.translation
+      const translated = t?.translated?.length || 0
+      const failedList: { locale: string; error: string }[] = t?.failed || []
+      const failed = failedList.length
+      const hint = failedList[0]?.error ? ` (${failedList[0].error})` : ""
+
+      if (data.translationError) {
+        toast.error(bi(
+          `Saved, but auto-translation failed: ${data.translationError}`,
+          `已保存，但自动翻译失败：${data.translationError}`
+        ))
+      } else if (failed > 0) {
+        if (translated > 0) {
+          toast.success(bi(`Saved. Auto-translated into ${translated} language(s).`, `已保存，并自动翻译为 ${translated} 种语言。`))
+        }
+        toast.error(bi(
+          `Page saved, but ${failed} language(s) failed to translate${hint}. Check OPENAI_API_KEY on the server.`,
+          `页面已保存，但 ${failed} 种语言翻译失败${hint}。请检查服务器上的 OPENAI_API_KEY。`
+        ))
+      } else if (translated > 0) {
+        toast.success(bi(`Saved. Auto-translated into ${translated} language(s).`, `已保存，并自动翻译为 ${translated} 种语言。`))
+      } else {
+        toast.success(mode === "edit" ? bi("Page updated", "页面已更新") : bi("Page created", "页面已创建"))
+      }
       router.push(redirectTo)
       router.refresh()
     } catch (err: any) {
@@ -199,12 +256,41 @@ export default function PageForm({
 
       <div className="border-t border-mist pt-6 space-y-4">
         <label className="block text-xs uppercase tracking-wider text-stone font-medium mb-1">{bi("Translations", "多语言翻译")}</label>
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" checked={autoTranslate} onChange={(e) => setAutoTranslate(e.target.checked)} className="w-4 h-4" />
+          {bi("Auto-translate into all languages on save", "保存时自动翻译成所有语言")}
+        </label>
+        <label className={`flex items-center gap-2 text-sm ${autoTranslate ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}>
+          <input
+            type="checkbox"
+            checked={overwriteTranslations}
+            disabled={!autoTranslate}
+            onChange={(e) => setOverwriteTranslations(e.target.checked)}
+            className="w-4 h-4"
+          />
+          {bi(
+            "Re-translate and overwrite existing translations (use after editing the English text)",
+            "重新翻译并覆盖已有翻译（修改英文原文后使用）"
+          )}
+        </label>
+        <p className="text-[11px] text-stone leading-relaxed">
+          {bi(
+            "The English text is the source. If a language tab is left empty the storefront falls back to English. Requires OPENAI_API_KEY on the server; if it is missing, saving still works but translation is skipped and you will see an error.",
+            "英文（或上方内容）是翻译源。某个语言页签留空时，前台会回退显示英文。服务器需配置 OPENAI_API_KEY；若未配置，页面仍可保存，但会跳过翻译并显示错误提示。"
+          )}
+        </p>
         <TranslationsEditor value={translations} onChange={setTranslations} includeContent />
       </div>
 
       <div className="flex items-center gap-3 pt-4 border-t border-mist">
         <button type="submit" disabled={saving} className="btn-primary text-xs">
-          {saving ? bi("Saving...", "保存中...") : mode === "edit" ? bi("Save Page", "保存页面") : bi("Create Page", "创建页面")}
+          {saving
+            ? autoTranslate
+              ? bi("Saving & translating...", "保存并翻译中...")
+              : bi("Saving...", "保存中...")
+            : mode === "edit"
+            ? bi("Save Page", "保存页面")
+            : bi("Create Page", "创建页面")}
         </button>
         <button type="button" onClick={() => router.push(cancelTo)} className="text-xs text-stone hover:text-charcoal transition-colors">{bi("Cancel", "取消")}</button>
       </div>

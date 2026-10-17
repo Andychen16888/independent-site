@@ -105,8 +105,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       }
     }
 
+    const freshTranslations = await prisma.pageTranslation.findMany({
+      where: { pageId: page.id },
+      orderBy: { locale: "asc" },
+    })
+
     invalidateStorefront()
-    return NextResponse.json({ page: updated, translation, translationError })
+    return NextResponse.json({ page: updated, translations: freshTranslations, translation, translationError })
   } catch (error) {
     console.error("Admin page update error:", error)
     return NextResponse.json({ error: "Failed to update page" }, { status: 500 })

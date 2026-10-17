@@ -121,10 +121,7 @@ export async function autoTranslatePage(
   if (!source.title || !source.title.trim()) return result
 
   const locales = SUPPORTED_CONTENT_LOCALES.filter((locale) => locale !== "en")
-  const existing = await prisma.pageTranslation.findMany({
-    where: { pageId },
-    select: { locale: true, content: true },
-  })
+  const existing = await prisma.pageTranslation.findMany({ where: { pageId } })
   const byLocale = new Map(existing.map((row) => [row.locale, row]))
 
   const targets = locales.filter((locale) => {
@@ -139,26 +136,26 @@ export async function autoTranslatePage(
   const tasks = targets.map((locale) => async () => {
     try {
       const out = await translateFields(source, locale)
+      const prev = byLocale.get(locale)
+      // Never blank out a field that the model omitted. When the English source
+      // still has content, keep the previous translation (or fall back to the
+      // English source) so the locale does not silently revert to English.
+      const keep = (translated: string | undefined, previous: string | null | undefined, sourceValue: string | null | undefined) => {
+        if (!(sourceValue || "").trim()) return null
+        return translated?.trim() || (previous || "").trim() || sourceValue!.trim()
+      }
+      const data = {
+        title: out.title?.trim() || prev?.title?.trim() || source.title,
+        excerpt: keep(out.excerpt, prev?.excerpt, source.excerpt),
+        content: keep(out.content, prev?.content, source.content),
+        seoTitle: keep(out.seoTitle, prev?.seoTitle, source.seoTitle),
+        seoDescription: keep(out.seoDescription, prev?.seoDescription, source.seoDescription),
+        seoKeywords: keep(out.seoKeywords, prev?.seoKeywords, source.seoKeywords),
+      }
       await prisma.pageTranslation.upsert({
         where: { pageId_locale: { pageId, locale } },
-        update: {
-          title: out.title?.trim() || source.title,
-          excerpt: out.excerpt?.trim() || null,
-          content: out.content?.trim() || null,
-          seoTitle: out.seoTitle?.trim() || null,
-          seoDescription: out.seoDescription?.trim() || null,
-          seoKeywords: out.seoKeywords?.trim() || null,
-        },
-        create: {
-          pageId,
-          locale,
-          title: out.title?.trim() || source.title,
-          excerpt: out.excerpt?.trim() || null,
-          content: out.content?.trim() || null,
-          seoTitle: out.seoTitle?.trim() || null,
-          seoDescription: out.seoDescription?.trim() || null,
-          seoKeywords: out.seoKeywords?.trim() || null,
-        },
+        update: data,
+        create: { pageId, locale, ...data },
       })
       result.translated.push(locale)
     } catch (error) {

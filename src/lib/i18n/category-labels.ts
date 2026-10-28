@@ -222,11 +222,21 @@ export function localizeCategoryName(
 ): string {
   if (locale === "en") return fallback
   if (dbTranslatedName && dbTranslatedName.trim()) return dbTranslatedName
+
   const normalizedSlug = normalizeCategorySlug(slug)
   const normalizedFallback = normalizeCategorySlug(fallback)
-  const key =
-    CATEGORY_NAME_ALIASES[normalizedSlug] ||
-    CATEGORY_NAME_ALIASES[normalizedFallback] ||
-    normalizedSlug
-  return CATEGORY_NAME_MAP[key]?.[locale] || fallback
+
+  const candidates = [
+    CATEGORY_NAME_ALIASES[normalizedSlug],
+    normalizedSlug,
+    CATEGORY_NAME_ALIASES[normalizedFallback],
+    normalizedFallback,
+  ].filter(Boolean) as string[]
+
+  for (const key of candidates) {
+    const localized = CATEGORY_NAME_MAP[key]?.[locale]
+    if (localized) return localized
+  }
+
+  return fallback
 }

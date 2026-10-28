@@ -124,6 +124,16 @@ export async function Footer({
   }
 
   const safeAbout = useDbContent ? about || t("about") : t("about")
+  const safeCompanyBrief = useDbContent
+    ? companyBrief
+    : t.has("companyBrief")
+      ? t("companyBrief")
+      : companyBrief
+  const safeAddress = useDbContent
+    ? address
+    : t.has("addressLine")
+      ? t("addressLine")
+      : address
   const safeHours = useDbContent ? hours || t("hours") : t("hours")
 
   const getLabel = (href: string, fallback: string) => {
@@ -182,7 +192,7 @@ export async function Footer({
             </Link>
             {companyName && <p className="text-sm text-ivory/80 font-medium mb-1">{companyName}</p>}
             {safeAbout && <p className="text-sm text-ivory/65 leading-relaxed mb-1 max-w-xs">{safeAbout}</p>}
-            {companyBrief && <p className="text-sm text-ivory/65 leading-relaxed mb-6 max-w-xs">{companyBrief}</p>}
+            {safeCompanyBrief && <p className="text-sm text-ivory/65 leading-relaxed mb-6 max-w-xs">{safeCompanyBrief}</p>}
             <div className="space-y-3 text-sm text-ivory/65">
               {contactEmail && (
                 <div className="flex items-center gap-3">
@@ -190,10 +200,10 @@ export async function Footer({
                   <span>{contactEmail}</span>
                 </div>
               )}
-              {address && (
+              {safeAddress && (
                 <div className="flex items-center gap-3">
                   <HiOutlineMapPin className="w-4 h-4" />
-                  <span>{address}</span>
+                  <span>{safeAddress}</span>
                 </div>
               )}
               {safeHours && (

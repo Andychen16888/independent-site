@@ -8,7 +8,7 @@ import { SystemStatusWidget } from "@/components/admin/SystemStatusWidget"
 import {
   HiOutlineSquares2X2, HiOutlineShoppingBag, HiOutlineCube,
   HiOutlineUsers, HiOutlineCurrencyDollar, HiOutlineDocumentText,
-  HiOutlinePhoto, HiOutlineMegaphone, HiOutlineChartBar,
+  HiOutlineMegaphone, HiOutlineChartBar,
   HiOutlineCog6Tooth, HiOutlineArrowLeftOnRectangle, HiOutlineFolder,
   HiOutlineDocument, HiOutlineBars3,
   HiOutlineQuestionMarkCircle, HiOutlineGlobeAlt, HiOutlineLanguage,
@@ -36,7 +36,6 @@ const navItems = [
   { name: "About Us", nameZh: "关于我们", href: "/admin/about", icon: HiOutlineBuildingOffice2 },
   { name: "Contact Us", nameZh: "联系我们", href: "/admin/contact", icon: HiOutlineChatBubbleOvalLeftEllipsis },
   { name: "Menus", nameZh: "菜单", href: "/admin/menus", icon: HiOutlineBars3 },
-  { name: "Banners", nameZh: "横幅广告", href: "/admin/banners", icon: HiOutlinePhoto },
   { name: "Site Images", nameZh: "站点图片", href: "/admin/images", icon: HiOutlineGlobeAlt },
   { name: "Analytics", nameZh: "数据分析", href: "/admin/analytics", icon: HiOutlineChartBar },
   { name: "Settings", nameZh: "设置", href: "/admin/settings", icon: HiOutlineCog6Tooth },

@@ -21,6 +21,8 @@ export const localeNames: Record<string, string> = {
   ms: "Bahasa Melayu",
 }
 
-export const rtlLocales = new Set(["ar"])
+// Keep storefront layout flow consistent across locales.
+// Arabic translations are rendered in-place without switching the whole page to RTL.
+export const rtlLocales = new Set<string>([])
 
 export type AppLocale = (typeof routing.locales)[number]

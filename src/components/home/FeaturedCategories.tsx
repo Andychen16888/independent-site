@@ -4,7 +4,6 @@ import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
-import { categoryFallbackTone } from "@/config/images"
 import { DEFAULT_FEATURED_CATEGORIES, type FeaturedCategory } from "@/lib/home-content"
 
 export function FeaturedCategories({
@@ -46,7 +45,7 @@ export function FeaturedCategories({
             >
               <Link
                 href={category.href}
-                className="relative mx-auto block w-full max-w-[500px] aspect-square overflow-hidden rounded-lg"
+                className="relative mx-auto block w-full max-w-[500px] aspect-square overflow-hidden rounded-lg bg-white"
               >
                 {/*
                   fit="contain" scales the whole image to fit inside the frame, so a
@@ -59,10 +58,9 @@ export function FeaturedCategories({
                 <SmartImage
                   src={category.image}
                   alt={category.title}
-                  tone={categoryFallbackTone(category.href)}
+                  tone="from-white via-white to-white"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   fit="contain"
-                  overlay
                 />
               </Link>
 

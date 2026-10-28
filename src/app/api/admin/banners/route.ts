@@ -3,12 +3,38 @@ import { prisma } from "@/lib/db/prisma"
 import { requireAdmin } from "@/lib/auth/admin-guard"
 import { invalidateStorefront } from "@/lib/settings/invalidate-storefront"
 import { upsertBannerTranslations } from "@/lib/i18n/banner"
+import { DEFAULT_HERO_SLIDES } from "@/lib/home-content"
+import { SITE_IMAGE_SLOTS } from "@/config/images"
+
+async function ensureDefaultHeroBanners() {
+  const count = await prisma.banner.count()
+  if (count > 0) return
+
+  const heroSlots = SITE_IMAGE_SLOTS.filter((slot) => slot.group === "hero")
+  const fallbackImage = heroSlots[0]?.defaultSrc || "/images/hero/china-container-port.jpg"
+
+  await prisma.banner.createMany({
+    data: DEFAULT_HERO_SLIDES.slice(0, 3).map((slide, index) => ({
+      title: slide.title,
+      subtitle: slide.subtitle || null,
+      description: slide.description || null,
+      ctaText: slide.cta || null,
+      alignment: slide.align || "left",
+      image: heroSlots[index]?.defaultSrc || fallbackImage,
+      link: slide.href || null,
+      sortOrder: index,
+      isActive: true,
+    })),
+  })
+}
 
 export async function GET(req: NextRequest) {
   const authError = await requireAdmin(req)
   if (authError) return authError
 
   try {
+    await ensureDefaultHeroBanners()
+
     const banners = await prisma.banner.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     })

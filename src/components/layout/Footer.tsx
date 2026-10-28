@@ -88,7 +88,7 @@ export async function Footer({
     prisma.category.findMany({
       where: { isActive: true, parentId: null },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-      take: 6,
+      take: 8,
     }),
     prisma.page.findMany({
       where: { isPublished: true },
@@ -171,10 +171,6 @@ export async function Footer({
   ].filter((s) => s.href)
   const connectLinks = socialLinks.length ? socialLinks : DEFAULT_SOCIAL_LINKS
 
-  const aboutLinks = pages
-    .filter((p) => ["about", "contact"].includes(p.slug))
-    .map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
-
   return (
     <footer className="bg-navy-dark text-ivory">
       <Container className="py-16 md:py-24">
@@ -250,13 +246,6 @@ export async function Footer({
             <h4 className="text-xs tracking-widest uppercase text-ivory mb-4">{t("support")}</h4>
             <ul className="space-y-3">
               {supportLinks.map((link) => (
-                <li key={link.href + link.name}>
-                  <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
-                    {getLabel(link.href, link.name)}
-                  </Link>
-                </li>
-              ))}
-              {aboutLinks.length > 0 && aboutLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
                     {getLabel(link.href, link.name)}

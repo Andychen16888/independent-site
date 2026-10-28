@@ -2,8 +2,6 @@
 
 import { Link } from "@/i18n/navigation"
 import { motion } from "framer-motion"
-import { useTranslations } from "next-intl"
-import { HiOutlineArrowRight } from "react-icons/hi2"
 import { Container } from "@/components/ui/Container"
 import { SmartImage } from "@/components/ui/SmartImage"
 import { categoryFallbackTone } from "@/config/images"
@@ -21,7 +19,6 @@ export function FeaturedCategories({
   tagline?: string
 }) {
   const safe = categories && categories.length > 0 ? categories : DEFAULT_FEATURED_CATEGORIES
-  const tc = useTranslations("common")
 
   return (
     <section className="section-padding bg-ivory">
@@ -49,7 +46,7 @@ export function FeaturedCategories({
             >
               <Link
                 href={category.href}
-                className="relative block aspect-[4/3] overflow-hidden rounded-lg"
+                className="relative mx-auto block w-full max-w-[500px] aspect-square overflow-hidden rounded-lg"
               >
                 {/*
                   fit="contain" scales the whole image to fit inside the frame, so a
@@ -67,23 +64,15 @@ export function FeaturedCategories({
                   fit="contain"
                   overlay
                 />
+              </Link>
 
-                <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">
-                  {category.subtitle && (
-                    <span className="eyebrow mb-2 text-white/70">{category.subtitle}</span>
-                  )}
-                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-white mb-2">
+              <div className="pt-4 text-center">
+                <Link href={category.href} className="inline-block">
+                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-charcoal">
                     {category.title}
                   </h3>
-                  {category.description && (
-                    <p className="text-white/75 text-sm line-clamp-2 max-w-sm">{category.description}</p>
-                  )}
-                  <span className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-white">
-                    {tc("exploreCollection")}
-                    <HiOutlineArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
+                </Link>
+              </div>
             </motion.div>
           ))}
         </div>

@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing"
 import { canonicalCategorySlug } from "@/lib/categories/slug"
 import { ensureUniqueCategorySlug } from "@/lib/categories/unique-slug"
 import { Prisma } from "@prisma/client"
+import { buildCategoryTranslations } from "@/lib/ai/translate-category"
 
 function isCategoryTranslationsTableMissing(error: unknown): boolean {
   if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false
@@ -68,7 +69,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords, translations } = body
+    const {
+      name,
+      slug,
+      description,
+      image,
+      parentId,
+      sortOrder,
+      isActive,
+      isFeatured,
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      translations,
+      autoTranslate,
+      overwriteTranslations,
+    } = body
 
     if (name !== undefined && !name.trim()) {
       return NextResponse.json({ error: "Name cannot be empty" }, { status: 400 })
@@ -79,13 +95,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "A category cannot be its own parent" }, { status: 400 })
     }
 
+    const currentCategory = await prisma.category.findUnique({
+      where: { id },
+      select: { id: true, name: true, slug: true },
+    })
+    if (!currentCategory) {
+      return NextResponse.json({ error: "Category not found" }, { status: 404 })
+    }
+
     let nextSlug: string | undefined
     if (slug !== undefined && slug !== "") {
       // Stored slugs must stay URL-safe: "LED Lighting" becomes "led-lighting" so
       // the category keeps one canonical URL.
       const desired = canonicalCategorySlug(slug, name ?? "")
-      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true } })
-      if (!current || current.slug !== desired) {
+      if (currentCategory.slug !== desired) {
         nextSlug = await ensureUniqueCategorySlug(desired, id)
       }
     }
@@ -105,7 +128,43 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const category = await prisma.category.update({ where: { id }, data })
-    await upsertCategoryTranslations(category.id, parseCategoryTranslations(translations))
+
+    const manualRows = parseCategoryTranslations(translations)
+    const shouldAutoTranslate = autoTranslate !== false
+    const shouldOverwrite = overwriteTranslations !== false
+
+    if (shouldAutoTranslate) {
+      const existingRows = await prisma.categoryTranslation.findMany({
+        where: { categoryId: category.id },
+        select: { locale: true, name: true },
+      })
+      const existingMap = new Map(existingRows.map((row) => [row.locale, row.name]))
+
+      const manualMap = new Map<string, string>()
+      for (const row of manualRows) {
+        const incoming = (row.name || "").trim()
+        const previous = (existingMap.get(row.locale) || "").trim()
+        if (shouldOverwrite && incoming === previous) {
+          continue
+        }
+        manualMap.set(row.locale, row.name || "")
+      }
+
+      const generated = await buildCategoryTranslations({
+        name: (name !== undefined ? name : currentCategory.name) || category.name,
+        slug: nextSlug || category.slug || currentCategory.slug,
+        existing: existingMap,
+        manual: manualMap,
+        overwrite: shouldOverwrite,
+      })
+      await upsertCategoryTranslations(category.id, generated.translations)
+      if (generated.failed.length > 0) {
+        console.warn("[i18n] Category auto-translate failed for locales:", generated.failed)
+      }
+    } else {
+      await upsertCategoryTranslations(category.id, manualRows)
+    }
+
     invalidateStorefront()
     return NextResponse.json({ category })
   } catch (error) {

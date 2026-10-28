@@ -6,6 +6,7 @@ import { upsertCategoryTranslations } from "@/lib/i18n/category"
 import { routing } from "@/i18n/routing"
 import { canonicalCategorySlug } from "@/lib/categories/slug"
 import { ensureUniqueCategorySlug } from "@/lib/categories/unique-slug"
+import { buildCategoryTranslations } from "@/lib/ai/translate-category"
 
 function parseCategoryTranslations(input: unknown): { locale: string; name?: string }[] {
   if (!input || typeof input !== "object") return []
@@ -42,7 +43,22 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { name, slug, description, image, parentId, sortOrder, isActive, isFeatured, seoTitle, seoDescription, seoKeywords, translations } = body
+    const {
+      name,
+      slug,
+      description,
+      image,
+      parentId,
+      sortOrder,
+      isActive,
+      isFeatured,
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      translations,
+      autoTranslate,
+      overwriteTranslations,
+    } = body
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
@@ -69,7 +85,25 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    await upsertCategoryTranslations(category.id, parseCategoryTranslations(translations))
+    const manualRows = parseCategoryTranslations(translations)
+    const manualMap = new Map(manualRows.map((row) => [row.locale, row.name || ""]))
+    const shouldAutoTranslate = autoTranslate !== false
+    const shouldOverwrite = overwriteTranslations !== false
+
+    if (shouldAutoTranslate) {
+      const generated = await buildCategoryTranslations({
+        name,
+        slug: slugValue,
+        manual: manualMap,
+        overwrite: shouldOverwrite,
+      })
+      await upsertCategoryTranslations(category.id, generated.translations)
+      if (generated.failed.length > 0) {
+        console.warn("[i18n] Category auto-translate failed for locales:", generated.failed)
+      }
+    } else {
+      await upsertCategoryTranslations(category.id, manualRows)
+    }
 
     invalidateStorefront()
     return NextResponse.json({ category }, { status: 201 })

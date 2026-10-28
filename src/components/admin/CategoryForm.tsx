@@ -88,6 +88,8 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
           sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
           image: form.image || null,
           translations,
+          autoTranslate: true,
+          overwriteTranslations: true,
         }),
       })
       const data = await res.json()

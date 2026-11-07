@@ -123,9 +123,9 @@ export function NewsletterCampaignForm({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ subject: subject.trim(), body: body.trim(), ...payload }),
     })
-    const body = (data || {}) as any
+    const payloadData = (data || {}) as any
     if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Request failed", "请求失败")))
-    return body
+    return payloadData
   }
 
   async function sendTest() {

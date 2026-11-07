@@ -5,6 +5,19 @@ const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET
 const PAYPAL_API_URL = process.env.PAYPAL_API_URL || "https://api-m.paypal.com"
 
+export interface PayPalOrderPayload {
+  id?: string
+  status?: string
+  error?: unknown
+  purchase_units?: Array<{
+    payments?: {
+      captures?: Array<{
+        id?: string
+      }>
+    }
+  }>
+}
+
 // 外部 API 调用必须有超时兜底，否则 PayPal 端卡住时请求永远挂起，
 // 会被 nginx 判为 "504 Gateway Time-out"。
 const PAYPAL_TIMEOUT_MS = 30_000
@@ -35,7 +48,7 @@ export async function getPayPalAccessToken(): Promise<string> {
   return data.access_token
 }
 
-export async function createPayPalOrder(amount: number, currency: string = "USD") {
+export async function createPayPalOrder(amount: number, currency: string = "USD"): Promise<PayPalOrderPayload> {
   const accessToken = await getPayPalAccessToken()
   const siteName = (await getSiteSeo()).siteName
 
@@ -60,10 +73,10 @@ export async function createPayPalOrder(amount: number, currency: string = "USD"
   })
   const parsed = await readJsonResponse(res)
   if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `PayPal create order failed (HTTP ${res.status})`))
-  return parsed.data || {}
+  return (parsed.data || {}) as PayPalOrderPayload
 }
 
-export async function capturePayPalOrder(orderId: string) {
+export async function capturePayPalOrder(orderId: string): Promise<PayPalOrderPayload> {
   const accessToken = await getPayPalAccessToken()
 
   const res = await paypalFetch(`${PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`, {
@@ -75,5 +88,5 @@ export async function capturePayPalOrder(orderId: string) {
   })
   const parsed = await readJsonResponse(res)
   if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `PayPal capture failed (HTTP ${res.status})`))
-  return parsed.data || {}
+  return (parsed.data || {}) as PayPalOrderPayload
 }

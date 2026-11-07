@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { btnGhost, btnPrimary, inputCls } from "./ui"
 
 /**
@@ -34,7 +35,7 @@ export function SendQuotationDialog({
   const submit = async () => {
     setSending(true)
     try {
-      const res = await fetch(`/api/admin/quotations/${quotationId}/send`, {
+      const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/quotations/${quotationId}/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,8 +44,8 @@ export function SendQuotationDialog({
           message: message.trim() || undefined,
         }),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Send failed (${res.status})`)
+      const json = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Send failed (${res.status})`))
       toast.success(bi("Quotation sent", `报价单已发送 (${json.emailNo})`))
       onSent()
     } catch (e) {

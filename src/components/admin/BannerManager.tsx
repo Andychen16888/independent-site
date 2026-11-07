@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface BannerRow {
   id: string
@@ -25,10 +26,10 @@ export default function BannerManager() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/banners", { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load banners", "加载横幅失败"))
-      const data = await res.json()
-      setRows(data.banners || [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/banners", { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load banners", "加载横幅失败")))
+      const payload = (data || {}) as any
+      setRows(payload.banners || [])
     } catch (e: any) {
       setError(e.message)
     } finally {

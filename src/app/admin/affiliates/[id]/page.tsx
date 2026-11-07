@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { formatDateShort, formatPrice } from "@/lib/utils/format"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface Referral {
   id: string
@@ -42,14 +43,14 @@ export default function EditAffiliatePage() {
   useEffect(() => {
     async function loadAffiliate() {
       try {
-        const res = await fetch(`/api/admin/affiliates/${id}`)
+        const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/affiliates/${id}`)
         if (res.status === 404) {
           setNotFound(true)
           return
         }
-        if (!res.ok) throw new Error(bi("Failed to load affiliate", "加载联盟成员失败"))
-        const data = await res.json()
-        const a: Affiliate = data.affiliate
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load affiliate", "加载联盟成员失败")))
+        const payload = (data || {}) as any
+        const a: Affiliate = payload.affiliate
         setAffiliate(a)
         setStatus(a.status)
         setCommissionRate(a.commissionRate.toString())
@@ -69,16 +70,15 @@ export default function EditAffiliatePage() {
     setError("")
 
     try {
-      const res = await fetch(`/api/admin/affiliates/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, commissionRate, paypalEmail }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || bi("Failed to update affiliate", "更新联盟成员失败"))
-      }
+      await fetchJsonOrThrow(
+        `/api/admin/affiliates/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status, commissionRate, paypalEmail }),
+        },
+        bi("Failed to update affiliate", "更新联盟成员失败")
+      )
 
       router.refresh()
       setError("")

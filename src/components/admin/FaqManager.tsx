@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface FaqRow {
   id: string
@@ -22,10 +23,10 @@ export default function FaqManager() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/faqs", { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load FAQs", "加载 FAQ 失败"))
-      const data = await res.json()
-      setRows(data.faqs || [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/faqs", { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load FAQs", "加载 FAQ 失败")))
+      const payload = (data || {}) as any
+      setRows(payload.faqs || [])
     } catch (e: any) {
       setError(e.message)
     } finally {

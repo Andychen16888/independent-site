@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils/cn"
+import { fetchJsonResponse } from "@/lib/json-response"
 import { SystemStatusWidget } from "@/components/admin/SystemStatusWidget"
 import {
   HiOutlineSquares2X2, HiOutlineShoppingBag, HiOutlineCube,
@@ -74,13 +75,13 @@ export function AdminSidebar({ siteName = "Commerce" }: { siteName?: string }) {
     async function load() {
       try {
         const [inq, follow] = await Promise.all([
-          fetch("/api/admin/inquiries?pageSize=1", { cache: "no-store" }),
-          fetch("/api/admin/follow-ups?pageSize=1&due=1", { cache: "no-store" }),
+          fetchJsonResponse<any>("/api/admin/inquiries?pageSize=1", { cache: "no-store" }),
+          fetchJsonResponse<any>("/api/admin/follow-ups?pageSize=1&due=1", { cache: "no-store" }),
         ])
-        if (!inq.ok || !follow.ok) return
+        if (!inq.parsed.ok || !follow.parsed.ok) return
 
-        const inqData = await inq.json()
-        const followData = await follow.json()
+        const inqData = (inq.data || {}) as any
+        const followData = (follow.data || {}) as any
         if (cancelled) return
 
         setCounts({

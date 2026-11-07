@@ -8,6 +8,7 @@ import DOMPurify from "isomorphic-dompurify"
 import { HiOutlineXMark, HiOutlinePaperAirplane, HiOutlineSparkles, HiOutlineArrowPath } from "react-icons/hi2"
 import { ProductSuggestions } from "./ProductSuggestions"
 import type { ChatProduct } from "./types"
+import { readJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface Message {
   role: "user" | "assistant"
@@ -83,8 +84,8 @@ export function ChatWidget({ trigger, products = [] }: ChatWidgetProps) {
       if (!res.ok) {
         let errorText = t("failed")
         try {
-          const data = await res.json()
-          if (data?.error) errorText = data.error
+          const parsed = await readJsonResponse(res)
+          errorText = responseErrorMessage(parsed, t("failed"))
         } catch {}
         throw new Error(errorText)
       }

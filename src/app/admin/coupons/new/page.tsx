@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow } from "@/lib/json-response"
 
 export default function NewCouponPage() {
   const router = useRouter()
@@ -34,16 +35,15 @@ export default function NewCouponPage() {
     setError("")
 
     try {
-      const res = await fetch("/api/admin/coupons", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || bi("Failed to create coupon", "创建优惠券失败"))
-      }
+      await fetchJsonOrThrow(
+        "/api/admin/coupons",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
+        bi("Failed to create coupon", "创建优惠券失败")
+      )
 
       router.push("/admin/coupons")
       router.refresh()

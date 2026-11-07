@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { localeNames } from "@/i18n/routing"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 const LOCALES: string[] = ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
 
@@ -33,12 +34,12 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
 
   useEffect(() => {
     if (mode !== "edit" || !faqId) return
-    fetch(`/api/admin/faqs/${faqId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/faqs/${faqId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load FAQ", "加载 FAQ 失败"))
-        const data = await res.json()
-        const f = data.faq
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load FAQ", "加载 FAQ 失败")))
+        const payload = (data || {}) as any
+        const f = payload.faq
         setSortOrder(f.sortOrder ?? 0)
         setIsActive(f.isActive === true)
         const map = emptyLocaleFields()
@@ -75,13 +76,15 @@ export default function FaqForm({ mode, faqId }: { mode: "new" | "edit"; faqId?:
         .filter((l) => touched.has(l))
         .map((l) => ({ locale: l, ...translations[l] }))
       const url = mode === "edit" ? `/api/admin/faqs/${faqId}` : "/api/admin/faqs"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sortOrder, isActive, translations: payload }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save FAQ", "保存 FAQ 失败"))
+      await fetchJsonOrThrow(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sortOrder, isActive, translations: payload }),
+        },
+        bi("Failed to save FAQ", "保存 FAQ 失败")
+      )
       toast.success(mode === "edit" ? bi("FAQ updated", "FAQ 已更新") : bi("FAQ created", "FAQ 已创建"))
       router.push("/admin/faq")
       router.refresh()

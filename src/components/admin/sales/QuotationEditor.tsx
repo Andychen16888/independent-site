@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { CURRENCIES } from "@/lib/sales/currencies"
 import { QUOTATION_STATUS, formatMoney } from "@/lib/sales/status-meta"
 import { btnGhost, btnPrimary, inputCls, selectCls } from "./ui"
@@ -140,7 +141,7 @@ export function QuotationEditor({
 
     setSaving(true)
     try {
-      const res = await fetch(
+      const { res, parsed, data } = await fetchJsonResponse<any>(
         quotation?.id
           ? `/api/admin/quotations/${quotation.id}`
           : `/api/admin/inquiries/${inquiryId}/quotations`,
@@ -150,10 +151,10 @@ export function QuotationEditor({
           body: JSON.stringify(payload),
         }
       )
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) {
+      const json = (data || {}) as any
+      if (!parsed.ok) {
         const fields = json.fields ? Object.values(json.fields).join("; ") : ""
-        throw new Error([json.error || `Save failed (${res.status})`, fields].filter(Boolean).join(" — "))
+        throw new Error([responseErrorMessage(parsed, `Save failed (${res.status})`), fields].filter(Boolean).join(" — "))
       }
       toast.success(bi("Quotation saved", "报价单已保存"))
       onSaved()

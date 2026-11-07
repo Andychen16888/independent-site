@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { toast } from "react-hot-toast"
 import ImageUploader from "@/components/admin/ImageUploader"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import {
   SITE_IMAGE_SLOTS,
   SITE_IMAGE_GROUP_LABELS,
@@ -40,15 +41,15 @@ export default function AdminImagesPage() {
     }
     setSaving(true)
     try {
-      const res = await fetch("/api/admin/site-images", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/site-images", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ images: imagesRef.current }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Save failed", "保存失败"))
+      const payload = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Save failed", "保存失败")))
       // 仅在本地上一次改动已提交之后再覆盖本地状态，避免覆盖并发上传
-      if (saveTimer.current === null) setNext(data.images)
+      if (saveTimer.current === null) setNext(payload.images)
     } catch (e) {
       toast.error(e instanceof Error ? e.message : bi("Save failed", "保存失败"))
     } finally {
@@ -68,12 +69,13 @@ export default function AdminImagesPage() {
   }, [])
 
   useEffect(() => {
-    fetch("/api/admin/site-images", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.images) setNext(data.images)
+    fetchJsonResponse<any>("/api/admin/site-images", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load images", "加载图片失败")))
+        const payload = (data || {}) as any
+        if (payload.images) setNext(payload.images)
       })
-      .catch(() => toast.error(bi("Failed to load images", "加载图片失败")))
+      .catch((e: any) => toast.error(e?.message || bi("Failed to load images", "加载图片失败")))
       .finally(() => setLoading(false))
   }, [])
 

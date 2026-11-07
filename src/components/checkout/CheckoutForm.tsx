@@ -10,6 +10,7 @@ import { PayPalPayment } from "./PayPalPayment"
 import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
 import { HiOutlineCreditCard, HiOutlineLockClosed } from "react-icons/hi2"
+import { fetchJsonOrThrow } from "@/lib/json-response"
 
 const stripeEnabled = !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
@@ -54,27 +55,28 @@ export function CheckoutForm() {
     if (isProcessing) return
     setIsProcessing(true)
     try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          shippingAddress: formData,
-          subtotal,
-          shippingCost: shipping,
-          taxAmount: tax,
-          total,
-          paymentMethod,
-          paymentId,
-        }),
-      })
-
-      if (!res.ok) throw new Error("Order creation failed")
-
-      const data = await res.json()
+      const { data } = await fetchJsonOrThrow<any>(
+        "/api/checkout",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items,
+            shippingAddress: formData,
+            subtotal,
+            shippingCost: shipping,
+            taxAmount: tax,
+            total,
+            paymentMethod,
+            paymentId,
+          }),
+        },
+        "Order creation failed"
+      )
+      const payload = (data || {}) as any
       toast.success(t("orderPlaced"))
       clearCart()
-      router.push(`/account/orders/${data.orderId}`)
+      router.push(`/account/orders/${payload.orderId}`)
     } catch {
       toast.error(t("failedToCreate"))
     } finally {

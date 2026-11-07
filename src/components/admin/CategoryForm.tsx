@@ -7,6 +7,7 @@ import { bi } from "@/components/admin/bilingual"
 import { localeNames } from "@/i18n/routing"
 import { slugify } from "@/lib/utils/format"
 import { canonicalCategorySlug } from "@/lib/categories/slug"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import ImageUploader from "@/components/admin/ImageUploader"
 
 interface CatOption { id: string; name: string; slug: string; parentId: string | null }
@@ -28,20 +29,23 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
   const [translations, setTranslations] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    fetch("/api/admin/categories", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => setCategories((data.categories || []).filter((c: any) => c.id !== categoryId)))
+    fetchJsonResponse<any>("/api/admin/categories", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) return
+        const payload = (data || {}) as any
+        setCategories((payload.categories || []).filter((c: any) => c.id !== categoryId))
+      })
       .catch(() => {})
   }, [categoryId])
 
   useEffect(() => {
     if (mode !== "edit" || !categoryId) return
-    fetch(`/api/admin/categories/${categoryId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/categories/${categoryId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load category", "加载分类失败"))
-        const data = await res.json()
-        const c = data.category
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load category", "加载分类失败")))
+        const payload = (data || {}) as any
+        const c = payload.category
         setForm({
           name: c.name, slug: c.slug, parentId: c.parentId || "",
           sortOrder: String(c.sortOrder ?? 0),
@@ -79,21 +83,23 @@ export default function CategoryForm({ mode, categoryId }: { mode: "new" | "edit
     setError("")
     try {
       const url = mode === "edit" ? `/api/admin/categories/${categoryId}` : "/api/admin/categories"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          parentId: form.parentId || null,
-          sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
-          image: form.image || null,
-          translations,
-          autoTranslate: true,
-          overwriteTranslations: true,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save category", "保存分类失败"))
+      await fetchJsonOrThrow(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...form,
+            parentId: form.parentId || null,
+            sortOrder: form.sortOrder !== "" ? form.sortOrder : 0,
+            image: form.image || null,
+            translations,
+            autoTranslate: true,
+            overwriteTranslations: true,
+          }),
+        },
+        bi("Failed to save category", "保存分类失败")
+      )
       toast.success(mode === "edit" ? bi("Category updated", "分类已更新") : bi("Category created", "分类已创建"))
       router.push("/admin/categories")
       router.refresh()

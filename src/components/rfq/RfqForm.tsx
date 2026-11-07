@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/Button"
 import { CURRENCIES } from "@/lib/sales/currencies"
 import { HONEYPOT_FIELD } from "@/lib/sales/honeypot"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 /**
  * Units the RFQ form offers. Duplicated from the server-side
@@ -95,7 +96,7 @@ export function RfqForm({
     setFormError("")
 
     try {
-      const res = await fetch("/api/inquiries", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,11 +109,11 @@ export function RfqForm({
           [HONEYPOT_FIELD]: trap,
         }),
       })
-      const json = await res.json().catch(() => ({}))
+      const json = (data || {}) as any
 
-      if (!res.ok) {
+      if (!parsed.ok) {
         if (json.fields) setErrors(json.fields)
-        setFormError(json.error || t("genericError"))
+        setFormError(responseErrorMessage(parsed, t("genericError")))
         return
       }
       setInquiryNo(json.inquiryNo ?? "")

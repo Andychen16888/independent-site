@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 type Template = {
   id: string
@@ -37,10 +38,10 @@ export function NewsletterTemplateBar({
 
   async function load() {
     try {
-      const res = await fetch("/api/admin/newsletter/templates", { cache: "no-store" })
-      if (!res.ok) return
-      const data = await res.json()
-      setTemplates(data.templates ?? [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/newsletter/templates", { cache: "no-store" })
+      if (!parsed.ok) return
+      const payload = (data || {}) as any
+      setTemplates(payload.templates ?? [])
     } catch {
       // Non-fatal: the bar just shows no templates.
     }
@@ -72,13 +73,12 @@ export function NewsletterTemplateBar({
     }
     setBusy(true)
     try {
-      const res = await fetch("/api/admin/newsletter/templates", {
+      const { parsed } = await fetchJsonResponse("/api/admin/newsletter/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmed, subject, body }),
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || bi("Failed to save template", "保存模板失败"))
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to save template", "保存模板失败")))
       setName("")
       await load()
       toast.success(bi("Template saved", "模板已保存"))
@@ -92,10 +92,9 @@ export function NewsletterTemplateBar({
   async function remove(id: string) {
     if (!window.confirm(bi("Delete this template?", "确定删除该模板？"))) return
     try {
-      const res = await fetch(`/api/admin/newsletter/templates/${id}`, { method: "DELETE" })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || bi("Failed to delete", "删除失败"))
+      const { parsed } = await fetchJsonResponse(`/api/admin/newsletter/templates/${id}`, { method: "DELETE" })
+      if (!parsed.ok) {
+        throw new Error(responseErrorMessage(parsed, bi("Failed to delete", "删除失败")))
       }
       if (selected === id) setSelected("")
       await load()

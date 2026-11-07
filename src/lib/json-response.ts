@@ -10,7 +10,7 @@
 export interface JsonResponse {
   ok: boolean
   status: number
-  data: Record<string, unknown> | null
+  data: unknown
   text: string
   /** True when the body is not JSON (e.g. an HTML error page from a proxy). */
   isHtml: boolean
@@ -18,9 +18,9 @@ export interface JsonResponse {
 
 export async function readJsonResponse(res: Response): Promise<JsonResponse> {
   const text = await res.text()
-  let data: Record<string, unknown> | null = null
+  let data: unknown = null
   try {
-    data = text ? (JSON.parse(text) as Record<string, unknown>) : null
+    data = text ? JSON.parse(text) : null
   } catch {
     data = null
   }
@@ -38,8 +38,14 @@ export function responseErrorMessage(
   res: JsonResponse,
   fallback: string,
 ): string {
-  if (res.data && typeof res.data.error === "string" && res.data.error.trim()) {
-    return res.data.error
+  if (
+    res.data &&
+    typeof res.data === "object" &&
+    "error" in res.data &&
+    typeof (res.data as { error?: unknown }).error === "string" &&
+    (res.data as { error: string }).error.trim()
+  ) {
+    return (res.data as { error: string }).error
   }
   if (res.isHtml) {
     return `${fallback} (HTTP ${res.status})`
@@ -48,4 +54,27 @@ export function responseErrorMessage(
     return res.text.trim()
   }
   return `${fallback} (HTTP ${res.status})`
+}
+
+/** Fetch then parse safely as JSON without throwing on HTML/non-JSON bodies. */
+export async function fetchJsonResponse<T = unknown>(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<{ res: Response; parsed: JsonResponse; data: T | null }> {
+  const res = await fetch(input, init)
+  const parsed = await readJsonResponse(res)
+  return { res, parsed, data: (parsed.data as T | null) }
+}
+
+/** Fetch JSON and throw a readable Error on non-OK responses. */
+export async function fetchJsonOrThrow<T = unknown>(
+  input: RequestInfo | URL,
+  init: RequestInit | undefined,
+  fallback: string,
+): Promise<{ res: Response; parsed: JsonResponse; data: T | null }> {
+  const out = await fetchJsonResponse<T>(input, init)
+  if (!out.parsed.ok) {
+    throw new Error(responseErrorMessage(out.parsed, fallback))
+  }
+  return out
 }

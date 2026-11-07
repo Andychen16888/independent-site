@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container"
 import { AccountSidebar } from "@/components/account/AccountSidebar"
 import { Button } from "@/components/ui/Button"
 import { toast } from "react-hot-toast"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface Address {
   id: string
@@ -33,9 +34,11 @@ export default function AddressesPage() {
   const t = useTranslations("account.addresses")
 
   useEffect(() => {
-    fetch("/api/addresses")
-      .then((r) => r.json())
-      .then(setAddresses)
+    fetchJsonResponse("/api/addresses")
+      .then(({ parsed, data }) => {
+        if (!parsed.ok || !Array.isArray(data)) throw new Error(responseErrorMessage(parsed, t("saveFailed")))
+        setAddresses(data as unknown as Address[])
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
@@ -47,18 +50,20 @@ export default function AddressesPage() {
     const method = editingId ? "PUT" : "POST"
     const url = editingId ? `/api/addresses/${editingId}` : "/api/addresses"
     try {
-      const res = await fetch(url, {
+      const { parsed, data } = await fetchJsonResponse(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       })
-      if (res.ok) {
-        const updated = await res.json()
+      if (parsed.ok) {
+        const updated = data as Address
         setAddresses((prev) =>
           editingId ? prev.map((a) => (a.id === editingId ? updated : a)) : [...prev, updated]
         )
         setShowForm(false); setEditingId(null); resetForm()
         toast.success(editingId ? t("updated") : t("added"))
+      } else {
+        toast.error(responseErrorMessage(parsed, t("saveFailed")))
       }
     } catch { toast.error(t("saveFailed")) }
   }

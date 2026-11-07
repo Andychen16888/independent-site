@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { bi } from "@/components/admin/bilingual"
 import { categoryPath } from "@/lib/categories/slug"
+import { fetchJsonResponse } from "@/lib/json-response"
 
 interface CategoryOption {
   slug: string
@@ -53,12 +54,13 @@ export default function LinkSelect({ value, onChange, allowExternal = false }: L
 
   useEffect(() => {
     let alive = true
-    fetch("/api/admin/categories", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => {
+    fetchJsonResponse<any>("/api/admin/categories", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) return
+        const payload = (data || {}) as any
         if (!alive) return
-        if (Array.isArray(data?.categories)) {
-          setCategories(data.categories.map((c: { slug?: string; name?: string }) => ({
+        if (Array.isArray(payload?.categories)) {
+          setCategories(payload.categories.map((c: { slug?: string; name?: string }) => ({
             slug: c.slug || "",
             name: c.name || "",
           })))

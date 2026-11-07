@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, readJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 type Summary = {
   counts: Record<string, number>
@@ -40,10 +41,10 @@ export default function AdminBackupPage() {
 
   async function loadSummary() {
     try {
-      const res = await fetch("/api/admin/backup", { cache: "no-store" })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to load", "加载失败"))
-      setSummary(data)
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/backup", { cache: "no-store" })
+      const payload = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load", "加载失败")))
+      setSummary(payload)
     } catch (e) {
       toast.error(e instanceof Error ? e.message : bi("Failed to load", "加载失败"))
     } finally {
@@ -60,8 +61,8 @@ export default function AdminBackupPage() {
     try {
       const res = await fetch("/api/admin/backup/export", { cache: "no-store" })
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || bi("Export failed", "导出失败"))
+        const parsed = await readJsonResponse(res)
+        throw new Error(responseErrorMessage(parsed, bi("Export failed", "导出失败")))
       }
 
       const disposition = res.headers.get("Content-Disposition") || ""
@@ -100,15 +101,15 @@ export default function AdminBackupPage() {
       formData.append("file", file)
       formData.append("wipe", wipe ? "true" : "false")
 
-      const res = await fetch("/api/admin/backup/restore", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/backup/restore", {
         method: "POST",
         body: formData,
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || bi("Restore failed", "恢复失败"))
+      const payload = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Restore failed", "恢复失败")))
 
-      setResult(data.summary as RestoreResult)
-      if (data.summary?.errors?.length) {
+      setResult(payload.summary as RestoreResult)
+      if (payload.summary?.errors?.length) {
         toast.error(bi("Restored with warnings", "恢复完成，但有警告"))
       } else {
         toast.success(bi("Restore complete", "恢复完成"))

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import TranslationsEditor, { type TranslationFields } from "@/components/admin/TranslationsEditor"
@@ -24,12 +25,12 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
 
   useEffect(() => {
     if (mode !== "edit" || !postId) return
-    fetch(`/api/admin/blog/${postId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/blog/${postId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load post", "加载文章失败"))
-        const data = await res.json()
-        const p = data.post
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load post", "加载文章失败")))
+        const payload = (data || {}) as any
+        const p = payload.post
         setForm({
           title: p.title, slug: p.slug, excerpt: p.excerpt || "", content: p.content || "",
           coverImage: p.coverImage || "", author: p.author || "Admin", tags: p.tags || "",
@@ -65,13 +66,15 @@ export default function BlogForm({ mode, postId }: { mode: "new" | "edit"; postI
     setError("")
     try {
       const url = mode === "edit" ? `/api/admin/blog/${postId}` : "/api/admin/blog"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, coverImage: form.coverImage || null, translations }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save post", "保存文章失败"))
+      await fetchJsonOrThrow(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, coverImage: form.coverImage || null, translations }),
+        },
+        bi("Failed to save post", "保存文章失败")
+      )
       toast.success(mode === "edit" ? bi("Post updated", "文章已更新") : bi("Post created", "文章已创建"))
       router.push("/admin/blog")
       router.refresh()

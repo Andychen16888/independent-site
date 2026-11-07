@@ -5,6 +5,7 @@ import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { FOLLOW_UP_STATUS } from "@/lib/sales/status-meta"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { EmptyNote, Panel, StatusPill, btnGhost, btnPrimary, inputCls } from "./ui"
 
 export interface FollowUpRow {
@@ -45,13 +46,12 @@ export function FollowUpList({
   const create = async () => {
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/inquiries/${inquiryId}/follow-ups`, {
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/inquiries/${inquiryId}/follow-ups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ followUpDate: date, note, nextAction }),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Failed (${res.status})`)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed (${res.status})`))
       setNote("")
       setNextAction("")
       toast.success(bi("Follow-up scheduled", "已安排跟进"))
@@ -66,13 +66,12 @@ export function FollowUpList({
   const update = async (id: string, body: Record<string, unknown>, message: string) => {
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/follow-ups/${id}`, {
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/follow-ups/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Failed (${res.status})`)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed (${res.status})`))
       toast.success(message)
       onChanged()
     } catch (e) {
@@ -86,10 +85,9 @@ export function FollowUpList({
     if (!confirm(bi("Delete this follow-up?", "删除此跟进记录？"))) return
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/follow-ups/${id}`, { method: "DELETE" })
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}))
-        throw new Error(json.error || `Failed (${res.status})`)
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/follow-ups/${id}`, { method: "DELETE" })
+      if (!parsed.ok) {
+        throw new Error(responseErrorMessage(parsed, `Failed (${res.status})`))
       }
       onChanged()
     } catch (e) {

@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { FOLLOW_UP_STATUS, INQUIRY_STATUS } from "@/lib/sales/status-meta"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { ListToolbar, Loading, Pager, SelectFilter } from "./toolbar"
 import { EmptyNote, ErrorNote, StatusPill, btnGhost } from "./ui"
 
@@ -64,13 +65,13 @@ export function FollowUpBoard() {
       if (searchParam) qs.set("search", searchParam)
       if (status) qs.set("status", status)
       if (due) qs.set("due", due)
-      const res = await fetch(`/api/admin/follow-ups?${qs}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load follow-ups (${res.status})`)
-      const data = await res.json()
-      setRows(data.items ?? [])
-      setTotal(data.pagination?.total ?? 0)
-      setTotalPages(data.pagination?.totalPages ?? 1)
-      setOverdue(data.overdueCount ?? 0)
+      const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/follow-ups?${qs}`, { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed to load follow-ups (${res.status})`))
+      const payload = (data || {}) as any
+      setRows(payload.items ?? [])
+      setTotal(payload.pagination?.total ?? 0)
+      setTotalPages(payload.pagination?.totalPages ?? 1)
+      setOverdue(payload.overdueCount ?? 0)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load follow-ups")
     } finally {
@@ -96,13 +97,12 @@ export function FollowUpBoard() {
   const patch = async (id: string, body: Record<string, unknown>, message: string) => {
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/follow-ups/${id}`, {
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/follow-ups/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Failed (${res.status})`)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed (${res.status})`))
       toast.success(message)
       load()
       router.refresh()

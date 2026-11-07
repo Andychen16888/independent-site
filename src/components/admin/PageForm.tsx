@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import TranslationsEditor, { type TranslationFields } from "@/components/admin/TranslationsEditor"
@@ -104,12 +105,12 @@ export default function PageForm({
 
   useEffect(() => {
     if (mode !== "edit" || !pageId || initialData) return
-    fetch(`/api/admin/pages/${pageId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/pages/${pageId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load page", "加载页面失败"))
-        const data = await res.json()
-        const p = data.page
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load page", "加载页面失败")))
+        const payload = (data || {}) as any
+        const p = payload.page
         setResolvedId(p.id)
         setForm({
           title: p.title, slug: p.slug, excerpt: p.excerpt || "", content: p.content || "",
@@ -146,34 +147,37 @@ export default function PageForm({
     setError("")
     try {
       const url = mode === "edit" ? `/api/admin/pages/${resolvedId}` : "/api/admin/pages"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          coverImage: form.coverImage || null,
-          translations,
-          autoTranslate,
-          overwriteTranslations,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save page", "保存页面失败"))
+      const { data } = await fetchJsonOrThrow<any>(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...form,
+            coverImage: form.coverImage || null,
+            translations,
+            autoTranslate,
+            overwriteTranslations,
+          }),
+        },
+        bi("Failed to save page", "保存页面失败")
+      )
+      const payload = (data || {}) as any
 
-      if (Array.isArray(data.translations)) {
-        setTranslations(toTranslationFields(data.translations))
+      if (Array.isArray(payload.translations)) {
+        setTranslations(toTranslationFields(payload.translations))
       }
 
-      const t = data.translation
+      const t = payload.translation
       const translated = t?.translated?.length || 0
       const failedList: { locale: string; error: string }[] = t?.failed || []
       const failed = failedList.length
       const hint = failedList[0]?.error ? ` (${failedList[0].error})` : ""
 
-      if (data.translationError) {
+      if (payload.translationError) {
         toast.error(bi(
-          `Saved, but auto-translation failed: ${data.translationError}`,
-          `已保存，但自动翻译失败：${data.translationError}`
+          `Saved, but auto-translation failed: ${payload.translationError}`,
+          `已保存，但自动翻译失败：${payload.translationError}`
         ))
       } else if (failed > 0) {
         if (translated > 0) {

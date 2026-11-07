@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/Button"
 import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface CouponInputProps {
   subtotal: number
@@ -29,19 +30,23 @@ export function CouponInput({ subtotal, onApplyDiscount }: CouponInputProps) {
 
     setApplying(true)
     try {
-      const res = await fetch("/api/coupons/validate", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: code.trim(), subtotal }),
       })
 
-      const data = await res.json()
-      if (data.valid) {
-        setApplied(data.coupon)
-        onApplyDiscount(data.coupon.discount)
-        toast.success(t("applied", { amount: formatPrice(data.coupon.discount, undefined, locale) }))
+      const payload = (data || {}) as any
+      if (!parsed.ok) {
+        toast.error(responseErrorMessage(parsed, t("failed")))
+        return
+      }
+      if (payload.valid) {
+        setApplied(payload.coupon)
+        onApplyDiscount(payload.coupon.discount)
+        toast.success(t("applied", { amount: formatPrice(payload.coupon.discount, undefined, locale) }))
       } else {
-        toast.error(data.error || t("invalid"))
+        toast.error(payload.error || t("invalid"))
       }
     } catch {
       toast.error(t("failed"))

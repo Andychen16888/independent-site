@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { formatPrice, formatDate } from "@/lib/utils/format"
 import { Badge } from "@/components/ui/Badge"
+import { fetchJsonResponse } from "@/lib/json-response"
 
 const statusColors: Record<string, "default" | "sale" | "new" | "best"> = {
   PENDING: "default",
@@ -23,10 +24,10 @@ export function OrdersList() {
   const locale = useLocale()
 
   useEffect(() => {
-    fetch("/api/orders")
-      .then((r) => {
-        if (!r.ok) throw new Error(`Request failed: ${r.status}`)
-        return r.json()
+    fetchJsonResponse<any>("/api/orders")
+      .then(({ res, parsed, data }) => {
+        if (!parsed.ok) throw new Error(`Request failed: ${res.status}`)
+        return data
       })
       .then((data) => setOrders(Array.isArray(data) ? data : []))
       .catch((err) => {

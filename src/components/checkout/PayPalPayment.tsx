@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl"
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import { toast } from "react-hot-toast"
 import { HiOutlineLockClosed } from "react-icons/hi2"
+import { fetchJsonOrThrow } from "@/lib/json-response"
 
 interface PayPalPaymentProps {
   amount: number
@@ -49,14 +50,16 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
           }}
           createOrder={async () => {
             try {
-              const res = await fetch("/api/paypal/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount, currency }),
-              })
-              const data = await res.json()
-              if (!res.ok) throw new Error(data.error || t("paypalInitFailed"))
-              return data.id
+              const { data } = await fetchJsonOrThrow<any>(
+                "/api/paypal/create-order",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ amount, currency }),
+                },
+                t("paypalInitFailed")
+              )
+              return data?.id
             } catch (error: any) {
               toast.error(error.message || t("paypalInitFailed"))
               throw error
@@ -64,13 +67,15 @@ export function PayPalPayment({ amount, currency = "USD", onSuccess, onError }: 
           }}
           onApprove={async (data) => {
             try {
-              const res = await fetch("/api/paypal/capture-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderId: data.orderID }),
-              })
-              const capture = await res.json()
-              if (!res.ok) throw new Error(capture.error || t("paypalCaptureFailed"))
+              const { data: capture } = await fetchJsonOrThrow<any>(
+                "/api/paypal/capture-order",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderId: data.orderID }),
+                },
+                t("paypalCaptureFailed")
+              )
 
               if (capture.status === "COMPLETED") {
                 onSuccess(data.orderID, capture.captureId)

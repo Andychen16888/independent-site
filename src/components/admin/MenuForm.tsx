@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import LinkSelect from "@/components/admin/LinkSelect"
 
 interface MenuOption { id: string; label: string; parentId: string | null }
@@ -18,20 +19,23 @@ export default function MenuForm({ mode, menuId }: { mode: "new" | "edit"; menuI
   const [form, setForm] = useState({ label: "", url: "/", parentId: "", sortOrder: "0", isActive: true })
 
   useEffect(() => {
-    fetch("/api/admin/menus", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => setMenus((data.menus || []).filter((m: any) => m.id !== menuId)))
+    fetchJsonResponse<any>("/api/admin/menus", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) return
+        const payload = (data || {}) as any
+        setMenus((payload.menus || []).filter((m: any) => m.id !== menuId))
+      })
       .catch(() => {})
   }, [menuId])
 
   useEffect(() => {
     if (mode !== "edit" || !menuId) return
-    fetch(`/api/admin/menus/${menuId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/menus/${menuId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load menu", "加载菜单失败"))
-        const data = await res.json()
-        const m = data.menu
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load menu", "加载菜单失败")))
+        const payload = (data || {}) as any
+        const m = payload.menu
         setForm({
           label: m.label, url: m.url, parentId: m.parentId || "",
           sortOrder: String(m.sortOrder ?? 0), isActive: m.isActive !== false,
@@ -49,13 +53,15 @@ export default function MenuForm({ mode, menuId }: { mode: "new" | "edit"; menuI
     setError("")
     try {
       const url = mode === "edit" ? `/api/admin/menus/${menuId}` : "/api/admin/menus"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, parentId: form.parentId || null, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0 }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save menu item", "保存菜单项失败"))
+      await fetchJsonOrThrow(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, parentId: form.parentId || null, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0 }),
+        },
+        bi("Failed to save menu item", "保存菜单项失败")
+      )
       toast.success(mode === "edit" ? bi("Menu item updated", "菜单项已更新") : bi("Menu item created", "菜单项已创建"))
       router.push("/admin/menus")
       router.refresh()

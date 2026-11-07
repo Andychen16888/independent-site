@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { signIn } from "next-auth/react"
 import { Container } from "@/components/ui/Container"
 import { Button } from "@/components/ui/Button"
+import { fetchJsonOrThrow } from "@/lib/json-response"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -26,16 +27,15 @@ export default function RegisterPage() {
     setError("")
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || t("registrationFailed"))
-      }
+      await fetchJsonOrThrow(
+        "/api/auth/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+        t("registrationFailed")
+      )
 
       await signIn("credentials", {
         email: formData.email,

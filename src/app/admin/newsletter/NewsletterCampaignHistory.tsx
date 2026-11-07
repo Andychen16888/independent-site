@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 type CampaignRow = {
   id: string
@@ -64,10 +65,10 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/newsletter/campaigns", { cache: "no-store" })
-      if (!res.ok) return
-      const data = await res.json()
-      setRows(data.campaigns ?? [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/newsletter/campaigns", { cache: "no-store" })
+      if (!parsed.ok) return
+      const payload = (data || {}) as any
+      setRows(payload.campaigns ?? [])
       setLoaded(true)
     } catch {
       // Non-fatal.
@@ -98,10 +99,10 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
     setExpanded(id)
     setFailed([])
     try {
-      const res = await fetch(`/api/admin/newsletter/campaigns/${id}`, { cache: "no-store" })
-      if (!res.ok) return
-      const data = await res.json()
-      setFailed(data.failed ?? [])
+      const { parsed, data } = await fetchJsonResponse<any>(`/api/admin/newsletter/campaigns/${id}`, { cache: "no-store" })
+      if (!parsed.ok) return
+      const payload = (data || {}) as any
+      setFailed(payload.failed ?? [])
     } catch {
       // Non-fatal.
     }
@@ -110,11 +111,10 @@ export function NewsletterCampaignHistory({ refreshKey }: { refreshKey?: number 
   async function act(id: string, action: "stop" | "resume") {
     setBusyId(id)
     try {
-      const res = await fetch(`/api/admin/newsletter/campaigns/${id}/${action}`, {
+      const { parsed } = await fetchJsonResponse(`/api/admin/newsletter/campaigns/${id}/${action}`, {
         method: "POST",
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || bi("Request failed", "请求失败"))
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Request failed", "请求失败")))
       toast.success(
         action === "stop"
           ? bi("Stopping after the current message", "将在当前这封发送完毕后停止")

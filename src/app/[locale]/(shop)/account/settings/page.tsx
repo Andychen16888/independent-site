@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/Container"
 import { AccountSidebar } from "@/components/account/AccountSidebar"
 import { Button } from "@/components/ui/Button"
 import { toast } from "react-hot-toast"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function AccountSettingsPage() {
   const { data: session } = useSession()
@@ -38,15 +39,15 @@ export default function AccountSettingsPage() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const res = await fetch("/api/account/profile", {
+      const { parsed } = await fetchJsonResponse("/api/account/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       })
-      if (res.ok) {
+      if (parsed.ok) {
         toast.success(t("profileUpdated"))
       } else {
-        toast.error(t("updateFailed"))
+        toast.error(responseErrorMessage(parsed, t("updateFailed")))
       }
     } catch {
       toast.error(ta("somethingWentWrong"))
@@ -63,7 +64,7 @@ export default function AccountSettingsPage() {
     }
     setIsLoading(true)
     try {
-      const res = await fetch("/api/account/password", {
+      const { parsed } = await fetchJsonResponse("/api/account/password", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -71,12 +72,11 @@ export default function AccountSettingsPage() {
           newPassword: passwordData.newPassword,
         }),
       })
-      if (res.ok) {
+      if (parsed.ok) {
         toast.success(t("passwordUpdated"))
         setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
       } else {
-        const data = await res.json()
-        toast.error(data.error || t("updateFailed"))
+        toast.error(responseErrorMessage(parsed, t("updateFailed")))
       }
     } catch {
       toast.error(ta("somethingWentWrong"))

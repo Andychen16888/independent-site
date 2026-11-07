@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface Coupon {
   id: string
@@ -44,14 +45,14 @@ export default function EditCouponPage() {
   useEffect(() => {
     async function loadCoupon() {
       try {
-        const res = await fetch(`/api/admin/coupons/${id}`)
+        const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/coupons/${id}`)
         if (res.status === 404) {
           setNotFound(true)
           return
         }
-        if (!res.ok) throw new Error(bi("Failed to load coupon", "加载优惠券失败"))
-        const data = await res.json()
-        const c: Coupon = data.coupon
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load coupon", "加载优惠券失败")))
+        const payload = (data || {}) as any
+        const c: Coupon = payload.coupon
         setForm({
           code: c.code,
           type: c.type,
@@ -86,16 +87,15 @@ export default function EditCouponPage() {
     setError("")
 
     try {
-      const res = await fetch(`/api/admin/coupons/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || bi("Failed to update coupon", "更新优惠券失败"))
-      }
+      await fetchJsonOrThrow(
+        `/api/admin/coupons/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
+        bi("Failed to update coupon", "更新优惠券失败")
+      )
 
       router.push("/admin/coupons")
       router.refresh()

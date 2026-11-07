@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
-import { readJsonResponse, responseErrorMessage } from "@/lib/json-response"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/tiff"]
 const MAX_SIZE = 5 * 1024 * 1024
@@ -77,18 +77,18 @@ export default function ImageUploader({
     try {
       const formData = new FormData()
       formData.append("file", file)
-      const res = await fetch("/api/admin/upload", {
+      const { parsed } = await fetchJsonResponse<{ url?: unknown }>("/api/admin/upload", {
         method: "POST",
         body: formData,
       })
-      const parsed = await readJsonResponse(res)
       if (!parsed.ok) {
         throw new Error(responseErrorMessage(parsed, bi("Upload failed", "上传失败")))
       }
-      if (!parsed.data || typeof parsed.data.url !== "string") {
+      const payload = parsed.data as { url?: unknown } | null
+      if (!payload || typeof payload.url !== "string") {
         throw new Error(bi("Upload failed", "上传失败"))
       }
-      const url = parsed.data.url
+      const url = payload.url
       onChange(url)
       loadInfo(url)
       toast.success(bi("Image uploaded", "图片上传成功"))

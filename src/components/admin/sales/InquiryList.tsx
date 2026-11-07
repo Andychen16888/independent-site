@@ -11,6 +11,7 @@ import {
   formatMoney,
   formatQuantity,
 } from "@/lib/sales/status-meta"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { ListToolbar, Loading, Pager, SelectFilter } from "./toolbar"
 import { EmptyNote, ErrorNote, Ref, StatusPill } from "./ui"
 
@@ -70,13 +71,13 @@ export function InquiryList({ lockedStatus }: { lockedStatus?: string }) {
       const qs = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) })
       if (searchParam) qs.set("search", searchParam)
       if (status) qs.set("status", status)
-      const res = await fetch(`/api/admin/inquiries?${qs}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load enquiries (${res.status})`)
-      const data = await res.json()
-      setRows(data.items ?? [])
-      setTotal(data.pagination?.total ?? 0)
-      setTotalPages(data.pagination?.totalPages ?? 1)
-      setStatusCounts(data.statusCounts ?? {})
+      const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/inquiries?${qs}`, { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed to load enquiries (${res.status})`))
+      const payload = (data || {}) as any
+      setRows(payload.items ?? [])
+      setTotal(payload.pagination?.total ?? 0)
+      setTotalPages(payload.pagination?.totalPages ?? 1)
+      setStatusCounts(payload.statusCounts ?? {})
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load enquiries")
     } finally {

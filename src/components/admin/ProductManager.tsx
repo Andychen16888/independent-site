@@ -5,6 +5,7 @@ import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { formatPrice } from "@/lib/utils/format"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface ProductRow {
   id: string
@@ -58,12 +59,12 @@ export default function ProductManager() {
       if (featured === "featured") params.set("isFeatured", "true")
       if (featured === "home") params.set("isHomeFeatured", "true")
       if (includeDeleted) params.set("includeDeleted", "true")
-      const res = await fetch(`/api/admin/products?${params}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load products", "加载产品失败"))
-      const data = await res.json()
-      setRows(data.products || [])
-      setTotal(data.pagination?.total ?? 0)
-      setSelected((prev) => prev.filter((id) => data.products?.some((p: ProductRow) => p.id === id)))
+      const { parsed, data } = await fetchJsonResponse<any>(`/api/admin/products?${params}`, { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load products", "加载产品失败")))
+      const payload = (data || {}) as any
+      setRows(payload.products || [])
+      setTotal(payload.pagination?.total ?? 0)
+      setSelected((prev) => prev.filter((id) => payload.products?.some((p: ProductRow) => p.id === id)))
     } catch (e: any) {
       setError(e.message)
     } finally {
@@ -76,9 +77,12 @@ export default function ProductManager() {
   }, [load])
 
   useEffect(() => {
-    fetch("/api/admin/categories", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => setCategories(d.categories || []))
+    fetchJsonResponse<any>("/api/admin/categories", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) return
+        const payload = (data || {}) as any
+        setCategories(payload.categories || [])
+      })
       .catch(() => {})
   }, [])
 
@@ -133,19 +137,19 @@ export default function ProductManager() {
     setBusy(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/products/batch", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/products/batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: selected, action: "translate" }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Batch translation failed", "批量翻译失败"))
+      const payload = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Batch translation failed", "批量翻译失败")))
       setSelected([])
       toast.success(bi(
-        `Translated ${data.translatedCount} missing language(s) across ${data.count} product(s).`,
-        `已为 ${data.count} 个产品翻译 ${data.translatedCount} 种缺失语言。`
+        `Translated ${payload.translatedCount} missing language(s) across ${payload.count} product(s).`,
+        `已为 ${payload.count} 个产品翻译 ${payload.translatedCount} 种缺失语言。`
       ))
-      if (data.failedCount > 0) toast.error(bi(`${data.failedCount} product(s) had failures.`, `${data.failedCount} 个产品翻译出错。`))
+      if (payload.failedCount > 0) toast.error(bi(`${payload.failedCount} product(s) had failures.`, `${payload.failedCount} 个产品翻译出错。`))
       load()
     } catch (e: any) {
       setError(e.message)

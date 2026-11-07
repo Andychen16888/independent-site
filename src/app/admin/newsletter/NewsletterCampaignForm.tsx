@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 const INPUT_CLS =
   "w-full border border-mist px-4 py-3 text-sm bg-white focus:border-charcoal focus:outline-none"
@@ -78,11 +79,11 @@ export function NewsletterCampaignForm({
       if (inFlight.current) return
       inFlight.current = true
       try {
-        const res = await fetch(`/api/admin/newsletter/campaigns/${id}`, { cache: "no-store" })
-        if (!res.ok) return
-        const data = await res.json()
-        setCampaign(data.campaign as Campaign)
-        setFailed((data.failed as FailedRow[]) ?? [])
+        const { parsed, data } = await fetchJsonResponse<any>(`/api/admin/newsletter/campaigns/${id}`, { cache: "no-store" })
+        if (!parsed.ok) return
+        const payload = (data || {}) as any
+        setCampaign(payload.campaign as Campaign)
+        setFailed((payload.failed as FailedRow[]) ?? [])
       } catch {
         // Transient network hiccup; the next tick picks it up.
       } finally {
@@ -117,14 +118,14 @@ export function NewsletterCampaignForm({
   }
 
   async function post(payload: Record<string, unknown>, url = "/api/admin/newsletter/send") {
-    const res = await fetch(url, {
+    const { parsed, data } = await fetchJsonResponse<any>(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ subject: subject.trim(), body: body.trim(), ...payload }),
     })
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || bi("Request failed", "请求失败"))
-    return data
+    const body = (data || {}) as any
+    if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Request failed", "请求失败")))
+    return body
   }
 
   async function sendTest() {

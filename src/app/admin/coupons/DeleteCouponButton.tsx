@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function DeleteCouponButton({ couponId, couponCode }: { couponId: string; couponCode: string }) {
   const router = useRouter()
@@ -10,10 +11,9 @@ export default function DeleteCouponButton({ couponId, couponCode }: { couponId:
     if (!confirm(`${bi("Are you sure you want to delete coupon", "确认要删除优惠券") } "${couponCode}"? ${bi("This cannot be undone.", "此操作不可撤销。")}`)) return
 
     try {
-      const res = await fetch(`/api/admin/coupons/${couponId}`, { method: "DELETE" })
-      if (!res.ok) {
-        const data = await res.json()
-        alert(data.error || bi("Failed to delete coupon", "删除优惠券失败"))
+      const { parsed } = await fetchJsonResponse(`/api/admin/coupons/${couponId}`, { method: "DELETE" })
+      if (!parsed.ok) {
+        alert(responseErrorMessage(parsed, bi("Failed to delete coupon", "删除优惠券失败")))
         return
       }
       router.refresh()

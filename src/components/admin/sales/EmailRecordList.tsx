@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
 import { EMAIL_STATUS } from "@/lib/sales/status-meta"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { ListToolbar, Loading, Pager, SelectFilter } from "./toolbar"
 import { EmptyNote, ErrorNote, Ref, StatusPill } from "./ui"
 
@@ -69,13 +70,13 @@ export function EmailRecordList() {
       if (status) qs.set("status", status)
       if (direction) qs.set("direction", direction)
       if (purpose) qs.set("purpose", purpose)
-      const res = await fetch(`/api/admin/emails?${qs}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load email records (${res.status})`)
-      const data = await res.json()
-      setRows(data.items ?? [])
-      setTotal(data.pagination?.total ?? 0)
-      setTotalPages(data.pagination?.totalPages ?? 1)
-      setStatusCounts(data.statusCounts ?? {})
+      const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/emails?${qs}`, { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed to load email records (${res.status})`))
+      const payload = (data || {}) as any
+      setRows(payload.items ?? [])
+      setTotal(payload.pagination?.total ?? 0)
+      setTotalPages(payload.pagination?.totalPages ?? 1)
+      setStatusCounts(payload.statusCounts ?? {})
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load email records")
     } finally {

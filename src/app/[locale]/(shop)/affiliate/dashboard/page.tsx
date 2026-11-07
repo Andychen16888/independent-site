@@ -8,6 +8,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { Button } from "@/components/ui/Button"
 import { formatPrice, formatDate } from "@/lib/utils/format"
 import { HiOutlineShare, HiOutlineCurrencyDollar, HiOutlineUserGroup, HiOutlineChartBar } from "react-icons/hi2"
+import { fetchJsonResponse } from "@/lib/json-response"
 
 export default function AffiliateDashboardPage() {
   const [stats, setStats] = useState<any>(null)
@@ -19,9 +20,11 @@ export default function AffiliateDashboardPage() {
   const locale = useLocale()
 
   useEffect(() => {
-    fetch("/api/affiliate/stats")
-      .then((r) => r.json())
-      .then(setStats)
+    fetchJsonResponse("/api/affiliate/stats")
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) return
+        setStats(data)
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -18,17 +19,16 @@ export default function ForgotPasswordPage() {
     setError("")
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const { parsed } = await fetchJsonResponse("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       })
 
-      const data = await res.json()
-      if (res.ok) {
+      if (parsed.ok) {
         setSent(true)
       } else {
-        setError(data.error || t("somethingWentWrong"))
+        setError(responseErrorMessage(parsed, t("somethingWentWrong")))
       }
     } catch {
       setError(t("somethingWentWrong"))

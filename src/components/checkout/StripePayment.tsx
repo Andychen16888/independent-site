@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button"
 import { getStripePublishableKey } from "@/lib/stripe/stripe"
 import { formatPrice } from "@/lib/utils/format"
 import { toast } from "react-hot-toast"
+import { fetchJsonOrThrow } from "@/lib/json-response"
 
 interface StripePaymentProps {
   amount: number
@@ -74,12 +75,16 @@ export function StripePayment(props: StripePaymentProps) {
   useEffect(() => {
     if (!stripePromise) return
 
-    fetch("/api/checkout/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: props.amount, currency: "usd" }),
-    })
-      .then((res) => res.json())
+    fetchJsonOrThrow<any>(
+      "/api/checkout/create-payment-intent",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: props.amount, currency: "usd" }),
+      },
+      t("initFailed")
+    )
+      .then(({ data }) => (data || {}) as any)
       .then((data) => {
         if (data.clientSecret) setClientSecret(data.clientSecret)
       })

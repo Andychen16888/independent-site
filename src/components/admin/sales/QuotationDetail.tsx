@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import {
   EMAIL_STATUS,
   QUOTATION_STATUS,
@@ -65,9 +66,9 @@ export function QuotationDetailView({ id }: { id: string }) {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch(`/api/admin/quotations/${id}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load quotation (${res.status})`)
-      setData((await res.json()) as QuotationDetail)
+      const { res, parsed, data } = await fetchJsonResponse<QuotationDetail>(`/api/admin/quotations/${id}`, { cache: "no-store" })
+      if (!parsed.ok || !data) throw new Error(responseErrorMessage(parsed, `Failed to load quotation (${res.status})`))
+      setData(data as unknown as QuotationDetail)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load quotation")
     } finally {
@@ -82,13 +83,12 @@ export function QuotationDetailView({ id }: { id: string }) {
   const setStatus = async (status: string) => {
     setBusy(true)
     try {
-      const res = await fetch(`/api/admin/quotations/${id}`, {
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/quotations/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Failed (${res.status})`)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed (${res.status})`))
       toast.success(bi("Status updated", "状态已更新"))
       await load()
       router.refresh()

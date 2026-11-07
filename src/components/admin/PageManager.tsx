@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface PageRow {
   id: string
@@ -23,10 +24,10 @@ export default function PageManager() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/pages", { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load pages", "加载页面失败"))
-      const data = await res.json()
-      setRows(data.pages || [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/pages", { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load pages", "加载页面失败")))
+      const payload = (data || {}) as any
+      setRows(payload.pages || [])
     } catch (e: any) {
       setError(e.message)
     } finally {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface MenuRow {
   id: string
@@ -24,10 +25,10 @@ export default function MenuManager() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/menus", { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load menus", "加载菜单失败"))
-      const data = await res.json()
-      setRows(data.menus || [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/menus", { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load menus", "加载菜单失败")))
+      const payload = (data || {}) as any
+      setRows(payload.menus || [])
     } catch (e: any) {
       setError(e.message)
     } finally {
@@ -62,10 +63,10 @@ export default function MenuManager() {
           <button
             onClick={async () => {
               if (!confirm(`${bi("Delete menu item", "删除菜单项")} "${m.label}"?`)) return
-              const res = await fetch(`/api/admin/menus/${m.id}`, { method: "DELETE" })
-              const data = await res.json()
-              if (!res.ok) {
-                toast.error(data.error || bi("Delete failed", "删除失败"))
+              const { parsed, data } = await fetchJsonResponse<any>(`/api/admin/menus/${m.id}`, { method: "DELETE" })
+              const payload = (data || {}) as any
+              if (!parsed.ok) {
+                toast.error(payload.error || bi("Delete failed", "删除失败"))
                 return
               }
               toast.success(bi("Item deleted", "菜单项已删除"))

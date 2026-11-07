@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast"
 import { SETTING_KEYS, SETTING_GROUP_ORDER, type SettingGroup } from "@/lib/settings/keys"
 import ImageUploader from "@/components/admin/ImageUploader"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import StructuredContentEditor, {
   type StructuredSchema,
 } from "@/components/admin/StructuredContentEditor"
@@ -102,12 +103,13 @@ export default function SettingsForm({ groups }: { groups?: SettingGroup[] }) {
   const activeGroups = groups && groups.length > 0 ? groups : SETTING_GROUP_ORDER
 
   useEffect(() => {
-    fetch("/api/admin/settings", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.settings) setSettings(data.settings)
+    fetchJsonResponse<any>("/api/admin/settings", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load settings", "加载设置失败")))
+        const payload = (data || {}) as any
+        if (payload.settings) setSettings(payload.settings)
       })
-      .catch(() => toast.error(bi("Failed to load settings", "加载设置失败")))
+      .catch((e: any) => toast.error(e?.message || bi("Failed to load settings", "加载设置失败")))
       .finally(() => setLoading(false))
   }, [])
 
@@ -119,14 +121,17 @@ export default function SettingsForm({ groups }: { groups?: SettingGroup[] }) {
     e.preventDefault()
     setSaving(true)
     try {
-      const res = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settings }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Save failed", "保存失败"))
-      if (data.settings) setSettings(data.settings)
+      const { data } = await fetchJsonOrThrow<any>(
+        "/api/admin/settings",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ settings }),
+        },
+        bi("Save failed", "保存失败")
+      )
+      const payload = (data || {}) as any
+      if (payload.settings) setSettings(payload.settings)
       toast.success(bi("Settings saved", "设置已保存"))
     } catch (e) {
       toast.error(e instanceof Error ? e.message : bi("Save failed", "保存失败"))

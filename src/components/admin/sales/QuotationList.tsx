@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
 import { QUOTATION_STATUS, formatMoney } from "@/lib/sales/status-meta"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import { ListToolbar, Loading, Pager, SelectFilter } from "./toolbar"
 import { EmptyNote, ErrorNote, Ref, StatusPill } from "./ui"
 
@@ -50,13 +51,13 @@ export function QuotationList() {
       const qs = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) })
       if (searchParam) qs.set("search", searchParam)
       if (status) qs.set("status", status)
-      const res = await fetch(`/api/admin/quotations?${qs}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load quotations (${res.status})`)
-      const data = await res.json()
-      setRows(data.items ?? [])
-      setTotal(data.pagination?.total ?? 0)
-      setTotalPages(data.pagination?.totalPages ?? 1)
-      setStatusCounts(data.statusCounts ?? {})
+      const { res, parsed, data } = await fetchJsonResponse<any>(`/api/admin/quotations?${qs}`, { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Failed to load quotations (${res.status})`))
+      const payload = (data || {}) as any
+      setRows(payload.items ?? [])
+      setTotal(payload.pagination?.total ?? 0)
+      setTotalPages(payload.pagination?.totalPages ?? 1)
+      setStatusCounts(payload.statusCounts ?? {})
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load quotations")
     } finally {

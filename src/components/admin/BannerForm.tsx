@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast"
 import ImageUploader from "@/components/admin/ImageUploader"
 import BannerTranslationsEditor, { type BannerTranslationFields } from "@/components/admin/BannerTranslationsEditor"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 function translationsFromData(list: any[]): BannerTranslationFields[] {
   return (list || []).map((t) => ({
@@ -33,12 +34,12 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
 
   useEffect(() => {
     if (mode !== "edit" || !bannerId) return
-    fetch(`/api/admin/banners/${bannerId}`, { cache: "no-store" })
-      .then(async (res) => {
+    fetchJsonResponse<any>(`/api/admin/banners/${bannerId}`, { cache: "no-store" })
+      .then(({ res, parsed, data }) => {
         if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load banner", "加载横幅失败"))
-        const data = await res.json()
-        const b = data.banner
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load banner", "加载横幅失败")))
+        const payload = (data || {}) as any
+        const b = payload.banner
         setForm({
           title: b.title, subtitle: b.subtitle || "", eyebrow: b.eyebrow || "",
           description: b.description || "", ctaText: b.ctaText || "",
@@ -59,13 +60,15 @@ export default function BannerForm({ mode, bannerId }: { mode: "new" | "edit"; b
     setError("")
     try {
       const url = mode === "edit" ? `/api/admin/banners/${bannerId}` : "/api/admin/banners"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0, translations }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save banner", "保存横幅失败"))
+      await fetchJsonOrThrow(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, sortOrder: form.sortOrder !== "" ? form.sortOrder : 0, translations }),
+        },
+        bi("Failed to save banner", "保存横幅失败")
+      )
       toast.success(mode === "edit" ? bi("Banner updated", "横幅已更新") : bi("Banner created", "横幅已创建"))
       router.push("/admin/banners")
       router.refresh()

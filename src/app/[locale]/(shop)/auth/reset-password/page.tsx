@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { Container } from "@/components/ui/Container"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams()
@@ -41,17 +42,16 @@ export default function ResetPasswordPage() {
     setIsLoading(true)
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const { parsed } = await fetchJsonResponse("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, email, password }),
       })
 
-      const data = await res.json()
-      if (res.ok) {
+      if (parsed.ok) {
         setSuccess(true)
       } else {
-        setError(data.error || t("somethingWentWrong"))
+        setError(responseErrorMessage(parsed, t("somethingWentWrong")))
       }
     } catch {
       setError(t("somethingWentWrong"))

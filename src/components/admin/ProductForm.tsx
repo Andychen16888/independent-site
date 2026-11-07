@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
 import { slugify } from "@/lib/utils/format"
+import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import RichEditor from "@/components/admin/RichEditor"
 import ImageUploader from "@/components/admin/ImageUploader"
 import ProductTranslationsEditor, { type ProductTranslationFields } from "@/components/admin/ProductTranslationsEditor"
@@ -242,9 +243,11 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
   })
 
   useEffect(() => {
-    fetch("/api/admin/categories", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => setCategories(data.categories || []))
+    fetchJsonResponse<any>("/api/admin/categories", { cache: "no-store" })
+      .then(({ parsed, data }) => {
+        if (!parsed.ok || !data) return
+        setCategories(data.categories || [])
+      })
       .catch(() => {})
   }, [])
 
@@ -253,11 +256,12 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 15000)
 
-    fetch(`/api/admin/products/${productId}`, { cache: "no-store", signal: controller.signal })
+    fetchJsonResponse<any>(`/api/admin/products/${productId}`, { cache: "no-store", signal: controller.signal })
       .then(async (res) => {
-        if (res.status === 404) { setNotFound(true); return }
-        if (!res.ok) throw new Error(bi("Failed to load product", "加载产品失败"))
-        const data = await res.json()
+        if (res.res.status === 404) { setNotFound(true); return }
+        const parsed = res.parsed
+        if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load product", "加载产品失败")))
+        const data = (res.data || {}) as any
         const p = data.product
         const loadedForm: ProductFormData = {
           name: p.name, slug: p.slug, sku: p.sku, brand: p.brand || "", model: p.model || "",
@@ -419,15 +423,15 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         setAutosaveStatus("saving")
         setAutosaveError("")
         try {
-          const res = await fetch(`/api/admin/products/${productId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(outgoing),
-          })
-          if (!res.ok) {
-            const data = await res.json().catch(() => ({}))
-            throw new Error(data.error || bi("Autosave failed", "自动保存失败"))
-          }
+          await fetchJsonOrThrow(
+            `/api/admin/products/${productId}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(outgoing),
+            },
+            bi("Autosave failed", "自动保存失败")
+          )
           markSaved(payload)
           setAutosaveStatus("saved")
         } catch (err: any) {
@@ -527,16 +531,19 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     busyRef.current = true
     try {
       const url = mode === "edit" ? `/api/admin/products/${productId}` : "/api/admin/products"
-      const res = await fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to save product", "保存产品失败"))
+      const { data } = await fetchJsonOrThrow<any>(
+        url,
+        {
+          method: mode === "edit" ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+        bi("Failed to save product", "保存产品失败")
+      )
+      const result = (data || {}) as any
 
-      if (Array.isArray(data.translations)) {
-        setTranslations(translationsFromData(data.translations))
+      if (Array.isArray(result.translations)) {
+        setTranslations(translationsFromData(result.translations))
       }
 
       markSaved(buildProductPayload({
@@ -544,21 +551,21 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         images,
         parameters,
         categoryIds: selectedCategoryIds,
-        translations: Array.isArray(data.translations) ? translationsFromData(data.translations) : translations,
+        translations: Array.isArray(result.translations) ? translationsFromData(result.translations) : translations,
         autoTranslate,
         overwriteTranslations,
       }))
       setAutosaveStatus("saved")
       setAutosaveError("")
 
-      if (data.translationError) {
+      if (result.translationError) {
         toast.error(bi(
-          `Saved, but auto-translation failed: ${data.translationError}`,
-          `已保存，但自动翻译失败：${data.translationError}`
+          `Saved, but auto-translation failed: ${result.translationError}`,
+          `已保存，但自动翻译失败：${result.translationError}`
         ))
-      } else if (data.translation && data.translation.translated.length > 0) {
-        const count = data.translation.translated.length
-        const failed = data.translation.failed?.length || 0
+      } else if (result.translation && result.translation.translated.length > 0) {
+        const count = result.translation.translated.length
+        const failed = result.translation.failed?.length || 0
         toast.success(bi(
           `Saved. Auto-translated into ${count} language(s).`,
           `已保存，并自动翻译为 ${count} 种语言。`
@@ -568,11 +575,11 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
         toastSuccess(mode === "edit" ? bi("Product updated", "产品已更新") : bi("Product created", "产品已创建"))
       }
 
-      if (mode === "new" && data.product?.id) {
+      if (mode === "new" && result.product?.id) {
         // The product exists server-side now, so the local draft has done its job.
         window.localStorage.removeItem(NEW_PRODUCT_DRAFT_KEY)
         setRestoredDraft(false)
-        router.push(`/admin/products/${data.product.id}`)
+        router.push(`/admin/products/${result.product.id}`)
       }
       router.refresh()
     } catch (err: any) {
@@ -589,20 +596,23 @@ export default function ProductForm({ mode, productId }: { mode: "new" | "edit";
     setError("")
     busyRef.current = true
     try {
-      const res = await fetch(`/api/admin/products/${productId}/translate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ overwrite: overwriteTranslations }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Failed to translate", "翻译失败"))
+      const { data } = await fetchJsonOrThrow<any>(
+        `/api/admin/products/${productId}/translate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ overwrite: overwriteTranslations }),
+        },
+        bi("Failed to translate", "翻译失败")
+      )
+      const payload = (data || {}) as any
 
-      if (Array.isArray(data.translations)) {
-        setTranslations(translationsFromData(data.translations))
+      if (Array.isArray(payload.translations)) {
+        setTranslations(translationsFromData(payload.translations))
       }
 
-      const translated = data.translation?.translated?.length || 0
-      const failed = data.translation?.failed?.length || 0
+      const translated = payload.translation?.translated?.length || 0
+      const failed = payload.translation?.failed?.length || 0
       if (translated > 0) {
         toast.success(bi(`Translated into ${translated} language(s).`, `已翻译 ${translated} 种语言。`))
       } else if (failed === 0) {

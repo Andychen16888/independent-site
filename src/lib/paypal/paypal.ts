@@ -1,4 +1,5 @@
 import { getSiteSeo } from "@/lib/settings/settings"
+import { readJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET
@@ -27,7 +28,10 @@ export async function getPayPalAccessToken(): Promise<string> {
     body: "grant_type=client_credentials",
   })
 
-  const data = await res.json()
+  const parsed = await readJsonResponse(res)
+  if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `PayPal token request failed (HTTP ${res.status})`))
+  const data = (parsed.data || {}) as any
+  if (!data.access_token) throw new Error("PayPal token response missing access_token")
   return data.access_token
 }
 
@@ -54,8 +58,9 @@ export async function createPayPalOrder(amount: number, currency: string = "USD"
       ],
     }),
   })
-
-  return res.json()
+  const parsed = await readJsonResponse(res)
+  if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `PayPal create order failed (HTTP ${res.status})`))
+  return parsed.data || {}
 }
 
 export async function capturePayPalOrder(orderId: string) {
@@ -68,6 +73,7 @@ export async function capturePayPalOrder(orderId: string) {
       Authorization: `Bearer ${accessToken}`,
     },
   })
-
-  return res.json()
+  const parsed = await readJsonResponse(res)
+  if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `PayPal capture failed (HTTP ${res.status})`))
+  return parsed.data || {}
 }

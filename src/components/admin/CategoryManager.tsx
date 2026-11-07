@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 interface CategoryRow {
   id: string
@@ -27,10 +28,10 @@ export default function CategoryManager() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/admin/categories", { cache: "no-store" })
-      if (!res.ok) throw new Error(bi("Failed to load categories", "加载分类失败"))
-      const data = await res.json()
-      setRows(data.categories || [])
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/categories", { cache: "no-store" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Failed to load categories", "加载分类失败")))
+      const payload = (data || {}) as any
+      setRows(payload.categories || [])
     } catch (e: any) {
       setError(e.message)
     } finally {
@@ -75,12 +76,12 @@ export default function CategoryManager() {
             <button
               onClick={async () => {
                 if (!confirm(`Delete "${c.name}"?`)) return
-                const res = await fetch(`/api/admin/categories/${c.id}`, { method: "DELETE" })
-                const data = await res.json()
-                if (!res.ok) {
-                  if (data.code === "CATEGORY_HAS_PRODUCTS") toast.error(`${bi("Cannot delete:", "无法删除：")}${data.productCount} ${bi("product(s) still assigned.", "个产品仍在该分类下。")}`)
-                  else if (data.code === "CATEGORY_HAS_CHILDREN") toast.error(`${bi("Cannot delete:", "无法删除：")}${data.childCount} ${bi("child category(ies) still exist.", "个子分类仍存在。")}`)
-                  else toast.error(data.error || bi("Delete failed", "删除失败"))
+                const { parsed, data } = await fetchJsonResponse<any>(`/api/admin/categories/${c.id}`, { method: "DELETE" })
+                const payload = (data || {}) as any
+                if (!parsed.ok) {
+                  if (payload.code === "CATEGORY_HAS_PRODUCTS") toast.error(`${bi("Cannot delete:", "无法删除：")}${payload.productCount} ${bi("product(s) still assigned.", "个产品仍在该分类下。")}`)
+                  else if (payload.code === "CATEGORY_HAS_CHILDREN") toast.error(`${bi("Cannot delete:", "无法删除：")}${payload.childCount} ${bi("child category(ies) still exist.", "个子分类仍存在。")}`)
+                  else toast.error(payload.error || bi("Delete failed", "删除失败"))
                   return
                 }
                 toast.success(bi("Category deleted", "分类已删除"))

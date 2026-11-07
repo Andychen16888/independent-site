@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function DeleteNewsletterButton({ subscriberId, email }: { subscriberId: string; email: string }) {
   const router = useRouter()
@@ -10,10 +11,9 @@ export default function DeleteNewsletterButton({ subscriberId, email }: { subscr
     if (!confirm(`${bi("Remove subscriber", "移除订阅用户")} "${email}"?`)) return
 
     try {
-      const res = await fetch(`/api/admin/newsletter/${subscriberId}`, { method: "DELETE" })
-      if (!res.ok) {
-        const data = await res.json()
-        alert(data.error || bi("Failed to remove subscriber", "移除订阅用户失败"))
+      const { parsed } = await fetchJsonResponse(`/api/admin/newsletter/${subscriberId}`, { method: "DELETE" })
+      if (!parsed.ok) {
+        alert(responseErrorMessage(parsed, bi("Failed to remove subscriber", "移除订阅用户失败")))
         return
       }
       router.refresh()

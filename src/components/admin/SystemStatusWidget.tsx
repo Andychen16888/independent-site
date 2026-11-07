@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse } from "@/lib/json-response"
 
 type HealthStatus = "ok" | "warning" | "critical"
 
@@ -42,9 +43,9 @@ export function SystemStatusWidget() {
 
     async function load() {
       try {
-        const res = await fetch("/api/admin/monitoring", { cache: "no-store", signal: controller.signal })
-        if (!res.ok) throw new Error("unavailable")
-        const json = await res.json()
+        const { parsed, data } = await fetchJsonResponse<MetricsSummary>("/api/admin/monitoring", { cache: "no-store", signal: controller.signal })
+        if (!parsed.ok || !parsed.data) throw new Error("unavailable")
+        const json = data as MetricsSummary
         if (active) {
           setData(json)
           setError(false)

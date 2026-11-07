@@ -2,20 +2,20 @@
 
 import { useRouter } from "next/navigation"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export default function ApproveButton({ affiliateId }: { affiliateId: string }) {
   const router = useRouter()
 
   const handleApprove = async () => {
     try {
-      const res = await fetch(`/api/admin/affiliates/${affiliateId}`, {
+      const { parsed } = await fetchJsonResponse(`/api/admin/affiliates/${affiliateId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "APPROVED" }),
       })
-      if (!res.ok) {
-        const data = await res.json()
-        alert(data.error || bi("Failed to approve affiliate", "批准联盟成员失败"))
+      if (!parsed.ok) {
+        alert(responseErrorMessage(parsed, bi("Failed to approve affiliate", "批准联盟成员失败")))
         return
       }
       router.refresh()

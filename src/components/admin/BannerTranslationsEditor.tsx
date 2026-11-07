@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { localeNames } from "@/i18n/routing"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
 export interface BannerTranslationFields {
   locale: string
@@ -75,14 +76,14 @@ export default function BannerTranslationsEditor({ value, onChange, source }: Pr
     }
     setTranslating(true)
     try {
-      const res = await fetch("/api/admin/banners/translate", {
+      const { parsed, data } = await fetchJsonResponse<any>("/api/admin/banners/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...source, locales: targets }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || bi("Translation failed", "翻译失败"))
-      const rows: BannerTranslationFields[] = (data.translations || []).map((t: any) => ({
+      const payload = (data || {}) as any
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, bi("Translation failed", "翻译失败")))
+      const rows: BannerTranslationFields[] = (payload.translations || []).map((t: any) => ({
         locale: t.locale,
         title: t.title || "",
         eyebrow: t.eyebrow || "",
@@ -91,7 +92,7 @@ export default function BannerTranslationsEditor({ value, onChange, source }: Pr
         ctaText: t.ctaText || "",
       }))
       merge(rows)
-      const failed = data.failed?.length || 0
+      const failed = payload.failed?.length || 0
       if (rows.length > 0) toast.success(bi(`Translated ${rows.length} language(s).`, `已翻译 ${rows.length} 种语言。`))
       if (failed > 0) toast.error(bi(`${failed} language(s) failed.`, `${failed} 种语言翻译失败。`))
     } catch (err: any) {

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { bi } from "@/components/admin/bilingual"
+import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 import {
   INQUIRY_SOURCES,
   INQUIRY_STATUS,
@@ -138,9 +139,9 @@ export function InquiryDetailView({ id }: { id: string }) {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch(`/api/admin/inquiries/${id}`, { cache: "no-store" })
-      if (!res.ok) throw new Error(`Failed to load enquiry (${res.status})`)
-      const json = (await res.json()) as InquiryDetail
+      const { res, parsed, data } = await fetchJsonResponse<InquiryDetail>(`/api/admin/inquiries/${id}`, { cache: "no-store" })
+      if (!parsed.ok || !data) throw new Error(responseErrorMessage(parsed, `Failed to load enquiry (${res.status})`))
+      const json = data as unknown as InquiryDetail
       setData(json)
       setInternalNote(textValue(json.internalNote))
       setLostReason(textValue(json.lostReason))
@@ -161,13 +162,12 @@ export function InquiryDetailView({ id }: { id: string }) {
   const patch = async (body: Record<string, unknown>, message: string) => {
     setSaving(true)
     try {
-      const res = await fetch(`/api/admin/inquiries/${id}`, {
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/inquiries/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Update failed (${res.status})`)
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Update failed (${res.status})`))
       toast.success(message)
       await load()
       router.refresh()
@@ -192,9 +192,8 @@ export function InquiryDetailView({ id }: { id: string }) {
       return
     setSaving(true)
     try {
-      const res = await fetch(`/api/admin/inquiries/${id}`, { method: "DELETE" })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `Delete failed (${res.status})`)
+      const { res, parsed } = await fetchJsonResponse(`/api/admin/inquiries/${id}`, { method: "DELETE" })
+      if (!parsed.ok) throw new Error(responseErrorMessage(parsed, `Delete failed (${res.status})`))
       toast.success(bi("Enquiry deleted", "询盘已删除"))
       router.push("/admin/inquiries")
     } catch (e) {

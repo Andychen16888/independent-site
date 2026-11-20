@@ -14,23 +14,24 @@ import { industrialMineralsTranslations } from "./blog-industrial-minerals"
 import { copperAluminumTranslations } from "./blog-copper-aluminum"
 import { steelCementTranslations } from "./blog-steel-cement"
 import { tradeServiceTranslations } from "./blog-trade-service"
+import { filterSupportedLocales } from "./locales"
 
 export const blogTranslationsSeed: Record<string, Record<string, BlogTranslationSeed>> = {
-  "import-from-china-beginners-guide": importBeginnerTranslations,
-  "quality-control-101": qualityControlTranslations,
-  "air-freight-vs-sea-freight": freightTranslations,
-  "understanding-moq-negotiation": moqTranslations,
-  "why-led-lighting-transforming-wholesale": ledTranslations,
-  "customs-tariffs-importer-guide": customsTranslations,
-  "new-silk-road-commodities": newSilkRoadTranslations,
-  "carbon-black-sourcing-guide": carbonBlackTranslations,
-  "pvc-resin-buyers-guide": pvcTranslations,
-  "pp-pe-polymer-guide": ppPeTranslations,
-  "titanium-dioxide-buyers-guide": titaniumDioxideTranslations,
-  "industrial-minerals-guide": industrialMineralsTranslations,
-  "copper-aluminum-metals-guide": copperAluminumTranslations,
-  "steel-cement-clinker-infrastructure": steelCementTranslations,
-  "how-our-trade-service-works": tradeServiceTranslations,
+  "import-from-china-beginners-guide": filterSupportedLocales(importBeginnerTranslations),
+  "quality-control-101": filterSupportedLocales(qualityControlTranslations),
+  "air-freight-vs-sea-freight": filterSupportedLocales(freightTranslations),
+  "understanding-moq-negotiation": filterSupportedLocales(moqTranslations),
+  "why-led-lighting-transforming-wholesale": filterSupportedLocales(ledTranslations),
+  "customs-tariffs-importer-guide": filterSupportedLocales(customsTranslations),
+  "new-silk-road-commodities": filterSupportedLocales(newSilkRoadTranslations),
+  "carbon-black-sourcing-guide": filterSupportedLocales(carbonBlackTranslations),
+  "pvc-resin-buyers-guide": filterSupportedLocales(pvcTranslations),
+  "pp-pe-polymer-guide": filterSupportedLocales(ppPeTranslations),
+  "titanium-dioxide-buyers-guide": filterSupportedLocales(titaniumDioxideTranslations),
+  "industrial-minerals-guide": filterSupportedLocales(industrialMineralsTranslations),
+  "copper-aluminum-metals-guide": filterSupportedLocales(copperAluminumTranslations),
+  "steel-cement-clinker-infrastructure": filterSupportedLocales(steelCementTranslations),
+  "how-our-trade-service-works": filterSupportedLocales(tradeServiceTranslations),
 }
 
 export const defaultBlogPostTranslations = blogTranslationsSeed

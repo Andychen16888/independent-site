@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
   /*
    * Land the reader in their own language. The confirmation page exists in all
-   * 12 locales, and a reassurance written in a language the reader cannot read
+   * 7 locales, and a reassurance written in a language the reader cannot read
    * is indistinguishable from an error. The parameter is checked against the
    * routing config because it comes straight off the query string, and a
    * rejected value falls back to English rather than 404ing.

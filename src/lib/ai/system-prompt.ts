@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 import { categoryPath } from "@/lib/categories/slug"
 
@@ -23,7 +24,7 @@ export async function buildSystemPrompt(): Promise<string> {
     "contact.hours",
   ])
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const currency = settings["site.currency"] || "USD"
 
   const [products, categories] = await Promise.all([

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import OpenAI from "openai"
+import { CONTENT_LOCALES, LOCALE_NAMES_EN as LOCALE_NAMES } from "../src/lib/i18n/locales"
 
 const prisma = new PrismaClient()
 
@@ -18,22 +19,6 @@ try {
   }
 } catch {
   // .env not found, rely on existing env vars
-}
-
-const CONTENT_LOCALES = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
-
-const LOCALE_NAMES: Record<string, string> = {
-  zh: "Simplified Chinese",
-  es: "Spanish",
-  pt: "Portuguese",
-  fr: "French",
-  de: "German",
-  ru: "Russian",
-  ar: "Arabic",
-  id: "Indonesian",
-  vi: "Vietnamese",
-  th: "Thai",
-  ms: "Malay",
 }
 
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini"

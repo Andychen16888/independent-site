@@ -1,22 +1,8 @@
 import OpenAI from "openai"
-import { routing } from "@/i18n/routing"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
+import { CONTENT_LOCALES, LOCALE_NAMES_EN } from "@/lib/i18n/locales"
 
-const LOCALE_NAMES: Record<string, string> = {
-  zh: "Simplified Chinese",
-  es: "Spanish",
-  pt: "Portuguese",
-  fr: "French",
-  de: "German",
-  ru: "Russian",
-  ar: "Arabic",
-  id: "Indonesian",
-  vi: "Vietnamese",
-  th: "Thai",
-  ms: "Malay",
-}
-
-export const CATEGORY_TRANSLATE_LOCALES = routing.locales.filter((locale) => locale !== "en")
+export const CATEGORY_TRANSLATE_LOCALES = CONTENT_LOCALES
 
 export function isCategoryAutoTranslateConfigured(): boolean {
   return Boolean(process.env.OPENAI_API_KEY)
@@ -32,7 +18,7 @@ function getClient(): OpenAI {
 }
 
 async function translateCategoryName(name: string, locale: string): Promise<string> {
-  const localeName = LOCALE_NAMES[locale] || locale
+  const localeName = LOCALE_NAMES_EN[locale] || locale
   const completion = await getClient().chat.completions.create({
     model: process.env.OPENAI_MODEL || "gpt-4o-mini",
     messages: [

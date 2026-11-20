@@ -2,10 +2,11 @@ import { Metadata } from "next"
 import { SEOData } from "@/types"
 import { routing } from "@/i18n/routing"
 import { getSiteSeo } from "@/lib/settings/settings"
+import { GENERIC_SITE_DESCRIPTION, GENERIC_SITE_NAME, GENERIC_SITE_URL } from "@/lib/settings/brand"
 
-export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
-export const defaultDescription = "Quality electronics, LED lighting, kitchenware, and everyday household commodities sourced directly from China for retail and wholesale B2B buyers worldwide."
+export const siteName = process.env.NEXT_PUBLIC_SITE_NAME || GENERIC_SITE_NAME
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
+export const defaultDescription = GENERIC_SITE_DESCRIPTION
 
 export const ogLocaleMap: Record<string, string> = {
   en: "en_US",
@@ -15,11 +16,6 @@ export const ogLocaleMap: Record<string, string> = {
   fr: "fr_FR",
   de: "de_DE",
   ru: "ru_RU",
-  ar: "ar_SA",
-  id: "id_ID",
-  vi: "vi_VN",
-  th: "th_TH",
-  ms: "ms_MY",
 }
 
 /** Return an absolute URL for a given site path (or as-is if already absolute). */

@@ -1,4 +1,5 @@
 import { notFound, permanentRedirect } from "next/navigation"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { Link } from "@/i18n/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
@@ -113,7 +114,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     catTranslations.get(category.id)
   )
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const path = categoryPath(canonicalSlug)
   const categoryUrl = `${baseUrl}/${locale}${path}`
   const children = allCategories.filter((c) => c.parentId === category.id && c.isActive)

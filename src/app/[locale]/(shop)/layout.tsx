@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
-import { getSiteSettings } from "@/lib/settings/settings"
+import { getSiteSettings, siteNameValue } from "@/lib/settings/settings"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { ChatButton } from "@/components/chat/ChatButton"
@@ -12,9 +12,26 @@ interface ShopLayoutProps {
   params: Promise<{ locale: string }>
 }
 
+const FALLBACK_MENUS = [
+  { label: "Home", url: "/" },
+  { label: "Products", url: "/products" },
+  { label: "Journal", url: "/blog" },
+  { label: "FAQ", url: "/faq" },
+  { label: "About Us", url: "/pages/about" },
+  { label: "Contact Us", url: "/pages/contact" },
+]
+
+const NAV_KEYS: Record<string, string> = {
+  "/": "home",
+  "/products": "products",
+  "/blog": "journal",
+  "/faq": "faq",
+  "/pages/about": "about",
+  "/pages/contact": "contact",
+}
+
 export default async function ShopLayout({ children, params }: ShopLayoutProps) {
   const { locale } = await params
-  const useDbContent = locale === "en"
   const t = await getTranslations("product")
   const th = await getTranslations("header")
   const tnav = await getTranslations("navigation")
@@ -32,15 +49,27 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
     }),
   ])
 
-  const siteName = settings["site.name"] || "Commodities From China"
-  const promoBar = useDbContent ? settings["site.promoBar"] || th("promoBar") : th("promoBar")
+  const siteName = siteNameValue(settings)
+  const promoBar = settings["site.promoBar"] || th("promoBar")
+  let requestQuoteLabel: string | undefined
+  try {
+    const cta = JSON.parse(settings["content.cta"] || "null") as { requestQuote?: string } | null
+    requestQuoteLabel = cta?.requestQuote || undefined
+  } catch {}
+
+  const labelFor = (label: string, url: string) => {
+    const key = NAV_KEYS[url]
+    const fallback = FALLBACK_MENUS.find((m) => m.url === url)?.label
+    const isBuiltInLabel = key && fallback && label.trim().toLowerCase() === fallback.toLowerCase()
+    return isBuiltInLabel ? tnav(key) : label
+  }
 
   const seenHrefs = new Set<string>()
   const navItems: { name: string; href: string }[] = []
-  for (const m of menus) {
+  for (const m of menus.length ? menus : FALLBACK_MENUS) {
     if (seenHrefs.has(m.url)) continue
     seenHrefs.add(m.url)
-    navItems.push({ name: m.label, href: m.url })
+    navItems.push({ name: labelFor(m.label, m.url), href: m.url })
   }
   if (!seenHrefs.has("/faq")) {
     navItems.push({ name: tnav("faq"), href: "/faq" })
@@ -61,6 +90,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         siteName={siteName}
         logo={settings["site.logo"]}
         promoBar={promoBar}
+        requestQuoteLabel={requestQuoteLabel}
       />
       <div className="h-[92px] md:h-[141px]" />
       <main className="min-h-screen">{children}</main>

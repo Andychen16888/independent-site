@@ -1,5 +1,6 @@
 import type { NextConfig } from "next"
 import createNextIntlPlugin from "next-intl/plugin"
+import { APP_LOCALES } from "./src/lib/i18n/locales"
 
 const withNextIntl = createNextIntlPlugin()
 
@@ -114,7 +115,7 @@ const nextConfig: NextConfig = {
     // Keep in sync with src/i18n/routing.ts. Enumerating real locales prevents the
     // ":locale" param from greedily matching unrelated first segments (e.g. /admin/about).
     const pages = ["about", "contact", "shipping", "privacy", "terms"]
-    const locales = ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+    const locales = APP_LOCALES
     return [
       ...locales.flatMap((locale) =>
         pages.map((slug) => ({

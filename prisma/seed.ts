@@ -6,10 +6,13 @@ import { faqTranslationsSeed } from "./seed-data/faq"
 import { commodityCategoriesSeed, commodityProductsSeed } from "./seed-data/commodities"
 import { commodityBlogPostsSeed } from "./seed-data/blog-commodity"
 import { commodityFaqsSeed } from "./seed-data/faq-commodity"
+import { APP_LOCALES, CONTENT_LOCALES, REMOVED_LOCALES } from "../src/lib/i18n/locales"
 
 const prisma = new PrismaClient()
 
-const CONTENT_LOCALES = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+const SUPPORTED_LOCALE_SET = new Set<string>(APP_LOCALES)
+
+const SEED_DEMO_CONTENT = process.env.SEED_DEMO_CONTENT === "true"
 
 async function main() {
   console.log("Seeding database...")
@@ -21,6 +24,8 @@ async function main() {
     console.error("Cannot connect to database. Check DATABASE_URL in .env")
     process.exit(1)
   }
+
+  await removeUnsupportedLocaleTranslations()
 
   const adminEmail = "81570423@qq.com"
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
@@ -34,7 +39,7 @@ async function main() {
         email: adminEmail,
         passwordHash,
         firstName: "Admin",
-        lastName: "Commodities From China",
+        lastName: "User",
         role: "ADMIN",
       },
     })
@@ -70,84 +75,127 @@ async function main() {
   }
 
   await seedDefaultPages()
-  await seedPageTranslations()
-  await seedCommodityCategories()
-  await seedCommodityProducts()
-  await seedDefaultBlogPosts()
-  await seedCommodityBlogPosts()
-  await seedBlogPostTranslations()
-  await seedSiteFaqs()
+  await seedDefaultBanners()
+  if (SEED_DEMO_CONTENT) {
+    await seedPageTranslations()
+    await seedCommodityCategories()
+    await seedCommodityProducts()
+    await seedDefaultBlogPosts()
+    await seedCommodityBlogPosts()
+    await seedBlogPostTranslations()
+    await seedSiteFaqs()
+  }
 
   console.log("Seeding complete.")
 }
 
+async function removeUnsupportedLocaleTranslations() {
+  const locale = { in: [...REMOVED_LOCALES] }
+  const results = await Promise.all([
+    prisma.categoryTranslation.deleteMany({ where: { locale } }),
+    prisma.productTranslation.deleteMany({ where: { locale } }),
+    prisma.blogPostTranslation.deleteMany({ where: { locale } }),
+    prisma.bannerTranslation.deleteMany({ where: { locale } }),
+    prisma.pageTranslation.deleteMany({ where: { locale } }),
+    prisma.siteFaqTranslation.deleteMany({ where: { locale } }),
+  ])
+  const removed = results.reduce((total, result) => total + result.count, 0)
+  if (removed > 0) console.log(`Removed ${removed} translation row(s) for unsupported locales.`)
+}
+
 async function seedSiteSettings() {
   const settings: Record<string, string> = {
-    "site.name": "Commodities From China",
-    "site.description": "A China trading house connecting SOEs, listed companies and large enterprises with overseas buyers \u2014 exporting bulk commodities, metals and building materials to Southeast Asia, Africa and Belt & Road markets for 20 years.",
+    "site.name": "Your Company",
+    "site.description": "Discover our products, learn about our company and get in touch with our team.",
     "site.logo": "",
     "site.favicon": "",
     "site.language": "en",
     "site.currency": "USD",
-    "site.promoBar": "20 Years of China Export Experience \u2014 Request a Quote Today",
+    "site.promoBar": "Welcome to our store \u2014 browse our products or request a quote",
+    "company.name": "Your Company",
+    "company.address": "",
+    "company.brief": "",
+    "contact.email": "",
+    "contact.phone": "",
+    "contact.whatsapp": "",
+    "contact.hours": "",
+    "footer.about": "We offer a carefully selected range of products, reliable service and support for every enquiry.",
+    "footer.copyright": "All rights reserved.",
     "seo.ogImage": "",
-    "seo.homeTitle": "Commodities From China | Bulk Commodities, Metals & Building Materials",
-    "seo.homeDescription": "Chinese trading house exporting bulk commodities and building materials to Southeast Asia, Africa and Belt & Road markets. Carbon black, PVC, PP, PE, titanium dioxide, minerals, copper, aluminum, steel, cement clinker, glass and ceramics. 20 years of export experience, AAA credit, cheap service fees. Request a quote.",
-    "seo.defaultKeywords": "bulk commodities china, commodity trading house, pvc resin wholesale, carbon black export, titanium dioxide, industrial minerals, cement clinker, steel export, b2b commodity supplier, belt and road trade",
-    "content.featuredEyebrow": "Commodities We Export",
-    "content.featuredHeading": "Bulk Products for Growing Markets",
-    "content.featuredTagline": "Carbon black, PVC, polymers, minerals, metals and building materials for Southeast Asia, Africa and Belt & Road buyers.",
+    "seo.homeTitle": "Your Company | Products & Services",
+    "seo.homeDescription": "Explore our product range, learn about our team and contact us for more information.",
+    "seo.defaultKeywords": "products, company, b2b, wholesale, supplier",
+    "content.featuredEyebrow": "Explore",
+    "content.featuredHeading": "Our Categories",
+    "content.featuredTagline": "Browse our product categories and find what you need.",
     "content.brandStory": JSON.stringify({
       eyebrow: "Our Story",
-      title: "20 Years Connecting Chinese Industry with Global Buyers",
+      title: "A Company Built on Quality and Service",
       paragraphs: [
-        "We are a Chinese trading house that bridges the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
-        "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed here, just send us your requirement \u2014 we respond fast with quality, cost-effective supply.",
+        "We are a dedicated team supplying quality products to customers around the world.",
+        "From sourcing to delivery, we focus on clear communication, dependable service and long-term partnerships. Add your own story here from Admin \u2192 Settings.",
       ],
       ctaLabel: "Read Our Story",
       ctaHref: "/pages/about",
     }),
     "content.promo1": JSON.stringify({
       eyebrow: "Why Work With Us",
-      title: "Your Cost-Effective Sourcing Partner",
-      body: "We connect Chinese SOEs, listed companies and large enterprises with overseas buyers \u2014 charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
+      title: "A Reliable Partner for Your Business",
+      body: "We offer competitive pricing, consistent quality and responsive support. Edit this section at any time from Admin \u2192 Settings.",
       features: [
-        { title: "Cheap Service Fees", description: "Lean, transparent charges \u2014 you pay for the goods and freight, not inflated margins" },
-        { title: "Factory Access at Scale", description: "Direct cooperation with Chinese state-owned, listed and major enterprises" },
-        { title: "Fast Response to Any Inquiry", description: "Commodity not listed? Send your requirement and we respond quickly" },
-        { title: "20 Years, AAA Credit", description: "Two decades of exports, trusted by well-known companies worldwide" },
+        { title: "Quality Products", description: "Carefully selected products for our customers" },
+        { title: "Competitive Pricing", description: "Transparent pricing and flexible order options" },
+        { title: "Fast Response", description: "We reply to enquiries quickly and clearly" },
+        { title: "Reliable Service", description: "Support from enquiry through to delivery" },
       ],
       ctaLabel: "View All Products",
       ctaHref: "/products",
     }),
-    "content.testimonials": JSON.stringify([
-      {
-        name: "Siti Rahayu",
-        location: "Jakarta, Indonesia",
-        rating: 5,
-        text: "We import carbon black and PVC resin for our plastic manufacturing lines. Consistent quality, honest pricing, and the team responds to every enquiry within hours.",
-        product: "Carbon Black & PVC Resin",
-      },
-      {
-        name: "Kevin Okafor",
-        location: "Lagos, Nigeria",
-        rating: 5,
-        text: "They quoted our aluminum and steel order quickly, handled all export documentation, and the goods arrived exactly to spec. Their 20 years of experience show in every shipment.",
-        product: "Aluminum & Steel",
-      },
-      {
-        name: "Nguyen Thanh",
-        location: "Ho Chi Minh City, Vietnam",
-        rating: 5,
-        text: "I requested a commodity that wasn't on their site \u2014 cement clinker for our trading business. They responded fast and sourced it from a major Chinese supplier.",
-        product: "Cement Clinker",
-      },
-    ]),
+    "content.testimonials": JSON.stringify([]),
     "content.instagram": JSON.stringify({
-      handle: "@commoditychina",
-      handleUrl: "https://www.instagram.com/commoditychina",
-      tagline: "Tag us @commoditychina for a chance to be featured",
+      handle: "",
+      handleUrl: "",
+      tagline: "",
       posts: [],
+    }),
+    "content.cta": JSON.stringify({
+      requestQuote: "Request a Quote",
+      contactUs: "Contact Us",
+      viewProducts: "View Products",
+      explore: "Explore",
+      howItWorks: "How It Works",
+    }),
+    "content.supplyChain": JSON.stringify({
+      eyebrow: "Our Capabilities",
+      heading: "One Connected Supply Chain",
+      tagline: "From sourcing to delivery, every stage is coordinated so your order moves efficiently and predictably.",
+      items: [
+        { title: "Sourcing", description: "We match your requirements with reliable production partners." },
+        { title: "Negotiation", description: "Clear quotes and straightforward commercial terms." },
+        { title: "Quality Control", description: "Goods are checked against your specification before shipment." },
+        { title: "Logistics", description: "Documentation and freight handled from start to finish." },
+      ],
+    }),
+    "content.process": JSON.stringify({
+      eyebrow: "How It Works",
+      heading: "Our Process",
+      steps: ["Inquiry", "Sourcing", "Quote", "Inspection", "Delivery", "Support"],
+    }),
+    "content.port": JSON.stringify({
+      eyebrow: "Worldwide Delivery",
+      heading: "Serving Customers Around the World",
+      body: "We coordinate sourcing, inspection and shipping so orders reach customers reliably, wherever they are based.",
+    }),
+    "content.trust": JSON.stringify({
+      eyebrow: "Why Choose Us",
+      heading: "Quality You Can Rely On",
+      tagline: "Every order follows the same careful workflow \u2014 the foundation of dependable service.",
+      items: ["Quality Products", "Experienced Team", "Transparent Pricing", "Responsive Support"],
+    }),
+    "content.global": JSON.stringify({
+      eyebrow: "Global Network",
+      heading: "Partners Around the World",
+      body: "We work with customers and partners across international markets, building lasting business relationships.",
     }),
   }
 
@@ -182,27 +230,62 @@ function isOldPositioningDefault(key: string, value: string): boolean {
   }
   switch (key) {
     case "site.description":
-      return value.startsWith("Direct sourcing from trusted Chinese factories. Quality electronics")
+      return (
+        value.startsWith("Direct sourcing from trusted Chinese factories. Quality electronics") ||
+        value.includes("China trading house connecting SOEs")
+      )
     case "site.promoBar":
-      return value === "New customers save 10%"
+      return value === "New customers save 10%" || value.includes("China Export Experience")
     case "seo.homeTitle":
-      return value.includes("Wholesale Electronics & Daily Commodities")
+      return value.includes("Wholesale Electronics & Daily Commodities") || value.includes("Bulk Commodities, Metals")
     case "seo.homeDescription":
-      return value.startsWith("Factory-direct sourcing from China for retail and wholesale B2B buyers")
+      return (
+        value.startsWith("Factory-direct sourcing from China for retail and wholesale B2B buyers") ||
+        value.includes("Chinese trading house exporting bulk commodities")
+      )
     case "seo.defaultKeywords":
-      return value.includes("led lighting wholesale")
+      return value.includes("led lighting wholesale") || value.includes("bulk commodities china")
     case "content.featuredEyebrow":
-      return value === "Explore"
+      return value === "Explore" || value === "Commodities We Export"
     case "content.featuredHeading":
-      return value === "Our Collections"
+      return value === "Our Collections" || value === "Bulk Products for Growing Markets"
     case "content.featuredTagline":
-      return value === "Factory-direct sourcing, quality goods, worldwide delivery"
+      return (
+        value === "Factory-direct sourcing, quality goods, worldwide delivery" ||
+        value.includes("Carbon black, PVC, polymers")
+      )
     case "content.brandStory":
-      return jsonHas((o) => (o as { title?: string }).title === "From China to the World")
+      return jsonHas((o) =>
+        ["From China to the World", "20 Years Connecting Chinese Industry with Global Buyers"].includes(
+          (o as { title?: string }).title || ""
+        )
+      )
     case "content.promo1":
-      return jsonHas((o) => (o as { title?: string }).title === "Quality Electronics")
+      return jsonHas((o) =>
+        ["Quality Electronics", "Your Cost-Effective Sourcing Partner"].includes((o as { title?: string }).title || "")
+      )
+    case "content.instagram":
+      return jsonHas((o) => String((o as { handle?: string }).handle || "").includes("commoditychina"))
     case "content.testimonials":
-      return jsonHas((arr) => Array.isArray(arr) && (arr as { name?: string }[]).some((t) => t.name === "Sarah M."))
+      return jsonHas(
+        (arr) =>
+          Array.isArray(arr) &&
+          (arr as { name?: string }[]).some((t) =>
+            ["Sarah M.", "Siti Rahayu", "Kevin Okafor", "Nguyen Thanh"].includes(t.name || "")
+          )
+      )
+    case "site.name":
+      return value === "Commodities From China"
+    case "content.supplyChain":
+      return jsonHas((o) => String((o as { eyebrow?: string }).eyebrow || "").includes("China Supply Chain"))
+    case "content.process":
+      return jsonHas((o) => String((o as { eyebrow?: string }).eyebrow || "").includes("From China to the World"))
+    case "content.port":
+      return jsonHas((o) => String((o as { heading?: string }).heading || "").includes("Connecting China"))
+    case "content.trust":
+      return jsonHas((o) => String((o as { heading?: string }).heading || "").includes("20 Years"))
+    case "content.global":
+      return jsonHas((o) => String((o as { eyebrow?: string }).eyebrow || "").includes("Global Network"))
     default:
       return false
   }
@@ -212,11 +295,11 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
   {
     title: "About Us",
     slug: "about",
-    excerpt: "A Chinese trading house connecting large enterprises with overseas buyers for 20 years.",
-    content: `<h1>About Us</h1><p>We are a China trading house with 20 years of export experience. Our business connects the country's leading enterprises \u2014 state-owned groups, listed companies and large manufacturers \u2014 with overseas buyers, especially small and mid-sized importers in Southeast Asia, Africa and other Belt &amp; Road markets.</p><p>We keep our service fees lean, respond quickly to every inquiry \u2014 including commodities not listed on our site \u2014 and deliver quality, cost-effective goods backed by an AAA credit rating and long-standing relationships with well-known companies worldwide.</p>`,
+    excerpt: "Learn who we are, what we do and how we can help your business.",
+    content: `<h1>About Us</h1><p>Welcome to our company. We are a dedicated team offering quality products, clear communication and dependable service to customers around the world.</p><p>From the first enquiry to final delivery, we focus on understanding your requirements and providing practical solutions. Edit this page at any time from Admin \u2192 Pages.</p>`,
     seoTitle: "About Us",
-    seoDescription: "A Chinese trading house with 20 years of export experience connecting state-owned enterprises, listed companies and large manufacturers with overseas buyers.",
-    seoKeywords: "about us, commodity trading house, china export, b2b trading",
+    seoDescription: "Learn about our company, our team and the products and services we offer.",
+    seoKeywords: "about us, company, team, products",
   },
   {
     title: "Contact Us",
@@ -231,7 +314,7 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
     title: "Shipping & Returns",
     slug: "shipping",
     excerpt: "Shipping rates, delivery times, and return policy.",
-    content: `<h1>Shipping & Returns</h1><h2>Shipping</h2><p>We offer worldwide shipping with tracking on all orders. Standard (5-8 business days): $5.99. Express (2-3 business days): $15.99. Free standard shipping on orders over $100.</p><h2>Returns</h2><p>30-day return window from delivery date. Products must be unused and in original packaging. Refunds are processed within 5-7 business days.</p>`,
+    content: `<h1>Shipping & Returns</h1><h2>Shipping</h2><p>Shipping options, costs and delivery times depend on your location and order. Contact us for a quote and current lead times.</p><h2>Returns</h2><p>Please contact our team if you need to return an item. We will explain the return conditions and next steps for your order.</p>`,
     seoTitle: "Shipping & Returns",
     seoDescription: "Learn about our shipping policies, delivery times, and return process.",
     seoKeywords: "shipping, returns, delivery",
@@ -255,6 +338,45 @@ const defaultPages: { title: string; slug: string; excerpt: string; content: str
     seoKeywords: "terms, conditions",
   },
 ]
+
+async function seedDefaultBanners() {
+  const banners = [
+    {
+      title: "Quality Products, Delivered With Care",
+      subtitle: "Your Trusted Partner",
+      description: "Explore our range of products and discover how we can support your business with reliable service and competitive pricing.",
+      ctaText: "View Products",
+      link: "/products",
+      alignment: "left",
+      image: "",
+    },
+    {
+      title: "A Team Focused on Your Needs",
+      subtitle: "Get To Know Us",
+      description: "From first enquiry to final delivery, our team works closely with you to make every step simple and dependable.",
+      ctaText: "Why Us",
+      link: "/pages/about",
+      alignment: "left",
+      image: "",
+    },
+    {
+      title: "Need Something Specific?",
+      subtitle: "Tell Us Your Requirement",
+      description: "Send us your requirements and our team will respond quickly with the information, options and support you need.",
+      ctaText: "Contact Us",
+      link: "/pages/contact",
+      alignment: "left",
+      image: "",
+    },
+  ]
+
+  for (let i = 0; i < banners.length; i++) {
+    const existing = await prisma.banner.findFirst({ where: { sortOrder: i } })
+    if (!existing) {
+      await prisma.banner.create({ data: { ...banners[i], sortOrder: i, isActive: true } })
+    }
+  }
+}
 
 async function seedDefaultPages() {
   for (const page of defaultPages) {
@@ -647,7 +769,7 @@ async function seedSiteFaqs() {
         },
       })
 
-      for (const [locale, data] of Object.entries(perLocale)) {
+      for (const [locale, data] of Object.entries(perLocale).filter(([l]) => SUPPORTED_LOCALE_SET.has(l))) {
         await prisma.siteFaqTranslation.create({
           data: { siteFaqId: faq.id, locale, question: data.q, answer: data.a },
         })
@@ -662,7 +784,7 @@ async function seedSiteFaqs() {
     })
     if (!existingEn) continue
 
-    for (const [locale, data] of Object.entries(perLocale)) {
+    for (const [locale, data] of Object.entries(perLocale).filter(([l]) => SUPPORTED_LOCALE_SET.has(l))) {
       await prisma.siteFaqTranslation.upsert({
         where: { siteFaqId_locale: { siteFaqId: existingEn.siteFaqId, locale } },
         update: { question: data.q, answer: data.a },

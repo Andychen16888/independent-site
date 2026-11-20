@@ -10,7 +10,9 @@ export interface PageTranslationSeed {
   seoKeywords: string
 }
 
-export const pageTranslationsSeed: Record<string, Record<string, PageTranslationSeed>> = {
+import { filterSupportedLocales } from "./locales"
+
+const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed>> = {
   about: {
     zh: {
       title: "关于我们",
@@ -517,3 +519,7 @@ export const pageTranslationsSeed: Record<string, Record<string, PageTranslation
     },
   },
 }
+
+export const pageTranslationsSeed = Object.fromEntries(
+  Object.entries(allPageTranslationsSeed).map(([slug, locales]) => [slug, filterSupportedLocales(locales)])
+)

@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 
   // Private / thin pages that must never be indexed.
   const disallowed = [

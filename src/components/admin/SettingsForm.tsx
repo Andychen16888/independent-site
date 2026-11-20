@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { SETTING_KEYS, SETTING_GROUP_ORDER, type SettingGroup } from "@/lib/settings/keys"
+import { APP_LOCALES, LOCALE_NAMES } from "@/lib/i18n/locales"
 import ImageUploader from "@/components/admin/ImageUploader"
 import { bi } from "@/components/admin/bilingual"
 import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
@@ -75,9 +76,9 @@ const STRUCTURED_FIELDS: Record<string, StructuredSchema> = {
   "content.instagram": {
     kind: "object",
     fields: [
-      { key: "handle", type: "text", label: "Handle", labelZh: "账号", placeholder: "e.g. @commoditychina" },
+      { key: "handle", type: "text", label: "Handle", labelZh: "账号", placeholder: "e.g. @yourcompany" },
       { key: "handleUrl", type: "url", label: "Profile Link", labelZh: "主页链接", placeholder: "https://instagram.com/..." },
-      { key: "tagline", type: "text", label: "Tagline", labelZh: "标语", placeholder: "e.g. Tag us @commoditychina  #hashtag" },
+      { key: "tagline", type: "text", label: "Tagline", labelZh: "标语", placeholder: "e.g. Tag us @yourcompany  #hashtag" },
       {
         key: "posts",
         type: "list",
@@ -87,6 +88,68 @@ const STRUCTURED_FIELDS: Record<string, StructuredSchema> = {
         listEntry: "text",
         placeholder: "https://.../image.jpg",
       },
+    ],
+  },
+  "content.cta": {
+    kind: "object",
+    fields: [
+      { key: "requestQuote", type: "text", label: "Request a Quote button", labelZh: "请求报价按钮", placeholder: "Request a Quote" },
+      { key: "contactUs", type: "text", label: "Contact Us button", labelZh: "联系我们按钮", placeholder: "Contact Us" },
+      { key: "viewProducts", type: "text", label: "View Products button", labelZh: "查看产品按钮", placeholder: "View Products" },
+      { key: "explore", type: "text", label: "Explore button", labelZh: "浏览按钮", placeholder: "Explore" },
+      { key: "howItWorks", type: "text", label: "How It Works button", labelZh: "流程按钮", placeholder: "How It Works" },
+    ],
+  },
+  "content.supplyChain": {
+    kind: "object",
+    fields: [
+      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题" },
+      { key: "heading", type: "text", label: "Heading", labelZh: "标题" },
+      { key: "tagline", type: "textarea", label: "Description", labelZh: "描述", rows: 3 },
+      {
+        key: "items",
+        type: "array",
+        label: "Columns",
+        labelZh: "栏目",
+        itemLabel: bi("Column", "栏目"),
+        fields: [
+          { key: "title", type: "text", label: "Title", labelZh: "标题" },
+          { key: "description", type: "textarea", label: "Description", labelZh: "描述", rows: 2 },
+        ],
+      },
+    ],
+  },
+  "content.process": {
+    kind: "object",
+    fields: [
+      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题" },
+      { key: "heading", type: "text", label: "Heading", labelZh: "标题" },
+      { key: "steps", type: "list", label: "Steps (one per line)", labelZh: "步骤（每行一个）", itemLabel: bi("step", "步骤") },
+    ],
+  },
+  "content.port": {
+    kind: "object",
+    fields: [
+      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题" },
+      { key: "heading", type: "text", label: "Heading", labelZh: "标题" },
+      { key: "body", type: "textarea", label: "Description", labelZh: "描述", rows: 4 },
+    ],
+  },
+  "content.trust": {
+    kind: "object",
+    fields: [
+      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题" },
+      { key: "heading", type: "text", label: "Heading", labelZh: "标题" },
+      { key: "tagline", type: "textarea", label: "Description", labelZh: "描述", rows: 3 },
+      { key: "items", type: "list", label: "Highlights (one per line)", labelZh: "亮点（每行一个）", itemLabel: bi("highlight", "亮点") },
+    ],
+  },
+  "content.global": {
+    kind: "object",
+    fields: [
+      { key: "eyebrow", type: "text", label: "Overline", labelZh: "眉题" },
+      { key: "heading", type: "text", label: "Heading", labelZh: "标题" },
+      { key: "body", type: "textarea", label: "Description", labelZh: "描述", rows: 4 },
     ],
   },
 }
@@ -184,12 +247,11 @@ export default function SettingsForm({ groups }: { groups?: SettingGroup[] }) {
                       onChange={(e) => update(meta.key, e.target.value)}
                       className="w-full px-4 py-3 bg-transparent border border-mist focus:border-charcoal outline-none text-sm transition-colors"
                     >
-                      <option value="en">{bi("English", "英语")}</option>
-                      <option value="zh">{bi("Chinese", "中文")}</option>
-                      <option value="es">Español</option>
-                      <option value="fr">Français</option>
-                      <option value="de">Deutsch</option>
-                      <option value="ar">العربية</option>
+                      {APP_LOCALES.map((locale) => (
+                        <option key={locale} value={locale}>
+                          {LOCALE_NAMES[locale]}
+                        </option>
+                      ))}
                     </select>
                   ) : meta.type === "currency" ? (
                     <select

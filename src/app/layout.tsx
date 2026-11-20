@@ -13,6 +13,7 @@ import {
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 import { routing, rtlLocales } from "@/i18n/routing"
 import { ogLocaleMap } from "@/lib/seo/generate-metadata"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import "./globals.css"
 
 const inter = Inter({
@@ -45,7 +46,7 @@ function buildAlternates(baseUrl: string, locale: string, path = "/") {
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSiteSeo()
   const locale = await getLocale()
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const ogImage = {
     url:
       seo.ogImage ||
@@ -116,14 +117,10 @@ export default async function RootLayout({
     getLocale(),
     getSettingsForKeys(["company.address"]),
   ])
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const dir = rtlLocales.has(locale) ? "rtl" : "ltr"
   const servedMarkets =
-    process.env.NEXT_PUBLIC_SERVED_MARKETS?.split(",").map((s) => s.trim()).filter(Boolean) || [
-      "Southeast Asia",
-      "Africa",
-      "Middle East",
-    ]
+    process.env.NEXT_PUBLIC_SERVED_MARKETS?.split(",").map((s) => s.trim()).filter(Boolean) || []
   const countryCode = process.env.NEXT_PUBLIC_BUSINESS_COUNTRY_CODE || "CN"
   const socialLinks = [
     seo.social.facebook,

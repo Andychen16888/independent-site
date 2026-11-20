@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
@@ -78,7 +79,7 @@ export default async function PageView({ params }: Props) {
   ])
   const pageL = applyPageLocalization(page, translations)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const pageUrl = `${baseUrl}/${locale}/pages/${slug}`
   const tc = await getTranslations("common")
   const tfooter = await getTranslations("footer")

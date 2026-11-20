@@ -1,10 +1,11 @@
 import { MetadataRoute } from "next"
+import { GENERIC_SITE_DESCRIPTION, GENERIC_SITE_NAME } from "@/lib/settings/brand"
 
 export default function manifest(): MetadataRoute.Manifest {
-  const name = process.env.NEXT_PUBLIC_SITE_NAME || "Commodities From China"
+  const name = process.env.NEXT_PUBLIC_SITE_NAME || GENERIC_SITE_NAME
   const description =
     process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
-    "Premium products for everyday living."
+    GENERIC_SITE_DESCRIPTION
   return {
     name,
     short_name: name,

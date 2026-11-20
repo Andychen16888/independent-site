@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { localeNames } from "@/i18n/routing"
+import { CONTENT_LOCALES } from "@/lib/i18n/locales"
 import { bi } from "@/components/admin/bilingual"
 
 export interface TranslationFields {
@@ -14,7 +15,7 @@ export interface TranslationFields {
   seoKeywords: string
 }
 
-const LOCALES: string[] = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+const LOCALES: readonly string[] = CONTENT_LOCALES
 
 interface Props {
   value: TranslationFields[]

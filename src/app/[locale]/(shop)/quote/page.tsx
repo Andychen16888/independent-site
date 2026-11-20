@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { RfqForm } from "@/components/rfq/RfqForm"
@@ -34,7 +35,7 @@ export default async function QuotePage({ params, searchParams }: Props) {
   const t = await getTranslations({ locale, namespace: "rfq" })
   const tc = await getTranslations({ locale, namespace: "common" })
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 
   const schema = breadcrumbSchema([
     { name: tc("home"), url: baseUrl },

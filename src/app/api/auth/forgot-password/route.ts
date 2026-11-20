@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import crypto from "crypto"
 import { prisma } from "@/lib/db/prisma"
 import { sendPasswordResetEmail } from "@/lib/email/resend"
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       data: { resetToken, resetTokenExpires },
     })
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
     const resetUrl = `${siteUrl}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`
 
     await sendPasswordResetEmail(user.email, resetUrl)

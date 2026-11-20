@@ -14,42 +14,16 @@ import { HiOutlineShoppingBag, HiOutlineUser, HiOutlineHeart, HiOutlineMagnifyin
 import { CurrencyToggle } from "@/components/ui/CurrencyToggle"
 import { LanguageSelector } from "@/components/ui/LanguageSelector"
 import { getSiteContent } from "@/config/site-content"
+import { GENERIC_PROMO_BAR, GENERIC_SITE_NAME } from "@/lib/settings/brand"
 
 const DEFAULT_NAV = [
-  { name: "Electronics", href: "/categories/electronics" },
-  { name: "Home & Kitchen", href: "/categories/home-kitchen" },
+  { name: "Home", href: "/" },
+  { name: "Products", href: "/products" },
   { name: "Journal", href: "/blog" },
   { name: "FAQ", href: "/faq" },
   { name: "About Us", href: "/pages/about" },
+  { name: "Contact Us", href: "/pages/contact" },
 ]
-
-function getNavKey(href: string): string | null {
-  switch (href) {
-    case "/":
-    case "/home":
-      return "home"
-    case "/products":
-      return "products"
-    case "/categories/electronics":
-      return "electronics"
-    case "/categories/home-kitchen":
-      return "homeKitchen"
-    case "/blog":
-      return "journal"
-    case "/faq":
-      return "faq"
-    case "/pages/about":
-      return "about"
-    case "/pages/contact":
-      return "contact"
-    case "/wishlist":
-      return "wishlist"
-    case "/account":
-      return "account"
-    default:
-      return null
-  }
-}
 
 function PromoBar({ text }: { text: string }) {
   const [isVisible, setIsVisible] = useState(true)
@@ -107,14 +81,16 @@ function PromoBar({ text }: { text: string }) {
 
 export function Header({
   navItems = DEFAULT_NAV,
-  siteName = "Commodities From China",
+  siteName = GENERIC_SITE_NAME,
   logo = "",
-  promoBar = "Wholesale & retail pricing available worldwide",
+  promoBar = GENERIC_PROMO_BAR,
+  requestQuoteLabel,
 }: {
   navItems?: { name: string; href: string }[]
   siteName?: string
   logo?: string
   promoBar?: string
+  requestQuoteLabel?: string
 }) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
@@ -126,15 +102,10 @@ export function Header({
   const cartCount = useCartStore((s) => s.getItemCount())
   const wishlistCount = useWishlistStore((s) => s.items.length)
   const t = useTranslations("header")
-  const tnav = useTranslations("navigation")
   const locale = useLocale()
   const { cta } = getSiteContent(locale)
+  const requestQuote = requestQuoteLabel || cta.requestQuote
   const safeNav = navItems && navItems.length > 0 ? navItems : DEFAULT_NAV
-
-  const getNavLabel = (item: { name: string; href: string }) => {
-    const key = getNavKey(item.href)
-    return key ? tnav(key) : item.name
-  }
 
   useEffect(() => {
     setIsMounted(true)
@@ -196,7 +167,7 @@ export function Header({
               href="/pages/contact"
               className="hidden lg:inline-flex btn-primary px-5 py-2.5 text-[11px]"
             >
-              {cta.requestQuote}
+              {requestQuote}
             </Link>
             <div className="hidden md:block">
               <CurrencyToggle />
@@ -247,7 +218,7 @@ export function Header({
                   : "text-stone hover:text-charcoal"
               )}
             >
-              {getNavLabel(item)}
+              {item.name}
             </Link>
           ))}
         </nav>
@@ -271,11 +242,11 @@ export function Header({
                     pathname.startsWith(item.href) ? "text-charcoal" : "text-stone"
                   )}
                 >
-                  {getNavLabel(item)}
+                  {item.name}
                 </Link>
               ))}
               <Link href="/pages/contact" className="btn-primary w-full">
-                {cta.requestQuote}
+                {requestQuote}
               </Link>
               <div className="flex items-center gap-6 pt-2">
                 <LanguageSelector />

@@ -1,27 +1,9 @@
 import OpenAI from "openai"
 import { prisma } from "@/lib/db/prisma"
+import { CONTENT_LOCALES, LOCALE_NAMES_EN } from "@/lib/i18n/locales"
 
-/**
- * Locales we localize product content into. English is the source language
- * and is intentionally excluded.
- */
-export const AUTO_TRANSLATE_LOCALES = [
-  "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms",
-] as const
-
-const LOCALE_NAMES: Record<string, string> = {
-  zh: "Simplified Chinese",
-  es: "Spanish",
-  pt: "Portuguese",
-  fr: "French",
-  de: "German",
-  ru: "Russian",
-  ar: "Arabic",
-  id: "Indonesian",
-  vi: "Vietnamese",
-  th: "Thai",
-  ms: "Malay",
-}
+/** English is the source language and is intentionally excluded. */
+export const AUTO_TRANSLATE_LOCALES = CONTENT_LOCALES
 
 export const AUTO_TRANSLATE_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini"
 
@@ -60,7 +42,7 @@ interface TranslationOutput {
 }
 
 async function translateFields(source: ProductTranslationSource, locale: string): Promise<TranslationOutput> {
-  const localeName = LOCALE_NAMES[locale] || locale
+  const localeName = LOCALE_NAMES_EN[locale] || locale
   const system =
     "You are a professional e-commerce localization expert for a B2B wholesale store. " +
     "Translate the JSON fields from English into " +

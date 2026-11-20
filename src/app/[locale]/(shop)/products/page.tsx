@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { Container } from "@/components/ui/Container"
@@ -83,7 +84,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
   const translations = await fetchProductTranslations(products.map((p) => p.id), locale)
   const localizedProducts = applyProductLocalizations(products, translations)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 
   const buildProductsHref = (categorySlug?: string) => {
     const qs = new URLSearchParams()

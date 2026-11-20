@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 
 /**
  * Opaque per-subscriber token used for one-click unsubscribe links.
@@ -20,7 +21,7 @@ export function generateUnsubscribeToken(): string {
  * preference -- the list has no locale column.
  */
 export function buildUnsubscribeUrl(token: string, locale?: string): string {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com").replace(/\/+$/, "")
+  const base = (process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL).replace(/\/+$/, "")
   const url = new URL(`${base}/api/newsletter/unsubscribe`)
   url.searchParams.set("token", token)
   if (locale) url.searchParams.set("locale", locale)

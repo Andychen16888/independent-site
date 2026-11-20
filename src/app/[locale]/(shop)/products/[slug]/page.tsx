@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
@@ -132,7 +133,7 @@ export default async function ProductPage({ params }: Props) {
   const relatedMap = await fetchProductTranslations(relatedProducts.map((p) => p.id), locale)
   const localizedRelated = applyProductLocalizations(relatedProducts, relatedMap)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const productUrl = `${baseUrl}/${locale}/products/${serializedProduct.slug}`
 
   const schemas = [

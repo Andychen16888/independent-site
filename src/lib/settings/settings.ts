@@ -1,6 +1,7 @@
 import { cache } from "react"
 import { prisma } from "@/lib/db/prisma"
 import { ALL_SETTING_KEYS } from "./keys"
+import { GENERIC_SITE_DESCRIPTION, GENERIC_SITE_NAME } from "./brand"
 
 export type SiteSettings = Record<string, string>
 
@@ -45,12 +46,12 @@ export async function updateSiteSettings(input: Record<string, string>) {
 }
 
 export const SITE_DEFAULTS: Record<string, string> = {
-  "site.name": "Commodities From China",
+  "site.name": GENERIC_SITE_NAME,
   "site.description": "",
 }
 
 export function siteNameValue(s: SiteSettings): string {
-  return s["site.name"] || SITE_DEFAULTS["site.name"]
+  return s["site.name"] || s["company.name"] || GENERIC_SITE_NAME
 }
 
 export interface SiteSeo {
@@ -80,12 +81,12 @@ export const getSiteSeo = cache(async (): Promise<SiteSeo> => {
   const siteName = siteNameValue(s)
   return {
     siteName,
-    siteDescription: s["site.description"] || siteName,
+    siteDescription: s["site.description"] || GENERIC_SITE_DESCRIPTION,
     logo: s["site.logo"] || "",
     favicon: s["site.favicon"] || "",
     ogImage: s["seo.ogImage"] || "",
     homepageTitle: s["seo.homeTitle"] || siteName,
-    homepageDescription: s["seo.homeDescription"] || s["site.description"] || siteName,
+    homepageDescription: s["seo.homeDescription"] || s["site.description"] || GENERIC_SITE_DESCRIPTION,
     defaultKeywords: s["seo.defaultKeywords"] || "",
     language: s["site.language"] || "en",
     contactEmail: s["contact.email"] || "",

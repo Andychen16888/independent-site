@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { Link } from "@/i18n/navigation"
 import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
@@ -34,7 +35,7 @@ export default async function BlogPage({ params, searchParams }: Props) {
   const { locale } = await params
   const { tag } = await searchParams
   const activeTag = tag || "all"
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const t = await getTranslations("blog")
   const tc = await getTranslations("common")
 

@@ -50,7 +50,7 @@ export function HeroBanner({
   const fallbackSrcs = srcList.slice(1)
 
   return (
-    <section className="relative h-[560px] sm:h-[600px] lg:h-[680px] max-h-[760px] min-h-[520px] overflow-hidden bg-navy">
+    <section className="relative h-[280px] sm:h-[300px] lg:h-[340px] max-h-[380px] min-h-[260px] overflow-hidden bg-navy">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -78,7 +78,7 @@ export function HeroBanner({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15, duration: 0.5 }}
-                    className="eyebrow mb-5 block text-white/70"
+                    className="eyebrow mb-3 block text-white/70"
                   >
                     {slide.subtitle}
                   </motion.span>
@@ -88,7 +88,7 @@ export function HeroBanner({
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25, duration: 0.55 }}
-                  className="heading-xl text-white mb-6 text-balance"
+                  className="heading-lg text-white mb-3 text-balance"
                 >
                   {slide.title}
                 </motion.h1>
@@ -98,7 +98,7 @@ export function HeroBanner({
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35, duration: 0.55 }}
-                    className="text-white/80 leading-relaxed text-sm md:text-lg mb-10 max-w-xl"
+                    className="text-white/80 leading-relaxed text-xs sm:text-sm md:text-base mb-5 max-w-xl"
                   >
                     {slide.description}
                   </motion.p>
@@ -108,7 +108,7 @@ export function HeroBanner({
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45, duration: 0.55 }}
-                  className="flex flex-wrap gap-4"
+                  className="flex flex-wrap gap-3"
                 >
                   <Link href={slide.href || "/products"} className="btn-primary">
                     {slide.cta || cta.viewProducts}
@@ -124,7 +124,7 @@ export function HeroBanner({
       </AnimatePresence>
 
       {safeSlides.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
           {safeSlides.map((_, index) => (
             <button
               key={index}

@@ -11,27 +11,27 @@ export interface HeroSlide {
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
-    title: "Bulk Commodities from China, Delivered to Your Market",
-    subtitle: "Belt & Road Trade Specialists",
-    description: "China's key industrial commodities — carbon black, PVC, metals, minerals and building materials — shipped to Southeast Asian and African buyers at competitive prices.",
+    title: "Quality Products, Delivered With Care",
+    subtitle: "Your Trusted Partner",
+    description: "Explore our range of products and discover how we can support your business with reliable service and competitive pricing.",
     cta: "View Products",
     href: "/products",
     bg: "bg-navy",
     align: "left",
   },
   {
-    title: "One Trading Partner, 20 Years of Exports",
-    subtitle: "AAA-Rated Trade Service",
-    description: "Backed by long-standing cooperation with Chinese SOEs, listed companies and large enterprises — traceable quality, honest pricing, fast response.",
+    title: "A Team Focused on Your Needs",
+    subtitle: "Get To Know Us",
+    description: "From first enquiry to final delivery, our team works closely with you to make every step simple and dependable.",
     cta: "Why Us",
     href: "/pages/about",
     bg: "bg-navy",
     align: "left",
   },
   {
-    title: "Looking for a Commodity Not Listed?",
+    title: "Need Something Specific?",
     subtitle: "Tell Us Your Requirement",
-    description: "Our team responds quickly to requests for any bulk commodity — send your specs and destination, and we handle sourcing, documentation and freight end to end.",
+    description: "Send us your requirements and our team will respond quickly with the information, options and support you need.",
     cta: "Contact Us",
     href: "/pages/contact",
     bg: "bg-navy",
@@ -50,10 +50,10 @@ export interface BrandStoryContent {
 
 export const DEFAULT_BRAND_STORY: BrandStoryContent = {
   eyebrow: "Our Story",
-  title: "20 Years Connecting Chinese Industry with Global Buyers",
+  title: "A Company Built on Quality and Service",
   paragraphs: [
-    "We are a Chinese trading house that bridges the country's leading enterprises — state-owned groups, listed companies and large manufacturers — with overseas buyers in Southeast Asia, Africa and other Belt & Road markets.",
-    "In two decades of exports we've built lasting business ties with well-known companies worldwide, earned an AAA credit rating, and kept our service fees lean. For commodities not listed on this site, just send us your requirement — we respond fast with quality, cost-effective supply.",
+    "We are a dedicated team supplying quality products to customers around the world.",
+    "From sourcing to delivery, we focus on clear communication, dependable service and long-term partnerships. Add your own story here from Admin → Settings.",
   ],
   ctaLabel: "Read Our Story",
   ctaHref: "/pages/about",
@@ -68,32 +68,7 @@ export interface FeaturedCategory {
   icon?: "sparkles" | "swatch" | "bag"
 }
 
-export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = [
-  {
-    title: "Chemical Products",
-    subtitle: "Industrial Chemicals & Polymers",
-    description: "Carbon black, PVC, PP, PE, titanium dioxide and zinc oxide for every downstream industry",
-    href: "/categories/chemical-products",
-  },
-  {
-    title: "Minerals & Powders",
-    subtitle: "Industrial Minerals & Fillers",
-    description: "Quartz sand, barite, talc, calcium carbonate, barium sulfate, wollastonite, fluorite and iron oxide pigments",
-    href: "/categories/minerals",
-  },
-  {
-    title: "Metals",
-    subtitle: "Copper, Aluminum & Steel",
-    description: "Billets, ingots and profiles trusted by distributors and fabricators across emerging markets",
-    href: "/categories/metal-products",
-  },
-  {
-    title: "Building Materials",
-    subtitle: "Cement, Glass & Ceramics",
-    description: "Cement clinker, float glass and building ceramics for infrastructure and construction projects",
-    href: "/categories/building-materials",
-  },
-]
+export const DEFAULT_FEATURED_CATEGORIES: FeaturedCategory[] = []
 
 export interface FeatureItem { title: string; description: string }
 
@@ -109,25 +84,13 @@ export interface PromoContent {
 
 export const DEFAULT_PROMO: PromoContent = {
   eyebrow: "Why Work With Us",
-  title: "Your Cost-Effective Sourcing Partner",
-  body: "We connect Chinese SOEs, listed companies and large enterprises with overseas mid-sized buyers — charging lean service fees, responding fast, and delivering quality commodities at competitive prices.",
+  title: "A Reliable Partner for Your Business",
+  body: "We offer competitive pricing, consistent quality and responsive support. Edit this section at any time from Admin → Settings.",
   features: [
-    {
-      title: "Cheap Service Fees",
-      description: "Lean, transparent charges — you pay for the goods and freight, not inflated middleman margins",
-    },
-    {
-      title: "Factory Access at Scale",
-      description: "Direct cooperation with Chinese state-owned enterprises, listed companies and major manufacturers",
-    },
-    {
-      title: "Fast Response to Any Inquiry",
-      description: "Commodity not listed? Send your requirement and our team responds quickly with a quotation",
-    },
-    {
-      title: "20 Years, AAA Credit",
-      description: "Two decades of export experience and business ties with well-known companies worldwide",
-    },
+    { title: "Quality Products", description: "Carefully selected products for our customers" },
+    { title: "Competitive Pricing", description: "Transparent pricing and flexible order options" },
+    { title: "Fast Response", description: "We reply to enquiries quickly and clearly" },
+    { title: "Reliable Service", description: "Support from enquiry through to delivery" },
   ],
   ctaLabel: "View All Products",
   ctaHref: "/products",
@@ -135,29 +98,7 @@ export const DEFAULT_PROMO: PromoContent = {
 
 export interface Testimonial { name: string; location?: string; rating?: number; text: string; product?: string }
 
-export const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  {
-    name: "Siti Rahayu",
-    location: "Jakarta, Indonesia",
-    rating: 5,
-    text: "We import carbon black and PVC resin for our plastic manufacturing lines. Consistent quality, honest pricing, and the team responds to every enquiry within hours. A trading partner we can rely on.",
-    product: "Carbon Black & PVC Resin",
-  },
-  {
-    name: "Kevin Okafor",
-    location: "Lagos, Nigeria",
-    rating: 5,
-    text: "They quoted our aluminum and steel order quickly, handled all export documentation, and the goods arrived exactly to spec. Their 20 years of experience show in every shipment.",
-    product: "Aluminum & Steel",
-  },
-  {
-    name: "Nguyen Thanh",
-    location: "Ho Chi Minh City, Vietnam",
-    rating: 5,
-    text: "I requested a commodity that wasn't on their site — cement clinker for our trading business. They responded fast, sourced it from a major Chinese supplier, and the terms were excellent.",
-    product: "Cement Clinker",
-  },
-]
+export const DEFAULT_TESTIMONIALS: Testimonial[] = []
 
 export interface InstagramConfig {
   handle?: string
@@ -167,8 +108,8 @@ export interface InstagramConfig {
 }
 
 export const DEFAULT_INSTAGRAM: InstagramConfig = {
-  handle: "@commoditychina",
-  handleUrl: "https://instagram.com/commoditychina",
-  tagline: "Tag us @commoditychina for a chance to be featured",
+  handle: "",
+  handleUrl: "",
+  tagline: "",
   posts: [],
 }

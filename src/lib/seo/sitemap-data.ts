@@ -1,6 +1,7 @@
 import { routing } from "@/i18n/routing"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 
-export const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+export const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 
 export interface SitemapEntry {
   url: string

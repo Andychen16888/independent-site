@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { localeNames } from "@/i18n/routing"
+import { CONTENT_LOCALES } from "@/lib/i18n/locales"
 import { bi } from "@/components/admin/bilingual"
 import { fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
@@ -15,7 +16,7 @@ export interface BannerTranslationFields {
   ctaText: string
 }
 
-const LOCALES: string[] = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+const LOCALES: readonly string[] = CONTENT_LOCALES
 
 interface SourceFields {
   title: string

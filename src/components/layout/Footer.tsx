@@ -8,6 +8,7 @@ import { fetchCategoryTranslations } from "@/lib/i18n/category"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import { categoryPath } from "@/lib/categories/slug"
 import type { PageTranslation } from "@prisma/client"
+import { GENERIC_SITE_DESCRIPTION, GENERIC_SITE_NAME } from "@/lib/settings/brand"
 import {
   HiOutlineEnvelope,
   HiOutlineMapPin,
@@ -48,9 +49,9 @@ const FOOTER_KEYS = new Set([
 ])
 
 export async function Footer({
-  siteName = "Commodities From China",
+  siteName = GENERIC_SITE_NAME,
   logo = "",
-  about = "Direct from China to the world. We supply quality electronics, LED lighting, kitchenware, and everyday household commodities for retail and wholesale B2B buyers.",
+  about = "",
   companyName = "",
   companyBrief = "",
   contactEmail = "",
@@ -59,7 +60,7 @@ export async function Footer({
   address = "",
   hours = "",
   copyrightText = "",
-  copyrightSuffix = "Commodities From China",
+  copyrightSuffix = GENERIC_SITE_NAME,
   facebook = "",
   instagram = "",
   linkedin = "",
@@ -111,32 +112,16 @@ export async function Footer({
     ? new Map<string, PageTranslation>()
     : await fetchPageTranslations(pages.map((p) => p.id), locale)
   const pageTitle = (p: { id: string; slug: string; title: string }): string => {
-    const key = navKeyForHref(`/pages/${p.slug}`)
-    if (key) {
-      try {
-        return tnav.has(key) ? tnav(key) : p.title
-      } catch {
-        // fall through to DB translation
-      }
-    }
     const tr = pageTranslations.get(p.id)
     return tr?.title || p.title
   }
 
-  const safeAbout = useDbContent ? about || t("about") : t("about")
-  const safeCompanyBrief = useDbContent
-    ? companyBrief
-    : t.has("companyBrief")
-      ? t("companyBrief")
-      : companyBrief
-  const safeAddress = useDbContent
-    ? address
-    : t.has("addressLine")
-      ? t("addressLine")
-      : address
-  const safeHours = useDbContent ? hours || t("hours") : t("hours")
+  const safeAbout = about || (t.has("about") ? t("about") : GENERIC_SITE_DESCRIPTION)
+  const safeCompanyBrief = companyBrief || (t.has("companyBrief") ? t("companyBrief") : "")
+  const safeAddress = address || (t.has("addressLine") ? t("addressLine") : "")
+  const safeHours = hours || (t.has("hours") ? t("hours") : "")
 
-  const getLabel = (href: string, fallback: string) => {
+  const fallbackLabel = (href: string, fallback: string) => {
     const key = navKeyForHref(href)
     if (!key) return fallback
     return FOOTER_KEYS.has(key) ? t(key) : tnav(key)
@@ -147,7 +132,7 @@ export async function Footer({
         name: localizeCategoryName(locale, c.slug, c.name, categoryTranslations.get(c.id)),
         href: categoryPath(c.slug, c.name),
       }))
-    : DEFAULT_SHOP_LINKS
+    : DEFAULT_SHOP_LINKS.map((l) => ({ ...l, name: fallbackLabel(l.href, l.name) }))
 
   /*
    * The RFQ link leads the column rather than trailing the CMS pages: for a
@@ -159,7 +144,7 @@ export async function Footer({
     { name: tnav("faq"), href: "/faq" },
     ...(pages.length
       ? pages.filter((p) => p.slug !== "faq").map((p) => ({ name: pageTitle(p), href: `/pages/${p.slug}` }))
-      : DEFAULT_SUPPORT_LINKS),
+      : DEFAULT_SUPPORT_LINKS.map((l) => ({ ...l, name: fallbackLabel(l.href, l.name) }))),
   ]
 
   const socialLinks = [
@@ -235,7 +220,7 @@ export async function Footer({
               {shopLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
-                    {getLabel(link.href, link.name)}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -248,7 +233,7 @@ export async function Footer({
               {supportLinks.map((link) => (
                 <li key={link.href + link.name}>
                   <Link href={link.href} className="text-sm text-ivory/65 hover:text-ivory transition-colors duration-300">
-                    {getLabel(link.href, link.name)}
+                    {link.name}
                   </Link>
                 </li>
               ))}

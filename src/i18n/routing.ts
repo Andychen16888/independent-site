@@ -1,28 +1,14 @@
 import { defineRouting } from "next-intl/routing"
+import { APP_LOCALES, LOCALE_NAMES, type AppLocale as Locale } from "@/lib/i18n/locales"
 
 export const routing = defineRouting({
-  locales: ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"],
+  locales: [...APP_LOCALES],
   defaultLocale: "en",
   localePrefix: "always",
 })
 
-export const localeNames: Record<string, string> = {
-  en: "English",
-  zh: "简体中文",
-  es: "Español",
-  pt: "Português",
-  fr: "Français",
-  de: "Deutsch",
-  ru: "Русский",
-  ar: "العربية",
-  id: "Bahasa Indonesia",
-  vi: "Tiếng Việt",
-  th: "ภาษาไทย",
-  ms: "Bahasa Melayu",
-}
+export const localeNames: Record<string, string> = LOCALE_NAMES
 
-// Keep storefront layout flow consistent across locales.
-// Arabic translations are rendered in-place without switching the whole page to RTL.
 export const rtlLocales = new Set<string>([])
 
-export type AppLocale = (typeof routing.locales)[number]
+export type AppLocale = Locale

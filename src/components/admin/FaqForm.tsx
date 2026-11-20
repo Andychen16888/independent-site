@@ -4,10 +4,11 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { localeNames } from "@/i18n/routing"
+import { APP_LOCALES } from "@/lib/i18n/locales"
 import { bi } from "@/components/admin/bilingual"
 import { fetchJsonOrThrow, fetchJsonResponse, responseErrorMessage } from "@/lib/json-response"
 
-const LOCALES: string[] = ["en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+const LOCALES: readonly string[] = APP_LOCALES
 
 interface LocaleFields {
   question: string

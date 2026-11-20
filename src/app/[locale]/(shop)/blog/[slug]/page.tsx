@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
 import { Container } from "@/components/ui/Container"
@@ -32,7 +33,7 @@ export default async function BlogPostPage({ params }: Props) {
   ])
   const postL = applyBlogPostLocalization(post, translations)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
   const postUrl = `${baseUrl}/${locale}/blog/${slug}`
   const datePublished = post.publishedAt.toISOString()
   const tags = (postL.tags || "").split(",").map((t) => t.trim()).filter(Boolean)

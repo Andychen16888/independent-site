@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db/prisma"
 import { bi } from "@/components/admin/bilingual"
@@ -77,7 +78,7 @@ function timeLabel(d: Date): string {
 }
 
 const DESCRIPTION = "Visitor analytics: trails, pages and countries. 访客统计：访问轨迹、页面与国家分布。"
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 const SITE_HOST = (() => {
   try {
     return new URL(SITE_URL).hostname

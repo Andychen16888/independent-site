@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/db/prisma"
 import type { BlogPostTranslation, PageTranslation, SiteFaq, SiteFaqTranslation } from "@prisma/client"
+import { APP_LOCALES } from "@/lib/i18n/locales"
 
 export function translationNeeded(locale: string): boolean {
   return locale !== "en"
 }
 
-export const SUPPORTED_CONTENT_LOCALES: readonly string[] = [
-  "en", "zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms",
-]
+export const SUPPORTED_CONTENT_LOCALES: readonly string[] = APP_LOCALES
 
 /* ------------------------------------------------------------------ */
 /* Pages (CMS about/contact/privacy/terms/...)                         */

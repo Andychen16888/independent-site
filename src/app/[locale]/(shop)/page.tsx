@@ -19,7 +19,7 @@ import { InstagramFeed } from "@/components/home/InstagramFeed"
 import { NewsletterSection } from "@/components/home/NewsletterSection"
 import { SEOSection, type SEOLink } from "@/components/home/SEOSection"
 import { ProductCarousel } from "@/components/product/ProductCarousel"
-import { getSiteContent } from "@/config/site-content"
+import { getSiteContent, type SiteContent } from "@/config/site-content"
 import { localizeCategoryName } from "@/lib/i18n/category-labels"
 import { categoryPath } from "@/lib/categories/slug"
 import {
@@ -59,6 +59,16 @@ export default async function HomePage({
   const t = await getTranslations("home")
   const tl = await getTranslations("home.links")
   const site = getSiteContent(locale)
+  const dbContent = <T,>(key: string) => parseJson<Partial<T> | null>(settings[key], null)
+  const cta = { ...site.cta, ...(dbContent<SiteContent["cta"]>("content.cta") || {}) }
+  const supplyChainContent = {
+    ...site.supplyChain,
+    ...(dbContent<SiteContent["supplyChain"]>("content.supplyChain") || {}),
+  }
+  const processContent = { ...site.process, ...(dbContent<SiteContent["process"]>("content.process") || {}) }
+  const portContent = { ...site.port, ...(dbContent<SiteContent["port"]>("content.port") || {}) }
+  const trustContent = { ...site.trust, ...(dbContent<SiteContent["trust"]>("content.trust") || {}) }
+  const globalContent = { ...site.global, ...(dbContent<SiteContent["global"]>("content.global") || {}) }
   const siteImages = await getGroupedSiteImages()
 
   const [banners, featuredCats, bestSellers, homeFeatured] = await Promise.all([
@@ -213,12 +223,9 @@ export default async function HomePage({
   const siteDescription = settings["site.description"]
 
   const getSiteSeoResult = await getSiteSeo()
-  const seoParagraphs = useDbContent
-    ? [
-        siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
-        t("seoParagraph", { siteName: getSiteSeoResult.siteName }),
-      ].filter(Boolean)
-    : [t("seoParagraph", { siteName: getSiteSeoResult.siteName })].filter(Boolean)
+  const seoParagraphs = [
+    siteDescription || getSiteSeoResult.homepageDescription || getSiteSeoResult.siteDescription,
+  ].filter(Boolean)
 
   const seoCategoryLinks: SEOLink[] = featuredCats.length > 0
     ? featuredCats.map((c) => ({ label: c.name, href: categoryPath(c.slug, c.name) }))
@@ -230,25 +237,20 @@ export default async function HomePage({
     { label: tl("faq"), href: "/faq" },
     { label: tl("aboutUs"), href: "/pages/about" },
   ]
-  const hasElectronics = featuredCats.length > 0
-    ? featuredCats.some((c) => c.slug === "electronics")
-    : featuredFallback.some((f) => f.href.includes("electronics"))
-
-  const seoLinks: SEOLink[] = [
-    ...featuredLinks,
-    ...(hasElectronics ? [{ label: tl("importingGuide"), href: "/blog" }] : []),
-  ]
+  const seoLinks: SEOLink[] = [...featuredLinks, { label: tl("importingGuide"), href: "/blog" }]
 
   return (
     <>
       <HeroBanner slides={heroSlides} images={siteImages.hero} />
-      <FeaturedCategories
-        categories={featuredCategories}
-        eyebrow={featuredEyebrow}
-        heading={featuredHeading}
-        tagline={featuredTagline}
-      />
-      <SupplyChain content={site.supplyChain} images={siteImages.supplyChain} />
+      {featuredCategories.length > 0 && (
+        <FeaturedCategories
+          categories={featuredCategories}
+          eyebrow={featuredEyebrow}
+          heading={featuredHeading}
+          tagline={featuredTagline}
+        />
+      )}
+      <SupplyChain content={supplyChainContent} images={siteImages.supplyChain} />
       {homeFeatured.length > 0 && (
         <ProductCarousel
           title={t("carouselFeatured.title")}
@@ -256,16 +258,16 @@ export default async function HomePage({
           products={localizedHomeFeatured}
         />
       )}
-      <ProcessFlow content={site.process} />
+      <ProcessFlow content={processContent} />
       <BrandStory content={brandStory || brandStoryFallback} image={siteImages.about[0]} />
-      <PortBanner content={site.port} ctaLabel={site.cta.requestQuote} image={siteImages.port} />
+      <PortBanner content={portContent} ctaLabel={cta.requestQuote} image={siteImages.port} />
       <ProductCarousel
         title={t("carouselBestSellers.title")}
         subtitle={t("carouselBestSellers.subtitle")}
         products={localizedBestSellers.length ? localizedBestSellers : localizedHomeFeatured}
       />
-      <TrustQuality content={site.trust} />
-      <GlobalNetwork content={site.global} image={siteImages.global} />
+      <TrustQuality content={trustContent} />
+      <GlobalNetwork content={globalContent} image={siteImages.global} />
       <PromoFeatureSection promo={promo1 || promoFallback} image={siteImages.about[3]} />
       <Testimonials
         items={testimonials || testimonialsFallback}

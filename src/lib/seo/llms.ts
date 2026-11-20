@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/db/prisma"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { getSiteSeo, getSettingsForKeys } from "@/lib/settings/settings"
 import { categoryPath } from "@/lib/categories/slug"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 const defaultLocale = "en"
 
 function localized(path: string): string {

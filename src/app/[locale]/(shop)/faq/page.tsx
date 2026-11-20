@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server"
+import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import { Container } from "@/components/ui/Container"
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { generateMetadata as genMeta } from "@/lib/seo/generate-metadata"
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function FAQPage({ params }: Props) {
   const { locale } = await params
   const seo = await getSiteSeo()
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://commoditychina.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || GENERIC_SITE_URL
 
   // FAQ content is stored per-locale via SiteFaq + SiteFaqTranslation tables.
   const faqs: FaqItem[] = (await fetchLocalizedFaqs(locale)).map((f) => ({ q: f.question, a: f.answer }))

@@ -2,6 +2,7 @@
 
 import { useState, type ClipboardEvent } from "react"
 import { localeNames } from "@/i18n/routing"
+import { CONTENT_LOCALES } from "@/lib/i18n/locales"
 import { bi } from "@/components/admin/bilingual"
 import { normalizePastedHtml } from "@/lib/editor/clipboard"
 
@@ -14,7 +15,7 @@ export interface ProductTranslationFields {
   seoDescription: string
 }
 
-const LOCALES: string[] = ["zh", "es", "pt", "fr", "de", "ru", "ar", "id", "vi", "th", "ms"]
+const LOCALES: readonly string[] = CONTENT_LOCALES
 
 interface Props {
   value: ProductTranslationFields[]

@@ -8,7 +8,7 @@
 # 若此时机器重启，nginx 根本起不来，站点全挂。
 #
 # 用法：
-#   bash scripts/install-nginx-conf.sh commoditychina.com
+#   bash scripts/install-nginx-conf.sh your-domain.com
 #
 # 做了 5 件事：
 #   1. 把模板里的 your-domain.com 全部替换成你的域名，并检查有没有漏掉的占位符
@@ -30,7 +30,7 @@ BACKUP_DIR="/etc/nginx/sites-backups"
 
 if [[ -z "$DOMAIN" ]]; then
   echo "用法: bash scripts/install-nginx-conf.sh <你的域名>" >&2
-  echo "  例: bash scripts/install-nginx-conf.sh commoditychina.com" >&2
+  echo "  例: bash scripts/install-nginx-conf.sh your-domain.com" >&2
   exit 1
 fi
 

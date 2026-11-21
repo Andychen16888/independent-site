@@ -20,7 +20,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>从中国走向世界</h1><p>我们的旅程始于中国的工厂与车间——从深圳的电子装配线到广州的厨具制造商。我们走遍全国，寻找秉承同一标准的生产者：值得信赖的品质。</p><p>我们相信，当好产品直接从生产者到达买家手中，购买会变得更简单。因此我们亲自负责采购、质量控制和运输——让您每次都能获得工厂直供的价值。</p>",
       seoTitle: "关于我们",
-      seoDescription: "了解Commodities From China如何直接从中国供应商采购优质电子产品、厨具与日常用品。",
+      seoDescription: "了解Your Company如何直接从中国供应商采购优质电子产品、厨具与日常用品。",
       seoKeywords: "关于我们, 我们的故事, 中国采购, B2B批发",
     },
     es: {
@@ -29,7 +29,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>De China al Mundo</h1><p>Nuestro viaje comenzó en las fábricas y talleres de China: desde las líneas de ensamblaje electrónico en Shenzhen hasta los fabricantes de utensilios de cocina en Guangzhou. Recorrimos el país en busca de creadores que compartan un estándar: calidad en la que se puede confiar.</p><p>Creemos que comprar bien es más simple cuando los buenos productos van directo del fabricante al comprador. Por eso gestionamos nosotros mismos el abastecimiento, el control de calidad y el envío, para que siempre obtenga valor directo de fábrica.</p>",
       seoTitle: "Sobre Nosotros",
-      seoDescription: "Descubra cómo Commodities From China obtiene productos electrónicos, utensilios de cocina y artículos cotidianos de calidad directamente de proveedores chinos.",
+      seoDescription: "Descubra cómo Your Company obtiene productos electrónicos, utensilios de cocina y artículos cotidianos de calidad directamente de proveedores chinos.",
       seoKeywords: "sobre nosotros, nuestra historia, abastecimiento desde china, venta mayorista b2b",
     },
     pt: {
@@ -38,7 +38,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Da China para o Mundo</h1><p>Nossa jornada começou nas fábricas e oficinas da China, das linhas de montagem de eletrônicos em Shenzhen aos fabricantes de utensílios de cozinha em Guangzhou. Percorremos o país para encontrar produtores que compartilham um padrão: qualidade em que você pode confiar.</p><p>Acreditamos que comprar bem é mais simples quando bons produtos vão direto do produtor ao comprador. Por isso cuidamos nós mesmos do fornecimento, do controle de qualidade e do envio, para que você sempre tenha valor direto de fábrica.</p>",
       seoTitle: "Sobre Nós",
-      seoDescription: "Descubra como a Commodities From China obtém eletrônicos, utensílios de cozinha e produtos do dia a dia de qualidade diretamente de fornecedores chineses.",
+      seoDescription: "Descubra como a Your Company obtém eletrônicos, utensílios de cozinha e produtos do dia a dia de qualidade diretamente de fornecedores chineses.",
       seoKeywords: "sobre nós, nossa história, fornecimento da china, atacado b2b",
     },
     fr: {
@@ -47,7 +47,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>De la Chine au Monde</h1><p>Notre voyage a commencé dans les usines et les ateliers de Chine, des chaînes d'assemblage électronique de Shenzhen aux fabricants d'ustensiles de cuisine de Guangzhou. Nous avons parcouru le pays pour trouver des fabricants partageant un même standard : une qualité de confiance.</p><p>Nous croyons qu'acheter mieux est plus simple lorsque de bons produits vont directement du producteur à l'acheteur. C'est pourquoi nous gérons nous-mêmes l'approvisionnement, le contrôle qualité et l'expédition, pour un vrai prix direct usine à chaque fois.</p>",
       seoTitle: "À Propos de Nous",
-      seoDescription: "Découvrez comment Commodities From China s'approvisionne en électronique, ustensiles de cuisine et articles du quotidien de qualité directement auprès de fournisseurs chinois.",
+      seoDescription: "Découvrez comment Your Company s'approvisionne en électronique, ustensiles de cuisine et articles du quotidien de qualité directement auprès de fournisseurs chinois.",
       seoKeywords: "à propos, notre histoire, approvisionnement depuis la chine, vente en gros b2b",
     },
     de: {
@@ -56,7 +56,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Von China in die Welt</h1><p>Unsere Reise begann in den Fabriken und Werkstätten Chinas – von den Elektronik-Montagelinien in Shenzhen bis zu den Küchengeräteherstellern in Guangzhou. Wir bereisten das Land, um Hersteller zu finden, die einen Standard teilen: Qualität, der man vertrauen kann.</p><p>Wir glauben, dass gutes Einkaufen einfacher ist, wenn gute Produkte direkt vom Hersteller zum Käufer gelangen. Deshalb übernehmen wir Beschaffung, Qualitätskontrolle und Versand selbst – für zuverlässigen fabrikdirekten Wert.</p>",
       seoTitle: "Über Uns",
-      seoDescription: "Erfahren Sie, wie Commodities From China Qualitätselektronik, Küchenutensilien und Alltagsartikel direkt von chinesischen Lieferanten bezieht.",
+      seoDescription: "Erfahren Sie, wie Your Company Qualitätselektronik, Küchenutensilien und Alltagsartikel direkt von chinesischen Lieferanten bezieht.",
       seoKeywords: "über uns, unsere geschichte, beschaffung aus china, b2b großhandel",
     },
     ru: {
@@ -65,7 +65,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Из Китая — всему миру</h1><p>Наш путь начался на заводах и в мастерских Китая — от сборочных линий электроники в Шэньчжэне до производителей кухонной утвари в Гуанчжоу. Мы объехали страну в поисках производителей, разделяющих один стандарт: качество, которому можно доверять.</p><p>Мы верим, что выгодные покупки становятся проще, когда хорошие товары идут напрямую от производителя к покупателю. Поэтому мы сами занимаемся закупками, контролем качества и доставкой — и вы всегда получаете ценность напрямую с фабрики.</p>",
       seoTitle: "О нас",
-      seoDescription: "Узнайте, как Commodities From China поставляет качественную электронику, кухонную утварь и товары повседневного спроса напрямую от китайских поставщиков.",
+      seoDescription: "Узнайте, как Your Company поставляет качественную электронику, кухонную утварь и товары повседневного спроса напрямую от китайских поставщиков.",
       seoKeywords: "о нас, наша история, поставки из китая, оптовая торговля b2b",
     },
     ar: {
@@ -74,7 +74,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>من الصين إلى العالم</h1><p>بدأت رحلتنا في مصانع الصين وورشها — من خطوط تجميع الإلكترونيات في شنتشن إلى مصنعي أدوات المطبخ في قوانغتشو. جُبنا البلاد بحثًا عن صُنّاع يلتزمون بمعيار واحد: جودة تثق بها.</p><p>نؤمن أن الشراء الجيد يصبح أسهل عندما تنتقل المنتجات الجيدة مباشرة من الصانع إلى المشتري. ولهذا نتولى بأنفسنا التوريد ومراقبة الجودة والشحن — لتحصل دائمًا على قيمة مباشرة من المصنع.</p>",
       seoTitle: "من نحن",
-      seoDescription: "اكتشف كيف تورّد Commodities From China الإلكترونيات وأدوات المطبخ والسلع اليومية عالية الجودة مباشرة من موردين صينيين.",
+      seoDescription: "اكتشف كيف تورّد Your Company الإلكترونيات وأدوات المطبخ والسلع اليومية عالية الجودة مباشرة من موردين صينيين.",
       seoKeywords: "من نحن, قصتنا, التوريد من الصين, بيع الجملة b2b",
     },
     id: {
@@ -83,7 +83,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Dari China ke Dunia</h1><p>Perjalanan kami dimulai di pabrik dan bengkel China, dari lini perakitan elektronik di Shenzhen hingga produsen peralatan dapur di Guangzhou. Kami menjelajahi negeri ini untuk menemukan produsen yang berbagi satu standar: kualitas yang bisa dipercaya.</p><p>Kami percaya bahwa berbelanja dengan baik lebih mudah ketika produk bagus berpindah langsung dari produsen ke pembeli. Itulah mengapa kami menangani sendiri pengadaan, kontrol kualitas, dan pengiriman — sehingga Anda selalu mendapatkan nilai langsung dari pabrik.</p>",
       seoTitle: "Tentang Kami",
-      seoDescription: "Temukan cara Commodities From China mendapat elektronik, peralatan dapur, dan kebutuhan sehari-hari berkualitas langsung dari pemasok China.",
+      seoDescription: "Temukan cara Your Company mendapat elektronik, peralatan dapur, dan kebutuhan sehari-hari berkualitas langsung dari pemasok China.",
       seoKeywords: "tentang kami, kisah kami, pengadaan dari china, grosir b2b",
     },
     vi: {
@@ -92,7 +92,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Từ Trung Quốc Ra Thế Giới</h1><p>Hành trình của chúng tôi bắt đầu tại các nhà máy và xưởng sản xuất của Trung Quốc — từ dây chuyền lắp ráp điện tử ở Thâm Quyến đến nhà sản xuất dụng cụ nhà bếp ở Quảng Châu. Chúng tôi đi khắp đất nước để tìm những nhà sản xuất chia sẻ một tiêu chuẩn: chất lượng bạn có thể tin cậy.</p><p>Chúng tôi tin rằng mua sắm tốt sẽ đơn giản hơn khi sản phẩm tốt được chuyển trực tiếp từ nhà sản xuất đến người mua. Vì vậy chúng tôi tự đảm nhận khâu tìm nguồn, kiểm soát chất lượng và vận chuyển — để bạn luôn nhận được giá trị trực tiếp từ nhà máy.</p>",
       seoTitle: "Về Chúng Tôi",
-      seoDescription: "Khám phá cách Commodities From China mua điện tử, dụng cụ nhà bếp và hàng tiêu dùng chất lượng trực tiếp từ nhà cung cấp Trung Quốc.",
+      seoDescription: "Khám phá cách Your Company mua điện tử, dụng cụ nhà bếp và hàng tiêu dùng chất lượng trực tiếp từ nhà cung cấp Trung Quốc.",
       seoKeywords: "về chúng tôi, câu chuyện của chúng tôi, nguồn hàng từ trung quốc, bán buôn b2b",
     },
     th: {
@@ -101,7 +101,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>จากจีนสู่ทั่วโลก</h1><p>การเดินทางของเราเริ่มต้นจากโรงงานและเวิร์กช็อปในจีน ตั้งแต่สายการประกอบอิเล็กทรอนิกส์ในเซินเจิ้น ไปจนถึงผู้ผลิตเครื่องครัวในกว่างโจว เราเดินทางทั่วประเทศเพื่อค้นหาผู้ผลิตที่ยึดมาตรฐานเดียว นั่นคือคุณภาพที่คุณวางใจได้</p><p>เราเชื่อว่าการซื้อที่ดีจะง่ายขึ้นเมื่อสินค้าดีย้ายจากผู้ผลิตตรงสู่ผู้ซื้อ นั่นคือเหตุผลที่เราจัดการด้านการจัดหา การควบคุมคุณภาพ และการจัดส่งด้วยตัวเอง เพื่อให้คุณได้รับคุณค่าจากโรงงานโดยตรงทุกครั้ง</p>",
       seoTitle: "เกี่ยวกับเรา",
-      seoDescription: "ค้นพบวิธีการที่ Commodities From China จัดหาอิเล็กทรอนิกส์ เครื่องครัว และสินค้าอุปโภคบริโภคคุณภาพโดยตรงจากซัพพลายเออร์จีน",
+      seoDescription: "ค้นพบวิธีการที่ Your Company จัดหาอิเล็กทรอนิกส์ เครื่องครัว และสินค้าอุปโภคบริโภคคุณภาพโดยตรงจากซัพพลายเออร์จีน",
       seoKeywords: "เกี่ยวกับเรา, เรื่องราวของเรา, การจัดหาจากจีน, ค้าส่ง b2b",
     },
     ms: {
@@ -110,7 +110,7 @@ const allPageTranslationsSeed: Record<string, Record<string, PageTranslationSeed
       content:
         "<h1>Dari China ke Seluruh Dunia</h1><p>Perjalanan kami bermula di kilang dan bengkel China — daripada barisan pemasangan elektronik di Shenzhen kepada pengeluar peralatan dapur di Guangzhou. Kami menjelajah negara ini mencari pengeluar yang berkongsi satu standard: kualiti yang boleh anda percayai.</p><p>Kami percaya bahawa pembelian yang baik lebih mudah apabila produk yang baik bergerak terus daripada pengeluar kepada pembeli. Itulah sebabnya kami menguruskan sendiri sumber, kawalan kualiti dan penghantaran — supaya anda sentiasa mendapat nilai terus dari kilang.</p>",
       seoTitle: "Tentang Kami",
-      seoDescription: "Ketahui cara Commodities From China mendapatkan elektronik, peralatan dapur dan barangan harian berkualiti terus daripada pembekal China.",
+      seoDescription: "Ketahui cara Your Company mendapatkan elektronik, peralatan dapur dan barangan harian berkualiti terus daripada pembekal China.",
       seoKeywords: "tentang kami, kisah kami, sumber dari china, borong b2b",
     },
   },

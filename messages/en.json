@@ -203,7 +203,7 @@
     "instagram": {
       "eyebrow": "Follow Us",
       "follow": "Follow on Instagram",
-      "tagline": "Tag us @commoditychina for a chance to be featured"
+      "tagline": "Tag us @yourcompany for a chance to be featured"
     },
     "newsletter": {
       "eyebrow": "Stay Connected",
@@ -304,7 +304,7 @@
   },
   "blog": {
     "title": "Journal",
-    "metaDescription": "Commodity market insights, sourcing guides, and trade know-how from the Commodities From China journal.",
+    "metaDescription": "Commodity market insights, sourcing guides, and trade know-how from our journal.",
     "eyebrow": "Guides & Insights",
     "heading": "The Journal",
     "subtitle": "Commodity market trends, sourcing guidance, and trade logistics knowledge for importers in Southeast Asia, Africa and Belt & Road markets.",

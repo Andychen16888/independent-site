@@ -203,7 +203,7 @@
     "instagram": {
       "eyebrow": "关注我们",
       "follow": "在 Instagram 关注",
-      "tagline": "发布时 @commoditychina，即有机会获得展示"
+      "tagline": "发布时 @yourcompany，即有机会获得展示"
     },
     "newsletter": {
       "eyebrow": "保持联系",
@@ -304,7 +304,7 @@
   },
   "blog": {
     "title": "资讯",
-    "metaDescription": "来自 Commodities From China 资讯的大宗商品行情洞察、采购指南与贸易知识。",
+    "metaDescription": "来自我们资讯的大宗商品行情洞察、采购指南与贸易知识。",
     "eyebrow": "指南与洞察",
     "heading": "资讯",
     "subtitle": "面向东南亚、非洲及一带一路市场进口商的大宗商品行情、采购指导与贸易物流知识。",

@@ -4,6 +4,9 @@
 >
 > **核心原则**：**不要在失陷的机器上「修干净继续用」**。root 权限已失禁，无法证明没有
 > rootkit / 内核模块 / 被替换的系统二进制。**数据可以救，机器必须重装。**
+>
+> **占位符**：下文 `your-domain.com` 代表你的主域名（不是任何真实公司的域名），
+> `www.your-domain.com` 代表你的 www 域名；请按本仓库部署文档开头的说明替换。
 
 ---
 
@@ -161,7 +164,7 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 
-# 2. SSH 登录方式二选一（完整可粘贴流程见 DEPLOYMENT.md §1.2）
+# 2. SSH 登录方式二选一（完整可粘贴流程见 通用独立站 DEPLOYMENT.md §1.2）
 #    方案 A（推荐）SSH 密钥：本地 ssh-keygen + ssh-copy-id，验证可免密登录后
 #      sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 #
@@ -193,7 +196,7 @@ ls -l /root/.ssh/authorized_keys 2>/dev/null
 #    ICMP 不要用 ufw 命令添加（ufw CLI 不支持，会报
 #    ERROR: Need 'to' or 'from' clause）；before.rules 默认已放行
 #    echo-request / destination-unreachable(PMTU) 等关键类型，无需额外处理。
-#    详见 DEPLOYMENT.md §1.2.1。
+#    详见 通用独立站 DEPLOYMENT.md §1.2.1。
 ufw --force reset
 ufw default deny incoming
 ufw default deny outgoing
@@ -219,7 +222,7 @@ ufw status verbose | head -8
 
 ## 5. 阶段五：恢复站点
 
-> 完整步骤见 [DEPLOYMENT.md](./DEPLOYMENT.md)，
+> 完整步骤见 [DEPLOYMENT.md](./通用独立站%20DEPLOYMENT.md)，
 > 下面只是带顺序的恢复视图，**变量值用阶段三轮换后的新值**。
 
 | 步骤 | 参考章节 | 动作 | 备注 |
@@ -289,7 +292,7 @@ grep 'Accepted' /root/incident/auth.log | grep -v 'for root' || echo "无 root �
 
 | 结论 | 处置 |
 |------|------|
-| 大量 `Failed password` + 一次陌生 `Accepted password` | 入口是 **SSH 弱密码爆破**。已通过阶段四禁用密码登录 + fail2ban 封堵；如需进一步收紧，改用密钥登录并关闭密码登录（见 DEPLOYMENT.md §1.2.4） |
+| 大量 `Failed password` + 一次陌生 `Accepted password` | 入口是 **SSH 弱密码爆破**。已通过阶段四禁用密码登录 + fail2ban 封堵；如需进一步收紧，改用密钥登录并关闭密码登录（见 通用独立站 DEPLOYMENT.md §1.2.4） |
 | 陌生 `Accepted publickey` | 私钥泄露。已在阶段三作废全部密钥；检查本地私钥存放目录是否被同步到过公共仓库 |
 | 无任何陌生 SSH 登录 | 入口可能是 **Web 应用漏洞**或 **Docker API 暴露**。检查 `ss -tlnp` 是否有 0.0.0.0 监听的 3000/5432/2375；本项目务必保持 `HOST=127.0.0.1`、PostgreSQL 不开放远程 |
 
@@ -311,11 +314,11 @@ curl -s http://localhost:3000/api/health     # {"status":"ok",...}
 ss -tlnp | grep -E ':(3000|5432)\b'          # 应只 listen 127.0.0.1
 
 # 站点
-curl -sI https://commoditychina.com | head -1        # HTTP/2 200
-curl -sI https://commoditychina.com/api/health       # 200
+curl -sI https://your-domain.com | head -1        # HTTP/2 200
+curl -sI https://your-domain.com/api/health       # 200
 
 # 缓存生效（CPU 优化的关键，MISS 说明没生效）
-curl -sI "https://commoditychina.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" \
+curl -sI "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" \
   | grep -i x-cache-status
 # 第二次请求应为 HIT
 
@@ -367,5 +370,5 @@ ls -lh /var/log/*.log
 
 ## 相关文档
 
-- [DEPLOYMENT.md](./DEPLOYMENT.md) —— 部署完整流程（PM2 + 系统 Nginx + PostgreSQL）
+- [DEPLOYMENT.md](./通用独立站%20DEPLOYMENT.md) —— 部署完整流程（PM2 + 系统 Nginx + PostgreSQL）
 - [OPERATIONS.md](./OPERATIONS.md) —— 运维、环境变量与第三方服务配置

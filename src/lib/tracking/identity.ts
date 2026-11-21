@@ -6,7 +6,11 @@
  * 本模块只允许被服务端代码（/api/track、auth 回调）import，绝不能被 "use client"
  * 组件引用。
  */
-export const ADMIN_TRACKING_EMAIL = "81570423@qq.com"
+export const ADMIN_TRACKING_EMAIL = (
+  process.env.ADMIN_TRACKING_EMAIL ||
+  process.env.SEED_ADMIN_EMAIL ||
+  "admin@example.com"
+).toLowerCase()
 
 /** 规范化邮箱：去首尾空白 + 统一小写。用于比较，不用于存储/上报。 */
 export function normalizeEmail(email: string | null | undefined): string {

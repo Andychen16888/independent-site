@@ -1,11 +1,16 @@
 # 新机零起点重建清单（含入侵后重装）
 
 > 用途：服务器被入侵后，在**全新服务器**上从 0 到站点上线的**一条线照做清单**。
-> 合并自 [DEPLOYMENT.md](./DEPLOYMENT.md) 与 [INCIDENT-RECOVERY.md](./INCIDENT-RECOVERY.md)，
+> 合并自 [DEPLOYMENT.md](./通用独立站%20DEPLOYMENT.md) 与 [INCIDENT-RECOVERY.md](./INCIDENT-RECOVERY.md)，
 > 两者仍是权威细节来源，本文件只是按执行顺序拼成可勾选的流程。
 >
-> **占位符（全程替换）**：`commoditychina.com` = 你的域名；`b2b_independent_site` = 库名；
-> `b2b_user` = 数据库角色；`/var/www/b2b-independent-site` = 项目目录（小写）。
+> **占位符（全程替换）**：`your-domain.com` = 你的主域名；`www.your-domain.com` = 你的 www 域名；
+> `Your Company` = 你的公司名称；`admin@example.com` = 你的管理员邮箱；
+> `b2b_independent_site` = 库名；`b2b_user` = 数据库角色；
+> `/var/www/b2b-independent-site` = 项目目录（小写）。
+>
+> `your-domain.com` 只是占位符，不是任何真实公司的域名；命令、证书路径、验证地址都要换成你自己的域名。
+> 站点名称和首页内容可在上线后到 `/admin/settings` 修改。
 >
 > **原则**：数据可以救，机器必须重装。旧机上的任何程序、脚本、二进制**一律不要带过来**。
 >
@@ -17,7 +22,7 @@
 
 ## 阶段 0 · 本地准备（备份 + 新凭据）
 
-- [ ] **确认已下载后台备份**：登录 `https://commoditychina.com/admin/backup` → 「下载备份」，
+- [ ] **确认已下载后台备份**：登录 `https://your-domain.com/admin/backup` → 「下载备份」，
       得到 `backup-*.zip`，移到安全位置保存（它包含内容 + 已上传图片）
 - [ ] 对照下表确认是否还需要额外 `pg_dump`：
 
@@ -124,7 +129,7 @@ free -h
 - [ ] 另开 PuTTY 窗口，默认端口 22 + 密码能登录（当前会话先别关）
 - [ ] `ufw status` 里 22/80/443 均为 ALLOW IN；`free -h` Swap 已启用
 
-**可选（推荐）：改用密钥登录**——确认新公钥能免密登录后，执行 `DEPLOYMENT.md §1.2.4`，
+**可选（推荐）：改用密钥登录**——确认新公钥能免密登录后，执行 `通用独立站 DEPLOYMENT.md §1.2.4`，
 关闭 `PasswordAuthentication`（`sshd -T` 期望 `passwordauthentication no`）。
 
 ---
@@ -192,11 +197,11 @@ echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
 
 ```bash
 cd /var/www
-git clone https://github.com/Andychen16888/B2B-Independent-Site.git
-mv B2B-Independent-Site b2b-independent-site      # 必须改成小写！
+# 如果你 fork 了仓库，把下面的 URL 换成你自己的仓库地址
+git clone https://github.com/Andychen16888/independent-site.git b2b-independent-site
 chown -R root:root b2b-independent-site
 cd b2b-independent-site
-ls -ld /var/www/b2b-independent-site              # 期望 root root，小写 b2b-
+ls -ld /var/www/b2b-independent-site              # 期望 root root
 
 cp .env.example .env
 nano .env
@@ -208,8 +213,11 @@ nano .env
 |------|------|
 | `DATABASE_URL` | `postgresql://b2b_user:【DB_PWD】@localhost:5432/b2b_independent_site?schema=public` |
 | `NEXTAUTH_SECRET` | `【NEXTAUTH_SECRET】` |
-| `NEXTAUTH_URL` | `https://commoditychina.com` |
-| `NEXT_PUBLIC_SITE_URL` | `https://commoditychina.com` |
+| `SEED_ADMIN_EMAIL` | `admin@example.com`（改成你自己的邮箱，仅首次建表生效） |
+| `NEXTAUTH_URL` | `https://your-domain.com` |
+| `NEXT_PUBLIC_SITE_URL` | `https://your-domain.com` |
+| `NEXT_PUBLIC_SITE_NAME` | `Your Company`（构建期默认值，也可在 `/admin/settings` 改） |
+| `SMTP_FROM` | `Your Company <no-reply@your-domain.com>` |
 
 - [ ] `grep '^DATABASE_URL' .env` 有输出且行首不是 `#`
 - [ ] `DATABASE_URL` 主机名是 `localhost`（不是 `db`）
@@ -238,7 +246,7 @@ test -f .next/standalone/server.js && echo "build ok, ready to start"
 ```bash
 cd /var/www/b2b-independent-site
 npm run db:migrate
-npm run db:seed            # 建管理员 81570423@qq.com / Admin123!，上线后立刻改密码
+npm run db:seed            # 建管理员 SEED_ADMIN_EMAIL / Admin123!，上线后立刻改密码
 ```
 
 - [ ] 可选：博客正文翻译 `npm run db:translate-blog`（需 `.env` 里 OPENAI_API_KEY）
@@ -269,7 +277,7 @@ curl http://localhost:3000/api/health    # {"status":"ok",...}
 sudo tee /etc/nginx/sites-available/b2b-independent-site > /dev/null <<'EOF'
 server {
   listen 80;
-  server_name commoditychina.com www.commoditychina.com;
+  server_name your-domain.com www.your-domain.com;
   location /.well-known/acme-challenge/ { root /var/www/b2b-independent-site/public; }
   location / {
     proxy_pass http://127.0.0.1:3000;
@@ -292,15 +300,15 @@ sudo nginx -t && sudo systemctl reload nginx
 # 8.2 申请证书
 sudo apt install -y certbot
 sudo certbot certonly --webroot -w /var/www/b2b-independent-site/public \
-  -d commoditychina.com -d www.commoditychina.com \
+  -d your-domain.com -d www.your-domain.com \
   --email you@example.com --agree-tos --no-eff-email
-sudo ls -l /etc/letsencrypt/live/commoditychina.com/
+sudo ls -l /etc/letsencrypt/live/your-domain.com/
 
 # 8.3 启用完整模板（含 HTTPS + 缓存）
 cd /var/www/b2b-independent-site
 sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
 sudo chown -R www-data:www-data /var/cache/nginx
-bash scripts/install-nginx-conf.sh commoditychina.com
+bash scripts/install-nginx-conf.sh your-domain.com
 
 # 断言模板里的项目路径真实存在
 grep -o '/var/www/[^ /;]*' /etc/nginx/sites-enabled/b2b-independent-site | sort -u | while read -r p; do
@@ -308,14 +316,14 @@ grep -o '/var/www/[^ /;]*' /etc/nginx/sites-enabled/b2b-independent-site | sort 
 done
 ```
 
-- [ ] `http://commoditychina.com` 301 跳到 `https://`
+- [ ] `http://your-domain.com` 301 跳到 `https://`
 - [ ] 证书 `sudo certbot renew --dry-run` 通过（systemd timer 自动续期）
 
 ---
 
 ## 阶段 9 · 恢复后台备份 + 初始化
 
-- [ ] 浏览器打开 `https://commoditychina.com/admin`，用 `81570423@qq.com / Admin123!` 登录
+- [ ] 浏览器打开 `https://your-domain.com/admin`，用 `.env` 中 `SEED_ADMIN_EMAIL` 的邮箱 / `Admin123!` 登录
 - [ ] **立刻修改管理员密码**
 - [ ] 进 **备份管理**（`/admin/backup`）→ 上传 `backup-*.zip` → 勾选**覆盖模式** → 「上传并恢复」
       - 上传上限 50MB（nginx `client_max_body_size`）；备份更大时先在服务器调高该值
@@ -340,9 +348,9 @@ grep 'Accepted' /root/incident/auth.log | grep -v 'for root' || echo "无 root �
 pm2 status                                   # online，重启次数 ↺ = 0
 curl -s http://localhost:3000/api/health     # {"status":"ok",...}
 ss -tlnp | grep -E ':(3000|5432)\b'          # 只 listen 127.0.0.1
-curl -sI https://commoditychina.com | head -1        # HTTP/2 200
-curl -sI https://commoditychina.com/api/health       # 200
-curl -sI "https://commoditychina.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" | grep -i X-Cache-Status
+curl -sI https://your-domain.com | head -1        # HTTP/2 200
+curl -sI https://your-domain.com/api/health       # 200
+curl -sI "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" | grep -i X-Cache-Status
 
 # 系统干净度
 crontab -l                                   # 仅 nginx @reboot，无 amco_/pakchoi
@@ -384,6 +392,6 @@ df -h /; free -h; pm2 monit
 
 ## 相关文档
 
-- [DEPLOYMENT.md](./DEPLOYMENT.md) —— 部署完整流程（PM2 + 系统 Nginx + PostgreSQL）
+- [DEPLOYMENT.md](./通用独立站%20DEPLOYMENT.md) —— 部署完整流程（PM2 + 系统 Nginx + PostgreSQL）
 - [INCIDENT-RECOVERY.md](./INCIDENT-RECOVERY.md) —— 入侵后恢复与凭据轮换
 - [OPERATIONS.md](./OPERATIONS.md) —— 运维、环境变量与第三方服务配置

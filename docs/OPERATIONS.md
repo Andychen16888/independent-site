@@ -3,10 +3,11 @@
 > 技术栈: Next.js 15 (standalone) + PostgreSQL 16 + Nginx + PM2
 >
 > **部署只有一条路径**：系统 Node + PM2 + 系统 Nginx。
-> 完整部署流程见 **[部署指南](./DEPLOYMENT.md)**，本文件只收录与部署方式无关的
+> 完整部署流程见 **[部署指南](./通用独立站%20DEPLOYMENT.md)**，本文件只收录与部署方式无关的
 > 运维、监控、备份、支付/邮件/SEO 等通用配置。
 >
-> 站点 `commoditychina.com` 当前即运行在此方式上，已上线验证。
+> 本文中的 `your-domain.com` / `Your Company` / `admin@example.com` 均为占位符，
+> 请按 **[部署指南](./通用独立站%20DEPLOYMENT.md)** 开头的说明替换成你自己的域名、公司名和邮箱。
 
 ---
 
@@ -108,7 +109,7 @@ openssl rand -base64 32   # 生成 NEXTAUTH_SECRET
 
 | 字段 | 值 |
 |------|-----|
-| 邮箱 | `81570423@qq.com` |
+| 邮箱 | `.env` 中的 `SEED_ADMIN_EMAIL`（默认 `admin@example.com`） |
 | 密码 | `Admin123!` |
 
 > **重要**：登录后台后请立即修改默认密码。
@@ -403,7 +404,7 @@ Went Wrong」）。**
 还有第二种更隐蔽的故障：软导航（点链接）会用**同一个 URL** 拉取 RSC payload
 （`Content-Type: text/x-component`），只是多带一个 `RSC` 请求头。CSS/普通请求按 URL 缓存，
 **CDN 层不认自定义 `Vary` 头**，于是这份 flight 数据被按 HTML 的 URL 缓存下来，之后
-`https://你的域名/en` 直接访问就返回 flight 文本（**页面显示乱码**）。两种故障的根因都是
+`https://your-domain.com/en` 直接访问就返回 flight 文本（**页面显示乱码**）。两种故障的根因都是
 「让 CDN 缓存了页面 HTML/RSC」。
 
 源站已做加固，但**最终仍需在 Cloudflare 侧确认**：
@@ -500,10 +501,10 @@ jobs:
 | SSL 到期 | `sudo certbot renew --force-renewal`；检查 `/etc/letsencrypt/live/` |
 | 内存不足 | `free -h`；PM2 `--max-memory-restart 1G` |
 
-部署流程与站点特有的排查见 [部署指南 §13 故障排查](./DEPLOYMENT.md#13-故障排查)。
+部署流程与站点特有的排查见 [部署指南 §13 故障排查](./通用独立站%20DEPLOYMENT.md#13-故障排查)。
 
 ---
 
-完整部署流程见 **[部署指南](./DEPLOYMENT.md)**。
+完整部署流程见 **[部署指南](./通用独立站%20DEPLOYMENT.md)**。
 
 > 最后更新: 2026-09-18

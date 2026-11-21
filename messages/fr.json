@@ -203,7 +203,7 @@
     "instagram": {
       "eyebrow": "Suivez-nous",
       "follow": "Suivre sur Instagram",
-      "tagline": "Taguez @commoditychina pour avoir une chance d'être mis en avant"
+      "tagline": "Taguez @yourcompany pour avoir une chance d'être mis en avant"
     },
     "newsletter": {
       "eyebrow": "Restez connecté",
@@ -304,7 +304,7 @@
   },
   "blog": {
     "title": "Magazine",
-    "metaDescription": "Analyses du marché des matières premières, guides d'approvisionnement et savoir-faire commercial du journal Commodities From China.",
+    "metaDescription": "Analyses du marché des matières premières, guides d'approvisionnement et savoir-faire commercial de notre journal.",
     "eyebrow": "Guides & analyses",
     "heading": "Le Magazine",
     "subtitle": "Tendances du marché des matières premières, conseils d'approvisionnement et connaissances logistiques commerciales pour les importateurs d'Asie du Sud-Est, d'Afrique et des marchés des Nouvelles routes de la soie.",

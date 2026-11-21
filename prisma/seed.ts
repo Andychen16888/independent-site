@@ -27,7 +27,7 @@ async function main() {
 
   await removeUnsupportedLocaleTranslations()
 
-  const adminEmail = "81570423@qq.com"
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@example.com"
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
 
   if (existing) {
@@ -44,7 +44,7 @@ async function main() {
       },
     })
     console.log("Admin user created:")
-    console.log("  Email:    81570423@qq.com")
+    console.log(`  Email:    ${adminEmail}`)
     console.log("  Password: Admin123!")
   }
 
@@ -446,7 +446,7 @@ const defaultBlogPosts: { title: string; slug: string; excerpt: string; content:
 
 <h2>Why Work with a Sourcing Partner?</h2>
 
-<p>A reliable sourcing partner, like Commodities From China, handles supplier vetting, quality control, and export logistics for you — so you get factory-direct pricing without the hassle of managing factories abroad.</p>`,
+<p>A reliable sourcing partner, like Your Company, handles supplier vetting, quality control, and export logistics for you — so you get factory-direct pricing without the hassle of managing factories abroad.</p>`,
     author: "Content Editor",
     tags: "importing, sourcing, china, b2b, wholesale",
     publishedAt: "2026-04-15",
@@ -481,7 +481,7 @@ const defaultBlogPosts: { title: string; slug: string; excerpt: string; content:
 
 <h2>Our Approach</h2>
 
-<p>At Commodities From China, every batch is inspected before shipment. Certified electronics and certified food-safe kitchenware can't be taken on faith — they're verified, documented, and traceable.</p>`,
+<p>At Your Company, every batch is inspected before shipment. Certified electronics and certified food-safe kitchenware can't be taken on faith — they're verified, documented, and traceable.</p>`,
     author: "Content Editor",
     tags: "quality control, inspection, manufacturing, b2b, suppliers",
     publishedAt: "2026-04-10",

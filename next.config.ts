@@ -51,19 +51,10 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "**" },
     ],
-    // CPU 优化: 只生成 WebP（不生成 AVIF——sharp 的 AVIF 编码极耗 CPU，
-    // 双核小机在爬虫请求图片时容易被 AVIF 编码打满）。
-    formats: ["image/webp"],
-    // 优化结果在 .next/cache 落盘缓存 1 年，同一张图只编码一次。
-    minimumCacheTTL: 31536000,
-    qualities: [60, 75, 82, 85],
-    // 限制候选分辨率，减少 sharp 编码组合数（同一张图最多按这几个宽度出图），
-    // 其余宽度全部落到最小可用档，显著降低图片优化 CPU 占用。
-    deviceSizes: [640, 828, 1080, 1920],
-    imageSizes: [16, 32, 64, 128, 256, 384],
   },
   async headers() {
     const privateRoutes = [

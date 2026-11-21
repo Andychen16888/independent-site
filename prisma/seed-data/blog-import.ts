@@ -40,7 +40,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>为什么与采购伙伴合作？</h2>
 
-<p>像 Commodities From China 这样可靠的采购伙伴，会为您处理供应商审核、质量控制和出口物流——让您无需费心管理海外工厂，即可获得工厂直销的价格。</p>`,
+<p>像 Your Company 这样可靠的采购伙伴，会为您处理供应商审核、质量控制和出口物流——让您无需费心管理海外工厂，即可获得工厂直销的价格。</p>`,
   },
   es: {
     title: "Cómo Importar desde China: Guía Completa para Principiantes",
@@ -81,7 +81,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>¿Por Qué Trabajar con un Socio de Abastecimiento?</h2>
 
-<p>Un socio de abastecimiento confiable, como Commodities From China, se encarga de la evaluación de proveedores, el control de calidad y la logística de exportación por usted — así obtiene precios de fábrica sin las molestias de gestionar fábricas en el extranjero.</p>`,
+<p>Un socio de abastecimiento confiable, como Your Company, se encarga de la evaluación de proveedores, el control de calidad y la logística de exportación por usted — así obtiene precios de fábrica sin las molestias de gestionar fábricas en el extranjero.</p>`,
   },
   pt: {
     title: "Como Importar da China: Guia Completo para Iniciantes",
@@ -122,7 +122,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Por Que Trabalhar com um Parceiro de Compras?</h2>
 
-<p>Um parceiro de compras confiável, como a Commodities From China, cuida da avaliação de fornecedores, do controle de qualidade e da logística de exportação para você — assim você obtém preços de fábrica sem o transtorno de gerenciar fábricas no exterior.</p>`,
+<p>Um parceiro de compras confiável, como a Your Company, cuida da avaliação de fornecedores, do controle de qualidade e da logística de exportação para você — assim você obtém preços de fábrica sem o transtorno de gerenciar fábricas no exterior.</p>`,
   },
   fr: {
     title: "Comment Importer de Chine : Guide Complet pour Débutants",
@@ -163,7 +163,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Pourquoi Travailler avec un Partenaire d'Approvisionnement ?</h2>
 
-<p>Un partenaire d'approvisionnement fiable, comme Commodities From China, gère pour vous le sélection des fournisseurs, le contrôle qualité et la logistique d'exportation — vous obtenez ainsi les prix directs usine sans les tracas de la gestion d'usines à l'étranger.</p>`,
+<p>Un partenaire d'approvisionnement fiable, comme Your Company, gère pour vous le sélection des fournisseurs, le contrôle qualité et la logistique d'exportation — vous obtenez ainsi les prix directs usine sans les tracas de la gestion d'usines à l'étranger.</p>`,
   },
   de: {
     title: "Import aus China: Der komplette Leitfaden für Einsteiger",
@@ -204,7 +204,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Warum mit einem Beschaffungspartner arbeiten?</h2>
 
-<p>Ein zuverlässiger Beschaffungspartner wie Commodities From China übernimmt Lieferantenauswahl, Qualitätskontrolle und Exportlogistik für Sie — so erhalten Sie Direktbezugpreise, ohne Fabriken im Ausland selbst managen zu müssen.</p>`,
+<p>Ein zuverlässiger Beschaffungspartner wie Your Company übernimmt Lieferantenauswahl, Qualitätskontrolle und Exportlogistik für Sie — so erhalten Sie Direktbezugpreise, ohne Fabriken im Ausland selbst managen zu müssen.</p>`,
   },
   ru: {
     title: "Как импортировать из Китая: полное руководство для начинающих",
@@ -245,7 +245,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Зачем работать с закупочным партнёром?</h2>
 
-<p>Надёжный закупочный партнёр, такой как Commodities From China, берёт на себя проверку поставщиков, контроль качества и экспортную логистику — вы получаете цены напрямую от завода без хлопот по управлению зарубежными заводами.</p>`,
+<p>Надёжный закупочный партнёр, такой как Your Company, берёт на себя проверку поставщиков, контроль качества и экспортную логистику — вы получаете цены напрямую от завода без хлопот по управлению зарубежными заводами.</p>`,
   },
   ar: {
     title: "كيف تستورد من الصين: دليل شامل للمبتدئين",
@@ -286,7 +286,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>لماذا تعمل مع شريك توريد؟</h2>
 
-<p>شريك توريد موثوق مثل Commodities From China يتولى التحقق من الموردين ومراقبة الجودة ولوجستيات التصدير نيابة عنك — فتحصل على الأسعار المباشرة من المصنع دون عناء إدارة المصانع في الخارج.</p>`,
+<p>شريك توريد موثوق مثل Your Company يتولى التحقق من الموردين ومراقبة الجودة ولوجستيات التصدير نيابة عنك — فتحصل على الأسعار المباشرة من المصنع دون عناء إدارة المصانع في الخارج.</p>`,
   },
   id: {
     title: "Cara Impor dari China: Panduan Lengkap untuk Pemula",
@@ -327,7 +327,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Mengapa Bekerja Sama dengan Mitra Pengadaan?</h2>
 
-<p>Mitra pengadaan yang andal, seperti Commodities From China, menangani penyeleksian pemasok, kontrol kualitas, dan logistik ekspor untuk Anda — sehingga Anda mendapatkan harga langsung dari pabrik tanpa repot mengelola pabrik di luar negeri.</p>`,
+<p>Mitra pengadaan yang andal, seperti Your Company, menangani penyeleksian pemasok, kontrol kualitas, dan logistik ekspor untuk Anda — sehingga Anda mendapatkan harga langsung dari pabrik tanpa repot mengelola pabrik di luar negeri.</p>`,
   },
   vi: {
     title: "Cách nhập hàng từ Trung Quốc: Hướng dẫn đầy đủ cho người mới",
@@ -368,7 +368,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Vì sao nên làm việc với đối tác tìm nguồn?</h2>
 
-<p>Một đối tác tìm nguồn đáng tin cậy, như Commodities From China, lo việc đánh giá nhà cung cấp, kiểm soát chất lượng và logistics xuất khẩu cho bạn — để bạn có giá trực tiếp từ nhà máy mà không phải đau đầu quản lý nhà máy ở nước ngoài.</p>`,
+<p>Một đối tác tìm nguồn đáng tin cậy, như Your Company, lo việc đánh giá nhà cung cấp, kiểm soát chất lượng và logistics xuất khẩu cho bạn — để bạn có giá trực tiếp từ nhà máy mà không phải đau đầu quản lý nhà máy ở nước ngoài.</p>`,
   },
   th: {
     title: "วิธีนำเข้าจากจีน: คู่มือฉบับสมบูรณ์สำหรับผู้เริ่มต้น",
@@ -409,7 +409,7 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>ทำไมต้องทำงานกับพันธมิตรด้านการจัดหา</h2>
 
-<p>พันธมิตรด้านการจัดหาที่ไว้วางใจได้ เช่น Commodities From China ดูแลการคัดเลือกซัพพลายเออร์ การควบคุมคุณภาพ และโลจิสติกส์การส่งออกให้คุณ — คุณจึงได้ราคาโดยตรงจากโรงงานโดยไม่ต้องยุ่งยากในการบริหารโรงงานในต่างประเทศ</p>`,
+<p>พันธมิตรด้านการจัดหาที่ไว้วางใจได้ เช่น Your Company ดูแลการคัดเลือกซัพพลายเออร์ การควบคุมคุณภาพ และโลจิสติกส์การส่งออกให้คุณ — คุณจึงได้ราคาโดยตรงจากโรงงานโดยไม่ต้องยุ่งยากในการบริหารโรงงานในต่างประเทศ</p>`,
   },
   ms: {
     title: "Cara Mengimport dari China: Panduan Lengkap untuk Pemula",
@@ -450,6 +450,6 @@ export const importBeginnerTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Mengapa Bekerjasama dengan Rakan Perolehan?</h2>
 
-<p>Rakan perolehan yang boleh dipercayai, seperti Commodities From China, mengendalikan penilaian pembekal, kawalan kualiti dan logistik eksport bagi pihak anda — anda mendapat harga terus dari kilang tanpa kesusahan mengurus kilang di luar negara.</p>`,
+<p>Rakan perolehan yang boleh dipercayai, seperti Your Company, mengendalikan penilaian pembekal, kawalan kualiti dan logistik eksport bagi pihak anda — anda mendapat harga terus dari kilang tanpa kesusahan mengurus kilang di luar negara.</p>`,
   },
 }

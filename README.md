@@ -1,11 +1,13 @@
-# Commodities From China — E-commerce Platform
+# Generic B2B/B2C E-commerce Platform
 
-A B2B/B2C e-commerce platform built with Next.js 15, featuring Stripe/PayPal payments, OpenAI AI customer-service chat, affiliate program, and admin dashboard.
+A white-label e-commerce platform built with Next.js 15, featuring Stripe/PayPal payments, OpenAI AI customer-service chat, affiliate program, and admin dashboard.
+
+> Replace the placeholders before deploying: `your-domain.com` (your domain), `Your Company` (your brand), and `admin@example.com` (your admin email). Site name and homepage content can be changed later in `/admin/settings`.
 
 ## Quick Start
 
 ```bash
-npm install
+npm ci --legacy-peer-deps
 npm run dev
 ```
 
@@ -18,6 +20,8 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 ```bash
 cp .env.example .env.local
 ```
+
+See the placeholder table at the top of [docs/通用独立站%20DEPLOYMENT.md](docs/通用独立站%20DEPLOYMENT.md) for the full list.
 
 ## Key Scripts
 
@@ -34,6 +38,6 @@ cp .env.example .env.local
 
 Single supported path: system Node.js + PM2 + system Nginx + PostgreSQL. No Docker files are kept in this repo.
 
-- [Deployment guide](docs/DEPLOYMENT.md) — the full production flow, currently in production
+- [Deployment guide](docs/通用独立站%20DEPLOYMENT.md) — the full production flow
 - [Operations & reference](docs/OPERATIONS.md) — monitoring, backups, env vars, payments, SEO/GEO, admin setup
 - [Incident recovery](docs/INCIDENT-RECOVERY.md) — server compromise checklist

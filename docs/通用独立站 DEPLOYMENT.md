@@ -1,6 +1,6 @@
 # 部署指南
 
-> 适用：1 核 2GB 起步的小内存 VPS（Vultr / DigitalOcean 等），已用于生产环境验证。
+> 适用：1 核 1GB VPS 可运行（需 1–2GB swap，Vultr / DigitalOcean 等），1 核 2GB 更稳。
 > 技术栈：Ubuntu 24.04 + Node.js 20 + PostgreSQL 16 + Nginx + PM2
 > 配套文档：[运维与通用参考](./OPERATIONS.md)　|　[服务器被入侵后的恢复清单](./INCIDENT-RECOVERY.md)
 >
@@ -9,6 +9,46 @@
 >
 > 🚨 **服务器疑似被入侵（挖矿程序 / 后门账号 / CPU 满载）？不要在原机上修，直接看
 > [服务器被入侵后的恢复清单](./INCIDENT-RECOVERY.md)。**
+
+---
+
+## 开始之前：域名与品牌占位符（必读）
+
+本教程和仓库里的 Nginx 模板使用统一占位符。每家公司域名不同，部署前请统一替换：
+
+| 占位符 | 含义 | 示例 |
+|--------|------|------|
+| `your-domain.com` | 你的主域名（不带 `www`） | `example.com` |
+| `www.your-domain.com` | 你的 `www` 域名（如使用） | `www.example.com` |
+| `https://your-domain.com` | 站点完整 HTTPS 地址 | `https://example.com` |
+| `Your Company` | 你的公司名称 | `Acme Trading` |
+| `admin@example.com` | 初始化管理员邮箱 | `ops@acme.com` |
+| `you@example.com` | 接收 SSL 续期提醒的邮箱 | `ops@acme.com` |
+
+> `your-domain.com` 只是占位符，**不是任何真实公司的域名**。下文所有命令、证书路径、
+> `curl` 验证地址里的 `your-domain.com` 都要换成你自己的域名；`www` 证书只在确实解析了
+> `www` 主机记录时才申请。
+>
+> 站点名称、页脚文案、首页各板块内容在站点上线后到 `/admin/settings` 修改；
+> `.env` 里的 `NEXT_PUBLIC_SITE_NAME` / `NEXT_PUBLIC_SITE_URL` 是构建期默认值，修改后需重新构建。
+
+---
+
+## 1 核 1GB 低配模式（VULTR）
+
+代码已针对 1 核 1GB 做过以下优化，部署时请配合这些设置：
+
+| 项目 | 设置 |
+|------|------|
+| 图片 | `next.config.ts` 已设 `images.unoptimized: true`，服务器不再用 sharp 编码图片 |
+| PM2 | `ecosystem.config.js` 已设 `--max-old-space-size=768`、`max_memory_restart: 900M`、`instances: 1` |
+| 首页 | 只渲染 Hero / 公司介绍 / 产品分类 / 推荐产品，缓存 1 小时（`revalidate = 3600`） |
+| 构建 | **不要在这台机器上执行 `npm run build`**；在本地或 CI 构建后上传 `.next/standalone` |
+| Swap | 必须创建 1–2GB swap：`fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`，并写入 `/etc/fstab` |
+| PostgreSQL | 建议 `shared_buffers = 128MB`、`max_connections = 30` |
+| Nginx | `worker_processes 1`，只缓存 `/_next/static/` 与静态图片，不缓存 HTML |
+
+低配机适合低流量展示站；如果爬虫集中抓图或后台频繁重建，建议升级到 1 核 2GB。
 
 ---
 
@@ -319,24 +359,20 @@ GRANT ALL ON SCHEMA public TO b2b_user;
 
 ```bash
 cd /var/www
-git clone https://github.com/Andychen16888/B2B-Independent-Site.git
-
-# ⚠️ 必须重命名：仓库名是 B2B-Independent-Site（大写 B2B），
-#    而本教程后续所有命令、Nginx 模板里的绝对路径都按小写 b2b-independent-site 写。
-#    Linux 区分大小写，不改的话后面每条 cd 都会报 "No such file or directory"。
-mv B2B-Independent-Site b2b-independent-site
+# 如果你 fork 了仓库，把下面的 URL 换成你自己的仓库地址
+git clone https://github.com/Andychen16888/independent-site.git b2b-independent-site
 
 chown -R root:root b2b-independent-site
 cd b2b-independent-site
 
-# 确认路径与属主都正确（必须是小写 b2b-）
+# 确认路径与属主都正确
 ls -ld /var/www/b2b-independent-site        # 期望：drwxr-xr-x ... root root ... b2b-independent-site
 ```
 
-> **为什么全篇用小写**：仓库名带大写 `B2B`，`git clone` 出来的目录就是大写；
-> 但 Nginx 模板（`b2b-independent-site.nginx.conf`）里 `root` / `alias` / `proxy_cache_path`
-> 等多处硬编码了 `/var/www/b2b-independent-site`，日志、备份、运维命令也统一用小写。
-> 统一成小写一处改到底，比在几十处命令里反复区分大小写可靠得多。
+> **为什么目录固定叫 `b2b-independent-site`**：Nginx 模板
+> （`b2b-independent-site.nginx.conf`）里 `root` / `alias` / `proxy_cache_path` 等多处
+> 硬编码了 `/var/www/b2b-independent-site`，日志、备份、运维命令也统一用这个路径。
+> 若改用别的目录名，必须同步修改模板和全篇命令中的路径。
 >
 > **为什么属主是 `root:root`**：本教程全程 root 部署，`ecosystem.config.js` 里的
 > `pm2` 也以 root 运行（`pm2 startup systemd -u root`），应用需要**写**权限到
@@ -368,8 +404,15 @@ nano .env
 |------|------|------|
 | `DATABASE_URL` | PostgreSQL 连接串 | `postgresql://b2b_user:【DB_PWD】@localhost:5432/b2b_independent_site?schema=public` |
 | `NEXTAUTH_SECRET` | 随机密钥 | `【NEXTAUTH_SECRET】` |
-| `NEXTAUTH_URL` | 站点 https 地址 | `https://commoditychina.com` |
-| `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://commoditychina.com` |
+| `SEED_ADMIN_EMAIL` | 初始化管理员邮箱（仅首次 `db:seed` 生效） | `admin@example.com` |
+| `ADMIN_TRACKING_EMAIL` | 埋点统计排除的管理员邮箱（留空则同 `SEED_ADMIN_EMAIL`） | 留空或 `ops@acme.com` |
+| `NEXTAUTH_URL` | 站点 https 地址 | `https://your-domain.com` |
+| `NEXT_PUBLIC_SITE_URL` | 同站点地址 | `https://your-domain.com` |
+| `NEXT_PUBLIC_SITE_NAME` | 公司名称（构建期默认值，也可在 `/admin/settings` 改） | `Your Company` |
+| `SMTP_FROM` | 发件人名称与邮箱 | `Your Company <no-reply@your-domain.com>` |
+
+> 上表中的 `your-domain.com` / `Your Company` / `admin@example.com` 都是占位符，请按
+> 本文件开头的说明替换成你自己的域名、公司名和管理员邮箱。
 
 > ⚠️ **`DATABASE_URL` 的主机名必须是 `localhost`。**
 > 本项目只用主机直装的 PostgreSQL，不存在容器网络。若误填容器服务名 `db` 会报：
@@ -460,7 +503,8 @@ npm run db:seed
 
 > 顺序不能错**：先 `db:migrate` 再 `db:seed`，否则 seed 报 `table does not exist`。
 >
-> 种子会创建管理员账号 `81570423@qq.com` / `Admin123!`，**上线后立刻在后台改掉密码**。
+> 种子会创建管理员账号 `admin@example.com` / `Admin123!`（邮箱取自 `.env` 的 `SEED_ADMIN_EMAIL`），
+> **上线后立刻在后台改掉密码**。
 
 ### 方式 B：后台备份 zip 恢复（推荐，新站/内容迁移）
 
@@ -476,8 +520,8 @@ npm run db:seed
 
 接着完成 [§7 启动应用](#7-启动应用-pm2)、[§8 Nginx 配置](#8-nginx-配置) 让站点能正常访问。站点上线后：
 
-1. 浏览器打开 `https://你的域名/admin/backup`
-2. 用管理员账号登录（`81570423@qq.com / Admin123!`，**登录后立刻改密码**）
+1. 浏览器打开 `https://your-domain.com/admin/backup`
+2. 用管理员账号登录（`SEED_ADMIN_EMAIL` 中填写的邮箱 / `Admin123!`，**登录后立刻改密码**）
 3. 点击「下载备份」可导出当前站点内容（也可直接上传之前导出的 `backup-*.zip`）
 4. 选择之前导出的 `backup-*.zip` → **建议勾选「覆盖模式」**（更干净）→ 点击「上传并恢复」
 5. 恢复完成后，商品、分类、页面、博客、横幅、菜单、站点设置以及已上传的图片都会一并恢复
@@ -582,7 +626,7 @@ pm2 status
 sudo tee /etc/nginx/sites-available/b2b-independent-site > /dev/null <<'EOF'
 server {
   listen 80;
-  server_name commoditychina.com www.commoditychina.com;
+  server_name your-domain.com www.your-domain.com;
 
   # certbot 验证路径（HTTP-only 阶段不能用 301 跳转，必须显式放行）
   location /.well-known/acme-challenge/ {
@@ -611,7 +655,7 @@ sudo mkdir -p /var/www/b2b-independent-site/public/.well-known/acme-challenge
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-此时 `http://commoditychina.com` 已能正常访问（纯 HTTP）。
+此时 `http://your-domain.com` 已能正常访问（纯 HTTP）。
 
 ### 8.2 申请 SSL 证书
 
@@ -621,11 +665,11 @@ sudo apt install -y certbot
 
 sudo certbot certonly --webroot \
   -w /var/www/b2b-independent-site/public \
-  -d commoditychina.com -d www.commoditychina.com \
+  -d your-domain.com -d www.your-domain.com \
   --email you@example.com --agree-tos --no-eff-email
 
 # 确认证书已生成
-sudo ls -l /etc/letsencrypt/live/commoditychina.com/
+sudo ls -l /etc/letsencrypt/live/your-domain.com/
 ```
 
 > 用 `certonly --webroot` 而不是 `certbot --nginx`：后者会重写 nginx 配置，
@@ -643,7 +687,7 @@ sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
 sudo chown -R www-data:www-data /var/cache/nginx
 
 # 安装模板：自动替换域名、备份旧配置、nginx -t 校验、失败自动还原
-bash scripts/install-nginx-conf.sh commoditychina.com
+bash scripts/install-nginx-conf.sh your-domain.com
 
 # 断言：模板里的项目路径必须真实存在（大小写不一致时 nginx -t 不会报错，
 # 但运行期会 404/502，非常隐蔽）。目录名对不上时先回 §4 重命名。
@@ -658,10 +702,9 @@ done
 > `nginx -t` 会报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."`。
 > 此时 nginx 仍在用旧配置运行（reload 没执行），但**机器一重启就起不来**，站点全挂。
 > `scripts/install-nginx-conf.sh` 会替换域名并在校验失败时自动还原旧配置。
-> 万一已经手动 cp 过，就地修复：
+> 万一已经手动 cp 过，直接重跑安装脚本即可（前提是 `.env` 与证书路径中的域名一致）：
 > ```bash
-> sudo sed -i 's/your-domain\.com/commoditychina.com/g' /etc/nginx/sites-enabled/b2b-independent-site
-> sudo nginx -t && sudo systemctl reload nginx
+> bash scripts/install-nginx-conf.sh your-domain.com
 > ```
 
 > **常见报错对照**
@@ -713,8 +756,8 @@ curl http://localhost:3000/api/health
 curl -o /dev/null -w "HTTP %{http_code}\n" http://localhost:3000
 
 # 4. 从外部（域名已解析后）
-curl -I https://commoditychina.com          # 期望 HTTP/2 200
-curl -I http://commoditychina.com           # 期望 301 → https
+curl -I https://your-domain.com          # 期望 HTTP/2 200
+curl -I http://your-domain.com           # 期望 301 → https
 ```
 
 **5. 图片缓存是否真的生效**（省 CPU 的关键，必须确认）：
@@ -723,10 +766,10 @@ curl -I http://commoditychina.com           # 期望 301 → https
 # 找一个已上传商品的图片 URL
 IMG=$(grep -oP 'https://[^"]*uploads/[^"]*' public/uploads/*.json 2>/dev/null | head -1)
 # 或直接从浏览器复制任意商品图地址后：
-# curl -sI -H 'Accept: image/webp' "https://commoditychina.com/实际图片路径" | grep -iE 'X-Cache-Status|Hit'
+# curl -sI -H 'Accept: image/webp' "https://your-domain.com/实际图片路径" | grep -iE 'X-Cache-Status|Hit'
 
 # 首次 MISS、上传后重复请求应 HIT，且 30 天内不再回源
-curl -sI "https://commoditychina.com/实际图片路径" | grep -i X-Cache-Status   # 期望 HIT
+curl -sI "https://your-domain.com/实际图片路径" | grep -i X-Cache-Status   # 期望 HIT
 ```
 
 > 持续 `MISS` 说明磁盘缓存没写入或缓存目录被清空，见 §8.3 的 `mkdir -p /var/cache/nginx/b2b_img`。
@@ -761,8 +804,8 @@ curl -sI "https://commoditychina.com/实际图片路径" | grep -i X-Cache-Statu
 > 重载后如何确认缓存生效：
 > ```bash
 > # 1. 同一张 /_next/image 请求两次，第二次应从 MISS 变 HIT
-> curl -s -o /dev/null -D - "https://YOUR_DOMAIN/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
-> curl -s -o /dev/null -D - "https://YOUR_DOMAIN/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
+> curl -s -o /dev/null -D - "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
+> curl -s -o /dev/null -D - "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
 > #   第一次 MISS（冷缓存）、第二次 HIT，即缓存已生效
 > #
 > # 2. 观察 CPU：爬虫抓图 / 访客看图高峰过后应明显回落
@@ -783,10 +826,10 @@ npm run build:server
 pm2 startOrReload ecosystem.config.js
 pm2 save
 
-# ↓↓↓ 本次 CPU 优化（ad79c62）必做：复制 nginx 模板并重载，否则 /_next/image 缓存不生效 ↓↓↓
+# ↓↓↓ 本次 CPU 优化（ad79c62）必做：重装 nginx 模板，否则 /_next/image 缓存不生效 ↓↓↓
 # 纯代码更新且 git log --stat -1 HEAD | grep nginx 无输出时，可跳过下面几行
-sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
-sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+cd /var/www/b2b-independent-site
+bash scripts/install-nginx-conf.sh your-domain.com
 # 必须先建缓存父目录：nginx 不会自动创建 /var/cache/nginx，缺它会报
 #   mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
 sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
@@ -818,9 +861,9 @@ sudo nginx -t && sudo systemctl reload nginx
 > **⚠️ 若本次更新修改了 nginx 模板（如 `b2b-independent-site.nginx.conf`，本次即增加了代理超时与开机自启相关调整），需要重新部署模板并重载**（每次都执行一次也没成本）：
 >
 > ```bash
-> # 从仓库重新复制模板，并把域名替换成你的（示例：commoditychina.com）
-> sudo cp /var/www/b2b-independent-site/b2b-independent-site.nginx.conf /etc/nginx/sites-available/b2b-independent-site
-> sudo sed -i 's/your-domain.com/commoditychina.com/g' /etc/nginx/sites-available/b2b-independent-site
+> # 从仓库重新安装模板，并把 your-domain.com 替换成你的主域名
+> cd /var/www/b2b-independent-site
+> bash scripts/install-nginx-conf.sh your-domain.com
 >
 > # 必须先创建缓存父目录（模板里的 proxy_cache_path 需要它）：
 > #   缺这一步会报 mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
@@ -855,7 +898,7 @@ systemctl list-unit-files | grep pm2    # 应看到 pm2-root.service enabled
 reboot
 # 重启后：
 curl http://localhost:3000/api/health   # 应直接返回 {"status":"ok"...}
-curl -I https://commoditychina.com      # 应直接返回 HTTP/2 200
+curl -I https://your-domain.com      # 应直接返回 HTTP/2 200
 ```
 
 > 已能正常打开网页 ≠ 已配好开机自启。请务必执行上面步骤，否则下次服务器重启后又会出现 504/502。
@@ -927,13 +970,13 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 证书还没签发。必须按 §8.1 → §8.2 → §8.3 顺序：先用 HTTP-only 引导配置把 nginx 跑起来，再 `certbot certonly --webroot` 签发，最后才套含 443 块的完整模板。直接套模板必然报 `cannot load certificate .../fullchain.pem` |
-| `nginx -t` 报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."` | 手动 `cp` 模板时忘了替换域名占位符（`sed 's/your-domain\.com/你的域名/g'`）。此时 nginx 仍在跑旧配置，但**机器重启会起不来**。就地修复：`sudo sed -i 's/your-domain\.com/commoditychina.com/g' /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`，以后改用 `bash scripts/install-nginx-conf.sh commoditychina.com` |
+| `nginx -t` 报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."` | 手动 `cp` 模板时忘了替换域名占位符。此时 nginx 仍在跑旧配置，但**机器重启会起不来**。修复：`cd /var/www/b2b-independent-site && bash scripts/install-nginx-conf.sh your-domain.com`，脚本会自动备份、替换域名并在校验失败时还原 |
 | `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | 后台数据分析里访客 IP 全是 Cloudflare 的 IP / 国家识别不出来 | nginx 没启用 Cloudflare 真实 IP（real_ip 模块）。按第 8.3 节重新部署最新模板：`sudo cp b2b-independent-site.nginx.conf /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`。模块确认：`nginx -V 2>&1 | grep realip`（应输出 `--with-http_realip_module`）。模板已内置 Cloudflare 全部 IPv4/IPv6 网段 + `real_ip_header CF-Connecting-IP` |
 | OOM 构建失败 | 加 swap（第 1.1 节） |
-| 重新部署 / 重构后首页打不开、报 500 或「Something Went Wrong」，但 `curl -I https://你的域名/en` 返回 200 | **Cloudflare 缓存了旧 HTML**：旧 HTML 引用的 `/_next/static/chunks/app/.../layout-<旧哈希>.js` 已被新构建删除（404），浏览器加载失败触发前端错误边界。验证：`curl -s https://你的域名/en` 里的 layout chunk 哈希与 `curl -s "https://你的域名/en?cb=$RANDOM"`（回源）不一致，且旧哈希 `curl -I` 返回 404。修复：① 立即 Caching → Configuration → **Purge Everything**；② 按 `docs/OPERATIONS.md` §12「缓存规则」只缓存 `/_next/static/`、`/static/`，**不要**缓存 HTML（删除任何「Cache Everything」/「HTML → N 分钟」规则）；③ 以后每次部署后清一次缓存 |
-| 直接访问 `https://你的域名/en`（或点击「首页」）返回一堆 `"$Sreact.fragment"`、`I[...]`、`self.__next_f` 之类的文本 = 页面乱码 | **Cloudflare 把 RSC payload 当成 HTML 缓存了**：软导航用同一 URL 拉 `text/x-component`，CDN 忽略自定义 `Vary: RSC`，于是边缘把 flight 数据按该 URL 返回给普通访问。验证：`curl -sS -D - -o NUL https://你的域名/en \| grep -i "content-type\\|cf-cache-status"`（反复几次会看到 `content-type` 在 `text/html` 与 `text/x-component` 间跳变、且 `cf-cache-status: HIT`）。修复：① Caching → Configuration → **Purge Everything**（必须，代码改不了已污染的条目）；② 删除所有 Page Rules「Cache Everything」/「HTML → N 分钟」（**Page Rule 的 Cache Everything 会连 `CDN-Cache-Control` 一起忽略**，只留 `OPERATIONS.md` §12 的两条 Cache Rules）；③ 部署含 `src/middleware.ts` + nginx 模板的版本（源站会下发 `CDN-Cache-Control: no-store`，Cache Rules 会据此 BYPASS） |
+| 重新部署 / 重构后首页打不开、报 500 或「Something Went Wrong」，但 `curl -I https://your-domain.com/en` 返回 200 | **Cloudflare 缓存了旧 HTML**：旧 HTML 引用的 `/_next/static/chunks/app/.../layout-<旧哈希>.js` 已被新构建删除（404），浏览器加载失败触发前端错误边界。验证：`curl -s https://your-domain.com/en` 里的 layout chunk 哈希与 `curl -s "https://your-domain.com/en?cb=$RANDOM"`（回源）不一致，且旧哈希 `curl -I` 返回 404。修复：① 立即 Caching → Configuration → **Purge Everything**；② 按 `docs/OPERATIONS.md` §12「缓存规则」只缓存 `/_next/static/`、`/static/`，**不要**缓存 HTML（删除任何「Cache Everything」/「HTML → N 分钟」规则）；③ 以后每次部署后清一次缓存 |
+| 直接访问 `https://your-domain.com/en`（或点击「首页」）返回一堆 `"$Sreact.fragment"`、`I[...]`、`self.__next_f` 之类的文本 = 页面乱码 | **Cloudflare 把 RSC payload 当成 HTML 缓存了**：软导航用同一 URL 拉 `text/x-component`，CDN 忽略自定义 `Vary: RSC`，于是边缘把 flight 数据按该 URL 返回给普通访问。验证：`curl -sS -D - -o NUL https://your-domain.com/en \| grep -i "content-type\\|cf-cache-status"`（反复几次会看到 `content-type` 在 `text/html` 与 `text/x-component` 间跳变、且 `cf-cache-status: HIT`）。修复：① Caching → Configuration → **Purge Everything**（必须，代码改不了已污染的条目）；② 删除所有 Page Rules「Cache Everything」/「HTML → N 分钟」（**Page Rule 的 Cache Everything 会连 `CDN-Cache-Control` 一起忽略**，只留 `OPERATIONS.md` §12 的两条 Cache Rules）；③ 部署含 `src/middleware.ts` + nginx 模板的版本（源站会下发 `CDN-Cache-Control: no-store`，Cache Rules 会据此 BYPASS） |
 
 ### 13.1 访客埋点停止写入
 
@@ -1011,7 +1054,7 @@ curl -s -X POST http://localhost:3000/api/track \
 
 ## 14. 通用参考（支付/邮件/SEO/管理后台）
 
-以下内容与部署方式无关，部署完成后按需配置，请看 [DEPLOYMENT.md](./DEPLOYMENT.md)：
+以下内容与部署方式无关，部署完成后按需配置，请看 [OPERATIONS.md](./OPERATIONS.md)：
 
 - 环境变量完整说明
 - Stripe / PayPal 支付配置

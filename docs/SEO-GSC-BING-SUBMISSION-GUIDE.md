@@ -1,22 +1,24 @@
 # Google + Bing SEO 提交流程（可直接执行）
 
-适用站点：`https://你的域名`
+适用站点：`https://your-domain.com`
+
+> `your-domain.com` 是占位符，请替换成你自己的主域名（见 [部署指南](./通用独立站%20DEPLOYMENT.md) 开头）。
 
 ## 1) 提交前检查（上线后先做）
 
 确保以下地址都返回 `200`：
 
-- `https://你的域名/sitemap.xml`
-- `https://你的域名/robots.txt`
-- `https://你的域名/llms.txt`
-- `https://你的域名/llms-full.txt`
+- `https://your-domain.com/sitemap.xml`
+- `https://your-domain.com/robots.txt`
+- `https://your-domain.com/llms.txt`
+- `https://your-domain.com/llms-full.txt`
 
 建议再抽查 4 个核心页面：
 
-- `https://你的域名/en`
-- `https://你的域名/en/products`
-- `https://你的域名/en/pages/about`
-- `https://你的域名/en/pages/contact`
+- `https://your-domain.com/en`
+- `https://your-domain.com/en/products`
+- `https://your-domain.com/en/pages/about`
+- `https://your-domain.com/en/pages/contact`
 
 ## 2) Google Search Console（GSC）提交流程
 
@@ -39,16 +41,16 @@
 
 在 GSC 左侧 `Sitemaps` 提交：
 
-- `https://你的域名/sitemap.xml`
+- `https://your-domain.com/sitemap.xml`
 
 ### D. 手动请求收录（首批关键页面）
 
 在 `URL Inspection` 逐条提交：
 
-- `https://你的域名/en`
-- `https://你的域名/en/products`
-- `https://你的域名/en/pages/about`
-- `https://你的域名/en/pages/contact`
+- `https://your-domain.com/en`
+- `https://your-domain.com/en/products`
+- `https://your-domain.com/en/pages/about`
+- `https://your-domain.com/en/pages/contact`
 
 ### E. 提交后观察点
 
@@ -61,7 +63,7 @@
 ### A. 添加站点
 
 1. 访问：<https://www.bing.com/webmasters>
-2. 添加 `https://你的域名`
+2. 添加 `https://your-domain.com`
 3. 验证方式推荐 DNS（也可 meta tag）
 
 ### B. 站点验证（代码方式）
@@ -76,16 +78,16 @@
 
 在 Bing 提交：
 
-- `https://你的域名/sitemap.xml`
+- `https://your-domain.com/sitemap.xml`
 
 ### D. 手动提交关键 URL
 
 在 `URL Inspection` / `Submit URLs` 提交：
 
-- `https://你的域名/en`
-- `https://你的域名/en/products`
-- `https://你的域名/en/pages/about`
-- `https://你的域名/en/pages/contact`
+- `https://your-domain.com/en`
+- `https://your-domain.com/en/products`
+- `https://your-domain.com/en/pages/about`
+- `https://your-domain.com/en/pages/contact`
 
 ### E. 打开 IndexNow（建议）
 
@@ -95,28 +97,28 @@
 ## 4) 可复制模板（提交记录）
 
 ```
-Site: https://你的域名
+Site: https://your-domain.com
 Submitted by: <姓名>
 Date: <YYYY-MM-DD>
 
 [Google Search Console]
 - Property Type: Domain / URL prefix
 - Verified: Yes / No
-- Sitemap Submitted: https://你的域名/sitemap.xml
+- Sitemap Submitted: https://your-domain.com/sitemap.xml
 - URL Inspection submitted:
-  1) https://你的域名/en
-  2) https://你的域名/en/products
-  3) https://你的域名/en/pages/about
-  4) https://你的域名/en/pages/contact
+  1) https://your-domain.com/en
+  2) https://your-domain.com/en/products
+  3) https://your-domain.com/en/pages/about
+  4) https://your-domain.com/en/pages/contact
 
 [Bing Webmaster]
 - Site Verified: Yes / No
-- Sitemap Submitted: https://你的域名/sitemap.xml
+- Sitemap Submitted: https://your-domain.com/sitemap.xml
 - URL Inspection submitted:
-  1) https://你的域名/en
-  2) https://你的域名/en/products
-  3) https://你的域名/en/pages/about
-  4) https://你的域名/en/pages/contact
+  1) https://your-domain.com/en
+  2) https://your-domain.com/en/products
+  3) https://your-domain.com/en/pages/about
+  4) https://your-domain.com/en/pages/contact
 - IndexNow Enabled: Yes / No
 ```
 

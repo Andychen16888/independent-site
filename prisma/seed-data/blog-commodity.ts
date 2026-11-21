@@ -38,7 +38,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>How to Position Your Business</h2>
 
 <p>Buyers who line up stable Chinese supply now will own the margin for years. Work with a trading house that has established relationships with Chinese state-owned enterprises and large manufacturers, that charges lean service fees, and that responds fast to off-list commodity inquiries.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "belt-road, china, international trade, minerals, steel, cement, building-materials",
     publishedAt: "2026-05-08",
   },
@@ -67,7 +67,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>Sourcing Route</h2>
 
 <p>Approach the purchase like an annual supply contract, not a spot gamble. Fixed grades, agreed moisture limits and packed weights (25kg bags, 500kg jumbo bags or FIBC) protect your end users' consistency. A trading house with direct producer ties can lock allocations and pass on better export pricing than a one-off factory hunt.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "chemicals, polymers, sourcing, china, inspection",
     publishedAt: "2026-05-01",
   },
@@ -96,7 +96,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <p>SG-5 is normally shipped in 25kg PIW bags or PE-lined PP woven bags, palletized for container loading. A 20' container carries roughly 24-26 metric tons. Book your container well ahead in high season, and confirm whether the destination port handles jumbo bags — that determines your unloading costs.</p>
 
 <blockquote>"The margin isn't in the resin price — it's in grade consistency and freight discipline."</blockquote>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "chemicals, polymers, plastics, importing, freight",
     publishedAt: "2026-04-25",
   },
@@ -125,7 +125,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>Buying Discipline</h2>
 
 <p>Polyolefins trade against international benchmarks, so negotiate against the reference on the day, not a sticker price. Confirm melt flow index (MFI) and additive package per shipment, keep one mill's certificate of analysis per lot, and run a test batch before committing your entire production to a new grade.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "polymers, plastics, chemicals, sourcing",
     publishedAt: "2026-04-18",
   },
@@ -153,7 +153,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>Source Discipline</h2>
 
 <p>Source rutile from producers with stable chloride or sulfate-process lines and per-batch documentation. Pre-shipment sampling and a retained reference sample protect both the importer and the end formulator when a batch drifts.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "chemicals, minerals, sourcing, inspection",
     publishedAt: "2026-04-11",
   },
@@ -184,7 +184,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <p>First, define the spec in writing: particle size distribution, sieve residue, whiteness index, moisture and harmful impurities. Second, add a retained sample agreement so disputes are judgeable. Third, choose small-bag or jumbo-bag packing to match your handling and keep the grade intact through the port.</p>
 
 <blockquote>"The price gap between mineral grades is small; the performance gap is enormous. Spec first, price second."</blockquote>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "minerals, sourcing, inspection, china",
     publishedAt: "2026-04-03",
   },
@@ -212,7 +212,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>Practical Buying Checklist</h2>
 
 <p>Confirm the reference price date, settle the premium, and keep weight certificates from a calibrated scale before stuffing. For shipments above a container, inspect cathode stacking and ingot strapping so the parcel arrives undamaged and unshort.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "metals, copper, aluminum, international trade, shipping",
     publishedAt: "2026-03-27",
   },
@@ -237,7 +237,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>Glass and Ceramics Follow the Buildings</h2>
 
 <p>As high-rise and housing stock grows, clear float glazing and ceramic tiles become steady repeat buys. For distributors, locking a multi-container supply line with a trusted Chinese trading house turns project-driven demand into predictable turnover.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "steel, cement, building-materials, belt-road, logistics",
     publishedAt: "2026-03-20",
   },
@@ -265,7 +265,7 @@ export const commodityBlogPostsSeed: CommodityBlogSeed[] = [
 <h2>What If the Commodity Isn't Listed?</h2>
 
 <p>Send your requirement anyway. Our supply relationships cover far more than we can list on this site — tell us the grade and quantity and we'll confirm availability and pricing quickly, backed by 20 years of export records and an AAA credit rating.</p>`,
-    author: "Commodities From China",
+    author: "Your Company",
     tags: "sourcing, china, b2b, international trade, negotiation",
     publishedAt: "2026-03-12",
   },

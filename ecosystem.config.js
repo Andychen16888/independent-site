@@ -16,15 +16,10 @@ module.exports = {
       instances: 1,
       exec_mode: "fork",
       watch: false,
-      // 内存相关（防止 504）：首页是全动态 SSR，首次访问还会触发 next/image 图像优化
-      // （sharp），单进程冷启动瞬间内存可轻松超过 1G。
-      //   - max_memory_restart 设 1G 容易被瞬时峰值"误杀"，PM2 反复重启 → 每个请求
-      //     都挂在转发上 → nginx 报 "504 Gateway Time-out"。调到 2G。
-      //   - node_args 提高 Node 堆上限，避免进程过早触发 GC/OOM。
-      // 若服务器内存很小（如 1G），请下调为: node_args "--max-old-space-size=768"、
-      //   max_memory_restart "1G"，并留意部署后首次访问的 pm2 status 重启次数。
-      node_args: "--max-old-space-size=2048",
-      max_memory_restart: "2G",
+      // 1 核 1GB VPS：限制 Node 堆在 768MB，RSS 到 900MB 就重启，
+      // 避免整机 OOM（PostgreSQL + nginx 还需要内存）。
+      node_args: "--max-old-space-size=768",
+      max_memory_restart: "900M",
       error_file: "./logs/err.log",
       out_file: "./logs/out.log",
       merge_logs: true,

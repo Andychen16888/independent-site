@@ -33,7 +33,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>我们的方法</h2>
 
-<p>在 Commodities From China，每一批货物在出货前都会经过检验。经过认证的电子产品与食品级厨具不能仅凭信任——它们都经过验证、记录在案，且可追溯。</p>`,
+<p>在 Your Company，每一批货物在出货前都会经过检验。经过认证的电子产品与食品级厨具不能仅凭信任——它们都经过验证、记录在案，且可追溯。</p>`,
   },
   es: {
     title: "Control de Calidad 101: Cómo Garantizar la Calidad de los Proveedores Chinos",
@@ -67,7 +67,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Nuestro Enfoque</h2>
 
-<p>En Commodities From China, cada lote se inspecciona antes del envío. Los productos electrónicos certificados y los utensilios de cocina certificados como seguros para alimentos no se aceptan por fe: se verifican, se documentan y son trazables.</p>`,
+<p>En Your Company, cada lote se inspecciona antes del envío. Los productos electrónicos certificados y los utensilios de cocina certificados como seguros para alimentos no se aceptan por fe: se verifican, se documentan y son trazables.</p>`,
   },
   pt: {
     title: "Controle de Qualidade 101: Garantindo a Qualidade dos Fornecedores Chineses",
@@ -101,7 +101,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Nossa Abordagem</h2>
 
-<p>Na Commodities From China, cada lote é inspecionado antes do embarque. Eletrônicos certificados e utensílios de cozinha certificados como seguros para alimentos não podem ser aceitos por fé — eles são verificados, documentados e rastreáveis.</p>`,
+<p>Na Your Company, cada lote é inspecionado antes do embarque. Eletrônicos certificados e utensílios de cozinha certificados como seguros para alimentos não podem ser aceitos por fé — eles são verificados, documentados e rastreáveis.</p>`,
   },
   fr: {
     title: "Contrôle Qualité 101 : Garantir la Qualité des Fournisseurs Chinois",
@@ -135,7 +135,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Notre Approche</h2>
 
-<p>Chez Commodities From China, chaque lot est inspecté avant expédition. L'électronique certifiée et les ustensiles de cuisine certifiés propres à un contact alimentaire ne peuvent pas être pris au pied de la lettre : ils sont vérifiés, documentés et traçables.</p>`,
+<p>Chez Your Company, chaque lot est inspecté avant expédition. L'électronique certifiée et les ustensiles de cuisine certifiés propres à un contact alimentaire ne peuvent pas être pris au pied de la lettre : ils sont vérifiés, documentés et traçables.</p>`,
   },
   de: {
     title: "Qualitätskontrolle 101: Produktqualität bei chinesischen Lieferanten sichern",
@@ -169,7 +169,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Unser Ansatz</h2>
 
-<p>Bei Commodities From China wird jede Charge vor dem Versand kontrolliert. Zertifizierte Elektronik und zertifiziertes lebensmittelsicheres Küchengeschirr kann man nicht auf Treu und Glauben annehmen — sie sind verifiziert, dokumentiert und rückverfolgbar.</p>`,
+<p>Bei Your Company wird jede Charge vor dem Versand kontrolliert. Zertifizierte Elektronik und zertifiziertes lebensmittelsicheres Küchengeschirr kann man nicht auf Treu und Glauben annehmen — sie sind verifiziert, dokumentiert und rückverfolgbar.</p>`,
   },
   ru: {
     title: "Контроль качества 101: обеспечение качества от китайских поставщиков",
@@ -203,7 +203,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Наш подход</h2>
 
-<p>В компании Commodities From China каждая партия проверяется перед отгрузкой. Сертифицированная электроника и сертифицированная посуда, безопасная для пищевых продуктов, не принимаются на веру — они проверены, задокументированы и прослеживаемы.</p>`,
+<p>В компании Your Company каждая партия проверяется перед отгрузкой. Сертифицированная электроника и сертифицированная посуда, безопасная для пищевых продуктов, не принимаются на веру — они проверены, задокументированы и прослеживаемы.</p>`,
   },
   ar: {
     title: "مراقبة الجودة 101: ضمان جودة المنتجات من الموردين الصينيين",
@@ -237,7 +237,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>نهجنا</h2>
 
-<p>في Commodities From China، يتم فحص كل دفعة قبل الشحن. الإلكترونيات المعتمدة وأدوات المطبخ المعتمدة الآمنة للطعام لا تُقبل على أساس الثقة فقط — فهي مُتحقق منها وموثقة وقابلة للتتبع.</p>`,
+<p>في Your Company، يتم فحص كل دفعة قبل الشحن. الإلكترونيات المعتمدة وأدوات المطبخ المعتمدة الآمنة للطعام لا تُقبل على أساس الثقة فقط — فهي مُتحقق منها وموثقة وقابلة للتتبع.</p>`,
   },
   id: {
     title: "Kontrol Kualitas 101: Memastikan Kualitas Produk dari Pemasok China",
@@ -271,7 +271,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Pendekatan Kami</h2>
 
-<p>Di Commodities From China, setiap batch diperiksa sebelum pengiriman. Produk elektronik bersertifikat dan peralatan dapur yang terjamin aman untuk makanan tidak bisa diterima hanya dengan kepercayaan — semuanya terverifikasi, terdokumentasi, dan dapat dilacak.</p>`,
+<p>Di Your Company, setiap batch diperiksa sebelum pengiriman. Produk elektronik bersertifikat dan peralatan dapur yang terjamin aman untuk makanan tidak bisa diterima hanya dengan kepercayaan — semuanya terverifikasi, terdokumentasi, dan dapat dilacak.</p>`,
   },
   vi: {
     title: "Kiểm soát chất lượng 101: Đảm bảo chất lượng từ nhà cung cấp Trung Quốc",
@@ -305,7 +305,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Cách Tiếp Cận Của Chúng Tôi</h2>
 
-<p>Tại Commodities From China, mọi lô hàng đều được kiểm tra trước khi gửi đi. Đồ điện tử được chứng nhận và đồ dùng nhà bếp được chứng nhận an toàn thực phẩm không thể chấp nhận dựa trên niềm tin suông — chúng được xác minh, ghi chép và có thể truy xuất nguồn gốc.</p>`,
+<p>Tại Your Company, mọi lô hàng đều được kiểm tra trước khi gửi đi. Đồ điện tử được chứng nhận và đồ dùng nhà bếp được chứng nhận an toàn thực phẩm không thể chấp nhận dựa trên niềm tin suông — chúng được xác minh, ghi chép và có thể truy xuất nguồn gốc.</p>`,
   },
   th: {
     title: "การควบคุมคุณภาพ 101: การรับประกันคุณภาพสินค้าจากซัพพลายเออร์จีน",
@@ -339,7 +339,7 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>แนวทางของเรา</h2>
 
-<p>ที่ Commodities From China ทุกล็อตจะถูกตรวจสอบก่อนการจัดส่ง เครื่องใช้ไฟฟ้าที่ผ่านการรับรองและเครื่องครัวที่ได้รับการรับรองว่าปลอดภัยต่ออาหารไม่สามารถรับได้ด้วยความเชื่อเพียงอย่างเดียว — สินค้าเหล่านี้ได้รับการตรวจยืนยัน บันทึกไว้ และสามารถตรวจสอบย้อนกลับได้</p>`,
+<p>ที่ Your Company ทุกล็อตจะถูกตรวจสอบก่อนการจัดส่ง เครื่องใช้ไฟฟ้าที่ผ่านการรับรองและเครื่องครัวที่ได้รับการรับรองว่าปลอดภัยต่ออาหารไม่สามารถรับได้ด้วยความเชื่อเพียงอย่างเดียว — สินค้าเหล่านี้ได้รับการตรวจยืนยัน บันทึกไว้ และสามารถตรวจสอบย้อนกลับได้</p>`,
   },
   ms: {
     title: "Kawalan Kualiti 101: Memastikan Kualiti Produk daripada Pembekal China",
@@ -373,6 +373,6 @@ export const qualityControlTranslations: Record<string, BlogTranslationSeed> = {
 
 <h2>Pendekatan Kami</h2>
 
-<p>Di Commodities From China, setiap lot diperiksa sebelum penghantaran. Elektronik bertauliah dan peralatan dapur yang disahkan selamat untuk makanan tidak boleh diterima berdasarkan kepercayaan semata-mata — ia disahkan, didokumenkan dan boleh dikesan.</p>`,
+<p>Di Your Company, setiap lot diperiksa sebelum penghantaran. Elektronik bertauliah dan peralatan dapur yang disahkan selamat untuk makanan tidak boleh diterima berdasarkan kepercayaan semata-mata — ia disahkan, didokumenkan dan boleh dikesan.</p>`,
   },
 }

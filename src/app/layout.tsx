@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Cormorant_Garamond } from "next/font/google"
 import { NextIntlClientProvider } from "next-intl"
 import { getLocale } from "next-intl/server"
 import { Providers } from "@/components/layout/Providers"
@@ -15,19 +14,6 @@ import { routing, rtlLocales } from "@/i18n/routing"
 import { ogLocaleMap } from "@/lib/seo/generate-metadata"
 import { GENERIC_SITE_URL } from "@/lib/settings/brand"
 import "./globals.css"
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-})
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-serif",
-  display: "swap",
-})
 
 function buildAlternates(baseUrl: string, locale: string, path = "/") {
   const languages: Record<string, string> = {}
@@ -161,10 +147,8 @@ export default async function RootLayout({
   const favicon = seo.favicon && /^https?:\/\//.test(seo.favicon) ? seo.favicon : undefined
 
   return (
-    <html lang={locale} dir={dir} className={`${inter.variable} ${cormorant.variable}`}>
+    <html lang={locale} dir={dir}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {favicon && <link rel="icon" href={favicon} />}
         <meta name="format-detection" content="telephone=no, address=no, email=no" />
         <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ""} />

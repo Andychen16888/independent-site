@@ -1,7 +1,7 @@
 # 部署指南
 
 > 适用：1 核 1GB VPS 可运行（需 1–2GB swap，Vultr / DigitalOcean 等），1 核 2GB 更稳。
-> 技术栈：Ubuntu 24.04 + Node.js 20 + PostgreSQL 16 + Nginx + PM2
+> 技术栈：Ubuntu 22.04 LTS + Node.js 20 + PostgreSQL 16 + Nginx + PM2
 > 配套文档：[运维与通用参考](./OPERATIONS.md)　|　[服务器被入侵后的恢复清单](./INCIDENT-RECOVERY.md)
 >
 > ⚠️ 本项目**只有这一条部署路径**，仓库中不再保留 Docker 相关文件与文档。
@@ -92,11 +92,12 @@
 | CPU | 1 核 | 2 核 |
 | 内存 | 2 GB（建议加 2G swap） | 4 GB |
 | 硬盘 | 20 GB SSD | 40 GB SSD |
-| 系统 | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
+| 系统 | Ubuntu 22.04 LTS | Ubuntu 22.04 LTS |
 
-> 1 核 2G 小机器**必须**先加 swap，防止 `next build` 时 OOM。
+> 1 核 1GB / 2GB 小机器**必须**先加 swap；1GB 机器还需要按 [§5](#5-构建应用) 在构建机/CI 构建。
 > 具体命令见 [§1.2 安全加固](#12-安全加固部署前必须完成) 的第 6 步（那里是一整段可直接粘贴的流程）。
-> Ubuntu 22.04 也验证可用，但 PostgreSQL 需自行加 PGDG 源（§2 已含该步骤）。
+> 本文只覆盖 Ubuntu 22.04 LTS（jammy）。PostgreSQL 16 需要 PGDG 源，§2 已包含；
+> 请勿升级或跨版本安装 24.04，避免引入未验证的内核/依赖变化。
 
 ### 1.2 安全加固（部署前必须完成）
 
@@ -113,6 +114,13 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 systemctl enable --now unattended-upgrades
+
+# 固定在 Ubuntu 22.04，避免 unattended-upgrades 跨版本升到 24.04
+. /etc/os-release
+test "$VERSION_CODENAME" = "jammy" || { echo "本教程仅支持 Ubuntu 22.04 LTS (jammy)"; exit 1; }
+if [ -f /etc/update-manager/release-upgrades ]; then
+  sed -i 's/^Prompt=.*/Prompt=never/' /etc/update-manager/release-upgrades
+fi
 
 # ============================================================
 # 1. 设置强密码（不要用 Vultr 默认密码，不要与其它服务复用）
@@ -303,9 +311,12 @@ sudo apt install -y nodejs
 node -v          # v20.x
 npm -v           # 10.x
 
-# PostgreSQL 16
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+# PostgreSQL 16（Ubuntu 22.04 默认源只有 PostgreSQL 14，需 PGDG）
+sudo apt install -y ca-certificates curl gnupg lsb-release
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/postgresql.gpg
+sudo chmod a+r /etc/apt/keyrings/postgresql.gpg
+echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
 sudo apt update
 sudo apt install -y postgresql-16
 sudo systemctl start postgresql
@@ -450,31 +461,47 @@ nano .env
 
 ## 5. 构建应用
 
+1 核 1GB 机器**不要在服务器上构建**。请在同架构的 Ubuntu 22.04 构建机/CI（Node 20）上构建，再上传 `.next`：
+
+```bash
+# 在构建机/CI 执行
+npm ci --legacy-peer-deps
+npm run db:generate
+npm run build:server
+
+tar czf b2b-build.tar.gz .next
+```
+
+```bash
+# 在服务器执行：只安装依赖并解包预构建产物，不跑 next build
+cd /var/www/b2b-independent-site
+npm ci --legacy-peer-deps
+# 把 b2b-build.tar.gz 上传到服务器的 /root 后：
+sudo tar xzf /root/b2b-build.tar.gz -C /var/www/b2b-independent-site
+```
+
+1 核 2GB 及以上机器也可以直接在服务器构建：
+
 ```bash
 cd /var/www/b2b-independent-site
-
-# 安装依赖（必须 --legacy-peer-deps，规避 Stripe/Auth.js 的 peer 冲突）
 npm ci --legacy-peer-deps
-
-# 生成 Prisma Client
 npm run db:generate
-
-# 构建 Next.js（standalone 模式，自动复制静态资源）
 npm run build:server
 ```
 
 > **说明**
 > - 必须用 `npm ci --legacy-peer-deps`：`@stripe/react-stripe-js@6.3.0` 要求 `@stripe/stripe-js >=9.3.1 <10.0.0` 而项目锁定 `6.1.0`，不带 flag 会报 `ERESOLVE` 直接失败。
-> - `next build` 时若 OOM，脚本已内置 `NODE_OPTIONS=--max-old-space-size=4096`；1 核 2G 机器请先加 swap（见 [§1.2 第 6 步](#12-安全加固部署前必须完成)）。
+> - `build:server` 内置 `NODE_OPTIONS=--max-old-space-size=4096`；1GB 机器即使加 swap 也可能 OOM，必须使用构建机/CI。
+> - 构建机必须也是 Linux x86_64；在 Windows 本地构建出的原生模块不能直接在服务器运行。
 > - 构建产物在 `.next/standalone/`，**运行时必须用 `node .next/standalone/server.js`，不能用 `next start`**。
 
-**构建好之后立刻确认产物存在：**
+**构建或上传完成后立刻确认产物存在：**
 
 ```bash
 test -f .next/standalone/server.js && echo "build ok, ready to start"
 ```
 
-如果没有输出 `build ok`，先回去重新构建，**禁止直接启动**。
+如果没有输出 `build ok`，先回去重新构建/上传，**禁止直接启动**。
 
 ---
 
@@ -683,7 +710,7 @@ sudo ls -l /etc/letsencrypt/live/your-domain.com/
 cd /var/www/b2b-independent-site
 
 # 创建模板里 proxy_cache_path 需要的缓存父目录（必须！nginx 不会自动创建父目录）
-sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+sudo mkdir -p /var/cache/nginx/b2b
 sudo chown -R www-data:www-data /var/cache/nginx
 
 # 安装模板：自动替换域名、备份旧配置、nginx -t 校验、失败自动还原
@@ -760,20 +787,16 @@ curl -I https://your-domain.com          # 期望 HTTP/2 200
 curl -I http://your-domain.com           # 期望 301 → https
 ```
 
-**5. 图片缓存是否真的生效**（省 CPU 的关键，必须确认）：
+**5. 图片直出确认**（`images.unoptimized: true`，服务器不再跑 sharp）：
 
 ```bash
-# 找一个已上传商品的图片 URL
-IMG=$(grep -oP 'https://[^"]*uploads/[^"]*' public/uploads/*.json 2>/dev/null | head -1)
-# 或直接从浏览器复制任意商品图地址后：
-# curl -sI -H 'Accept: image/webp' "https://your-domain.com/实际图片路径" | grep -iE 'X-Cache-Status|Hit'
-
-# 首次 MISS、上传后重复请求应 HIT，且 30 天内不再回源
-curl -sI "https://your-domain.com/实际图片路径" | grep -i X-Cache-Status   # 期望 HIT
+# 从浏览器复制任意商品图地址后：
+curl -sI "https://your-domain.com/uploads/实际图片名.jpg" | grep -iE 'content-type|cache-control'
+# 期望：Content-Type: image/jpeg 等图片类型；Cache-Control: public, max-age=604800
 ```
 
-> 持续 `MISS` 说明磁盘缓存没写入或缓存目录被清空，见 §8.3 的 `mkdir -p /var/cache/nginx/b2b_img`。
-> `X-Cache-Status` 若是 `EXPIRED`，说明命中但已过新鲜期，会回源更新一次，仍算正常。
+> 1GB 机器上不要再访问 `/_next/image?...` 验证缓存：该端点已不再使用，
+> `next.config.ts` 已关闭服务端图像优化，图片由 nginx 从 `/uploads/` 直接返回。
 
 **6. 管理后台监控页**（`/admin/monitoring`）：
 
@@ -786,30 +809,19 @@ curl -sI "https://your-domain.com/实际图片路径" | grep -i X-Cache-Status  
 
 ## 11. 更新部署
 
-> ## ⚡ 本次拉取（`ad79c62` CPU 优化）后：普通部署命令之外，**额外多一步** —— 重新复制 nginx 模板并 `nginx -t && reload`
+> ## ⚡ 更新提示
 >
-> 原因：CPU 优化的 `/_next/image` 图片缓存加在 nginx 模板里，**`git pull` / 重建 / `pm2` 都覆盖不到**，不重载 nginx 就不会生效（改了代码也不会自动生效，必须手动重载一次）。
+> 当前代码已关闭 `next/image` 服务端优化（`images.unoptimized: true`），不再需要
+> `/_next/image` 缓存；图片由 nginx 从 `/uploads/` 直接返回。
 >
-> | 改动 | 生效方式 |
-> |------|----------|
-> | `/_next/image` 缓存（nginx 新增 `b2b_img` cache zone + `location /_next/image`） | **只改 nginx 模板** → 必须 `cp 模板 → sed 换域名 → nginx -t && reload`（**本次必做**） |
-> | sharp 宽度从 8 个减到 5/6 个（`next.config.ts`） | 在代码里，`npm run build` 即生效 |
-> | ISR `revalidate` 300→3600（首页等 6 个页面）+ admin 更新即时 `revalidatePath` | 相同 |
-> | `/api/track` 埋点 12s 突发去重 | 相同 |
->
-> **如何判断以后某次更新是否也要重载 nginx**：`git log --stat -1 HEAD | grep nginx`
-> - 有输出（文件为 `b2b-independent-site.nginx.conf`）→ 需要执行下方「重载 nginx 模板」步骤；
+> nginx 模板只在模板本身变更时需要重载，判断方式：`git log --stat -1 HEAD | grep nginx`
+> - 有输出（文件为 `b2b-independent-site.nginx.conf`）→ 执行下方「重载 nginx 模板」步骤；
 > - 没有输出 → 纯代码更新，跳过 nginx 步骤。
 >
-> 重载后如何确认缓存生效：
+> 重载后可确认静态资源缓存头仍在：
 > ```bash
-> # 1. 同一张 /_next/image 请求两次，第二次应从 MISS 变 HIT
-> curl -s -o /dev/null -D - "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
-> curl -s -o /dev/null -D - "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fany.webp&w=1080&q=75" | grep -i x-cache-status
-> #   第一次 MISS（冷缓存）、第二次 HIT，即缓存已生效
-> #
-> # 2. 观察 CPU：爬虫抓图 / 访客看图高峰过后应明显回落
-> top -bn1 | head -15        # 或 pm2 monit 看 b2b-independent-site 的 CPU%
+> curl -sI "https://your-domain.com/_next/static/任意已有文件" | grep -i cache-control
+> # 期望：public, max-age=31536000, immutable
 > ```
 
 每次拉取新代码后重新构建并重启：
@@ -822,17 +834,20 @@ npm ci --legacy-peer-deps
 npm run db:generate
 npm run db:migrate
 npm run db:seed
-npm run build:server
+
+# 1 核 1GB：按 §5 上传预构建 b2b-build.tar.gz 后执行
+tar xzf /root/b2b-build.tar.gz -C /var/www/b2b-independent-site
+# 1 核 2GB 及以上可改为：npm run build:server
+
 pm2 startOrReload ecosystem.config.js
 pm2 save
 
-# ↓↓↓ 本次 CPU 优化（ad79c62）必做：重装 nginx 模板，否则 /_next/image 缓存不生效 ↓↓↓
-# 纯代码更新且 git log --stat -1 HEAD | grep nginx 无输出时，可跳过下面几行
+# 仅当 git log --stat -1 HEAD | grep nginx 有输出时执行下面几行
 cd /var/www/b2b-independent-site
 bash scripts/install-nginx-conf.sh your-domain.com
 # 必须先建缓存父目录：nginx 不会自动创建 /var/cache/nginx，缺它会报
 #   mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
-sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+sudo mkdir -p /var/cache/nginx/b2b
 sudo chown -R www-data:www-data /var/cache/nginx
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -867,7 +882,7 @@ sudo nginx -t && sudo systemctl reload nginx
 >
 > # 必须先创建缓存父目录（模板里的 proxy_cache_path 需要它）：
 > #   缺这一步会报 mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)
-> sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+> sudo mkdir -p /var/cache/nginx/b2b
 > sudo chown -R www-data:www-data /var/cache/nginx
 >
 > sudo nginx -t && sudo systemctl reload nginx
@@ -915,7 +930,8 @@ npm ci --legacy-peer-deps
 npm run db:generate
 npm run db:migrate
 npm run db:seed
-npm run build:server
+# 1 核 1GB：先在构建机/CI 构建好并上传 /root/b2b-build.tar.gz，再解包：
+[ -f /root/b2b-build.tar.gz ] && tar xzf /root/b2b-build.tar.gz -C /var/www/b2b-independent-site
 pm2 startOrReload ecosystem.config.js
 pm2 save
 echo "Deployment complete!"
@@ -962,19 +978,19 @@ tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /var/www/b2b-independent-site 
 | 现象 | 排查 |
 |------|------|
 | `pm2 status` 为 `errored` | `pm2 logs b2b-independent-site --lines 50` |
-| `Script not found: .../standalone/server.js` | 没执行第 5 节构建。先 `npm run build:server` 再启动 |
+| `Script not found: .../standalone/server.js` | 没有按 §5 构建/上传产物。1GB 机器应上传 `b2b-build.tar.gz` 并解包，不要在服务器 build |
 | 迁移报 `table does not exist` | 迁移/种子顺序反了，或旧迁移残留，按第 6 节重置空库 |
 | `npm install` 报 ERESOLVE | 必须 `npm ci --legacy-peer-deps` |
 | 502 Bad Gateway | `curl http://localhost:3000/api/health`；`sudo nginx -t` |
-| 504 Gateway Time-out | ① 确认 nginx 模板已按**第 8 节/11 节**重新部署（`/api` 已放宽到 360s）；② `curl http://localhost:3000/api/health` + `pm2 status`：若 app 反复重启 / restart 次数暴涨，多半是 `max_memory_restart` 太低被瞬时峰值误杀（首页全动态 SSR + 首次访问的图像优化内存飙升）——已把 `ecosystem.config.js` 调到 2G 堆、2G 重启阈值，确认服务器按新版重启过；小内存机器按该文件注释下调；③ 部署后首次打开很慢属正常（图像优化缓存是冷的），可先访问一次首页预热；④ 刚重启过机器而 Node 没起来时见第 11.1 节开机自启 |
+| 504 Gateway Time-out | ① nginx 模板按 §8.3/§11 重新部署（`/api` 360s）；② `curl http://localhost:3000/api/health` + `pm2 status`：若反复重启，确认 `ecosystem.config.js` 当前为 768MB 堆 / 900M 重启阈值，并检查 `free -h` 有 swap；③ 图片已改为 `/uploads/` 直出，不再有 `/_next/image` 冷缓存预热；④ 开机自启见 §11.1 |
 | `[PM2][ERROR] Process with pid X already exists` | PM2 开机自启恢复时记录的 pid 文件过期/复用（重启后常见）。清理后重新注册：`pm2 kill` → `pkill -f ".next/standalone/server.js"` → 确认 `curl http://localhost:3000/api/health` 无响应 → `pm2 delete b2b-independent-site; pm2 start ecosystem.config.js --update-env; pm2 save` → `pm2 status` 应为 online |
 | 服务器重启后网页 502/504 打不开 | 开机自启未配置：`systemctl is-enabled postgresql nginx` 应输出 enabled；`pm2 startup` + `pm2 save` 重新注册；`reboot` 后用 `curl http://localhost:3000/api/health` 验证 |
 | `nginx -t` 报证书不存在 | 证书还没签发。必须按 §8.1 → §8.2 → §8.3 顺序：先用 HTTP-only 引导配置把 nginx 跑起来，再 `certbot certonly --webroot` 签发，最后才套含 443 块的完整模板。直接套模板必然报 `cannot load certificate .../fullchain.pem` |
 | `nginx -t` 报 `cannot load certificate "/etc/letsencrypt/live/your-domain.com/..."` | 手动 `cp` 模板时忘了替换域名占位符。此时 nginx 仍在跑旧配置，但**机器重启会起不来**。修复：`cd /var/www/b2b-independent-site && bash scripts/install-nginx-conf.sh your-domain.com`，脚本会自动备份、替换域名并在校验失败时还原 |
-| `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
+| `nginx -t` 报 `mkdir() "/var/cache/nginx/b2b" failed (2: No such file or directory)` | 模板里的 `proxy_cache_path` 需要父目录 `/var/cache/nginx`，而 nginx 只会自动创建末级目录。执行 `sudo mkdir -p /var/cache/nginx/b2b && sudo chown -R www-data:www-data /var/cache/nginx` 后重新 `nginx -t && systemctl reload nginx`。**服务器重启后易复发**（Ubuntu `/etc/tmpfiles.d/` 会清空该目录），可写进 `crontab @reboot` 自动化 |
 | 重新部署后首页第一张图 / 产品主图丢失 | 见第 11 节「上传文件目录」：① 一次性 `pm2 delete b2b-independent-site` 后 `pm2 startOrReload ecosystem.config.js` 重建进程；② 确认 `ls /var/www/b2b-independent-site/uploads` 里有文件；③ 若旧文件此前存在 `.next/standalone/uploads` 且已被构建清空，只能到管理后台重新上传。新代码（`src/lib/uploads.ts`）已自动把上传目录固定到项目根 `uploads/`，重建不会再丢 |
 | 后台数据分析里访客 IP 全是 Cloudflare 的 IP / 国家识别不出来 | nginx 没启用 Cloudflare 真实 IP（real_ip 模块）。按第 8.3 节重新部署最新模板：`sudo cp b2b-independent-site.nginx.conf /etc/nginx/sites-enabled/b2b-independent-site && sudo nginx -t && sudo systemctl reload nginx`。模块确认：`nginx -V 2>&1 | grep realip`（应输出 `--with-http_realip_module`）。模板已内置 Cloudflare 全部 IPv4/IPv6 网段 + `real_ip_header CF-Connecting-IP` |
-| OOM 构建失败 | 加 swap（第 1.1 节） |
+| OOM 构建失败 | 1GB 机器不要在服务器构建；按 §5 用 Ubuntu 22.04 构建机/CI 构建后上传 `.next`；仍需加 swap |
 | 重新部署 / 重构后首页打不开、报 500 或「Something Went Wrong」，但 `curl -I https://your-domain.com/en` 返回 200 | **Cloudflare 缓存了旧 HTML**：旧 HTML 引用的 `/_next/static/chunks/app/.../layout-<旧哈希>.js` 已被新构建删除（404），浏览器加载失败触发前端错误边界。验证：`curl -s https://your-domain.com/en` 里的 layout chunk 哈希与 `curl -s "https://your-domain.com/en?cb=$RANDOM"`（回源）不一致，且旧哈希 `curl -I` 返回 404。修复：① 立即 Caching → Configuration → **Purge Everything**；② 按 `docs/OPERATIONS.md` §12「缓存规则」只缓存 `/_next/static/`、`/static/`，**不要**缓存 HTML（删除任何「Cache Everything」/「HTML → N 分钟」规则）；③ 以后每次部署后清一次缓存 |
 | 直接访问 `https://your-domain.com/en`（或点击「首页」）返回一堆 `"$Sreact.fragment"`、`I[...]`、`self.__next_f` 之类的文本 = 页面乱码 | **Cloudflare 把 RSC payload 当成 HTML 缓存了**：软导航用同一 URL 拉 `text/x-component`，CDN 忽略自定义 `Vary: RSC`，于是边缘把 flight 数据按该 URL 返回给普通访问。验证：`curl -sS -D - -o NUL https://your-domain.com/en \| grep -i "content-type\\|cf-cache-status"`（反复几次会看到 `content-type` 在 `text/html` 与 `text/x-component` 间跳变、且 `cf-cache-status: HIT`）。修复：① Caching → Configuration → **Purge Everything**（必须，代码改不了已污染的条目）；② 删除所有 Page Rules「Cache Everything」/「HTML → N 分钟」（**Page Rule 的 Cache Everything 会连 `CDN-Cache-Control` 一起忽略**，只留 `OPERATIONS.md` §12 的两条 Cache Rules）；③ 部署含 `src/middleware.ts` + nginx 模板的版本（源站会下发 `CDN-Cache-Control: no-store`，Cache Rules 会据此 BYPASS） |
 

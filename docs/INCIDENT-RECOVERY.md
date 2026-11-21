@@ -153,16 +153,21 @@ scp root@<OLD_SERVER_IP>:/root/incident/auth.log .
 
 ## 4. 阶段四：重装系统
 
-1. Vultr 控制台 → 该实例 → **Destroy / 重建**（或重装 Ubuntu 24.04 LTS 全新系统盘）
+1. Vultr 控制台 → 该实例 → **Destroy / 重建**（或重装 Ubuntu 22.04 LTS 全新系统盘，不要选 24.04）
 2. 生成并写入新 SSH 公钥（阶段三第 2 条）
 3. 首次登录后**立刻**完成加固（在装任何东西之前）：
 
 ```bash
 apt update && apt upgrade -y
 
-# 1. 装基础工具 + fail2ban + 自动安全更新
+# 1. 装基础工具 + fail2ban + 自动安全更新，并固定在 Ubuntu 22.04
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
+. /etc/os-release
+test "$VERSION_CODENAME" = "jammy" || { echo "本教程仅支持 Ubuntu 22.04 LTS (jammy)"; exit 1; }
+if [ -f /etc/update-manager/release-upgrades ]; then
+  sed -i 's/^Prompt=.*/Prompt=never/' /etc/update-manager/release-upgrades
+fi
 
 # 2. SSH 登录方式二选一（完整可粘贴流程见 通用独立站 DEPLOYMENT.md §1.2）
 #    方案 A（推荐）SSH 密钥：本地 ssh-keygen + ssh-copy-id，验证可免密登录后
@@ -227,14 +232,14 @@ ufw status verbose | head -8
 
 | 步骤 | 参考章节 | 动作 | 备注 |
 |------|---------|------|------|
-| 1 | §1.1 | 加 2G swap | 2G 内存机器 `next build` 易 OOM |
+| 1 | §1.1 | 加 2G swap | 1G 机器还必须在构建机/CI build，见 §5 |
 | 2 | §2 | 装 Node 20 / PostgreSQL 16 / nginx / PM2 / Redis | **不装 Docker** |
 | 3 | §3 | 建库建角色，密码用**新密码** | `listen_addresses` 保持 `localhost` |
 | 4 | §4 | `git clone` + 新建 `.env` | 用轮换后的全部新凭据 |
-| 5 | §5 | `npm ci --legacy-peer-deps` → `db:generate` → `build:server` | 缺 flag 会 `ERESOLVE` 失败 |
+| 5 | §5 | `npm ci --legacy-peer-deps` → `db:generate` → 上传预构建 `.next` | 1G 不要服务器 build；缺 flag 会 `ERESOLVE` 失败 |
 | 6 | §6 | 恢复数据库：`pg_restore`（见下） | 顺序在 migrate 之前 |
 | 7 | §6 | `npm run db:migrate` | 幂等，已应用的自动跳过 |
-| 8 | §5 | 解压上传图片到项目根 `uploads/` | 必须在 `build:server` 前后均可，但要在 `pm2 start` 之前 |
+| 8 | §5 | 解压上传图片到项目根 `uploads/` | 必须在 `pm2 start` 之前 |
 | 9 | §7 | `pm2 start ecosystem.config.js` → `pm2 save` → `pm2 startup` | `UPLOAD_DIR` 已指向项目根 |
 | 10 | §8 | 复制 nginx 模板 + 替换域名 + **mkdir 缓存父目录** + `nginx -t && reload` | 漏 `mkdir -p` 会报 `mkdir() "/var/cache/nginx/b2b" failed` |
 | 11 | §9 | certbot 申请证书 → **重跑第 10 步**恢复自定义 location | `certbot --nginx` 会改写配置 |
@@ -317,10 +322,10 @@ ss -tlnp | grep -E ':(3000|5432)\b'          # 应只 listen 127.0.0.1
 curl -sI https://your-domain.com | head -1        # HTTP/2 200
 curl -sI https://your-domain.com/api/health       # 200
 
-# 缓存生效（CPU 优化的关键，MISS 说明没生效）
-curl -sI "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" \
-  | grep -i x-cache-status
-# 第二次请求应为 HIT
+# 图片直出（images.unoptimized: true，不再走 /_next/image）
+curl -sI "https://your-domain.com/uploads/实际图片名.jpg" \
+  | grep -iE 'content-type|cache-control'
+# 期望：图片 Content-Type + Cache-Control: public, max-age=604800
 
 # 系统干净
 crontab -l                                   # 仅 nginx @reboot，无 amco_/pakchoi

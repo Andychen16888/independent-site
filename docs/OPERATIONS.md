@@ -1,6 +1,6 @@
 # 运维与通用参考
 
-> 技术栈: Next.js 15 (standalone) + PostgreSQL 16 + Nginx + PM2
+> 技术栈: Ubuntu 22.04 LTS + Next.js 15 (standalone) + PostgreSQL 16 + Nginx + PM2
 >
 > **部署只有一条路径**：系统 Node + PM2 + 系统 Nginx。
 > 完整部署流程见 **[部署指南](./通用独立站%20DEPLOYMENT.md)**，本文件只收录与部署方式无关的
@@ -497,9 +497,9 @@ jobs:
 | 502 Bad Gateway | `curl http://localhost:3000/api/health`（不依赖 DB）→ 应用是否在跑；`nginx -t` |
 | 迁移报错 | 先 `db:migrate` 再 `db:seed`；旧库重置后重跑 |
 | `npm install` ERESOLVE | 统一 `npm ci --legacy-peer-deps` |
-| OOM | 加 swap；构建已内置 `NODE_OPTIONS=--max-old-space-size=4096` |
+| OOM | 1GB 机器不要在服务器构建；按部署指南 §5 用 Ubuntu 22.04 构建机/CI 构建后上传 `.next`；加 swap |
 | SSL 到期 | `sudo certbot renew --force-renewal`；检查 `/etc/letsencrypt/live/` |
-| 内存不足 | `free -h`；PM2 `--max-memory-restart 1G` |
+| 内存不足 | `free -h`；PM2 `--max-old-space-size=768`、`max_memory_restart: 900M` |
 
 部署流程与站点特有的排查见 [部署指南 §13 故障排查](./通用独立站%20DEPLOYMENT.md#13-故障排查)。
 

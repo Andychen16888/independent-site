@@ -53,7 +53,7 @@
 | 10 | Google / Apple OAuth | 轮换 client secret |
 | 11 | Resend / 17Track / UploadThing | 逐个重建 |
 
-- [ ] **销毁旧服务器**（Vultr → Destroy / 重建 Ubuntu 24.04 LTS 全新系统盘），备份 zip 已确认在手
+- [ ] **销毁旧服务器**（Vultr → Destroy / 重建 Ubuntu 22.04 LTS 全新系统盘，不要选 24.04），备份 zip 已确认在手
 
 ---
 
@@ -65,6 +65,13 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim fail2ban unattended-upgrades
 systemctl enable --now fail2ban
 systemctl enable --now unattended-upgrades
+
+# 固定在 Ubuntu 22.04，避免跨版本升到 24.04
+. /etc/os-release
+test "$VERSION_CODENAME" = "jammy" || { echo "本教程仅支持 Ubuntu 22.04 LTS (jammy)"; exit 1; }
+if [ -f /etc/update-manager/release-upgrades ]; then
+  sed -i 's/^Prompt=.*/Prompt=never/' /etc/update-manager/release-upgrades
+fi
 
 # 1. 设置强密码（不要用 Vultr 默认密码）
 passwd root
@@ -117,7 +124,7 @@ ufw status verbose
 systemctl reload sshd
 sshd -T | grep -E '^port|passwordauthentication'
 
-# 6. 加 2G swap（2G 内存机器 next build 必做，否则 OOM）
+# 6. 加 2G swap（1G/2G 小机器必做；1G 还要按 §5 在构建机/CI 构建）
 fallocate -l 2G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
@@ -142,9 +149,12 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 node -v          # v20.x
 
-# PostgreSQL 16（PGDG 源）
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+# PostgreSQL 16（Ubuntu 22.04 默认源只有 14，需 PGDG）
+sudo apt install -y ca-certificates curl gnupg lsb-release
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/postgresql.gpg
+sudo chmod a+r /etc/apt/keyrings/postgresql.gpg
+echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
 sudo apt update
 sudo apt install -y postgresql-16
 sudo systemctl enable --now postgresql
@@ -227,17 +237,22 @@ nano .env
 
 ## 阶段 5 · 构建（DEPLOYMENT §5）
 
+1 核 1GB：**不要在服务器上 build**。先在 Ubuntu 22.04 x86_64 构建机/CI 执行
+`npm ci --legacy-peer-deps && npm run db:generate && npm run build:server`，
+生成 `b2b-build.tar.gz`（含 `.next`）后上传到服务器。
+
 ```bash
 cd /var/www/b2b-independent-site
 npm ci --legacy-peer-deps
 npm run db:generate
-npm run build:server
+tar xzf /root/b2b-build.tar.gz -C /var/www/b2b-independent-site
 
 # 断言构建产物存在
 test -f .next/standalone/server.js && echo "build ok, ready to start"
 ```
 
-- [ ] 输出 `build ok, ready to start` 才能继续，否则重新构建
+- [ ] 1G 机器使用构建机/CI 产物；1G 以上可直接在服务器 `npm run build:server`
+- [ ] 输出 `build ok, ready to start` 才能继续，否则重新构建/上传
 
 ---
 
@@ -306,7 +321,7 @@ sudo ls -l /etc/letsencrypt/live/your-domain.com/
 
 # 8.3 启用完整模板（含 HTTPS + 缓存）
 cd /var/www/b2b-independent-site
-sudo mkdir -p /var/cache/nginx/b2b /var/cache/nginx/b2b_img
+sudo mkdir -p /var/cache/nginx/b2b
 sudo chown -R www-data:www-data /var/cache/nginx
 bash scripts/install-nginx-conf.sh your-domain.com
 
@@ -350,7 +365,7 @@ curl -s http://localhost:3000/api/health     # {"status":"ok",...}
 ss -tlnp | grep -E ':(3000|5432)\b'          # 只 listen 127.0.0.1
 curl -sI https://your-domain.com | head -1        # HTTP/2 200
 curl -sI https://your-domain.com/api/health       # 200
-curl -sI "https://your-domain.com/_next/image?url=%2Fapi%2Fuploads%2Fxxx.jpg&w=640&q=75" | grep -i X-Cache-Status
+curl -sI "https://your-domain.com/uploads/实际图片名.jpg" | grep -iE 'content-type|cache-control'
 
 # 系统干净度
 crontab -l                                   # 仅 nginx @reboot，无 amco_/pakchoi
@@ -362,7 +377,7 @@ top -bn1 | head -5                           # %Cpu(s) 个位数
 fail2ban-client status sshd 2>&1 | head -8
 ```
 
-- [ ] `/_next/image` 第二次请求 `X-Cache-Status: HIT`（CPU 优化生效）
+- [ ] 图片走 `/uploads/` 直出，响应含 `Cache-Control: public, max-age=604800`
 - [ ] `/admin/monitoring` 全绿，**Top Processes** 只有正常进程
 - [ ] 后台已用 `backup-*.zip` 恢复成功，内容（产品/分类/页面/博客/图片）与备份前一致
 - [ ] `/admin/images` 和前台：首页 / 分类页 / 产品详情页 / 商品图片正常

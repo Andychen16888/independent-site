@@ -37,9 +37,12 @@ export default function SignInPage() {
       }).catch(() => {})
     } else {
       const params = new URLSearchParams(window.location.search)
-      const callbackUrl = params.get("callbackUrl") || `/${locale}/account`
-      router.push(callbackUrl)
-      router.refresh()
+      const rawCallback = params.get("callbackUrl")
+      const callbackUrl =
+        rawCallback && rawCallback.startsWith("/") && !rawCallback.startsWith("//")
+          ? rawCallback
+          : `/${locale}/account`
+      window.location.assign(callbackUrl)
     }
   }
 

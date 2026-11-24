@@ -144,10 +144,10 @@ free -h
 ## 阶段 2 · 安装依赖（DEPLOYMENT §2）
 
 ```bash
-# Node.js 20 LTS
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# Node.js 22 LTS（Next.js 15 要求 Node.js >= 18.18.0；Node 20 已 EOL，建议使用 22 LTS）
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
-node -v          # v20.x
+node -v          # v22.x
 
 # PostgreSQL 16（Ubuntu 22.04 默认源只有 14，需 PGDG）
 sudo apt install -y ca-certificates curl gnupg lsb-release

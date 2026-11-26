@@ -16,7 +16,7 @@ import {
   HiOutlineBuildingOffice2, HiOutlineChatBubbleOvalLeftEllipsis, HiOutlineHome,
   HiOutlineEnvelope, HiOutlineInbox, HiOutlineChevronDown,
   HiOutlineDocumentDuplicate, HiOutlineClock, HiOutlinePaperAirplane,
-  HiOutlineArchiveBox,
+  HiOutlineArchiveBox, HiOutlineBars3BottomLeft,
 } from "react-icons/hi2"
 import { INQUIRY_STAGES } from "@/lib/sales/status-meta"
 
@@ -34,6 +34,7 @@ const navItems = [
   { name: "Blog", nameZh: "博客", href: "/admin/blog", icon: HiOutlineDocumentText },
   { name: "FAQ", nameZh: "常见问题", href: "/admin/faq", icon: HiOutlineQuestionMarkCircle },
   { name: "Pages", nameZh: "页面", href: "/admin/pages", icon: HiOutlineDocument },
+  { name: "Footer", nameZh: "页脚管理", href: "/admin/footer", icon: HiOutlineBars3BottomLeft },
   { name: "About Us", nameZh: "关于我们", href: "/admin/about", icon: HiOutlineBuildingOffice2 },
   { name: "Contact Us", nameZh: "联系我们", href: "/admin/contact", icon: HiOutlineChatBubbleOvalLeftEllipsis },
   { name: "Menus", nameZh: "菜单", href: "/admin/menus", icon: HiOutlineBars3 },

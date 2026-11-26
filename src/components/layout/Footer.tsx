@@ -54,10 +54,12 @@ export async function Footer({
   about = "",
   companyName = "",
   companyBrief = "",
+  localizedBrief = "",
   contactEmail = "",
   contactPhone = "",
   whatsapp = "",
   address = "",
+  localizedAddress = "",
   hours = "",
   copyrightText = "",
   copyrightSuffix = GENERIC_SITE_NAME,
@@ -72,10 +74,12 @@ export async function Footer({
   about?: string
   companyName?: string
   companyBrief?: string
+  localizedBrief?: string
   contactEmail?: string
   contactPhone?: string
   whatsapp?: string
   address?: string
+  localizedAddress?: string
   hours?: string
   copyrightText?: string
   copyrightSuffix?: string
@@ -117,8 +121,8 @@ export async function Footer({
   }
 
   const safeAbout = about || (t.has("about") ? t("about") : GENERIC_SITE_DESCRIPTION)
-  const safeCompanyBrief = companyBrief || (t.has("companyBrief") ? t("companyBrief") : "")
-  const safeAddress = address || (t.has("addressLine") ? t("addressLine") : "")
+  const safeCompanyBrief = localizedBrief || companyBrief || (t.has("companyBrief") ? t("companyBrief") : "")
+  const safeAddress = localizedAddress || address || (t.has("addressLine") ? t("addressLine") : "")
   const safeHours = hours || (t.has("hours") ? t("hours") : "")
 
   const fallbackLabel = (href: string, fallback: string) => {

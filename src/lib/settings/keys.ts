@@ -1,3 +1,5 @@
+import { FOOTER_CONTENT_KEY } from "./footer"
+
 export type SettingGroup = "site" | "content" | "contact" | "social" | "seo" | "shipping" | "analytics"
 
 export interface SettingMeta {
@@ -62,4 +64,4 @@ export const SETTING_GROUP_ORDER: SettingGroup[] = ["site", "content", "contact"
 /** JSON map of storefront image slot key -> uploaded URL (managed at /admin/images). */
 export const IMAGE_SETTING_KEY = "images.site"
 
-export const ALL_SETTING_KEYS = [...SETTING_KEYS.map((s) => s.key), IMAGE_SETTING_KEY]
+export const ALL_SETTING_KEYS = [...SETTING_KEYS.map((s) => s.key), IMAGE_SETTING_KEY, FOOTER_CONTENT_KEY]

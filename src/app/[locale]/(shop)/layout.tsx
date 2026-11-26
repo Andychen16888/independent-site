@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma"
 import { getTranslations } from "next-intl/server"
 import { getSiteSettings, siteNameValue } from "@/lib/settings/settings"
+import { localizedFooterValue, parseFooterContent } from "@/lib/settings/footer"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { ChatButton } from "@/components/chat/ChatButton"
@@ -50,6 +51,7 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
   ])
 
   const siteName = siteNameValue(settings)
+  const footerContent = parseFooterContent(settings["footer.content"])
   const promoBar = settings["site.promoBar"] || th("promoBar")
   let requestQuoteLabel: string | undefined
   try {
@@ -100,10 +102,12 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         about={settings["footer.about"]}
         companyName={settings["company.name"]}
         companyBrief={settings["company.brief"]}
+        localizedBrief={localizedFooterValue(footerContent, locale, "brief")}
         contactEmail={settings["contact.email"]}
         contactPhone={settings["contact.phone"]}
         whatsapp={settings["contact.whatsapp"]}
         address={settings["company.address"]}
+        localizedAddress={localizedFooterValue(footerContent, locale, "address")}
         hours={settings["contact.hours"]}
         copyrightText={settings["footer.copyright"]}
         copyrightSuffix={siteName}
